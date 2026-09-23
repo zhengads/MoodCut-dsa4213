@@ -218,22 +218,52 @@ git checkout <你的分支>
 git rebase main                 # 或者 git merge main（分支落后较多时）
 ```
 
-### 提交与推送
+### 提交格式（**必填**）
+
+提交信息**必须包含姓名和日期**，这样出了问题能直接找到人。
+
+```
+<类型>: <一句话说明改了什么>
+
+姓名: <你的姓名>
+日期: <YYYY-MM-DD>
+```
+
+**类型**：`feat` 新功能 / `fix` 修 bug / `docs` 文档 / `test` 测试 / `refactor` 重构 / `chore` 杂项
+
+**示例**：
+
+```
+feat: 实现编剧智能体的初稿生成
+
+姓名: 郑明良
+日期: 2026-09-25
+```
+
+推送：
 
 ```bash
 git add <你改的文件>
-git commit -m "feat: 简短说明这次改了什么"
+git commit            # 会自动弹出模板，按提示填
 git push -u origin <你的分支>
 ```
 
-提交信息建议用前缀区分类型：`feat:` 新功能 / `fix:` 修 bug / `docs:` 文档 / `test:` 测试 / `chore:` 杂项。
+> **克隆仓库后请先跑一次这条命令**，之后 `git commit` 就会自动弹出格式模板：
+>
+> ```bash
+> git config commit.template .gitmessage
+> ```
+>
+> 用 `git commit -m "..."` 的话就自己按格式写全。
 
 ### 发起 Pull Request
+
+> ⚠️ **`main` 分支已开启保护，不能直接推送** —— 所有改动必须走 PR。
 
 1. 推送后在 GitHub 页面点击 **Compare & pull request**
 2. base 选 `main`，compare 选你的分支
 3. 填写改了什么、怎么验证的
-4. 至少找一名同学 review 后再合并
+4. **至少找一名同学 review 后再合并**（或自己确认无误后合并，别不检查就合）
 
 ---
 
