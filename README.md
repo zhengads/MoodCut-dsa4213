@@ -46,11 +46,15 @@ Multi-Agent Collaborative Framework*，arXiv:2501.12909）。
 
 ## 👥 团队成员
 
-| 姓名 | GitHub | 负责模块 |
-| --- | --- | --- |
-| 郑明良 | [@zhengads](https://github.com/zhengads) | 待定 |
-| <!-- 同学姓名 --> | <!-- @username --> | 待定 |
-| <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+> 共 **5 人**。同学加入仓库后请把自己的 GitHub 用户名填进来。
+
+| # | 姓名 | GitHub | 负责模块 |
+| --- | --- | --- | --- |
+| 1 | 郑明良 | [@zhengads](https://github.com/zhengads) | 待定 |
+| 2 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+| 3 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+| 4 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+| 5 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
 
 ---
 
