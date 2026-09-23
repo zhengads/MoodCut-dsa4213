@@ -1,7 +1,7 @@
 # FilmAgent — DSA 4213 课程项目
 
-> 基于大语言模型的多智能体（LLM-based Multi-Agent）虚拟电影制作框架。
-> 本项目为 **DSA 4213** 课程小组作业，选题围绕 FilmAgent 框架的复现、分析与扩展。
+> 本项目为 **DSA 4213** 课程小组作业，参考 **FilmAgent** 与 **VideoClaw** 两套 LLM 多智能体视频生成框架，
+> 重点关注其产出视频的**评测方法**（主观感受为主、客观 benchmark 为辅）。
 
 ---
 
@@ -44,6 +44,66 @@ Multi-Agent Collaborative Framework*，arXiv:2501.12909）。
 
 ---
 
+## 📖 什么是 VideoClaw
+
+VideoClaw 是 **FilmAgent 同一个团队（哈工大深圳 TMG + 阿里）的第二代开源框架**，定位是「AI 全自动化视频生成员工」。
+相比 FilmAgent 的 Unity 3D 虚拟拍摄，VideoClaw 直接对接**真实的视频生成模型**，产出可交付的成片。
+
+> ⚠️ 注意重名：GitHub 上还有 `T0UGH/videoclaw`（CLI 工具）、Synclip 的 VideoClaw（节点式工作台）等
+> 完全无关的项目。我们参考的是 **[HITsz-TMG/VideoClaw](https://github.com/HITsz-TMG/VideoClaw)**。
+
+### 六阶段流水线
+
+**剧本策划 → 角色/场景设计 → 分镜规划 → 参考图生成 → 视频生成 → 后期剪辑**
+
+每个阶段的产出会约束下一阶段，形成逐级收敛的制作流程。
+
+### 多智能体「数字剧组」
+
+| 阶段 | 智能体 |
+| --- | --- |
+| 剧本 | ScriptWriterAgent |
+| 角色设计 | CharacterDesignerAgent |
+| 分镜 | StoryboardAgent |
+| 参考图 | ReferenceGeneratorAgent |
+| 视频生成 | VideoDirectorAgent |
+| 剪辑 | VideoEditorAgent |
+
+由 orchestrator 以状态机（pending / running / waiting / completed）统一调度，并持久化会话。
+
+### 值得关注的设计（可能对我们的选题有用）
+
+- **Human-in-the-loop 停靠点**：在关键阶段（约 7~9 个确认点）暂停，让人检查并修改脚本、角色、分镜、参考图和片段 ——
+  这正好对应我们想做的**主观评价介入**。
+- **场记（script supervisor）状态库**：把人物关系、空间位置、分镜版本作为结构化资产存储，用于保持长视频的一致性。
+- **VLM 闭环质检**：用视觉语言模型审查中间图片/帧是否符合脚本。
+- **无限续写**：支持短剧的逐集连载。
+
+### 技术栈
+
+视频生成对接 **Wan、Kling** 等主流模型（支持首帧生视频、首尾帧生视频、参考图生视频）；
+LLM/VLM 侧支持 DashScope、DeepSeek、GPT、Gemini、Seedream、即梦。
+部署为本地 FastAPI（:8000）+ Next.js（:3000），MIT 协议。
+
+---
+
+## 🔗 两个框架的对比
+
+| 维度 | FilmAgent（2024） | VideoClaw（2026） |
+| --- | --- | --- |
+| 出品方 | 哈工大深圳 + 清华 | 哈工大深圳 TMG + 阿里 |
+| 拍摄环境 | Unity 3D 虚拟场景 | 真实视频生成模型 |
+| 制作阶段 | 3 阶段（创意/剧本/摄影） | 6 阶段（含角色设计、参考图、剪辑） |
+| 智能体 | 4 个角色（导演/编剧/演员/摄影师） | 6 个阶段智能体 + orchestrator |
+| 协作机制 | Critique-Correct-Verify、Debate-Judge | 状态机调度 + 人工停靠点 |
+| 长视频一致性 | 有限（单场景） | 场记状态库 + VLM 质检 |
+| 输出 | 虚拟场景合成视频 | 可交付成片 |
+
+**演进脉络**：FilmAgent 验证了「多智能体协作优于单智能体」，VideoClaw 把这个思路推进到真实生产流程，
+并引入了人工介入点。这为我们的选题提供了很好的切入点。
+
+---
+
 ## 👥 团队成员
 
 > 共 **5 人**。同学加入仓库后请把自己的 GitHub 用户名填进来。
@@ -56,15 +116,43 @@ Multi-Agent Collaborative Framework*，arXiv:2501.12909）。
 | 4 | Sona Asatryan | [@ChessLover](https://github.com/ChessLover) | 待定 |
 | 5 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
 
+> 第 5 位同学的 GitHub 用户名待补充。
+
 ---
 
 ## 🎯 项目目标
 
-> ⚠️ **本小节待小组讨论后确定**，目前是占位内容，讨论后请更新。
+> ⚠️ **选题仍在讨论中，下面是目前的初步方向**（2026-09-23），定稿后请更新。
 
-- [ ] 明确选题：复现 / 改进 / 应用于新场景（三选一或组合）
-- [ ] 确定交付物范围（代码、报告、演示视频等）
-- [ ] 确认评分标准与截止时间
+### 核心思路：借用成熟技术，主打评测方法
+
+我们**不打算从零造一套视频生成系统**，而是复用 FilmAgent / VideoClaw 已验证的多智能体管线，
+把研究重心放在**如何评价产出的视频**上。
+
+### 为什么评测是切入点
+
+视频生产类模型的产出质量**高度依赖人的主观感受** —— 一个镜头是否「好看」「连贯」「符合预期」，
+很难被单一数值指标完全刻画。而现有的自动评测（FVD、CLIPScore 等）与人的真实观感之间往往存在落差。
+
+因此我们认为：**主观评价应当作为主要依据，客观 benchmark 作为补充佐证。**
+
+### 计划的评测方案（待细化）
+
+| 类型 | 方式 | 说明 |
+| --- | --- | --- |
+| **主观**（主要） | 人工评分 / 问卷 | 邀请真人观看片段，按维度打分（如动作准确性、剧情连贯性、镜头合理性） |
+| **客观**（辅证） | Benchmark 跑分 | 跑现成的自动指标，与主观结果做对比分析 |
+
+> FilmAgent 论文本身就是用 5 分制李克特量表做人工评测的（4 个维度：动作准确性、剧情连贯性、
+> 人设贴合度、镜头合理性）。我们可以沿用并调整这套维度。
+
+### 待确定
+
+- [ ] 具体在哪个环节做评测（全流程 / 只评某一阶段）
+- [ ] 主观评测的维度设计与样本量
+- [ ] 客观 benchmark 选哪些指标
+- [ ] 是否需要自己复现一套 baseline 做对比
+- [ ] 最终交付物范围（代码 / 实验报告 / 演示视频）
 - [ ] 拆解为可分配的任务（见 [TASKS.md](TASKS.md)）
 
 ---
@@ -174,7 +262,18 @@ git push -u origin <你的分支>
 
 ## 📚 参考资料
 
+### FilmAgent
+
 - 论文：[FilmAgent: A Multi-Agent Framework for End-to-End Film Automation in Virtual 3D Spaces](https://huggingface.co/papers/2501.12909)（arXiv:2501.12909）
 - ACM 页面：[SIGGRAPH Asia 2024 Technical Communications](https://dl.acm.org/doi/fullHtml/10.1145/3681758.3698014)
 - 项目主页：[filmagent.github.io](https://filmagent.github.io/)
 - 官方实现：[github.com/HITsz-TMG/FilmAgent](https://github.com/HITsz-TMG/FilmAgent)
+
+### VideoClaw
+
+- 官方实现：[github.com/HITsz-TMG/VideoClaw](https://github.com/HITsz-TMG/VideoClaw)
+- 英文说明：[README_EN.md](https://github.com/HITsz-TMG/VideoClaw/blob/main/README_EN.md)
+- 项目介绍（中文）：[哈工大张民团队联合阿里开源全流程 AI 多智能体导演框架 VideoClaw](https://www.dtinsight.com.cn/nd.jsp?id=4003)
+
+> ⚠️ GitHub 上有多个同名项目（`T0UGH/videoclaw`、Synclip 的 VideoClaw 等），与本文所指**无关**。
+> 认准 `HITsz-TMG/VideoClaw`。
