@@ -153,7 +153,7 @@ git push -u origin <你的分支>
 
 本项目的任务用 **GitHub Projects 看板** 追踪，列：`Todo` → `In Progress` → `Done`。
 
-- 看板地址：https://github.com/users/zhengads/projects/2
+- 看板地址：https://github.com/users/zhengads/projects/3
 - 详细分工表见 [TASKS.md](TASKS.md)
 
 **使用约定**：
