@@ -239,16 +239,24 @@ git push -u origin <你的分支>
 
 ## 📋 任务管理
 
-本项目的任务用 **GitHub Projects 看板** 追踪，列：`Todo` → `In Progress` → `Done`。
+本项目的任务全部用 **GitHub Issues** 追踪，在 [Issues 页面](https://github.com/zhengads/filmagent-dsa4213/issues) 查看。
+详细分工表见 [TASKS.md](TASKS.md)。
 
-- 看板地址：https://github.com/users/zhengads/projects/3
-- 详细分工表见 [TASKS.md](TASKS.md)
+**标签表示状态**：
+
+| 标签 | 含义 |
+| --- | --- |
+| `待开始` | 还没人接手 |
+| `进行中` | 有人在做 |
+| `受阻` | 卡住了，需要协助 |
+| `已完成` | 做完了，关掉 Issue |
 
 **使用约定**：
-- 开一个任务 → 在 Projects 里建卡片（或建 Issue），指派给负责人
-- 开始做 → 卡片拖到 `In Progress`，同时建对应的开发分支
-- 做完 → 提 PR，合并后卡片拖到 `Done`
-- 卡住了 → 在卡片里留言说明卡在哪，别自己憋着
+
+- **认领任务** → 在 Issue 里留言说一声，加上 `进行中` 标签
+- **做完** → 关掉 Issue，改成 `已完成` 标签
+- **卡住了** → 加上 `受阻` 标签并在 Issue 里说明卡在哪，别自己憋着
+- **讨论** → 一律在 Issue 里留言，不要私聊，方便其他人看到上下文
 
 ---
 
