@@ -53,7 +53,7 @@ Multi-Agent Collaborative Framework*，arXiv:2501.12909）。
 | 1 | 郑明良 | [@zhengads](https://github.com/zhengads) | 待定 |
 | 2 | Tang Jiaxin | [@594jx](https://github.com/594jx) | 待定 |
 | 3 | <!-- 同学姓名 --> | [@fanx9905-blip](https://github.com/fanx9905-blip) | 待定 |
-| 4 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+| 4 | Sona Asatryan | [@ChessLover](https://github.com/ChessLover) | 待定 |
 | 5 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
 
 ---
