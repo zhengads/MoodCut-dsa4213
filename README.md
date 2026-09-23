@@ -51,8 +51,8 @@ Multi-Agent Collaborative Framework*，arXiv:2501.12909）。
 | # | 姓名 | GitHub | 负责模块 |
 | --- | --- | --- | --- |
 | 1 | 郑明良 | [@zhengads](https://github.com/zhengads) | 待定 |
-| 2 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
-| 3 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
+| 2 | Tang Jiaxin | [@594jx](https://github.com/594jx) | 待定 |
+| 3 | <!-- 同学姓名 --> | [@fanx9905-blip](https://github.com/fanx9905-blip) | 待定 |
 | 4 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
 | 5 | <!-- 同学姓名 --> | <!-- @username --> | 待定 |
 
@@ -153,7 +153,7 @@ git push -u origin <你的分支>
 
 本项目的任务用 **GitHub Projects 看板** 追踪，列：`Todo` → `In Progress` → `Done`。
 
-- 看板地址：<!-- 看板创建后粘贴在这里 -->
+- 看板地址：https://github.com/users/zhengads/projects/2
 - 详细分工表见 [TASKS.md](TASKS.md)
 
 **使用约定**：
