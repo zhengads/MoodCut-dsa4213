@@ -1,4 +1,4 @@
-# FilmAgent — DSA 4213 课程项目
+# MoodCut — DSA 4213 课程项目
 
 > 本项目为 **DSA 4213** 课程小组作业，参考 **FilmAgent** 与 **VideoClaw** 两套 LLM 多智能体视频生成框架，
 > 重点关注其产出视频的**评测方法**（主观感受为主、客观 benchmark 为辅）。
