@@ -69,3 +69,9 @@ desktop.ini
 *.tmp
 tmp/
 temp/
+
+# Local reference material and generated results
+/references/upstream/
+/references/papers/
+/local_assets/
+/runs/

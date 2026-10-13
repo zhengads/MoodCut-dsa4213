@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "projects": {
+    "movieagent": {
+      "repository": "https://github.com/showlab/MovieAgent",
+      "commit": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "paper": "https://arxiv.org/abs/2503.07314v1",
+      "project_page": "https://weijiawu.github.io/MovieAgent/",
+      "license_status": "No project-level license found at the pinned commit; source and media remain local reference copies."
+    },
+    "filmagent": {
+      "repository": "https://github.com/HITsz-TMG/VideoClaw",
+      "commit": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "source_directory": "FilmAgent",
+      "official_code_link": "https://github.com/HITsz-TMG/FilmAgent",
+      "paper": "https://arxiv.org/abs/2501.12909v1",
+      "project_page": "https://filmagent.github.io/",
+      "license_status": "Pinned repository root LICENSE states MIT; preserve the notice when reusing covered code; media rights are separate."
+    }
+  },
+  "files": [
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/dataset/FrozenII/script_synopsis.json",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/script_synopsis.json",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "dataset/FrozenII/script_synopsis.json",
+      "sha256": "52017c09877ba8d7a03a3be3b9824836701061ae4305c27b2203e29f806085f4",
+      "size_bytes": 858
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/movie_agent/base_agent.py",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/movie_agent/base_agent.py",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "movie_agent/base_agent.py",
+      "sha256": "be9a67f15c29d71802f948ed808ce106e161c010a7d2aa01eb3657730798a11a",
+      "size_bytes": 7762
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/movie_agent/run.py",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/movie_agent/run.py",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "movie_agent/run.py",
+      "sha256": "1b4426862fbd6f82a11e53a55c89435d5b111d6956a0b47e4a0a495c5556d75e",
+      "size_bytes": 13415
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/movie_agent/script/run.sh",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/movie_agent/script/run.sh",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "movie_agent/script/run.sh",
+      "sha256": "3344e9f87bbb8ea2156704e7ce2b3d667fa4b77c090e2340bba9a3e65637fc23",
+      "size_bytes": 626
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/movie_agent/system_prompts.py",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/movie_agent/system_prompts.py",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "movie_agent/system_prompts.py",
+      "sha256": "6ef9bc30e874c95a616a515886600d25a65988bd0fb902168be9c35d1d276564",
+      "size_bytes": 30696
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/movie_agent/tools.py",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/movie_agent/tools.py",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "movie_agent/tools.py",
+      "sha256": "3cbfbeb37e4b39923aa1ee19ddae389e627bb058b9627ccb8b7e2c382917f473",
+      "size_bytes": 10559
+    },
+    {
+      "project": "movieagent",
+      "group": "core",
+      "path": "references/upstream/movieagent/README.md",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/README.md",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "README.md",
+      "sha256": "d73cc495e3aa0c8dc20669542166ea3ce074e3add88a1cdc12d7c5bc20f36ffd",
+      "size_bytes": 5535
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/LLMCaller.py",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/LLMCaller.py",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/LLMCaller.py",
+      "sha256": "d067946838d3c3c42e404f97136b35d611edb687240e4940e5cf282bb65e0a09",
+      "size_bytes": 1197
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Locations/actions.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Locations/actions.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Locations/actions.txt",
+      "sha256": "bbeda6af466c1e18afcc7ba65654804364b73b28040c19fe1bd76c3dc3c6290b",
+      "size_bytes": 1446
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Locations/shots.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Locations/shots.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Locations/shots.txt",
+      "sha256": "13811974d222e6ccfde3cbebe71ae74b45a1f8eedec893871c14b7ff2b6d0da3",
+      "size_bytes": 1961
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/main.py",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/main.py",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/main.py",
+      "sha256": "2065f1394f06c4b2930f8fe029035c969c7685e28e277917658e21b84b698711",
+      "size_bytes": 33989
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/actor.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/actor.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/actor.txt",
+      "sha256": "e685dd101e85e9ceeee18f05863c4e6b8c3af637bbc61e5c044d2ea40c15658c",
+      "size_bytes": 820
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/cinematographer.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/cinematographer.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/cinematographer.txt",
+      "sha256": "3f922b0df589906a627b8357f5a5afec26f41a96cdc52a41d1fc68f62b69c5c2",
+      "size_bytes": 1675
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_1.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_1.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_1.txt",
+      "sha256": "e2a6fd464e7902a9e094e81556adf9f34e946e3329863eb58fa05f16cabd3803",
+      "size_bytes": 700
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_2.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_2.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_2.txt",
+      "sha256": "e9981787abd9c70845e83010871a20593713ebe231709ee6a9af32c8cf1fd8a0",
+      "size_bytes": 2227
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_3.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_3.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_3.txt",
+      "sha256": "51ca049d67d42e38795b764e0cad979e32ea13680f2e42c9a630a4c72d87225d",
+      "size_bytes": 2223
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_4.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_4.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_4.txt",
+      "sha256": "c2fa26dfc6bb492c33cecb04a2e4aadadea3325d4a79982dac3fdc2b880864b6",
+      "size_bytes": 801
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_5.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_5.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_5.txt",
+      "sha256": "36e6d37db44805fa45ed621c6bb0f923ee6ad0efb4f34881abf4af634be45554",
+      "size_bytes": 1651
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_6.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_6.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_6.txt",
+      "sha256": "ef92afa40bdcd2e73ad3cd32a3ba3f9869ca507e61c7cfb8f3604a15d576aa8d",
+      "size_bytes": 622
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_7.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_7.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_7.txt",
+      "sha256": "6a9a637f28c90c40961ad8103d039a99ebebf92c3c9d8ed599d71bc7f203d299",
+      "size_bytes": 1221
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_8.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_8.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_8.txt",
+      "sha256": "c58097a04b1e06a47d73d13b0a9bd5e7bd0cf8b656c013c7e761fc6d65be6ba8",
+      "size_bytes": 1667
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/director_9.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/director_9.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/director_9.txt",
+      "sha256": "25bbdbf899f6fdd833ff0d9bada1330f5c3136b28b50724323e23f4f011226ce",
+      "size_bytes": 1136
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/screenwriter_1.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/screenwriter_1.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/screenwriter_1.txt",
+      "sha256": "37692e86a77999179d567bea87d1f3fb3032ba440ee93a0db3221e6e85b76706",
+      "size_bytes": 1005
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/screenwriter_2.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/screenwriter_2.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/screenwriter_2.txt",
+      "sha256": "e99f3860db317e73b446ccd061ec9b73aec8f2f1d9e967cfdea91bcd6b87e02a",
+      "size_bytes": 568
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/screenwriter_3.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/screenwriter_3.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/screenwriter_3.txt",
+      "sha256": "bf7036ba6b06e16a4d739b15304ca7a225ed4009f7c4a88b8c8ba1e481c014af",
+      "size_bytes": 2276
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/screenwriter_4.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/screenwriter_4.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/screenwriter_4.txt",
+      "sha256": "f08985bcc9adbf3378f379370b32769bffd9a6794d9e48e80b4a10eaa178cd0e",
+      "size_bytes": 2253
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/screenwriter_5.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/screenwriter_5.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/screenwriter_5.txt",
+      "sha256": "108b7c8a07a2e46473ab4bf0da6a688b89ed59b1e0937fd07650a54061faf051",
+      "size_bytes": 795
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/Prompt/shot_review.txt",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/Prompt/shot_review.txt",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/Prompt/shot_review.txt",
+      "sha256": "90381e6f228cb9e3cf4355ff750f805b3923d05e8ac872438c70b15d519e0cc3",
+      "size_bytes": 2688
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/scripts/full/1/actors_profile.json",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/scripts/full/1/actors_profile.json",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/scripts/full/1/actors_profile.json",
+      "sha256": "734fb5016a37e58d61e0b5019445172bace9f724dd49c9b4867fae41dee2cc5f",
+      "size_bytes": 751
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/scripts/full/1/script.json",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/scripts/full/1/script.json",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/scripts/full/1/script.json",
+      "sha256": "3372ba2ea8d002d6984b5a387fcef3d3eb17c3984709c982406f849de35391f0",
+      "size_bytes": 28952
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/FilmAgent/util.py",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/FilmAgent/util.py",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/FilmAgent/util.py",
+      "sha256": "500841c216590519d68fd2ba301561535e1bf4c88095206338310bc05bcf584a",
+      "size_bytes": 4759
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/FilmAgent/README.md",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/FilmAgent/README.md",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "FilmAgent/README.md",
+      "sha256": "963f037d6436bcfbc19f22be30d8c6b68e5ffbbb0f9840ac8d245a4e1b5dda41",
+      "size_bytes": 10344
+    },
+    {
+      "project": "filmagent",
+      "group": "core",
+      "path": "references/upstream/filmagent/LICENSE",
+      "url": "https://raw.githubusercontent.com/HITsz-TMG/VideoClaw/16c1ce0b553e30eff90ff1274e8a8a63c1d548a3/LICENSE",
+      "revision": "16c1ce0b553e30eff90ff1274e8a8a63c1d548a3",
+      "upstream_path": "LICENSE",
+      "sha256": "a1092e06ef022b021547b828af0e3b2cd30987e7f2741f553d32a19854abc227",
+      "size_bytes": 1066
+    },
+    {
+      "project": "movieagent",
+      "group": "papers",
+      "path": "references/papers/movieagent-2503.07314v1.pdf",
+      "url": "https://arxiv.org/pdf/2503.07314v1",
+      "revision": "2503.07314v1",
+      "upstream_path": "arxiv:2503.07314v1",
+      "sha256": "ecf4e084096c19acc40492d502b61982b5c264f4bb2dc8fe35d42790857a604c",
+      "size_bytes": 11322115
+    },
+    {
+      "project": "filmagent",
+      "group": "papers",
+      "path": "references/papers/filmagent-2501.12909v1.pdf",
+      "url": "https://arxiv.org/pdf/2501.12909v1",
+      "revision": "2501.12909v1",
+      "upstream_path": "arxiv:2501.12909v1",
+      "sha256": "efa80b19f83b909d218c0801e4f8760c18c009742d8e27aad7ff050f3a834a9d",
+      "size_bytes": 45492265
+    },
+    {
+      "project": "movieagent",
+      "group": "assets",
+      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "dataset/FrozenII/character_list/Anna/best.png",
+      "sha256": "6086a3d86af1b14cd0ff281fc494a94e5b41d5593b0493a4af06fa067a9394dd",
+      "size_bytes": 439194
+    },
+    {
+      "project": "movieagent",
+      "group": "assets",
+      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Anna/best.txt",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "dataset/FrozenII/character_list/Anna/best.txt",
+      "sha256": "9864dae1c8d55481071ba9d0f7bba6a4086d45805086d6ec61e4d0186bba43a6",
+      "size_bytes": 83
+    },
+    {
+      "project": "movieagent",
+      "group": "assets",
+      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "dataset/FrozenII/character_list/Elsa/best.png",
+      "sha256": "422c12807142e392ffd0e5e20f4fd39a4001c0b7ca032a727616fe1bc59598bd",
+      "size_bytes": 792419
+    },
+    {
+      "project": "movieagent",
+      "group": "assets",
+      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Elsa/best.txt",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "upstream_path": "dataset/FrozenII/character_list/Elsa/best.txt",
+      "sha256": "a12ce1875e0d36c1f0bebb9c4bb43806bc222633a48bdcbde910887964811392",
+      "size_bytes": 107
+    }
+  ]
+}
