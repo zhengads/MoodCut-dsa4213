@@ -1,6 +1,6 @@
 # MC-04 固定素材动态分镜渲染
 
-负责人：P4，GitHub 账号以 Issue 指派为准。评审：P2。依赖：MC-01 PR1；用自制fixture开发，无需等待LLM或MovieAgent素材。首个 Draft PR：10/15；集成：10/17。
+认领模块：P4 渲染，账号以 Issue 为准。依赖：MC-01 PR1；使用共享夹具，无需等待模型或上游素材。首个 Draft PR：10/15；集成：10/17。
 
 ## 开工资料
 
@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/rendering/`、`tests/rendering/`、`docs/rendering.md`。模块内实现 renderer.py、frames.py、subtitles.py。依赖变更交给P1合并，不自己改根配置。
+`src/moodcut/renderer.py`、`tests/test_renderer.py`、`tests/test_video.py`、`docs/rendering.md`。画面、字幕与 FFmpeg 编排先作为 renderer.py 内的函数实现。依赖和共享渲染配置变更与公共基础模块协调后更新，不自行新增平行配置。
 
 ## PR 1 画面与字幕
 
@@ -32,6 +32,10 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/rendering -q`、`python -m moodcut render --plan fixtures/plan.json --assets fixtures/assets.json --font local_assets/font.ttf --output runs/dev/render`。
+目标命令：`python -m pytest tests/test_renderer.py tests/test_video.py -q`、`python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render`。
 
 交付视频、contact sheet、timeline和ffprobe结果。人工检查中文字幕、角色对应、镜头顺序、裁切和时长。无需调用付费模型。
+
+## 提交自查
+
+完成本次增量后检查 diff、公共接口和实际验收结果，在 PR 描述中记录自查结论与遗留事项。可自行评审，也可请同伴或 AI 辅助；无需指定评审人。通过所需检查并解决阻塞问题后按仓库规则合并。

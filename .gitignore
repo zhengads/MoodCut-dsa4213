@@ -73,5 +73,5 @@ temp/
 # Local reference material and generated results
 /references/upstream/
 /references/papers/
-/local_assets/
+/assets/raw/
 /runs/

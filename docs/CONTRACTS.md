@@ -36,8 +36,8 @@ tone 仅允许 affectionate/suspicious/hostile。两个角色是第一版边界�
 {
   "schema_version":"1.0",
   "assets":[
-    {"asset_id":"dev_a","character_id":"a","path":"local_assets/dev_a.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]},
-    {"asset_id":"dev_b","character_id":"b","path":"local_assets/dev_b.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]}
+    {"asset_id":"dev_a","character_id":"a","path":"tests/fixtures/images/dev_a.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]},
+    {"asset_id":"dev_b","character_id":"b","path":"tests/fixtures/images/dev_b.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]}
   ]
 }
 ```
@@ -104,42 +104,44 @@ condition 为 baseline/generic_review/moodcut。cost 未知为 null，不能置�
 
 ## 2. 公共接口与归属
 
+下列文件均位于 `src/moodcut/`，直接按功能平铺。提示词在 `src/moodcut/prompts/`，配置在根目录 `configs/`；具体文件归属见任务卡。
+
 ```python
-# core/client.py — P1，所有付费请求只能经过该接口
+# client.py — P1，所有付费请求只能经过该接口
 class LLMClient:
     def complete_json(self, *, stage: str, system: str, user: str,
                       max_output_tokens: int) -> dict: ...
 
-# core/validation.py — P1；返回错误列表，空列表表示结构通过
+# validation.py — P1；返回错误列表，空列表表示结构通过
 def validate_plan(scene: dict, plan: dict, manifest: dict) -> list[str]: ...
 
-# planning/importer.py — P2；只读本地上游文件，无网络
+# importer.py — P2；只读本地上游文件，无网络
 def import_synopsis(path: str) -> dict: ... # {story: str, character_names: list[str]}
 
-# planning/planner.py — P2
+# planner.py — P2
 def make_plan(scene: dict, manifest: dict, client: LLMClient) -> dict: ...
 
-# review/service.py — P3，mode 必须显式给出
+# reviewer.py — P3，mode 必须显式给出
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
                       client: LLMClient, *, mode: str) -> dict: ... # ReviewResult
 
-# review/patches.py — P3；纯函数，不调用模型、不改输入对象
+# patches.py — P3；纯函数，不调用模型、不改输入对象
 def apply_patch(scene: dict, plan: dict, manifest: dict,
                 report: dict, patch: dict) -> dict: ... # {plan,status,errors}
 
-# rendering/renderer.py — P4
+# renderer.py — P4
 def render_plan(plan: dict, manifest: dict, *, project_root: str,
                 out_dir: str, font_path: str) -> dict: ... # RenderResult
 
-# evaluation/design.py — P5；纯函数，创建分配记录不发请求
+# evaluation.py — P5；纯函数，创建分配记录不发请求
 def build_assignments(scenes: list[dict], *, replicates: int,
                       tones: list[str], conditions: list[str]) -> list[dict]: ...
 
-# evaluation/blinding.py / metrics.py — P5
+# evaluation.py — P5
 def export_blind_items(records: list[dict], *, out_dir: str, seed: int) -> dict: ...
 def summarize(records: list[dict], ratings: list[dict]) -> dict: ...
 
-# core/pipeline.py — P1，initial_plan 由 block cache 取得或只生成一次
+# pipeline.py — P1，initial_plan 由 block cache 取得或只生成一次
 def run_condition(scene: dict, initial_plan: dict, manifest: dict,
                   client: LLMClient, *, condition: str, out_dir: str,
                   project_root: str, font_path: str) -> dict: ... # RunRecord
@@ -156,18 +158,18 @@ review_and_revise 两种 mode 都按 critique → revise → verify 执行，最
 以下是 P1 将实现的命令，当前尚不可执行。
 
 ```bash
-python -m moodcut plan --scene fixtures/scene.json --assets fixtures/assets.json --mock --output runs/dev/initial.json
-python -m moodcut review --scene fixtures/scene.json --plan fixtures/plan.json --assets fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json
-python -m moodcut render --plan fixtures/plan.json --assets fixtures/assets.json --font local_assets/font.ttf --output runs/dev/render
+python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json
+python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json
+python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render
 python -m moodcut smoke --mock --output runs/dev/smoke
-python -m moodcut evaluate --config configs/evaluation/pilot.json --dry-run
+python -m moodcut evaluate --config configs/pilot.json --dry-run
 ```
 
 smoke mock 模式不联网、不需要 key、不渲染视频，检查 baseline/generic_review/moodcut 三条 JSON 链路与记录；render 独立需要 FFmpeg 和显式字体。真实调用必须同时有授权、`--allow-paid`、`--max-cost-usd`、明确模型及价格配置。paid 不能作为任何命令默认行为。
 
 ## 4. 固定存储与结构检查
 
-共享夹具由 P1 写在 `fixtures/`，不用被现有 `.gitignore` 整体忽略的 `data/`。P2 维护 `assets/manifest.json`，原始第三方图片在忽略目录 `local_assets/`。运行结果在忽略目录 `runs/`。P1 修改 .gitignore；各模块不各自修改根配置。
+共享夹具由 P1 写在 `tests/fixtures/`，不用被现有 `.gitignore` 整体忽略的 `data/`。P2 维护 `assets/manifest.json`，原始第三方图片在忽略目录 `assets/raw/`。运行结果在忽略目录 `runs/`。P1 修改 .gitignore；各模块不各自修改根配置。
 
 必检：版本、scene/tone 对齐、唯一 shot_id、有效 beat/character/asset 引用、所有必需 beats 被覆盖、duration>0 且合计60–90、镜头数1–6、visuals每镜头1–2项且crop受允许；dialogue speaker 必须在 scene.characters 中。素材不存在、hash不符、非图片或越界路径均报错。
 

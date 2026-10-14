@@ -372,7 +372,7 @@
     {
       "project": "movieagent",
       "group": "assets",
-      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png",
       "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
       "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
       "upstream_path": "dataset/FrozenII/character_list/Anna/best.png",
@@ -382,7 +382,7 @@
     {
       "project": "movieagent",
       "group": "assets",
-      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Anna/best.txt",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.txt",
       "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.txt",
       "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
       "upstream_path": "dataset/FrozenII/character_list/Anna/best.txt",
@@ -392,7 +392,7 @@
     {
       "project": "movieagent",
       "group": "assets",
-      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
       "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
       "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
       "upstream_path": "dataset/FrozenII/character_list/Elsa/best.png",
@@ -402,7 +402,7 @@
     {
       "project": "movieagent",
       "group": "assets",
-      "path": "local_assets/movieagent/dataset/FrozenII/character_list/Elsa/best.txt",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.txt",
       "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.txt",
       "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
       "upstream_path": "dataset/FrozenII/character_list/Elsa/best.txt",

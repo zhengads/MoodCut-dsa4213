@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moodcut"
+version = "0.0.0"
+description = "Emotion-aware storyboard review and constrained revision research"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["moodcut*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+moodcut = ["prompts/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

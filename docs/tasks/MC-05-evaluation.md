@@ -1,6 +1,6 @@
 # MC-05 配对对照、盲评导出与统计
 
-负责人：P5，GitHub 账号以 Issue 指派为准。评审：P3；最终实验协议由P1确认。依赖：MC-01 PR1的记录契约；不等待真实视频，先用合成run records开发。首个 Draft PR：10/15；10/21前完成协议工具。
+认领模块：P5 评估，账号以 Issue 为准。依赖：MC-01 PR1 的记录契约；先用合成记录开发。首个 Draft PR：10/15；10/21 前完成协议工具。
 
 ## 开工资料
 
@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/evaluation/`、`configs/evaluation/`、`tests/evaluation/`、`docs/evaluation.md`。模块内实现 design.py、blinding.py、metrics.py。不改初稿、提示词、review逻辑或renderer。
+`src/moodcut/evaluation.py`、`configs/pilot.json`、`tests/test_evaluation.py`、`docs/evaluation.md`。分配、盲评导出和指标汇总先作为 evaluation.py 内的函数实现。后续已确认实验的配置也放 configs；不修改模型/渲染公共配置、初稿、提示词、reviewer 或 renderer。
 
 ## PR 1 实验分配与盲评
 
@@ -34,6 +34,10 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/evaluation -q`、`python -m moodcut evaluate --config configs/evaluation/pilot.json --dry-run`。
+目标命令：`python -m pytest tests/test_evaluation.py -q`、`python -m moodcut evaluate --config configs/pilot.json --dry-run`。
 
 测试用合成记录覆盖：一正确、一错误、一失败、一uncertain、一无评分、重复评分、初稿hash不一致、零样本。预期数值人工手算写在测试中。报告能看到失败与分母，不预写“我们方法更好”。
+
+## 提交自查
+
+完成本次增量后检查 diff、公共接口和实际验收结果，在 PR 描述中记录自查结论与遗留事项。可自行评审，也可请同伴或 AI 辅助；无需指定评审人。通过所需检查并解决阻塞问题后按仓库规则合并。

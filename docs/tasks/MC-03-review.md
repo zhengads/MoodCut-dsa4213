@@ -1,6 +1,6 @@
 # MC-03 通用审查、情绪审查与局部修订
 
-负责人：P3，GitHub 账号以 Issue 指派为准。评审：P1；P5检查对照公平性。依赖：MC-01 PR1，使用fixture，不必等P2真实规划。首个 Draft PR：10/15；接入：10/17。
+认领模块：P3 审查修订，账号以 Issue 为准。依赖：MC-01 PR1；使用共享夹具，不必等真实规划。首个 Draft PR：10/15；接入：10/17。
 
 ## 开工资料
 
@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/review/`、`prompts/review/`、`tests/review/`、`docs/review.md`。模块内实现 service.py、patches.py；提示目录内实现 generic.txt、moodcut.txt、revise.txt、verify.txt。不要改公共client、planner、renderer或共享契约。
+`src/moodcut/reviewer.py`、`src/moodcut/patches.py`、`src/moodcut/prompts/review_generic.txt`、`src/moodcut/prompts/review_moodcut.txt`、`src/moodcut/prompts/review_revise.txt`、`src/moodcut/prompts/review_verify.txt`、`tests/test_reviewer.py`、`tests/test_patches.py`、`docs/review.md`。不要修改公共 client、planner、renderer、共享契约或规划提示词。
 
 ## PR 1 报告与纯补丁应用
 
@@ -33,6 +33,10 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/review -q`、`python -m moodcut review --scene fixtures/scene.json --plan fixtures/plan.json --assets fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json`。
+目标命令：`python -m pytest tests/test_patches.py tests/test_reviewer.py -q`、`python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json`。
 
 交付一份可读修改记录：原台词、意见、修改后台词、验证状态。交付需包含可运行实现及验收证据。评审Agent的自评分不能作为最终实验成绩。
+
+## 提交自查
+
+完成本次增量后检查 diff、公共接口和实际验收结果，在 PR 描述中记录自查结论与遗留事项。可自行评审，也可请同伴或 AI 辅助；无需指定评审人。通过所需检查并解决阻塞问题后按仓库规则合并。

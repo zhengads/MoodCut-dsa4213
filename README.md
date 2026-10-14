@@ -15,13 +15,62 @@ python scripts/prepare_references.py
 
 参考资料准备仅需 Python 3.11+ 和网络，无第三方 Python 依赖，无需 API key。默认下载固定版本的 33 份核心源码、提示词和样例，约 178 KB；再次运行验证缓存，不重复下载。
 
-打开仓库，让编码助手按 [START_HERE.md](START_HERE.md) 读取共享规则及本人 Issue。统一入口会检查参考文件，并在缺失时执行准备脚本。
+## 用 AI 开发一个任务
 
-- [项目范围与五人分工](TEAM_HANDOFF.md)
-- [模块任务卡](TASKS.md)
+在 GitHub Issue 中认领一个模块，拉取最新 main 后，将以下指令交给编码助手并替换编号：
+
+```text
+我负责 GitHub Issue #N，请读取 AGENTS.md、
+.agents/skills/moodcut-team/SKILL.md、docs/TEAM.md、docs/CONTRACTS.md、
+docs/REFERENCES.md、docs/upstream-reuse.md 和该 Issue 关联的任务卡。
+先检查任务认领和已有 PR，避免重复开发。
+执行 python scripts/prepare_references.py --check；若资料缺失，
+允许执行 python scripts/prepare_references.py 下载固定公开来源并重新校验。
+若哈希不符，保留原文件并报告。按索引阅读本模块所需源码。
+完成任务卡的 PR 1；若已合并，则完成下一个可验收增量。
+只修改任务范围内文件，默认离线，不调用付费 API。
+允许提交并推送任务分支、创建或更新 Draft PR、更新该 Issue 的进度。
+完成验收后自查当前 diff，在 PR 描述中记录评审结论、测试结果和遗留问题。
+这次先提交 PR，不自动合并。
+```
+
+无需指定评审人。作者可以自行检查，也可请同伴或 AI 辅助评审；提交者核对结果后负责自己的交付。AI 无法读取 GitHub 时，可粘贴 Issue 全文，并说明远端认领状态尚未核实。
+
+- [模块分工、任务卡与协作流程](docs/TEAM.md)
 - [公共接口](docs/CONTRACTS.md)
 - [参考资料与源码阅读路径](docs/REFERENCES.md)
 - [复用范围](docs/upstream-reuse.md)
+
+## 目录
+
+```text
+src/moodcut/
+  __init__.py
+  __main__.py       命令行入口
+  client.py         公共 LLMClient / FakeClient
+  validation.py     结构检查
+  pipeline.py       三条件流程编排
+  importer.py       上游输入适配
+  planner.py        规划与字段归一化
+  reviewer.py       通用/情绪审查
+  patches.py        受约束修改
+  renderer.py       画面、字幕与视频
+  evaluation.py     配对、盲评导出与指标
+  prompts/          规划和审查提示词
+configs/            模型、渲染和实验配置
+tests/             测试文件平铺；共享数据在 fixtures/
+assets/             素材清单；原始素材在 raw/，不提交
+scripts/            资料准备等辅助脚本
+references/         上游资料索引、锁定清单和本地缓存
+docs/               分工、契约、实施计划和 tasks/ 任务卡
+pyproject.toml      Python 包安装与测试配置
+.agents/            编码协作 Skill
+.github/            PR 模板和 CI
+```
+
+上述代码文件和目录已纳入 Git。业务 `.py` 文件目前仅有职责说明；`__main__.py` 在 CLI 未实现时明确报错退出。`prompts/`、`configs/` 和 `tests/fixtures/` 用 `.gitkeep` 保留，提示词、配置值及夹具由任务卡实现。`assets/raw/` 和 `runs/` 按素材准备或运行需要创建，内容不提交。
+
+按文件范围认领任务；同一目录内的不同文件可由不同成员并行开发。共享模型/渲染配置归 MC-01，`configs/pilot.json` 等实验配置归 MC-05。
 
 ## 系统流程
 
@@ -48,12 +97,12 @@ python scripts/prepare_references.py
 
 ## 当前开发状态
 
-仓库已提供开发规则、模块契约、任务卡和可运行的参考资料准备工具。规划、审查、渲染和评估模块按任务卡实施；`docs/CONTRACTS.md` 中的项目 CLI 是实现目标。当前不把参考资料下载成功视为生成管线已完成。
+仓库已提供开发规则、模块契约、任务卡、代码目录骨架和可运行的参考资料准备工具。已提供最小包安装配置；CLI、FakeClient、测试夹具及业务逻辑仍待实现；`docs/CONTRACTS.md` 中的项目 CLI 是实现目标。当前不把参考资料下载成功视为生成管线已完成。
 
 资料工具的离线验收：
 
 ```bash
-python -m unittest discover -s tests/tooling -p "test_*.py" -v
+python -m unittest discover -s tests -p "test_prepare_references.py" -v
 python scripts/prepare_references.py --check
 ```
 
@@ -77,6 +126,14 @@ python scripts/prepare_references.py --assets  # Anna/Elsa 两张参考图及说
 
 ## 提交与评审
 
-每个模块 Issue 由一位负责人认领，按可验收增量提交 PR。分支使用 `codex/issue-编号-内容`；不得直接推送 main。就绪 PR 附验证命令与结果，由非作者成员评审；验收和所需检查通过后按仓库规则合并。完整流程见 [START_HERE.md](START_HERE.md)。
+一个模块 Issue 由一位负责人认领，按可验收增量提交 PR。分支使用 `codex/issue-编号-内容`，所有改动走 PR。提交前检查当前 diff、接口、测试结果和敏感文件；在 PR 描述记录自查结论。通过验收、所需 CI 和现有仓库规则后，作者可自行合并。无需固定评审人或额外的同伴批准。
 
-保留 `.gitmessage` 中的姓名与日期格式。API key、上游素材、模型权重、运行视频及原始个人评分不进入提交。普通开发使用离线夹具；真实模型调用单独确认规模和预算。
+自查记录写在 PR 描述中；作者不能给自己的 PR 提交 GitHub 的 Approve 审批。需要 AI 合并时可明确下达：
+
+```text
+请自查 PR #N 当前版本的改动和验收证据，将结论更新到 PR 描述。
+确认没有阻塞问题、所需检查通过且符合仓库规则后，squash merge 此 PR。
+如果有缺项，报告具体问题，不绕过保护。
+```
+
+保留 `.gitmessage` 的姓名与日期格式。API key、上游原始素材、模型权重、运行视频及原始个人评分不进入提交。普通开发使用离线夹具；真实模型调用单独确认规模和预算。
