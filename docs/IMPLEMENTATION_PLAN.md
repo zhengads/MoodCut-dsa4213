@@ -55,6 +55,8 @@ tests/evaluation/
 tests/test_smoke.py
 ```
 
+The package directories above already exist with minimal `__init__.py` files; prompt/config/test directories use `.gitkeep` where empty. Named implementation files, packaging, CLI and shared fixtures remain task deliverables.
+
 ## Task 1 — Shared contracts and foundation
 
 Owner P1. Full work item: `docs/tasks/MC-01-foundation.md`. Files and output interfaces are specified there and in CONTRACTS.md. Produces LLMClient/FakeClient, validate_plan, fixtures, CLI and run_condition. Consumes other modules only in the second PR.

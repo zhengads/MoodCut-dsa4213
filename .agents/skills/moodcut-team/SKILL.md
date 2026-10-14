@@ -23,6 +23,7 @@ Read the module-specific paths in docs/REFERENCES.md. FilmAgent is the pinned Vi
 ## Implement one increment
 
 - Follow the task card's writable paths. P1–P5 denote module responsibilities, not approval authority. Coordinate cross-module and contract changes with affected owners before editing shared interfaces.
+- Reuse the existing package and test directories. Initial `__init__.py` files and `.gitkeep` files provide structure only; they do not mean APIs, CLI, FakeClient or fixtures are implemented.
 - Use `tests/fixtures/`, the shared FakeClient and `docs/CONTRACTS.md`. Do not build a competing client or a duplicate implementation of a teammate's dependency. Module-specific fixtures belong in that module's tests.
 - Keep prompts and configuration inside the corresponding `src/moodcut/` module. Keep material manifests in `assets/`, downloaded assets in `assets/raw/`, and run outputs in `runs/`.
 - Complete the next independently verifiable increment. Task-card commands describe acceptance targets until their implementation exists; do not claim they already pass.

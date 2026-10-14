@@ -12,12 +12,12 @@
 
 ## 已有基础
 
-仓库已提供协作规则、参考资料锁定清单和 prepare_references 工具。沿用这些文件，按需修正；本任务仍需实现运行骨架、FakeClient 与公共夹具。现有 `tests/tooling/` 是资料工具测试，继续保留。pytest 收集限定 `tests/`，排除上游参考缓存。
+仓库已提供协作规则、参考资料锁定清单、prepare_references 工具，以及 src/moodcut 五个模块和对应测试目录。现有 __init__.py 仅标记包，.gitkeep 仅保留空目录；沿用这些路径。本任务仍需实现安装配置、CLI、FakeClient、结构验证与公共夹具。现有 `tests/tooling/` 是资料工具测试，继续保留。pytest 收集限定 `tests/`，排除上游参考缓存。
 
 ## PR 1 契约与公共夹具
 
 - [ ] 将 CONTRACTS.md、协作规范与 PR 模板纳入仓库；保持 README 的项目说明、链接与配置一致。
-- [ ] 建 Python 3.11 的 src-layout 包，测试用 pytest；提供 `python -m moodcut --help`。
+- [ ] 沿用现有 src-layout 目录，补齐 Python 3.11 的包安装配置，测试用 pytest；提供 `python -m moodcut --help`。
 - [ ] 编写 `core/client.py` 的 LLMClient/FakeClient，FakeClient 消费预置响应队列并记录 stage、输入和输出上限，不联网。
 - [ ] 编写 `core/validation.py`，实现契约第4节的全部结构检查；禁止把结构检查结果叫语义正确。
 - [ ] 将契约 SceneInput/ShotPlan 保存为合法 `tests/fixtures/scene.json`、`tests/fixtures/plan.json`，另存 review/patch/verification 响应。生成两张有 A/B 标识的纯色测试图片，保存真实 hash 与尺寸为 `tests/fixtures/assets.json`。素材路径统一在项目根可解析；明确软件夹具非实验数据。
