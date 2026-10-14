@@ -39,8 +39,9 @@ is still required. Report dimensions separately, without inventing a total score
 
 A manifest is a nonempty JSON list. Paths are relative POSIX-style MP4 paths.
 Unknown generation seeds are null, not zero. This validator checks metadata only;
-a future execution adapter must resolve paths within an explicit video root,
-reject symlink escapes, verify existence, hash files, and check decoding.
+the batch runner resolves paths within an explicit video root, rejects path
+escapes and duplicate resolved paths, checks existence, hashes input bytes, and
+records decoder failures returned by the isolated VBench worker.
 
 ```json
 [
@@ -87,7 +88,7 @@ This descriptive mean is our aggregation, not necessarily the official VBench
 aggregate. CSV includes planned, succeeded, failed and missing counts. No successful
 scores yields null (blank CSV cell), never zero. Comparisons with unequal coverage
 are not evidence of an unconditional improvement. Paired comparison, confidence
-intervals, other native dimensions, plots and batch execution remain future work.
+intervals, other native dimensions and plots remain future work. Batch execution is described below.
 
 ## Run the offline tools
 
@@ -226,6 +227,81 @@ virtual environment are excluded from the commit.
 
 ## 中文速览
 
-已完成 VBench 单指标接入、原始结果解析、失败与缺失统计及 CSV 导出；17 项测试通过。
-使用本地生成的 1 秒测试视频，在 CPU 上真实跑通 imaging_quality，得分 0.55884。
-此分数仅验证评估流程，不代表 MoodCut 正式效果；批量评估、其他指标和正式实验仍待完成。
+已完成 VBench 单指标接入、批量评估、逐条失败记录、断点续跑及 CSV 汇总。
+续跑会核对视频内容与配置，避免复用过期分数；测试数据仅验证流程，不代表 MoodCut 正式效果。
+其他指标、正式实验和 GPU 验证仍待完成，具体测试证据见下文。
+
+
+## Batch evaluation and resume
+
+The `batch` entry point accepts the metadata list above and evaluates each video
+with original VBench imaging_quality on CPU. Dependencies and verified weights
+must already exist. Each clip runs in an isolated process, with a default timeout
+of 300 seconds including imports and model loading. The model is loaded per clip;
+this trades throughput for simple failure isolation. No paid API or automatic
+weight download is involved. Use a fresh output directory for a new experiment.
+
+```powershell
+$env:PYTHONPATH = 'src'
+.venv/Scripts/python -B -m moodcut.evaluation batch --manifest manifest.json --video-root assets/raw --upstream references/upstream/vbench --cache runs/vbench-cache --output runs/batch-01 --timeout 300
+```
+
+To continue the same run, repeat the identical command with `--resume`. Before
+reusing results, the runner verifies the entire manifest, resolved video paths,
+SHA-256 hashes of present inputs, missing-file state, benchmark/weight versions,
+reporting module hash, Python environment/package versions, device, preprocessing
+and timeout. Changed data, code or configuration requires a new output directory.
+A previously missing file appearing is also a change. A manifest cannot mix formal,
+development and synthetic sources or shot and film units.
+
+A completed success or failure is not evaluated again. Interrupted, unfinished
+items are evaluated on resume in a fresh attempt directory. Failed attempts are
+retained; retrying failures or testing repaired videos requires a new run. Ordinary
+Ctrl+C preserves committed items and releases the lock. Forced termination can
+leave `batch.lock`: first verify that the recorded process is no longer running,
+then remove only that stale lock before resuming. Do not run two writers against
+the same output directory.
+
+Artifacts:
+
+- `checkpoint.json`: input/configuration identity and completed per-video records;
+  written atomically after each item. This is the recovery source of truth.
+- `normalized_results.json`: completed successes and explicit failures, including
+  score/error, elapsed time, video hash and attempt directory.
+- `summary.csv`: per-method means and planned/succeeded/failed/missing counts.
+  Missing means not yet completed; an attempted absent file is an explicit failure.
+- `item-*/worker.log`: decoder/model diagnostics for each attempted clip.
+- `item-*/batch_eval_results.json` and `native_result.json`: raw successful results.
+
+Derived JSON/CSV reports are regenerated from the checkpoint, including at resume.
+No-success means remain null/blank. Exit code 0 means all items succeeded, 2 means
+the batch finished with failed/missing items, and 1 indicates invalid input or a
+setup failure. Setup problems in an individual worker are recorded as item failures
+with details in its log. Check the counts and logs rather than interpreting any
+CSV's existence as complete success. The runner does not certify cross-method
+experimental comparability; formal pairing and analysis remain separate work.
+
+
+### Batch validation evidence (2026-10-14)
+
+- All 23 offline tests passed: 17 evaluation tests and 6 existing reference tests.
+- Real CPU batch: valid video, deliberately corrupt MP4, second valid video,
+  and missing file. Both valid videos completed; corrupt and absent files were
+  retained as two failures, with zero unfinished items.
+- Both valid inputs were copies of the same procedural fixture, so their measured
+  scores were identical (0.558844404220581). They are not independent research samples.
+- Resume completed in approximately 1.76 seconds, returned exit code 2 because
+  failures remain, left checkpoint bytes unchanged, and created no new attempt
+  directories (four before and after). No model was rerun.
+- A separate offline KeyboardInterrupt test verifies that a completed first item
+  survives interruption at the second item, and resume evaluates only unfinished
+  items. Input-byte/configuration/metadata changes and newly appearing files are
+  rejected on resume. Concurrent-writer locks and changed-during-evaluation files
+  are also covered by tests.
+- Local evidence: `runs/batch-validation-01/summary.csv`,
+  `normalized_results.json`, `checkpoint.json`, `resume-validation.json`, and
+  per-attempt worker logs. These runtime artifacts remain excluded from Git.
+
+GPU performance, representative long videos, formal method comparisons and other
+metrics have not been validated. This increment proves batch orchestration and
+failure accounting, not MoodCut generation quality.

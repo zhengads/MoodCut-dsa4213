@@ -1,4 +1,4 @@
-"""Offline VBench reporting helpers. No model imports or network requests."""
+"""Offline reporting and explicitly invoked local VBench CPU evaluation."""
 import csv
 import json
 import math
@@ -245,8 +245,204 @@ def run_imaging_quality_smoke(*, upstream_dir, cache_dir, output_dir):
     return record
 
 
+
+def _file_hash(path):
+    import hashlib
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _atomic_write(path, text):
+    import os
+    import tempfile
+    path = Path(path)
+    fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=path.name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def _save_json(path, data):
+    _atomic_write(path, json.dumps(data, indent=2, allow_nan=False))
+
+
+def _batch_engine(manifest, *, video_root, output_dir, config, evaluate_one, resume=False):
+    """Checkpoint orchestration; callback returns native imaging_quality results.
+
+    Finished failures are retained. Changed inputs/config require a new run.
+    Ctrl+C preserves completed items; a hard kill can leave a lock for manual review.
+    """
+    import hashlib
+    import io
+    import os
+    import tempfile
+    import time
+    summarize_vbench(manifest, [], dimensions=["imaging_quality"])
+    root, out = Path(video_root).resolve(), Path(output_dir).resolve()
+    if not root.is_dir():
+        raise ValueError("Video root must exist")
+    sources, paths, seen = [], [], set()
+    for row in manifest:
+        path = (root / row["video_path"]).resolve()
+        if not path.is_relative_to(root) or path in seen:
+            raise ValueError("Video paths must be unique and inside video root")
+        seen.add(path)
+        if path.exists() and not path.is_file():
+            raise ValueError("Video path is not a regular file")
+        paths.append(path)
+        sources.append(dict(path=str(path), sha256=_file_hash(path) if path.is_file() else None))
+    identity = dict(schema_version=1, manifest=manifest, sources=sources, config=config)
+    fingerprint = hashlib.sha256(json.dumps(identity, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    if resume:
+        if not out.is_dir():
+            raise ValueError("Resume requires an existing output directory")
+    else:
+        out.mkdir(parents=True, exist_ok=False)
+    lock = out / "batch.lock"
+    with lock.open("x", encoding="utf-8") as handle:
+        handle.write(str(os.getpid()))
+    try:
+        checkpoint = out / "checkpoint.json"
+        if resume:
+            state = json.loads(checkpoint.read_text(encoding="utf-8"))
+            if state.get("fingerprint") != fingerprint or state.get("identity") != identity:
+                raise ValueError("Inputs or configuration changed; use a new output directory")
+            summarize_vbench(manifest, state.get("results"), dimensions=["imaging_quality"])
+        else:
+            state = dict(fingerprint=fingerprint, identity=identity, results=[])
+            _save_json(checkpoint, state)
+        completed = {r["video_id"] for r in state["results"]}
+
+        def reports():
+            summary = summarize_vbench(manifest, state["results"], dimensions=["imaging_quality"])
+            _save_json(out / "normalized_results.json", state["results"])
+            buffer = io.StringIO(newline="")
+            writer = csv.DictWriter(buffer, fieldnames=list(summary[0]))
+            writer.writeheader()
+            writer.writerows(summary)
+            _atomic_write(out / "summary.csv", buffer.getvalue())
+            return summary
+
+        reports()
+        for index, (row, path, source) in enumerate(zip(manifest, paths, sources)):
+            if row["video_id"] in completed:
+                continue
+            attempt = Path(tempfile.mkdtemp(prefix=f"item-{index:04d}-", dir=out))
+            start = time.perf_counter()
+            result = dict(video_id=row["video_id"], dimension="imaging_quality", status="failed", score=None)
+            try:
+                if source["sha256"] is None:
+                    raise FileNotFoundError("Video file is missing")
+                if _file_hash(path) != source["sha256"]:
+                    raise ValueError("Video changed after snapshot")
+                raw = evaluate_one(path, attempt)
+                if _file_hash(path) != source["sha256"]:
+                    raise ValueError("Video changed during evaluation")
+                _save_json(attempt / "native_result.json", raw)
+                result = normalize_imaging_quality(raw, [row], video_root=root)[0]
+            except Exception as exc:
+                result["error"] = f"{type(exc).__name__}: {exc}"
+            result.update(attempt_dir=attempt.name, video_sha256=source["sha256"],
+                          elapsed_s=time.perf_counter() - start)
+            state["results"].append(result)
+            _save_json(checkpoint, state)
+            reports()
+        return reports()
+    finally:
+        lock.unlink()
+
+
+def _imaging_worker(video, output, upstream, cache):
+    """Fresh process isolates decoder errors and provides per-video timeouts."""
+    import os
+    import sys
+    os.environ["VBENCH_CACHE_DIR"] = cache
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    sys.path.insert(0, upstream)
+    import torch
+    from vbench import VBench
+    torch.set_num_threads(2)
+    torch.manual_seed(0)
+    with torch.inference_mode():
+        VBench(torch.device("cpu"), str(Path(upstream) / "vbench/VBench_full_info.json"), output).evaluate(
+            video, name="batch", dimension_list=["imaging_quality"], mode="custom_input",
+            imaging_quality_preprocessing_mode="longer")
+
+
+def run_imaging_quality_batch(manifest, *, video_root, upstream_dir, cache_dir,
+                              output_dir, resume=False, timeout_s=300):
+    """Evaluate manifest sequentially on CPU using verified local weights."""
+    import importlib.metadata
+    import os
+    import platform
+    import subprocess
+    import sys
+    if type(timeout_s) not in (int, float) or not math.isfinite(timeout_s) or timeout_s <= 0:
+        raise ValueError("Timeout must be finite and positive")
+    upstream, cache = Path(upstream_dir).resolve(), Path(cache_dir).resolve()
+    revision = subprocess.check_output(["git", "-C", str(upstream), "rev-parse", "HEAD"], text=True).strip()
+    dirty = subprocess.check_output(["git", "-C", str(upstream), "status", "--porcelain"], text=True).strip()
+    if revision != VBENCH_REVISION or dirty:
+        raise ValueError("Expected clean pinned VBench checkout")
+    weight = cache / "pyiqa_model/musiq_spaq_ckpt-358bb6af.pth"
+    if not weight.is_file() or _file_hash(weight) != MUSIQ_SHA256:
+        raise ValueError("Missing or incorrect MUSIQ checkpoint")
+    packages = {d.metadata["Name"].lower(): d.version for d in importlib.metadata.distributions()}
+    config = dict(revision=revision, weight_sha256=MUSIQ_SHA256, module_sha256=_file_hash(__file__),
+                  device="cpu", threads=2, seed=0, preprocessing="longer", timeout_s=timeout_s,
+                  packages=packages, python=sys.version, executable=sys.executable, platform=platform.platform())
+
+    def evaluate_one(path, attempt):
+        code = "from moodcut.evaluation import _imaging_worker; import sys; _imaging_worker(*sys.argv[1:])"
+        env = dict(os.environ)
+        env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+        with (attempt / "worker.log").open("w", encoding="utf-8") as log:
+            try:
+                proc = subprocess.run([sys.executable, "-B", "-c", code, str(path), str(attempt),
+                                       str(upstream), str(cache)], stdout=log, stderr=subprocess.STDOUT,
+                                      timeout=timeout_s, env=env)
+            except subprocess.TimeoutExpired:
+                raise TimeoutError(f"Evaluation exceeded {timeout_s}s; see worker.log") from None
+        if proc.returncode:
+            raise RuntimeError(f"Evaluation exited {proc.returncode}; see worker.log")
+        return json.loads((attempt / "batch_eval_results.json").read_text(encoding="utf-8"))
+
+    return _batch_engine(manifest, video_root=video_root, output_dir=output_dir,
+                         config=config, evaluate_one=evaluate_one, resume=resume)
+
+
 if __name__ == "__main__":
     import argparse
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "batch":
+        batch = argparse.ArgumentParser(description="Batch VBench imaging_quality evaluation on CPU")
+        batch.add_argument("--manifest", required=True)
+        batch.add_argument("--video-root", required=True)
+        batch.add_argument("--upstream", required=True)
+        batch.add_argument("--cache", required=True)
+        batch.add_argument("--output", required=True)
+        batch.add_argument("--resume", action="store_true")
+        batch.add_argument("--timeout", type=float, default=300)
+        args = batch.parse_args(sys.argv[2:])
+        try:
+            summary = run_imaging_quality_batch(
+                json.loads(Path(args.manifest).read_text(encoding="utf-8-sig")),
+                video_root=args.video_root, upstream_dir=args.upstream, cache_dir=args.cache,
+                output_dir=args.output, resume=args.resume, timeout_s=args.timeout)
+            print(json.dumps(summary, indent=2))
+            raise SystemExit(2 if any(r["failed"] or r["missing"] for r in summary) else 0)
+        except (ValueError, OSError) as exc:
+            batch.exit(1, f"Batch failed: {exc}\n")
     parser = argparse.ArgumentParser(description="Summarize normalized VBench results offline")
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--results", required=True)

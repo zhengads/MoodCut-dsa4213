@@ -109,3 +109,104 @@ class NativeResultTests(unittest.TestCase):
             for raw in cases:
                 with self.subTest(raw=raw), self.assertRaises(ValueError):
                     normalize_imaging_quality(raw, manifest(), video_root=directory)
+
+
+class BatchTests(unittest.TestCase):
+    def setup_inputs(self, directory):
+        root = Path(directory)
+        rows = manifest()[:3]
+        (root / "videos").mkdir()
+        for i in (0, 1):
+            (root / f"videos/v{i}.mp4").write_bytes(b"test bytes")
+        return root, rows
+
+    def raw(self, path):
+        return {D: [.5, [dict(video_path=str(path), video_results=50)]]}
+
+    def test_failure_missing_and_resume_without_recomputation(self):
+        from moodcut.evaluation import _batch_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root, rows = self.setup_inputs(directory)
+            calls = []
+            def evaluate(path, attempt):
+                calls.append(path.name)
+                if path.name == "v0.mp4":
+                    raise ValueError("corrupt video")
+                return self.raw(path)
+            kwargs = dict(video_root=root, output_dir=root / "out", config={"version": 1}, evaluate_one=evaluate)
+            result = _batch_engine(rows, **kwargs)[0]
+            self.assertEqual((result["succeeded"], result["failed"], result["missing"]), (1, 2, 0))
+            self.assertEqual(calls, ["v0.mp4", "v1.mp4"])
+            self.assertEqual(_batch_engine(rows, resume=True, **kwargs)[0], result)
+            self.assertEqual(len(calls), 2)
+
+    def test_interrupt_then_resume(self):
+        from moodcut.evaluation import _batch_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root, rows = self.setup_inputs(directory)
+            calls = []
+            def interrupted(path, attempt):
+                calls.append(path.name)
+                if path.name == "v1.mp4":
+                    raise KeyboardInterrupt()
+                return self.raw(path)
+            kwargs = dict(video_root=root, output_dir=root / "out", config={})
+            with self.assertRaises(KeyboardInterrupt):
+                _batch_engine(rows, evaluate_one=interrupted, **kwargs)
+            self.assertFalse((root / "out/batch.lock").exists())
+            def resumed(path, attempt):
+                calls.append(path.name)
+                return self.raw(path)
+            result = _batch_engine(rows, evaluate_one=resumed, resume=True, **kwargs)[0]
+            self.assertEqual(calls, ["v0.mp4", "v1.mp4", "v1.mp4"])
+            self.assertEqual(result["succeeded"], 2)
+
+    def test_changed_bytes_config_metadata_or_missing_file_rejected(self):
+        from moodcut.evaluation import _batch_engine
+        for change in ("bytes", "config", "metadata", "new_file"):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
+                root, rows = self.setup_inputs(directory)
+                kwargs = dict(video_root=root, output_dir=root / "out", config={}, evaluate_one=lambda p, a: self.raw(p))
+                _batch_engine(rows, **kwargs)
+                if change == "bytes":
+                    (root / "videos/v0.mp4").write_bytes(b"changed")
+                elif change == "config":
+                    kwargs["config"] = {"new": True}
+                elif change == "metadata":
+                    rows[0]["prompt"] = "changed"
+                else:
+                    (root / "videos/v2.mp4").write_bytes(b"new")
+                with self.assertRaisesRegex(ValueError, "changed"):
+                    _batch_engine(rows, resume=True, **kwargs)
+
+    def test_no_overwrite_and_lock(self):
+        from moodcut.evaluation import _batch_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root, rows = self.setup_inputs(directory)
+            kwargs = dict(video_root=root, output_dir=root / "out", config={}, evaluate_one=lambda p, a: self.raw(p))
+            _batch_engine(rows, **kwargs)
+            with self.assertRaises(FileExistsError):
+                _batch_engine(rows, **kwargs)
+            (root / "out/batch.lock").write_text("another process")
+            with self.assertRaises(FileExistsError):
+                _batch_engine(rows, resume=True, **kwargs)
+            self.assertTrue((root / "out/batch.lock").exists())
+
+    def test_duplicate_resolved_paths_rejected(self):
+        from moodcut.evaluation import _batch_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root, rows = self.setup_inputs(directory)
+            rows[1]["video_path"] = rows[0]["video_path"]
+            with self.assertRaises(ValueError):
+                _batch_engine(rows, video_root=root, output_dir=root / "out", config={}, evaluate_one=lambda p, a: self.raw(p))
+
+    def test_changed_during_evaluation_is_failed(self):
+        from moodcut.evaluation import _batch_engine
+        with tempfile.TemporaryDirectory() as directory:
+            root, rows = self.setup_inputs(directory)
+            def mutate(path, attempt):
+                path.write_bytes(b"changed")
+                return self.raw(path)
+            result = _batch_engine(rows[:1], video_root=root, output_dir=root / "out", config={}, evaluate_one=mutate)[0]
+            self.assertEqual(result["failed"], 1)
+            self.assertIsNone(result["mean_score"])
