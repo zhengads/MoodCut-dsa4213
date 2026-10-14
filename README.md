@@ -44,19 +44,33 @@ docs/REFERENCES.md、docs/upstream-reuse.md 和该 Issue 关联的任务卡。
 ## 目录
 
 ```text
-src/moodcut/    项目代码：core、planning、review、rendering、evaluation
-               提示词与模块配置放在各自模块内
-tests/        测试；共享测试数据放 tests/fixtures/
-docs/         接口、实施计划、TEAM.md、阅读说明与 tasks/ 任务卡
-references/   上游资料索引、引用、锁定清单及本地源码/论文缓存
-scripts/      资料准备等辅助工具
-assets/       素材清单；原始素材放 assets/raw/，不提交
-runs/         运行产物，不提交
-.agents/      编码协作 Skill
-.github/      PR 模板和 CI
+src/moodcut/
+  __init__.py
+  __main__.py       命令行入口
+  client.py         公共 LLMClient / FakeClient
+  validation.py     结构检查
+  pipeline.py       三条件流程编排
+  importer.py       上游输入适配
+  planner.py        规划与字段归一化
+  reviewer.py       通用/情绪审查
+  patches.py        受约束修改
+  renderer.py       画面、字幕与视频
+  evaluation.py     配对、盲评导出与指标
+  prompts/          规划和审查提示词
+configs/            模型、渲染和实验配置
+tests/             测试文件平铺；共享数据在 fixtures/
+assets/             素材清单；原始素材在 raw/，不提交
+scripts/            资料准备等辅助脚本
+references/         上游资料索引、锁定清单和本地缓存
+docs/               分工、契约、实施计划和 tasks/ 任务卡
+pyproject.toml      Python 包安装与测试配置
+.agents/            编码协作 Skill
+.github/            PR 模板和 CI
 ```
 
-五个代码模块、模块内提示词/配置目录、对应测试目录及 `tests/fixtures/` 已建立。Python 包使用最小 `__init__.py`，空资源目录使用 `.gitkeep` 保留，因此 clone 后即可看到。`assets/raw/` 和 `runs/` 由素材准备或运行过程按需创建，内容不提交。
+上述代码文件和目录已纳入 Git。业务 `.py` 文件目前仅有职责说明；`__main__.py` 在 CLI 未实现时明确报错退出。`prompts/`、`configs/` 和 `tests/fixtures/` 用 `.gitkeep` 保留，提示词、配置值及夹具由任务卡实现。`assets/raw/` 和 `runs/` 按素材准备或运行需要创建，内容不提交。
+
+按文件范围认领任务；同一目录内的不同文件可由不同成员并行开发。共享模型/渲染配置归 MC-01，`configs/pilot.json` 等实验配置归 MC-05。
 
 ## 系统流程
 
@@ -83,12 +97,12 @@ runs/         运行产物，不提交
 
 ## 当前开发状态
 
-仓库已提供开发规则、模块契约、任务卡、代码目录骨架和可运行的参考资料准备工具。代码模块目前只有包初始化文件；安装配置、CLI、FakeClient、测试夹具及业务逻辑按任务卡实施；`docs/CONTRACTS.md` 中的项目 CLI 是实现目标。当前不把参考资料下载成功视为生成管线已完成。
+仓库已提供开发规则、模块契约、任务卡、代码目录骨架和可运行的参考资料准备工具。已提供最小包安装配置；CLI、FakeClient、测试夹具及业务逻辑仍待实现；`docs/CONTRACTS.md` 中的项目 CLI 是实现目标。当前不把参考资料下载成功视为生成管线已完成。
 
 资料工具的离线验收：
 
 ```bash
-python -m unittest discover -s tests/tooling -p "test_*.py" -v
+python -m unittest discover -s tests -p "test_prepare_references.py" -v
 python scripts/prepare_references.py --check
 ```
 

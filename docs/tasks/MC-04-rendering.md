@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/rendering/`、`tests/rendering/`、`docs/rendering.md`。模块内实现 renderer.py、frames.py、subtitles.py。依赖变更先与公共基础模块协调，再更新根配置。
+`src/moodcut/renderer.py`、`tests/test_renderer.py`、`tests/test_video.py`、`docs/rendering.md`。画面、字幕与 FFmpeg 编排先作为 renderer.py 内的函数实现。依赖和共享渲染配置变更与公共基础模块协调后更新，不自行新增平行配置。
 
 ## PR 1 画面与字幕
 
@@ -32,7 +32,7 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/rendering -q`、`python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render`。
+目标命令：`python -m pytest tests/test_renderer.py tests/test_video.py -q`、`python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render`。
 
 交付视频、contact sheet、timeline和ffprobe结果。人工检查中文字幕、角色对应、镜头顺序、裁切和时长。无需调用付费模型。
 

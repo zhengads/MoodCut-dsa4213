@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/review/`、`src/moodcut/review/prompts/`、`tests/review/`、`docs/review.md`。模块内实现 service.py、patches.py；提示目录内实现 generic.txt、moodcut.txt、revise.txt、verify.txt。不要改公共client、planner、renderer或共享契约。
+`src/moodcut/reviewer.py`、`src/moodcut/patches.py`、`src/moodcut/prompts/review_generic.txt`、`src/moodcut/prompts/review_moodcut.txt`、`src/moodcut/prompts/review_revise.txt`、`src/moodcut/prompts/review_verify.txt`、`tests/test_reviewer.py`、`tests/test_patches.py`、`docs/review.md`。不要修改公共 client、planner、renderer、共享契约或规划提示词。
 
 ## PR 1 报告与纯补丁应用
 
@@ -33,7 +33,7 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/review -q`、`python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json`。
+目标命令：`python -m pytest tests/test_patches.py tests/test_reviewer.py -q`、`python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json`。
 
 交付一份可读修改记录：原台词、意见、修改后台词、验证状态。交付需包含可运行实现及验收证据。评审Agent的自评分不能作为最终实验成绩。
 

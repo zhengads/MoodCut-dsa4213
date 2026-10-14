@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import Mock
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("prepare_references", ROOT / "scripts/prepare_references.py")
 references = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(references)

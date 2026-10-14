@@ -1,1 +1,1 @@
-"""MoodCut package. Module implementations follow docs/CONTRACTS.md."""
+"""MoodCut research package; business logic is pending implementation."""

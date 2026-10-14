@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/evaluation/`、`src/moodcut/evaluation/configs/`、`tests/evaluation/`、`docs/evaluation.md`。模块内实现 design.py、blinding.py、metrics.py。不改初稿、提示词、review逻辑或renderer。
+`src/moodcut/evaluation.py`、`configs/pilot.json`、`tests/test_evaluation.py`、`docs/evaluation.md`。分配、盲评导出和指标汇总先作为 evaluation.py 内的函数实现。后续已确认实验的配置也放 configs；不修改模型/渲染公共配置、初稿、提示词、reviewer 或 renderer。
 
 ## PR 1 实验分配与盲评
 
@@ -34,7 +34,7 @@
 
 ## 验收
 
-目标命令：`python -m pytest tests/evaluation -q`、`python -m moodcut evaluate --config src/moodcut/evaluation/configs/pilot.json --dry-run`。
+目标命令：`python -m pytest tests/test_evaluation.py -q`、`python -m moodcut evaluate --config configs/pilot.json --dry-run`。
 
 测试用合成记录覆盖：一正确、一错误、一失败、一uncertain、一无评分、重复评分、初稿hash不一致、零样本。预期数值人工手算写在测试中。报告能看到失败与分母，不预写“我们方法更好”。
 

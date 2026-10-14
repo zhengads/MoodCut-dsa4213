@@ -8,23 +8,23 @@
 
 ## 修改范围
 
-`pyproject.toml`、`.gitignore`、`.env.example`、`.github/workflows/offline.yml`、`.github/PULL_REQUEST_TEMPLATE.md`、`src/moodcut/__init__.py`、`src/moodcut/__main__.py`、`src/moodcut/cli.py`、`src/moodcut/core/`、`tests/fixtures/`、`tests/core/`、`tests/test_smoke.py`、`README.md`、`AGENTS.md`、`.agents/skills/moodcut-team/`、`docs/tasks/`、`docs/CONTRACTS.md`、`docs/REFERENCES.md`、`docs/reading/`、`references/sources.lock.json`、`references/references.bib`、`scripts/prepare_references.py`、`tests/tooling/`、`docs/TEAM.md`。保留 .gitmessage 约定。任务卡调整需相关负责人确认，不能用修改任务卡绕过现有范围。
+`pyproject.toml`、`.gitignore`、`.env.example`、`.github/workflows/offline.yml`、`.github/workflows/reference-tooling.yml`、`.github/PULL_REQUEST_TEMPLATE.md`、`src/moodcut/__init__.py`、`src/moodcut/__main__.py`、`src/moodcut/client.py`、`src/moodcut/validation.py`、`src/moodcut/pipeline.py`、`configs/model.json`、`configs/render.json`、`tests/fixtures/`、`tests/test_client.py`、`tests/test_validation.py`、`tests/test_pipeline.py`、`tests/test_cli.py`、`tests/test_smoke.py`、`README.md`、`AGENTS.md`、`.agents/skills/moodcut-team/`、`docs/tasks/`、`docs/CONTRACTS.md`、`docs/REFERENCES.md`、`docs/reading/`、`references/sources.lock.json`、`references/references.bib`、`scripts/prepare_references.py`、`tests/test_prepare_references.py`、`docs/TEAM.md`。保留 .gitmessage 约定。任务卡调整需相关负责人确认，不能用修改任务卡绕过现有范围。
 
 ## 已有基础
 
-仓库已提供协作规则、参考资料锁定清单、prepare_references 工具，以及 src/moodcut 五个模块和对应测试目录。现有 __init__.py 仅标记包，.gitkeep 仅保留空目录；沿用这些路径。本任务仍需实现安装配置、CLI、FakeClient、结构验证与公共夹具。现有 `tests/tooling/` 是资料工具测试，继续保留。pytest 收集限定 `tests/`，排除上游参考缓存。
+仓库已有扁平的 src/moodcut 代码文件、最小 pyproject.toml、集中提示词/配置目录及 tests/fixtures。业务文件仅有职责说明，命令入口目前明确报未实现；沿用这些文件完成公共客户端、验证、编排与 CLI。`.gitkeep` 仅保留空目录，不能当作有效配置或夹具。`tests/test_prepare_references.py` 是已有资料工具测试，继续保留。pytest 收集限定 tests，排除上游参考缓存。
 
 ## PR 1 契约与公共夹具
 
 - [ ] 将 CONTRACTS.md、协作规范与 PR 模板纳入仓库；保持 README 的项目说明、链接与配置一致。
-- [ ] 沿用现有 src-layout 目录，补齐 Python 3.11 的包安装配置，测试用 pytest；提供 `python -m moodcut --help`。
-- [ ] 编写 `core/client.py` 的 LLMClient/FakeClient，FakeClient 消费预置响应队列并记录 stage、输入和输出上限，不联网。
-- [ ] 编写 `core/validation.py`，实现契约第4节的全部结构检查；禁止把结构检查结果叫语义正确。
+- [ ] 沿用现有 pyproject.toml，按实现补齐依赖；测试用 pytest，CLI 在 __main__.py 实现；提供 `python -m moodcut --help`。
+- [ ] 编写 `client.py` 的 LLMClient/FakeClient，FakeClient 消费预置响应队列并记录 stage、输入和输出上限，不联网。
+- [ ] 编写 `validation.py`，实现契约第4节的全部结构检查；禁止把结构检查结果叫语义正确。
 - [ ] 将契约 SceneInput/ShotPlan 保存为合法 `tests/fixtures/scene.json`、`tests/fixtures/plan.json`，另存 review/patch/verification 响应。生成两张有 A/B 标识的纯色测试图片，保存真实 hash 与尺寸为 `tests/fixtures/assets.json`。素材路径统一在项目根可解析；明确软件夹具非实验数据。
 - [ ] 添加忽略项 assets/raw/、runs/，测试夹具放 tests/fixtures，避免被现有 data/ 忽略规则吞掉。
 - [ ] CI 只装轻量测试依赖并跑离线 core 测试，不注入真实 key，不安装 torch/CUDA。PR 合并后向组员说明契约版本1.0。
 
-验收命令目标：`python -m pytest tests/core -q`；检查非法角色、缺beat、重复shot、超时长和素材越界路径都会失败；fixture通过；FakeClient不访问网络。
+验收命令目标：`python -m pytest tests/test_client.py tests/test_validation.py tests/test_cli.py -q`；检查非法角色、缺beat、重复shot、超时长和素材越界路径都会失败；fixture通过；FakeClient不访问网络。
 
 ## PR 2 客户端、编排与集成
 
@@ -35,7 +35,7 @@
 - [ ] 写三条件RunRecord；render失败与review失败分开记录；输入输出token和失败请求可获得的费用都计入。未经提供的usage不编造为零。
 - [ ] 自查根配置与真实 API 的执行和费用边界，在 PR 中记录结论；付费 pilot 需单独确认。
 
-验收命令目标：`python -m pytest tests/core tests/test_smoke.py -q`、`python -m moodcut smoke --mock --output runs/smoke-01`。同块initial hash一致，条件会话隔离，失败记录不丢失，输出路径不覆盖。
+验收命令目标：`python -m pytest tests/test_client.py tests/test_validation.py tests/test_pipeline.py tests/test_cli.py tests/test_smoke.py -q`、`python -m moodcut smoke --mock --output runs/smoke-01`。同块initial hash一致，条件会话隔离，失败记录不丢失，输出路径不覆盖。
 
 ## 完成标准
 

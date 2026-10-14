@@ -23,9 +23,9 @@ Read the module-specific paths in docs/REFERENCES.md. FilmAgent is the pinned Vi
 ## Implement one increment
 
 - Follow the task card's writable paths. P1–P5 denote module responsibilities, not approval authority. Coordinate cross-module and contract changes with affected owners before editing shared interfaces.
-- Reuse the existing package and test directories. Initial `__init__.py` files and `.gitkeep` files provide structure only; they do not mean APIs, CLI, FakeClient or fixtures are implemented.
-- Use `tests/fixtures/`, the shared FakeClient and `docs/CONTRACTS.md`. Do not build a competing client or a duplicate implementation of a teammate's dependency. Module-specific fixtures belong in that module's tests.
-- Keep prompts and configuration inside the corresponding `src/moodcut/` module. Keep material manifests in `assets/`, downloaded assets in `assets/raw/`, and run outputs in `runs/`.
+- Reuse the flat `src/moodcut/*.py` files and `tests/test_*.py` layout. Business files currently contain responsibility docstrings, and the CLI explicitly exits as unimplemented. Package metadata exists; APIs, prompts, configuration values, FakeClient and fixtures remain task deliverables.
+- Use `tests/fixtures/`, the shared FakeClient and `docs/CONTRACTS.md`. Do not build a competing client or a duplicate implementation of a teammate's dependency. Create task-specific inputs in the owning test file or its temporary directory; coordinate changes to shared fixtures.
+- Keep prompts together in `src/moodcut/prompts/`: MC-02 owns `planning_*.txt`, MC-03 owns `review_*.txt`. Use root `configs/`: MC-01 owns model/render configuration and MC-05 owns experiment configuration such as `pilot.json`. Own specific files rather than whole shared directories. Keep material manifests in `assets/`, downloaded assets in `assets/raw/`, and run outputs in `runs/`.
 - Complete the next independently verifiable increment. Task-card commands describe acceptance targets until their implementation exists; do not claim they already pass.
 - Default to offline development. Real paid API calls, GPU work and experiments require the human's explicit model, scale and budget. The USD15 allowance is shared.
 - Run relevant checks and inspect actual outputs. Inspect the diff and untracked files, stage explicit paths, and preserve the `.gitmessage` name/date format. Never include keys, upstream caches, generated media or private evaluation identities.

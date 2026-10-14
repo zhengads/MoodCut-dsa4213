@@ -24,4 +24,4 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run offline reference-tool tests
-        run: python -m unittest discover -s tests/tooling -p "test_*.py" -v
+        run: python -m unittest discover -s tests -p "test_prepare_references.py" -v

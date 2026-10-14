@@ -42,7 +42,7 @@
 4. 先接通离线规划、修订和渲染，再整合三条件记录及评估工具。尚未实现的命令明确报未就绪，不能返回伪成功。
 5. 每次 PR 合并后，从最新 main 开始下一个增量。模块整体验收完成后才关闭 Issue。
 
-跨模块或公共接口变更先在 Issue 中与受影响成员协调，范围较大时单独提交接口 PR。公共功能放在 core，提示词放在对应模块的 prompts 子目录，测试数据放在 tests/fixtures。具体签名和路径以 [CONTRACTS.md](CONTRACTS.md) 及任务卡为准。
+跨模块或公共接口变更先在 Issue 中与受影响成员协调，范围较大时单独提交接口 PR。代码按功能平铺在 src/moodcut，提示词集中在 src/moodcut/prompts，配置在 configs，测试文件平铺在 tests，共享测试数据放在 tests/fixtures。任务卡按具体文件划分所有权，不独占整个代码或提示词目录。具体签名和路径以 [CONTRACTS.md](CONTRACTS.md) 及任务卡为准。
 
 ## PR 自查与合并
 

@@ -12,7 +12,7 @@
 
 ## 修改范围
 
-`src/moodcut/planning/`、`src/moodcut/planning/prompts/`、`assets/manifest.json`、`scripts/prepare_assets.py`、`tests/planning/`、`docs/upstream-reuse.md`。模块内实现 importer.py、planner.py、normalizer.py。不要改根client、schema、review或renderer。
+`src/moodcut/importer.py`、`src/moodcut/planner.py`、`src/moodcut/prompts/planning_director.txt`、`src/moodcut/prompts/planning_scene.txt`、`src/moodcut/prompts/planning_shot.txt`、`assets/manifest.json`、`scripts/prepare_assets.py`、`tests/test_importer.py`、`tests/test_planner.py`、`tests/test_prepare_assets.py`、`docs/upstream-reuse.md`。归一化逻辑放在 planner.py；不另建 normalizer 模块。不要修改公共 client、validation、reviewer、renderer 或审查提示词。
 
 ## 上游定位
 
@@ -42,7 +42,7 @@ MovieAgent固定版本 `d84041bed8bc8be460664528d9e9924cdde384ba`：
 
 ## 验收
 
-目标命令：`python -m pytest tests/planning -q`、`python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json`。
+目标命令：`python -m pytest tests/test_importer.py tests/test_planner.py tests/test_prepare_assets.py -q`、`python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json`。
 
 必须证明：无需torch/CUDA即可导入；三个planning stage按序执行；fixture计划通过公共验证；未知角色/素材、遗漏beat、超时长返回明确失败；原始来源保留。只声明规划适配，不声称完整复现MovieAgent。
 

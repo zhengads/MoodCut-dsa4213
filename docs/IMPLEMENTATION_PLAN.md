@@ -27,53 +27,44 @@
 src/moodcut/
   __init__.py
   __main__.py
-  cli.py
-  core/client.py
-  core/validation.py
-  core/pipeline.py
-  planning/importer.py
-  planning/planner.py
-  planning/normalizer.py
-  review/service.py
-  review/patches.py
-  rendering/renderer.py
-  rendering/frames.py
-  rendering/subtitles.py
-  evaluation/design.py
-  evaluation/blinding.py
-  evaluation/metrics.py
-src/moodcut/planning/prompts/
-src/moodcut/review/prompts/
-assets/manifest.json
-tests/fixtures/
-scripts/prepare_assets.py
-tests/core/
-tests/planning/
-tests/review/
-tests/rendering/
-tests/evaluation/
-tests/test_smoke.py
+  client.py
+  validation.py
+  pipeline.py
+  importer.py
+  planner.py
+  reviewer.py
+  patches.py
+  renderer.py
+  evaluation.py
+  prompts/
+configs/
+tests/
+  test_prepare_references.py
+  fixtures/
+assets/
+scripts/prepare_references.py
+pyproject.toml
 ```
 
-The package directories above already exist with minimal `__init__.py` files; prompt/config/test directories use `.gitkeep` where empty. Named implementation files, packaging, CLI and shared fixtures remain task deliverables.
+All listed paths exist. Business modules currently contain responsibility docstrings; the command entry point exits explicitly as unimplemented. Minimal packaging exists. Prompt/configuration contents, shared fixtures and the acceptance-test files shown below remain task deliverables. Tests are flat files; task cards own specific code, prompt and configuration files. Normalization belongs in planner.py, frame/subtitle helpers in renderer.py, and design/blinding/metrics in evaluation.py.
 
 ## Task 1 — Shared contracts and foundation
 
 Owner P1. Full work item: `docs/tasks/MC-01-foundation.md`. Files and output interfaces are specified there and in CONTRACTS.md. Produces LLMClient/FakeClient, validate_plan, fixtures, CLI and run_condition. Consumes other modules only in the second PR.
 
-- [ ] Add fixtures exactly matching CONTRACTS and register the Python package.
+- [ ] Add fixtures exactly matching CONTRACTS and verify the existing minimal package configuration.
 - [ ] Add the validation regression test below; run it and confirm it fails before implementation.
 - [ ] Implement schema/reference checks as enumerated in CONTRACTS; return all detected structural errors as strings.
-- [ ] Run `python -m pytest tests/core -q`; confirm the valid fixture passes and the mutant fails.
+- [ ] Run `python -m pytest tests/test_client.py tests/test_validation.py tests/test_cli.py -q`; confirm the valid fixture passes and the mutant fails.
 - [ ] Commit contract, fixtures and core tests; self-review the first PR and record validation before dependent work branches.
 - [ ] Implement budgeted client and then integration as the second PR, using the MC-01 acceptance criteria.
 
 ```python
-# tests/core/test_contract.py
+# tests/test_validation.py
 import copy
 import json
 from pathlib import Path
-from moodcut.core.validation import validate_plan
+from moodcut.validation import validate_plan
 
 def read_fixture(name):
     return json.loads((Path('tests/fixtures') / name).read_text(encoding='utf-8'))
@@ -93,17 +84,17 @@ Client implementation must refuse unknown prices in budget-enforced paid mode, c
 Owner P2. Full work item: `docs/tasks/MC-02-planning.md`. Produces import_synopsis and make_plan; consumes scene/manifest and LLMClient. Exact files are listed in task card.
 
 - [ ] Write importer tests using temporary team-authored JSON, not downloading upstream during tests.
-- [ ] Run `python -m pytest tests/planning -q`; observe importer missing before implementation.
+- [ ] Run `python -m pytest tests/test_importer.py tests/test_planner.py tests/test_prepare_assets.py -q`; observe importer missing before implementation.
 - [ ] Implement MovieScript/Character type checks and return the normalized dict; implement selected local asset preparation and provenance.
 - [ ] Implement director→scene→shot prompts through injected LLMClient, store raw responses, normalize and validate without silently dropping unknown references.
 - [ ] Verify stage order using FakeClient and verify the output against public validator.
 - [ ] Commit importer/material preparation first; submit planner in a separate PR. Record a self-review of the current diff and test results.
 
 ```python
-# tests/planning/test_importer.py
+# tests/test_importer.py
 import json
 import pytest
-from moodcut.planning.importer import import_synopsis
+from moodcut.importer import import_synopsis
 
 def test_synopsis_import_and_missing_characters(tmp_path):
     path = tmp_path / 'script.json'
@@ -124,15 +115,15 @@ Owner P3. Full work item: `docs/tasks/MC-03-review.md`. Produces apply_patch and
 - [ ] Implement whitelist patching: validate all IDs and fields; copy original; apply all edits; validate; reject all on any error.
 - [ ] Implement two critique prompts and common revise/verify prompts. Generic gets the same target tone and resources.
 - [ ] Bound each review stage to one call, record errors, return the original plan on API/parse failure; unresolved verification is logged and never triggers another loop.
-- [ ] Run `python -m pytest tests/review -q`; add a fake-client assertion for maximum three review calls and condition context isolation.
+- [ ] Run `python -m pytest tests/test_patches.py tests/test_reviewer.py -q`; add a fake-client assertion for maximum three review calls and condition context isolation.
 - [ ] Commit pure patch engine before LLM service; submit two PRs, checking contract compliance and comparison fairness in each self-review.
 
 ```python
-# tests/review/test_patches.py
+# tests/test_patches.py
 import copy
 import json
 from pathlib import Path
-from moodcut.review.patches import apply_patch
+from moodcut.patches import apply_patch
 
 def test_cannot_change_beat_ids_and_input_is_immutable():
     def load(name):
@@ -161,11 +152,11 @@ Owner P4. Full work item: `docs/tasks/MC-04-rendering.md`. Produces render_plan,
 - [ ] Commit frame rendering then MP4 integration; self-review the asset/rendering contract and report actual ffprobe output.
 
 ```python
-# tests/rendering/test_video.py
+# tests/test_video.py
 import json
 import os
 from pathlib import Path
-from moodcut.rendering.renderer import render_plan
+from moodcut.renderer import render_plan
 
 def test_fixture_video_duration(tmp_path):
     root = Path.cwd()
@@ -189,12 +180,12 @@ Owner P5. Full work item: `docs/tasks/MC-05-evaluation.md`. Produces build_assig
 - [ ] Create synthetic records covering success, failure, missing ratings and mismatched initial hash; keep them clearly separate from real study files.
 - [ ] Implement anonymous export and private mapping, seeded ordering, duplicate-rater/item rejection and output field validation.
 - [ ] Implement metric calculations exactly as MC-05 specifies, including equal clip weighting, null denominators and all-run coverage/cost tables.
-- [ ] Run `python -m pytest tests/evaluation -q`; hand-check expected counts from synthetic records, verify no condition/tone leakage in viewer export.
+- [ ] Run `python -m pytest tests/test_evaluation.py -q`; hand-check expected counts from synthetic records, verify no condition/tone leakage in viewer export.
 - [ ] Submit allocation/CSV tooling first, metrics second; self-review comparison fairness and confirm the shared experiment protocol before formal runs.
 
 ```python
-# tests/evaluation/test_design.py
-from moodcut.evaluation.design import build_assignments
+# tests/test_evaluation.py
+from moodcut.evaluation import build_assignments
 
 def test_three_conditions_share_one_block():
     rows = build_assignments([{'scene_id':'dev_a'}], replicates=1,
