@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_01",
+  "resolved_issue_ids": [
+    "r1"
+  ],
+  "unresolved_issue_ids": [],
+  "new_concerns": [],
+  "notes": "The revised dialogue introduces a cautious question that better conveys suspicion while preserving the original story events."
+}

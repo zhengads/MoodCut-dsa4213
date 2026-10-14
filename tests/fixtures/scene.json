@@ -1,0 +1,45 @@
+
+
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_01",
+  "tone": "suspicious",
+  "story": "Character A gives a letter to Character B. Character B reads the letter, puts it away, and then both characters leave.",
+  "characters": [
+    {
+      "id": "a",
+      "name": "A"
+    },
+    {
+      "id": "b",
+      "name": "B"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Character A gives the letter to Character B."
+    },
+    {
+      "id": "b2",
+      "description": "Character B reads the letter and puts it away."
+    },
+    {
+      "id": "b3",
+      "description": "Both characters leave."
+    }
+  ],
+  "asset_ids": [
+    "dev_a",
+    "dev_b"
+  ],
+  "min_duration_s": 60,
+  "max_duration_s": 90,
+  "max_shots": 6,
+  "provenance": {
+    "kind": "team_authored_development",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Synthetic development fixture created by the team for software testing. Not intended for independent experimental evaluation."
+  }
+}
