@@ -21,7 +21,7 @@ def test_render_plan_writes_verified_mp4(tmp_path):
         font_path=_font_path(),
     )
 
-    assert result["status"] == "rendered"
+    assert result["status"] == "rendered", result["errors"]
     assert Path(result["video_path"]).is_file()
     timeline = json.loads(Path(result["timeline_path"]).read_text(encoding="utf-8"))
     assert timeline["ffprobe"]["width"] == 1280
@@ -54,8 +54,8 @@ def test_crop_dialogue_and_duration_changes_are_visible(tmp_path):
         font_path=_font_path(),
     )
 
-    assert base_result["status"] == "rendered"
-    assert changed_result["status"] == "rendered"
+    assert base_result["status"] == "rendered", base_result["errors"]
+    assert changed_result["status"] == "rendered", changed_result["errors"]
     base_frame = tmp_path / "base" / "frames" / "shot_02_s2.png"
     changed_frame = tmp_path / "changed" / "frames" / "shot_02_s2.png"
     assert _mean_abs_pixel_difference(base_frame, changed_frame) > 0.5
@@ -101,7 +101,7 @@ def test_ffprobe_reports_mp4_has_no_audio_stream(tmp_path):
         font_path=_font_path(),
     )
 
-    assert result["status"] == "rendered"
+    assert result["status"] == "rendered", result["errors"]
     command = [
         shutil.which("ffprobe") or "ffprobe",
         "-v",

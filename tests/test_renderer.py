@@ -20,7 +20,7 @@ def test_render_plan_outputs_frames_contact_sheet_and_timeline(tmp_path):
         font_path=_font_path(),
     )
 
-    assert result["status"] == "rendered"
+    assert result["status"] == "rendered", result["errors"]
     assert Path(result["video_path"]).is_file()
     assert result["duration_s"] == 60.0
 
@@ -56,7 +56,7 @@ def test_render_plan_accepts_shared_fixture_plan(tmp_path):
         font_path=_font_path(),
     )
 
-    assert result["status"] == "rendered"
+    assert result["status"] == "rendered", result["errors"]
     assert result["duration_s"] == 60.0
     timeline = json.loads(Path(result["timeline_path"]).read_text(encoding="utf-8"))
     assert [shot["shot_id"] for shot in timeline["shots"]] == ["s1", "s2", "s3"]
@@ -83,8 +83,8 @@ def test_center_close_crop_changes_rendered_frame(tmp_path):
         font_path=_font_path(),
     )
 
-    assert full_result["status"] == "rendered"
-    assert close_result["status"] == "rendered"
+    assert full_result["status"] == "rendered", full_result["errors"]
+    assert close_result["status"] == "rendered", close_result["errors"]
     full_frame = next((project_root / "runs" / "full" / "frames").glob("shot_01_*.png"))
     close_frame = next((project_root / "runs" / "close" / "frames").glob("shot_01_*.png"))
     assert full_frame.read_bytes() != close_frame.read_bytes()
