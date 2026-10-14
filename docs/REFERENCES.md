@@ -41,7 +41,7 @@ FilmAgent 项目页的 `HITsz-TMG/FilmAgent` 链接会重定向到 VideoClaw。�
 - `run.py`：`ScriptBreakAgent`、`ScriptBreak`、`ScenePlanning`、`ShotPlotCreate`、`VideoAudioGen`。
 - `system_prompts.py`：`screenwriterCoT-sys`、`ScenePlanningCoT-sys`、`ShotPlotCreateCoT-sys`、`scriptsupervisor-sys`。
 - `dataset/FrozenII/script_synopsis.json`：`MovieScript` 与 `Character`。
-- 素材选项准备后：`local_assets/movieagent/dataset/FrozenII/character_list/Anna/best.png` 与 `Elsa/best.png`，各有 `best.txt`。
+- 素材选项准备后：`assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png` 与 `Elsa/best.png`，各有 `best.txt`。
 
 ### FilmAgent 定位
 

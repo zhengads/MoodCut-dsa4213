@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAX_BYTES = 64 * 1024 * 1024
 HOSTS = {"raw.githubusercontent.com", "arxiv.org", "export.arxiv.org"}
 PREFIXES = {"core": "references/upstream/", "papers": "references/papers/",
-            "assets": "local_assets/movieagent/"}
+            "assets": "assets/raw/movieagent/"}
 
 
 def load_manifest(path: Path) -> list[dict]:

@@ -36,8 +36,8 @@ tone 仅允许 affectionate/suspicious/hostile。两个角色是第一版边界�
 {
   "schema_version":"1.0",
   "assets":[
-    {"asset_id":"dev_a","character_id":"a","path":"local_assets/dev_a.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]},
-    {"asset_id":"dev_b","character_id":"b","path":"local_assets/dev_b.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]}
+    {"asset_id":"dev_a","character_id":"a","path":"tests/fixtures/images/dev_a.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]},
+    {"asset_id":"dev_b","character_id":"b","path":"tests/fixtures/images/dev_b.png","width":640,"height":640,"sha256":"由准备脚本计算的64位十六进制值","source_url":null,"revision":null,"rights_note":"team-created placeholder","allowed_crops":["full","center_close"]}
   ]
 }
 ```
@@ -156,18 +156,18 @@ review_and_revise 两种 mode 都按 critique → revise → verify 执行，最
 以下是 P1 将实现的命令，当前尚不可执行。
 
 ```bash
-python -m moodcut plan --scene fixtures/scene.json --assets fixtures/assets.json --mock --output runs/dev/initial.json
-python -m moodcut review --scene fixtures/scene.json --plan fixtures/plan.json --assets fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json
-python -m moodcut render --plan fixtures/plan.json --assets fixtures/assets.json --font local_assets/font.ttf --output runs/dev/render
+python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json
+python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json
+python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render
 python -m moodcut smoke --mock --output runs/dev/smoke
-python -m moodcut evaluate --config configs/evaluation/pilot.json --dry-run
+python -m moodcut evaluate --config src/moodcut/evaluation/configs/pilot.json --dry-run
 ```
 
 smoke mock 模式不联网、不需要 key、不渲染视频，检查 baseline/generic_review/moodcut 三条 JSON 链路与记录；render 独立需要 FFmpeg 和显式字体。真实调用必须同时有授权、`--allow-paid`、`--max-cost-usd`、明确模型及价格配置。paid 不能作为任何命令默认行为。
 
 ## 4. 固定存储与结构检查
 
-共享夹具由 P1 写在 `fixtures/`，不用被现有 `.gitignore` 整体忽略的 `data/`。P2 维护 `assets/manifest.json`，原始第三方图片在忽略目录 `local_assets/`。运行结果在忽略目录 `runs/`。P1 修改 .gitignore；各模块不各自修改根配置。
+共享夹具由 P1 写在 `tests/fixtures/`，不用被现有 `.gitignore` 整体忽略的 `data/`。P2 维护 `assets/manifest.json`，原始第三方图片在忽略目录 `assets/raw/`。运行结果在忽略目录 `runs/`。P1 修改 .gitignore；各模块不各自修改根配置。
 
 必检：版本、scene/tone 对齐、唯一 shot_id、有效 beat/character/asset 引用、所有必需 beats 被覆盖、duration>0 且合计60–90、镜头数1–6、visuals每镜头1–2项且crop受允许；dialogue speaker 必须在 scene.characters 中。素材不存在、hash不符、非图片或越界路径均报错。
 
