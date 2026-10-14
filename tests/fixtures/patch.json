@@ -1,0 +1,26 @@
+
+
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_01",
+  "edits": [
+    {
+      "issue_id": "r1",
+      "shot_id": "s2",
+      "set": {
+        "dialogue": [
+          {
+            "character_id": "b",
+            "text": "Where did you get this letter?"
+          }
+        ],
+        "visuals": [
+          {
+            "asset_id": "dev_b",
+            "crop": "center_close"
+          }
+        ]
+      }
+    }
+  ]
+}

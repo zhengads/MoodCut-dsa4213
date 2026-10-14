@@ -1,0 +1,37 @@
+
+
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "dev_a",
+      "character_id": "a",
+      "path": "tests/fixtures/images/dev_a.png",
+      "width": 640,
+      "height": 640,
+      "sha256": "70725e39e094163d63a91f3de254814906f94f677a4fe8007a6c309c519a2d82",
+      "source_url": null,
+      "revision": null,
+      "rights_note": "Team-created placeholder image for software testing.",
+      "allowed_crops": [
+        "full",
+        "center_close"
+      ]
+    },
+    {
+      "asset_id": "dev_b",
+      "character_id": "b",
+      "path": "tests/fixtures/images/dev_b.png",
+      "width": 640,
+      "height": 640,
+      "sha256": "23ce3594453b32dfc05322758ce57c33ebb275dedab5b44b91491e9262a0953b",
+      "source_url": null,
+      "revision": null,
+      "rights_note": "Team-created placeholder image for software testing.",
+      "allowed_crops": [
+        "full",
+        "center_close"
+      ]
+    }
+  ]
+}

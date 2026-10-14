@@ -1,0 +1,17 @@
+
+
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_01",
+  "mode": "moodcut",
+  "issues": [
+    {
+      "issue_id": "r1",
+      "shot_id": "s2",
+      "dimension": "tone",
+      "evidence": "The dialogue 'I have read it.' is too neutral to clearly convey the target tone of suspicion.",
+      "suggestion": "Replace the neutral statement with a cautious question that expresses suspicion without changing the required story events.",
+      "severity": "minor"
+    }
+  ]
+}

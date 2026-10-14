@@ -1,0 +1,72 @@
+
+
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_01",
+  "tone": "suspicious",
+  "shots": [
+    {
+      "shot_id": "s1",
+      "beat_ids": [
+        "b1"
+      ],
+      "duration_s": 20,
+      "visuals": [
+        {
+          "asset_id": "dev_a",
+          "crop": "full"
+        },
+        {
+          "asset_id": "dev_b",
+          "crop": "full"
+        }
+      ],
+      "dialogue": [
+        {
+          "character_id": "a",
+          "text": "I brought the letter you asked for."
+        }
+      ],
+      "narration": "Character A hands the letter to Character B."
+    },
+    {
+      "shot_id": "s2",
+      "beat_ids": [
+        "b2"
+      ],
+      "duration_s": 20,
+      "visuals": [
+        {
+          "asset_id": "dev_b",
+          "crop": "full"
+        }
+      ],
+      "dialogue": [
+        {
+          "character_id": "b",
+          "text": "I have read it."
+        }
+      ],
+      "narration": "Character B reads the letter carefully and puts it away."
+    },
+    {
+      "shot_id": "s3",
+      "beat_ids": [
+        "b3"
+      ],
+      "duration_s": 20,
+      "visuals": [
+        {
+          "asset_id": "dev_a",
+          "crop": "full"
+        },
+        {
+          "asset_id": "dev_b",
+          "crop": "full"
+        }
+      ],
+      "dialogue": [],
+      "narration": "Both characters leave the room."
+    }
+  ]
+}
