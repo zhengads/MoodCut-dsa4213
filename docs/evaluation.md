@@ -1,0 +1,231 @@
+# MC-05: VBench Evaluation
+
+Issue: https://github.com/zhengads/MoodCut-dsa4213/issues/9
+
+## Current delivery
+
+Offline helpers validate video metadata and summarize per-video scores. The second
+increment adds a pinned native imaging_quality adapter and an explicitly invoked
+CPU smoke runner. Neither synthetic-video scores nor tool success establish that
+the project generates high-quality videos. The existing
+human-rating interfaces in CONTRACTS.md are not replaced by these separately named
+helpers. The legacy MC-05 task card needs a coordinated update for Issue #9.
+
+## Proposed evaluation protocol
+
+Use original VBench custom-input evaluation as the initial integration target,
+subject to team confirmation for formal runs. The smoke test and native-output
+adapter use the immutable upstream revision recorded below. Start with imaging_quality
+for an environment smoke check; this is not a claim that it is the cheapest metric.
+The official README lists six custom-input dimensions: subject_consistency,
+background_consistency, motion_smoothness, dynamic_degree, aesthetic_quality,
+and imaging_quality. Do not label this subset a complete VBench benchmark.
+
+Source checked 2026-10-14: https://github.com/Vchitect/VBench#usage
+
+Propose individual generated shots as the initial evaluation unit. Keep full-film
+analysis separate: intended scene cuts can change subjects/backgrounds. Do not
+pool shot and film scores or synthetic, development, and formal data. Preserve
+prompts, generation settings, seeds, video hashes, benchmark revision, weight
+versions, runtime environment and raw results for formal runs. Match generation
+inputs and evaluation settings across methods. Agree on sample size and dimensions
+before inspecting formal outcomes.
+
+VBench video-quality dimensions alone do not establish emotion recognition,
+narrative quality, or audio quality. Confirm whether separate emotion evaluation
+is still required. Report dimensions separately, without inventing a total score.
+
+## Proposed video metadata
+
+A manifest is a nonempty JSON list. Paths are relative POSIX-style MP4 paths.
+Unknown generation seeds are null, not zero. This validator checks metadata only;
+a future execution adapter must resolve paths within an explicit video root,
+reject symlink escapes, verify existence, hash files, and check decoding.
+
+```json
+[
+  {
+    "video_id": "dev_001",
+    "story_id": "story_001",
+    "method": "baseline",
+    "prompt": "A character walks through a garden.",
+    "video_path": "videos/dev_001.mp4",
+    "seed": null,
+    "evaluation_unit": "shot",
+    "source_kind": "development"
+  }
+]
+```
+
+IDs must be unique. Method labels are not hardcoded to the previous three-condition
+experiment. An empty manifest is an input error; a planned video with no result is
+counted as missing.
+
+## Normalized result schema
+
+This is a proposed internal format, NOT VBench's native JSON format. The imaging_quality adapter supports the pinned original VBench revision below.
+Other native dimensions are not yet supported.
+Each video/dimension has at most one result. Scores use the dimension's normalized
+[0, 1] scale; preserve raw outputs separately and verify conversion in the adapter.
+
+```json
+[
+  {"video_id": "dev_001", "dimension": "imaging_quality", "status": "success", "score": 0.5}
+]
+```
+
+The example score is illustrative, not measured. Failure example:
+
+```json
+[
+  {"video_id": "dev_001", "dimension": "imaging_quality", "status": "failed", "score": null, "error": "Video could not be decoded"}
+]
+```
+
+Successful video scores receive equal weight within each method and dimension.
+This descriptive mean is our aggregation, not necessarily the official VBench
+aggregate. CSV includes planned, succeeded, failed and missing counts. No successful
+scores yields null (blank CSV cell), never zero. Comparisons with unequal coverage
+are not evidence of an unconditional improvement. Paired comparison, confidence
+intervals, other native dimensions, plots and batch execution remain future work.
+
+## Run the offline tools
+
+From the repository root in PowerShell:
+
+```powershell
+$env:PYTHONPATH = 'src'
+python -B -m unittest discover -s tests -p 'test_evaluation.py' -v
+python -B -m moodcut.evaluation --manifest manifest.json --results results.json --dimensions imaging_quality --output summary.csv
+```
+
+The second command requires user-created inputs following the schemas above.
+The output parent must exist. Existing output files are never overwritten.
+This module entry point does not implement the shared project CLI.
+
+## Environment and remaining decisions
+
+Read-only hardware check found NVIDIA GeForce RTX 3060 Laptop GPU, 6144 MiB.
+Availability does not establish sufficient memory or compatible dependencies.
+The original offline increment did not install VBench or weights. The follow-up
+installs isolated CPU dependencies and one checkpoint; GPU evaluation and paid
+API requests remain outside the performed checks. Reference-cache validation found the 33 upstream
+MovieAgent/FilmAgent files absent; they were not downloaded. These offline helpers
+do not depend on those files.
+
+Before formal evaluation or expansion to other metrics, confirm:
+
+- Original VBench versus VBench++ / VBench 2.0, and an immutable revision.
+- Selected dimensions and shot versus full-film evaluation.
+- Available environment, model-weight storage and compute budget.
+- Metadata agreement with the generation owner and formal experimental conditions.
+
+## Contribution and validation boundaries
+
+This increment provides original project glue code, metadata validation, explicit
+coverage accounting, CSV reporting and hand-calculated regression tests. Credit
+VBench for the underlying metrics. Tests use synthetic data only. No formal scores,
+emotion improvements or full-pipeline evaluation success are claimed.
+
+
+## Pinned imaging-quality integration
+
+Upstream commit: `fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490`.
+The upstream checkout is not modified and is excluded from project commits.
+Native `imaging_quality` output is `[aggregate, per_video_entries]`. Each entry's
+`video_results` uses a 0..100 scale; the aggregate is divided by 100 upstream.
+Our adapter divides each per-video score by 100 exactly once, checks the aggregate,
+and rejects unknown/duplicate paths, invalid scores and paths outside the root.
+Missing videos stay missing; they are not inferred to have failed.
+
+Source: https://github.com/Vchitect/VBench/blob/fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490/vbench/imaging_quality.py
+
+The smoke runner generates eight 256x256 frames at 8 fps using OpenCV: a colored
+circle moves over a gradient. This is a one-second software fixture, not a model
+output or representative natural-video benchmark. The actual MUSIQ-SPAQ model
+scores the encoded/decoded MP4 using VBench's unmodified implementation and
+`longer` preprocessing. Inference runs on CPU with two PyTorch threads.
+
+Checkpoint: `musiq_spaq_ckpt-358bb6af.pth` (108610983 bytes).
+SHA-256: `358bb6af275e28ea56821d44fb55c6cb83645db11f394d3ad65b2d149965ab50`.
+Source: https://github.com/chaofengc/IQA-PyTorch/releases/download/v0.1-weights/musiq_spaq_ckpt-358bb6af.pth
+
+### Environment setup
+
+Use a dedicated virtual environment. These commands are for the Windows CPU smoke
+check, not a declaration that every VBench dimension works on Windows or CPU.
+
+```powershell
+python -m venv .venv
+.venv/Scripts/python -m pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
+.venv/Scripts/python -m pip install torch==2.5.1 torchvision==0.20.1 numpy==1.26.4 pyiqa==0.1.13 timm==1.0.12 transformers==4.37.2 decord==0.6.0 opencv-python==4.10.0.84 opencv-python-headless==4.10.0.84 bitsandbytes==0.45.5 accelerate==1.2.1
+git clone https://github.com/Vchitect/VBench.git references/upstream/vbench
+git -C references/upstream/vbench checkout fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490
+```
+
+Download the checkpoint from the source above into
+`runs/vbench-cache/pyiqa_model/`; the runner checks its complete SHA-256 and will
+refuse missing or different weights. It does not automatically download weights.
+
+### Run a fresh smoke check
+
+From the project root, choose an output directory that does not already exist:
+
+```powershell
+$env:PYTHONPATH = 'src'
+.venv/Scripts/python -B -c "from moodcut.evaluation import run_imaging_quality_smoke; print(run_imaging_quality_smoke(upstream_dir='references/upstream/vbench', cache_dir='runs/vbench-cache', output_dir='runs/vbench-smoke-new'))"
+```
+
+The runner records metadata, video/checkpoint hashes, package versions, raw native
+JSON, normalized JSON and a summary CSV. Failure details are saved in `run.json`
+when execution fails after the output directory is created. Initial revision,
+checkpoint and output-path validation errors occur before output creation.
+Keep failed attempts; use a new directory for a retry. Never report a failed
+attempt as zero quality. Video/weights/runtime files stay in ignored directories.
+
+
+## Verified smoke result (2026-10-14)
+
+- Status: success, using the unmodified pinned VBench implementation on CPU.
+- Test video: 1 second, 8 frames, 256x256, generated locally by the smoke runner.
+- Native per-video MUSIQ score: 55.884440422058105.
+- Normalized imaging_quality: 0.558844404220581.
+- Elapsed time including imports/model loading: approximately 14.77 seconds.
+- Video SHA-256: `6f58b4e90ca2d61a4fed94bbe42e9c90b7a4f467cba346d0d33a1ed9dba0c21c`.
+- Local evidence: `runs/vbench-smoke-01/run.json`, `smoke_eval_results.json`,
+  `normalized_results.json`, `manifest.json`, `summary.csv`, and the test MP4.
+- Full local dependency snapshot: `runs/vbench-environment.txt`.
+- Dependency consistency check: `pip check` passed.
+
+This is a real model-computed score on a synthetic software fixture, not a mock
+score and not a formal MoodCut result. It verifies only imaging_quality on this
+CPU environment. It does not verify GPU execution, other dimensions, full-length
+films, or scientific validity of an experimental comparison. No paid API was used.
+
+The original VBench implementation and MUSIQ-SPAQ weights supply the metric; our
+contribution is reproducible invocation, input/output adaptation, validation,
+provenance and reporting. Preserve upstream attribution in any project report.
+
+
+## Offline validation record
+
+On 2026-10-14, the following command passed all 17 tests (11 evaluation tests
+and 6 existing reference-tool tests) in the isolated Python 3.12.1 environment:
+
+```powershell
+$env:PYTHONPATH = 'src'
+.venv/Scripts/python -B -m unittest discover -s tests -v
+```
+
+Coverage includes hand-calculated means, missing/failed counts, input validation,
+source separation, duplicate rejection, native score conversion, aggregate
+consistency, CSV output and refusal to overwrite results. The dependency check
+also passed. These offline tests do not invoke model inference; the real smoke
+result is documented separately above. Upstream source, weights, videos and the
+virtual environment are excluded from the commit.
+
+## 中文速览
+
+已完成 VBench 单指标接入、原始结果解析、失败与缺失统计及 CSV 导出；17 项测试通过。
+使用本地生成的 1 秒测试视频，在 CPU 上真实跑通 imaging_quality，得分 0.55884。
+此分数仅验证评估流程，不代表 MoodCut 正式效果；批量评估、其他指标和正式实验仍待完成。

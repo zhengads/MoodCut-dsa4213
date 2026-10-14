@@ -1,0 +1,21 @@
+{
+  "status": "proposal_not_approved_for_formal_runs",
+  "benchmark_family": "VBench-original",
+  "benchmark_revision": "fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490",
+  "mode": "custom_input",
+  "proposed_dimensions": [
+    "imaging_quality"
+  ],
+  "evaluation_unit": "shot",
+  "source_kind": "development",
+  "compute_environment_verified": true,
+  "formal_sample_size": null,
+  "note": "Planning metadata only. CPU imaging_quality smoke verified; formal protocol still requires team confirmation.",
+  "verified_scope": {
+    "dimension": "imaging_quality",
+    "device": "cpu",
+    "fixture": "8-frame 256x256 procedural MP4",
+    "gpu_verified": false,
+    "formal_evaluation_verified": false
+  }
+}
