@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_movieagent_01",
+  "tone": "suspicious",
+  "story": "安娜把信交给艾莎。艾莎读信后收起信，两人离开。对话和叙述字幕使用中文；以怀疑的氛围表达，不能改变这些事件。",
+  "characters": [
+    {"id": "a", "name": "Anna / 安娜"},
+    {"id": "b", "name": "Elsa / 艾莎"}
+  ],
+  "beats": [
+    {"id": "b1", "description": "安娜将信交给艾莎。"},
+    {"id": "b2", "description": "艾莎读过信后，把信收起来。"},
+    {"id": "b3", "description": "两人随后离开。"}
+  ],
+  "asset_ids": ["movieagent_anna", "movieagent_elsa"],
+  "min_duration_s": 60,
+  "max_duration_s": 90,
+  "max_shots": 6,
+  "provenance": {
+    "kind": "team_authored_development_with_movieagent_images",
+    "source_url": "https://github.com/showlab/MovieAgent/tree/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list",
+    "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "adaptation": "Existing team-authored letter software fixture, renamed Anna/Elsa and translated into Chinese. Uses pinned MovieAgent reference images. Not the upstream film script, generated motion, or independent evaluation data.",
+    "story_fixture": "tests/fixtures/scene.json"
+  }
+}

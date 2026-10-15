@@ -38,6 +38,8 @@ planning.json 只记录共享规划，各 run.json 只记录本条件；block.js
 
 README 提供环境变量、configs/model.json 和 `check-client` 的命令。模型 ID、价格和本次预算须明确；实际调用要求 --allow-paid 与 --max-cost-usd。依赖检查在请求前完成。单实例本地预算不是跨进程或账户硬额度，团队 15 美元仍需平台控制。
 
+开发 demo 已配置 openai/gpt-4.1-mini（当前输入/输出 $0.40/$1.60 每百万 token），configs/demo_scene.json 指向已有 MovieAgent 图像清单。scripts/compare_demo.py 可对现有 block 生成逐镜头改动与视频对比页。示例运行预算为 $0.10，未因写入配置而调用模型；它不是正式实验的模型或样本冻结决定。
+
 真实模型可能返回不合契约的输出；保存原始解析响应、错误、用量，返回非零，不自动补跑或用 mock 顶替。工程离线验收不等于真实 OpenRouter 凭据、模型输出质量或研究效果验证。
 
 ## 尚需团队判断

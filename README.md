@@ -31,23 +31,30 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 ## 接入 OpenRouter
 
-在 `configs/model.json` 填入模型 ID、每百万输入/输出 token 的美元单价。模型和价格默认为 null，须按实际选用模型核实。temperature 默认 0，网络超时默认 60 秒；保持三个条件共用这份配置。
+`configs/model.json` 已选择第一轮开发 demo 使用的 `openai/gpt-4.1-mini`：输入 $0.40/百万 token、输出 $1.60/百万 token，temperature=0，单次网络超时 120 秒。三个条件共用这份配置，不自动换模型或重试。2026-10-15 核验了 [OpenRouter 模型页](https://openrouter.ai/openai/gpt-4.1-mini) 和 [公开端点参数/价格](https://openrouter.ai/api/v1/models/openai/gpt-4.1-mini/endpoints)：当前 OpenAI 端点支持 max_tokens、temperature、response_format。该选择用于先查看真实输出，不代表已经证明它最适合正式实验。价格变化时同步更新配置；未知价格继续拒绝发送。
 
 key 只从进程环境读取。`.env.example` 是空模板，程序不自动加载 `.env`。不要将 key 写入共享配置、命令文本或 PR：
 
 ```powershell
 $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
-.venv/Scripts/python -m moodcut check-client --config configs/model.json --max-cost-usd 0.05
+.venv/Scripts/python -m moodcut check-client --config configs/model.json --max-cost-usd 0.10
 ```
 
 check-client 只检查本地配置，不联网、不验证远端 key，也不会扣费。确认本次模型、规模和费用上限后，可将离线运行替换为真实调用：
 
 ```powershell
-# Only run after confirming this model and budget for this one block.
-.venv/Scripts/python -m moodcut run --allow-paid --model-config configs/model.json --max-cost-usd 0.05 --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --output runs/live-development-01
+# One development story, all three conditions, with pinned Anna/Elsa images.
+# Only run after accepting this model and this run's USD 0.10 budget threshold.
+.venv/Scripts/python -m moodcut run --allow-paid --model-config configs/model.json --max-cost-usd 0.10 --scene configs/demo_scene.json --assets assets/manifest.json --output runs/live-demo-01
+.venv/Scripts/python scripts/compare_demo.py --run runs/live-demo-01
+Start-Process (Resolve-Path runs/live-demo-01/comparison.html).Path
 ```
 
-未命中初稿缓存时，一块数据最多 3 次规划请求和每个审查条件 3 次请求，合计 9 次；无意见、无效补丁或失败会提前退出，不自动重试。真实模型不符合 JSON/公共契约时保存诊断并返回失败，不修饰为成功。
+首次使用这份素材先运行下文的 prepare_references.py --assets 和 prepare_assets.py --check。configs/demo_scene.json 复用已有读信软件故事、改用 Anna/Elsa 名称及中文字幕，asset_ids 指向 MovieAgent 参考图；不是原电影剧情或正式评价数据。demo 可先改为 --mock 查看同一素材的离线流程。
+
+未命中初稿缓存时，一块数据最多 3 次规划请求和每个审查条件 3 次请求，合计 9 次；无意见、无效补丁或失败会提前退出，不自动重试。按当前短输入及上述价格，开发估计约 $0.01–$0.05、1–3 分钟，实际以 usage.cost 和失败记录为准，不承诺精确耗时/价格。真实模型不符合 JSON/公共契约时保存诊断并返回失败，不修饰为成功。
+
+comparison.html 是本地对比页：三段视频、逐镜头字段的修改前/修改后、审查意见、补丁/复查状态，以及规划只计一次的费用和实际调用数。没有改动会明确显示没有变化；失败没有最终分镜时不会说成没有变化。页面不调用模型、不打效果分、不调整提示词。它核对初稿/最终分镜哈希并转义模型文本；请将 HTML 与对应运行目录一起保留。可直接双击 HTML，或在 PowerShell 用 Start-Process 打开。
 
 `max-cost-usd` 是本次客户端的估算阈值，不是账户硬额度。输入使用 UTF-8 字节数加固定余量估算，实际 token 由模型 tokenizer 决定；团队共享 15 美元还需在 OpenRouter 端限制 key/团队总额。费用未知保留 null，并停止该客户端后续请求。不同进程或新建客户端不共享本地余额。
 

@@ -165,7 +165,7 @@ review_and_revise 两种 mode 都按 critique → revise → verify 执行，最
 
 ### OpenRouterClient 与调用账目
 
-`OpenRouterClient(LLMClient)` 已实现；`OpenRouterClient.from_env(config_path, *, allow_paid=False, max_cost_usd=None)` 读取公开模型配置和进程环境中的 OPENROUTER_API_KEY。config_path 默认 configs/model.json；模型 ID 和每百万 token 单价必须显式填写。max_cost_usd 必须为正；只有 allow_paid=True 才能发送请求。构造和 check-client 均不联网，缺省不允许付费。
+`OpenRouterClient(LLMClient)` 已实现；`OpenRouterClient.from_env(config_path, *, allow_paid=False, max_cost_usd=None)` 读取公开模型配置和进程环境中的 OPENROUTER_API_KEY。config_path 默认 configs/model.json；当前开发配置为 openai/gpt-4.1-mini，输入/输出每百万 token 单价为 $0.40/$1.60，2026-10-15 核验；温度 0、超时 120 秒。替换模型时必须显式更新实际价格。max_cost_usd 必须为正；只有 allow_paid=True 才能发送请求。构造和 check-client 均不联网，缺省不允许付费。
 
 complete_json 返回原有模型 JSON dict，不包裹 usage，保持 MC-02/MC-03 调用兼容。输出不是对象、JSON 非法/重复键/非有限数、内容被拒绝或截断、接口/超时错误均抛 OpenRouterError；预算不足或既往扣费未知抛 BudgetError。错误不自动重试，不带 key、提示词或原始响应正文。
 
@@ -192,6 +192,8 @@ python -m moodcut evaluate --records runs/dev/block/block.json --blind-output ru
 smoke 不联网、不需要 key、不渲染视频，检查三条 JSON 链路；run 默认 mock，--no-render 可跳过视频。render/run 视频先检查 FFmpeg/ffprobe 和可用字体，顺序为 --font、MOODCUT_FONT、configs/render.json、系统候选。显式配置错误不偷偷换字体。真实调用必须同时有授权、--allow-paid、--max-cost-usd、明确模型及价格配置；不自动重试或切换模型。所有输出新建，不覆盖。
 
 evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记录列表。--blind-output 复制已有非空 MP4 到匿名 public/videos，public 只有匿名索引和空评分模板；PRIVATE 私有映射含目标 tone、条件、初稿与视频 SHA-256。导出不是播放器验证，发放前需检查视频。--ratings 必须搭配同次导出的 --private-key；旧映射或视频被替换时拒绝。评分字段和统计分母见任务卡 MC-05 与 evaluation.md。
+
+开发检查可另运行 `python scripts/compare_demo.py --run runs/<block>`，在该运行目录生成 comparison.html。该工具只读现有输入/计划/审查/视频和账目，新建 HTML，不改原始文件，不调用 API，不产生评分。字段差异、模型复查和人工评价仍须分开解释；该页面展示条件、目标和审查意见，不作为盲评观看材料发放。
 
 ## 4. 固定存储与结构检查
 
