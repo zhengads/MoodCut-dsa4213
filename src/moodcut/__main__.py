@@ -52,6 +52,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Prepare and evaluate experimental results.",
     )
 
+    check = subparsers.add_parser(
+        "check-client",
+        help="Validate local OpenRouter configuration without sending a request.",
+    )
+    check.add_argument("--config", default="configs/model.json")
+    check.add_argument("--max-cost-usd", type=float, required=True)
+
     return parser
 
 
@@ -63,6 +70,17 @@ def main() -> int:
 
     if args.command is None:
         parser.print_help()
+        return 0
+
+    if args.command == "check-client":
+        from .client import OpenRouterClient
+
+        try:
+            client = OpenRouterClient.from_env(args.config, max_cost_usd=args.max_cost_usd)
+        except (ValueError, OSError) as exc:
+            # Do not echo configuration values or environment secrets.
+            parser.error(f"Invalid OpenRouter configuration ({type(exc).__name__}); check key, model, prices and budget")
+        print(f"OpenRouter configuration valid for {client.model}; no network request sent.")
         return 0
 
     parser.error(
