@@ -93,7 +93,7 @@ Start-Process (Resolve-Path runs/generated-pair-01/comparison.html).Path
 .venv/Scripts/python scripts/generate_video.py --resume-job runs/generated-pair-01/baseline/shot-01
 ```
 
-恢复只下载该镜头，不自动继续整对或重新计账；先核对已有 receipt 和平台扣费，再决定后续操作。提交超时且没有 job ID 时需到平台核对，不重新提交来猜测状态。receipt.json 保留状态和已知/未知费用，不保存 key 或签名下载 URL。任一费用未知停止后续生成。
+恢复只下载该镜头，不自动继续整对或重新计账；先核对已有 receipt 和平台扣费，再决定后续操作。提交超时且没有 job ID 时需到平台核对，不重新提交来猜测状态。receipt.json 保留状态、已知/未知费用、generation ID 和脱敏后的服务端错误原因，不保存 key 或签名下载 URL。任一费用未知停止后续生成。
 
 成片拼接实际生成的音视频轨，不补静态占位，不把缺少音轨当作成功。输出含每镜头 generated.mp4/receipt.json、每版 film.mp4、generation.json 与 comparison.html。检查音轨存在只证明文件含音频；是否正确说出中文台词、说话人、口型、声音连续和情绪自然度仍需人工听看。固定 seed 不能保证改变台词后画面完全相同，单个样例也不能证明情绪效果提升。当前没有真实视频生成验收证据，不承诺一次调用达到最终质量。
 

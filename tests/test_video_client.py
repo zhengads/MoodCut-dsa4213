@@ -124,6 +124,23 @@ def test_terminal_failure_preserves_known_charge(tmp_path):
     assert "never-log" not in str(saved)
 
 
+def test_failed_job_retains_sanitized_provider_reason(tmp_path):
+    opener = Mock(side_effect=[response({"id": "job-123", "status": "failed", "generation_id": "gen-test-123",
+                                        "error": {"code": "REFERENCE_FETCH_FAILED", "message":
+                                                  "Cannot fetch https://example.com/private?token=secret; key=never-log-this-key"}})])
+    c = client(opener)
+    with pytest.raises(OpenRouterError):
+        c.generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["provider_error"]["code"] == "REFERENCE_FETCH_FAILED"
+    assert "Cannot fetch" in saved["provider_error"]["message"]
+    assert "never-log-this-key" not in str(saved)
+    assert "token=secret" not in str(saved)
+    assert saved["generation_id"] == "gen-test-123"
+    assert saved["provider_cost_usd"] is None
+    assert c.post_attempts == 1
+
+
 def test_poll_error_can_resume_without_post(tmp_path):
     opener = Mock(side_effect=[response({"id": "job-123", "status": "pending"}), URLError("oops")])
     with pytest.raises(OpenRouterError):

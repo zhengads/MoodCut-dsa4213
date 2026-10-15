@@ -135,6 +135,21 @@ class OpenRouterVideoClient:
         temporary.write_text(json.dumps(receipt, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
         temporary.replace(directory / "receipt.json")
 
+    def _safe_provider_error(self, value):
+        """Keep actionable error fields, excluding credentials and signed URLs."""
+        if value is None or type(value) in (bool, int):
+            return value
+        if isinstance(value, dict):
+            return {key: self._safe_provider_error(value[key])
+                    for key in ("code", "message", "type", "error", "details") if key in value}
+        if isinstance(value, list):
+            return [self._safe_provider_error(item) for item in value[:5]]
+        text = str(value).replace(self._key, "[redacted-key]")
+        text = re.sub(r"https?://[^\s\"<>]+", "[redacted-url]", text)
+        text = re.sub(r"sk-[A-Za-z0-9_-]+", "[redacted-key]", text)
+        text = re.sub(r"(?i)bearer\s+[A-Za-z0-9._~+/-]+=*", "Bearer [redacted-key]", text)
+        return text[:2000]
+
     def generate(self, request: dict, *, out_dir: str) -> dict:
         if not self._allow_paid:
             raise BudgetError("Paid video generation is disabled")
@@ -223,6 +238,12 @@ class OpenRouterVideoClient:
                 break
             sleep(self._poll_interval)
             data = None
+        generation_id = data.get("generation_id")
+        if isinstance(generation_id, str) and re.fullmatch(r"[A-Za-z0-9_-]{1,200}", generation_id):
+            receipt["generation_id"] = generation_id
+        if data.get("error") is not None:
+            receipt["provider_error"] = self._safe_provider_error(data["error"])
+        self._save(directory, receipt)
         usage = data.get("usage")
         value = usage.get("cost") if isinstance(usage, dict) else None
         if value is not None:
