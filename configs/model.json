@@ -1,7 +1,7 @@
 {
-  "model": null,
-  "input_price_per_million": null,
-  "output_price_per_million": null,
+  "model": "openai/gpt-4.1-mini",
+  "input_price_per_million": 0.4,
+  "output_price_per_million": 1.6,
   "temperature": 0,
-  "timeout_s": 60
+  "timeout_s": 120
 }
