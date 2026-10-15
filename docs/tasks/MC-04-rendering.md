@@ -4,6 +4,8 @@
 
 PNG、字幕、接触表、timeline 与 MP4 已实现并接入主流程。默认自动检测字体，也可显式指定；真实素材的裁切与视觉合适程度仍需人工检查。
 
+生成式增量：`src/moodcut/video_generation.py`、`scripts/generate_video.py`、`configs/video.json` 和 `tests/test_video_generation.py` 负责人物参考图请求、台词差异、真实音视频拼接和检查页；异步 HTTP/费用在 MC-01 的 `src/moodcut/video_client.py`。见 [生成视频计划](../GENERATIVE_VIDEO_PLAN.md)。已完成离线接入，尚未真实生成验收；不得用原 animatic 替代生成式成片。原渲染器和既有验收保留，用于诊断与回归。
+
 下列勾选项表示工程实现；不表示真实 API、正式实验或人工主观评价已完成。
 
 认领模块：P4 渲染，账号以 Issue 为准。依赖：MC-01 PR1；使用共享夹具，无需等待模型或上游素材。首个 Draft PR：10/15；集成：10/17。

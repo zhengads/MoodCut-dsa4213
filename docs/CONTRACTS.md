@@ -202,3 +202,15 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 必检：版本、scene/tone 对齐、唯一 shot_id、有效 beat/character/asset 引用、所有必需 beats 被覆盖、duration>0 且合计60–90、镜头数1–6、visuals每镜头1–2项且crop受允许；dialogue speaker 必须在 scene.characters 中。素材不存在、hash不符、非图片或越界路径均报错。
 
 结构验证不判断角色是否真的完成了叙述事件，也不判断台词是否自然、情绪是否正确。这些通过独立标注检查。
+
+## 5. 生成式开发视频（独立于原 animatic）
+
+`scripts/generate_video.py` 读取成功且哈希匹配的既有 baseline/moodcut 记录，默认离线输出 `kind=derived_development_video_pair` 的 bundle 与请求预览。`video_generation.build_video_bundle(scene, initial, revised, manifest, config, *, project_root)` 使用公共 `validate_plan` 核对原记录，明确把 candidate 投影到 dialogue；其他修改列入 ignored_non_dialogue_changes。该派生输入不继承原复查结论，不改变源文件。
+
+`configs/video.json` 显式配置开发场景、人物/参考图、场景动作、声音、镜头时长和生成参数。原计划的 duration_s 仍符合旧契约；新视频时长来自独立配置并另行记录，不能用旧计划时长冒充新视频时长。当前示例前后各 18 秒，仅用于开发，不改正式实验配置。
+
+每个 request 包含 model/prompt/duration/resolution/aspect_ratio/generate_audio/seed/input_references；不包含 frame_images。素材清单的本地图经过公共验证；公开 source_url 作为服务端参考输入，不上传本地文件、不发送卡片版式。前后共用人物、方向、生成设置与 seed，只改变台词。完全相同的请求可复用同一镜头并标记，不能重复记调用和费用。
+
+`video_client.OpenRouterVideoClient` 是独立异步端点的传输适配器，复用公共 BudgetError/OpenRouterError/严格 JSON；不取代原文本 LLMClient。POST 一次，保存 job ID，GET 轮询/下载；resume 只恢复一个已有任务，不能发 POST。每任务 receipt 保留未知扣费和失败；失去提交响应时不自动补交。最新模型目录/价格由付费 CLI 在提交前核对；估算预算不是平台硬上限或共享账户账本。
+
+拼接要求每镜头同时存在实际视频和音频流、时长与请求一致，保留生成音频。generation.json 的 assembled_requires_manual_inspection 只表示文件拼接通过，不能解释为中文台词正确、动作/情绪通过。语音内容、口型、人物一致性、剧情和情绪需独立人工检查；首次真实调用尚未验收。

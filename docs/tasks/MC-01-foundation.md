@@ -4,6 +4,8 @@
 
 公共客户端、验证器、CLI、缓存与三条件编排已有实现。运行入口见 README；只认领 Issue 中新增缺陷或未验收增量，避免重复搭骨架。真实模型和费用需确认后另行 pilot。
 
+生成式增量：`src/moodcut/video_client.py` 与 `tests/test_video_client.py` 维护 OpenRouter 异步视频任务、预算预留、未知费用和 GET-only 恢复。`scripts/generate_video.py` 在付费前核对最新公开参数和价格；不复用旧文本 demo 的预算授权。请求与媒体边界见 [生成视频计划](../GENERATIVE_VIDEO_PLAN.md)，不另建文本客户端或重复实现公共验证器。
+
 下列勾选项表示工程实现；不表示真实 API、正式实验或人工主观评价已完成。
 
 认领模块：P1 公共基础，账号以 Issue 为准。依赖：无。首个 Draft PR：10/14；完整离线集成：10/17。MC 编号不等于 GitHub Issue 号。
