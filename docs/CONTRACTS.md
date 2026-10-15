@@ -113,21 +113,22 @@ class LLMClient:
                       max_output_tokens: int) -> dict: ...
 
 # validation.py — P1；返回错误列表，空列表表示结构通过
-def validate_plan(scene: dict, plan: dict, manifest: dict) -> list[str]: ...
+def validate_scene(scene: dict, manifest: dict, *, project_root=None) -> list[str]: ...
+def validate_plan(scene: dict, plan: dict, manifest: dict, *, project_root=None) -> list[str]: ...
 
 # importer.py — P2；只读本地上游文件，无网络
 def import_synopsis(path: str) -> dict: ... # {story: str, character_names: list[str]}
 
 # planner.py — P2
-def make_plan(scene: dict, manifest: dict, client: LLMClient) -> dict: ...
+def make_plan(scene: dict, manifest: dict, client: LLMClient, *, project_root=None) -> dict: ...
 
 # reviewer.py — P3，mode 必须显式给出
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
-                      client: LLMClient, *, mode: str) -> dict: ... # ReviewResult
+                      client: LLMClient, *, mode: str, project_root=None) -> dict: ... # ReviewResult
 
 # patches.py — P3；纯函数，不调用模型、不改输入对象
 def apply_patch(scene: dict, plan: dict, manifest: dict,
-                report: dict, patch: dict) -> dict: ... # {plan,status,errors}
+                report: dict, patch: dict, *, project_root=None) -> dict: ... # {plan,status,errors}
 
 # renderer.py — P4
 def render_plan(plan: dict, manifest: dict, *, project_root: str,
@@ -144,12 +145,21 @@ def summarize(records: list[dict], ratings: list[dict]) -> dict: ...
 # pipeline.py — P1，initial_plan 由 block cache 取得或只生成一次
 def run_condition(scene: dict, initial_plan: dict, manifest: dict,
                   client: LLMClient, *, condition: str, out_dir: str,
-                  project_root: str, font_path: str) -> dict: ... # RunRecord
+                  project_root: str, font_path: str | None, render=True,
+                  replicate=1, source_kind="development") -> dict: ... # RunRecord
+
+def run_experiment(scene: dict, manifest: dict, client=None, *, out_dir: str,
+                   project_root=".", font_path=None, render=True, replicate=1,
+                   cache_dir=None, source_kind="development") -> dict: ... # block.json
 ```
 
-上述 `...` 是 Python 接口声明，不是完成实现。所有函数的具体行为由本文件与任务卡定义。P1 的 FakeClient 使用预置响应队列，record 每次 stage 和上限；队列耗尽、网络企图或非法响应应报错。
+上述 `...` 用于缩写已实现函数的签名。project_root 为 None 时沿用当前目录；CLI/pipeline 显式传项目根目录。FakeClient 使用预置响应队列，record 每次 stage 和上限；队列耗尽、网络企图或非法响应报错。
 
-make_plan 依次使用 director、scene、shot 三个 planning stage，再转换为 ShotPlan；所有条件共用缓存初稿。不允许 review 模块反过来改变 scene。
+make_plan 依次使用 director、scene、shot 三个 planning stage，输出上限分别 1024/2048/4096，再转换为 ShotPlan。director 保留输入 beat 顺序；scene 分段完整覆盖原顺序；shot 接受 canonical、shots、plan 或单场景 scenes 封装，不接受多场景静默截断。make_plan_with_trace 同时返回 plan/raw_responses/prompt_hashes；PlanningError 携带失败阶段、错误和已解析原始响应。所有条件共用初稿，不允许 review 模块反过来改变 scene。
+
+run_experiment 只规划一次；可选初稿缓存身份含完整 scene/manifest、模型与温度、replicate、schema、规划提示词哈希、输出上限与 planner 代码哈希。缓存需通过身份、内容哈希和公共验证器；损坏缓存或已有独占锁报错，不覆盖。无自动重试。规划失败仍产出三个失败 RunRecord。run_condition 保存各条件独立副本；review 失败可渲染原稿用于诊断，但 run_status 仍为 failed。
+
+planning.json 记录共享规划费用一次；三个 run.json 不重复分摊规划，包含各自 call_records。block.json 汇集 planning 与 runs。usage 中 calls 是逻辑调用数，real_http_calls 是实际 HTTP 尝试数；FakeClient 后者及实际费用为零，未提供的 token 仍为 null。evaluate 汇总的 overall.usage 只含条件用量，block_ledger_accounting.all_phases 在完整 block.json 可用时包含共享规划一次，缺共享账目返回 null。
 
 review_and_revise 两种 mode 都按 critique → revise → verify 执行，最多各一次。critique 得到 report；revise 得到 patch；apply_patch 结构通过才运行 verify。无意见可不发 revise/verify。模型返回 JSON 不合法或 API 失败不自动重试；保留错误。实际用量与提前退出分别报告，不声称实际费用完全相同。
 
@@ -165,19 +175,23 @@ estimated_cost_usd 基于返回的实际 token 计数和配置单价；provider_
 
 本地预算使用输入 UTF-8 字节数加 64 作为 token 估计，并按 max_output_tokens 预留输出费用。它是单实例估算检查，不是精确 tokenizer 上界、跨进程账本或平台硬额度；不同实例不共享余额。提供商请求限制 token 单价和零按次附加费，仍须使用 OpenRouter 端共享 key/团队额度控制真实总支出。未知价格拒绝发送。
 
-## 3. CLI 目标
+## 3. CLI
 
-以下 plan/review/render/smoke/evaluate 仍是 P1 待集成的命令。帮助、版本及不联网的 `python -m moodcut check-client --config configs/model.json --max-cost-usd 0.05` 已实现；check-client 只做本地配置检查，不验证远端凭据。
+plan/review/render/smoke/run/import-synopsis/evaluate/check-client 已接入。check-client 只做本地配置检查，不验证远端凭据。每个命令接受 --project-root；相对 CLI 输入与输出路径由该根目录解析。
 
 ```bash
 python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json
 python -m moodcut review --scene tests/fixtures/scene.json --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --mode moodcut --mock --output runs/dev/review.json
-python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --font assets/raw/font.ttf --output runs/dev/render
+python -m moodcut render --plan tests/fixtures/plan.json --assets tests/fixtures/assets.json --output runs/dev/render
 python -m moodcut smoke --mock --output runs/dev/smoke
-python -m moodcut evaluate --config configs/pilot.json --dry-run
+python -m moodcut run --mock --cache-dir runs/plan-cache --output runs/dev/block
+python -m moodcut evaluate --config configs/experiment.json --dry-run
+python -m moodcut evaluate --records runs/dev/block/block.json --blind-output runs/dev/blind
 ```
 
-smoke mock 模式不联网、不需要 key、不渲染视频，检查 baseline/generic_review/moodcut 三条 JSON 链路与记录；render 独立需要 FFmpeg 和显式字体。真实调用必须同时有授权、`--allow-paid`、`--max-cost-usd`、明确模型及价格配置。paid 不能作为任何命令默认行为。
+smoke 不联网、不需要 key、不渲染视频，检查三条 JSON 链路；run 默认 mock，--no-render 可跳过视频。render/run 视频先检查 FFmpeg/ffprobe 和可用字体，顺序为 --font、MOODCUT_FONT、configs/render.json、系统候选。显式配置错误不偷偷换字体。真实调用必须同时有授权、--allow-paid、--max-cost-usd、明确模型及价格配置；不自动重试或切换模型。所有输出新建，不覆盖。
+
+evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记录列表。--blind-output 复制已有非空 MP4 到匿名 public/videos，public 只有匿名索引和空评分模板；PRIVATE 私有映射含目标 tone、条件、初稿与视频 SHA-256。导出不是播放器验证，发放前需检查视频。--ratings 必须搭配同次导出的 --private-key；旧映射或视频被替换时拒绝。评分字段和统计分母见任务卡 MC-05 与 evaluation.md。
 
 ## 4. 固定存储与结构检查
 

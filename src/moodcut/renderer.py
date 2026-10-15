@@ -113,7 +113,7 @@ def render_plan(
             "video_path": str(video_path),
             "contact_sheet_path": str(contact_sheet_path),
             "timeline_path": str(timeline_path),
-            "duration_s": round(cursor, 3),
+            "duration_s": probe["duration_s"],
             "errors": [],
         }
     except Exception as exc:  # Keep the public renderer contract simple.

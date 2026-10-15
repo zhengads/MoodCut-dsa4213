@@ -89,7 +89,7 @@ def validate_verification(report: dict, verification: dict) -> list[str]:
 
 
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
-                      client: LLMClient, *, mode: str) -> dict:
+                      client: LLMClient, *, mode: str, project_root=None) -> dict:
     """Return ReviewResult; make at most three calls through the supplied client.
 
     Attach an INFO handler to moodcut.review.trace to persist request/response
@@ -135,7 +135,8 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
     try:
         if mode not in ("generic_review", "moodcut"):
             raise ValueError("mode must be generic_review or moodcut")
-        errors = validation.validate_plan(deepcopy(scene), deepcopy(original), deepcopy(manifest))
+        errors = validation.validate_plan(deepcopy(scene), deepcopy(original), deepcopy(manifest),
+                                          **({"project_root": project_root} if project_root is not None else {}))
         if not isinstance(errors, list) or any(not isinstance(e, str) for e in errors):
             raise ValueError("validate_plan must return list[str]")
         if errors:
@@ -156,7 +157,8 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             return result
         result["patch"] = request("revise", "review_revise.txt",
                                   {**context, "report": result["report"]})
-        applied = apply_patch(scene, original, manifest, result["report"], result["patch"])
+        applied = apply_patch(scene, original, manifest, result["report"], result["patch"],
+                              **({"project_root": project_root} if project_root is not None else {}))
         if applied["status"] == "rejected":
             result.update(applied)
             return result

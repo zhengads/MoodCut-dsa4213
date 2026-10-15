@@ -13,7 +13,7 @@
 
 共享仓库包含阅读笔记、引用、固定来源清单及资料准备工具。33 份核心参考文件下载到 `references/upstream/`，两篇论文 PDF 可下载到 `references/papers/`；这些文件不进入项目 Python 包、不由测试发现、不作为运行依赖。
 
-初始素材选项提供 Anna/Elsa 两张参考图及说明。清单里的 SHA-256、路径与来源是下载记录；P2 仍需生成符合 `docs/CONTRACTS.md` 的 AssetManifest，并人工检查图片、裁切及角色映射。
+初始素材选项提供 Anna/Elsa 两张参考图及说明。清单里的 SHA-256、路径与来源是下载记录；assets/selection.example.json 与 assets/manifest.json 已提供显式映射及尺寸/哈希。下载到本地后用 prepare_assets.py --check 核验；仅开放 full，其他裁切及实际故事角色映射仍需人工确认。
 
 ## 来源与许可记录
 
@@ -22,3 +22,7 @@ MovieAgent 固定提交未发现项目级 LICENSE；嵌套后端的许可不作�
 FilmAgent 当前所在仓库的根 LICENSE 标注 MIT。原始声明随参考文件下载；若复用受该许可覆盖的代码，保留声明并记录来源。图片、视频、角色形象和论文各自的使用限制单独处理。
 
 每次实际采用或改编上游代码时，在对应 PR 补充：源仓库、提交、文件/函数、目标文件、保留的许可声明与修改内容。方法参考也应在报告中引用两篇论文。
+
+## 独立适配实现
+
+importer.py 读取上游 MovieScript/Character 字段；planner.py 和 planning_*.txt 参考分阶段组织方式，独立定义本项目的 director/scene/shot JSON 协议，没有复制上游 Python 执行代码或原提示词全文。reviewer.py 参考 FilmAgent 的 CCV 方法，保留本项目受限补丁及一次循环。图像清单仅提交元数据，原始图片仍留在忽略目录。

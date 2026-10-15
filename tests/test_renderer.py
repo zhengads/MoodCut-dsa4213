@@ -1,3 +1,4 @@
+import os
 import hashlib
 import json
 from pathlib import Path
@@ -250,6 +251,7 @@ def _sha256(path):
 
 def _font_path():
     candidates = [
+        os.environ.get("MOODCUT_TEST_FONT", "C:/Windows/Fonts/msyh.ttc"),
         "/System/Library/Fonts/PingFang.ttc",
         "/System/Library/Fonts/STHeiti Medium.ttc",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",

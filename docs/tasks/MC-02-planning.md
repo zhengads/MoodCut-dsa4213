@@ -1,5 +1,11 @@
 # MC-02 MovieAgent 输入素材与规划适配
 
+## 当前交付
+
+importer、planner、三份规划提示、prepare_assets 与两张参考图的 manifest 元数据已实现。原图仍在忽略目录；故事改编、具体 beats、目标 tone 和新裁切需人工确认。
+
+下列勾选项表示工程实现；不表示真实 API、正式实验或人工主观评价已完成。
+
 认领模块：P2 规划，账号以 Issue 为准。依赖：MC-01 PR1；可先阅读上游。首个 Draft PR：10/15；接入：10/17。
 
 ## 开工资料
@@ -12,7 +18,7 @@
 
 ## 修改范围
 
-`src/moodcut/importer.py`、`src/moodcut/planner.py`、`src/moodcut/prompts/planning_director.txt`、`src/moodcut/prompts/planning_scene.txt`、`src/moodcut/prompts/planning_shot.txt`、`assets/manifest.json`、`scripts/prepare_assets.py`、`tests/test_importer.py`、`tests/test_planner.py`、`tests/test_prepare_assets.py`、`docs/upstream-reuse.md`。归一化逻辑放在 planner.py；不另建 normalizer 模块。不要修改公共 client、validation、reviewer、renderer 或审查提示词。
+`src/moodcut/importer.py`、`src/moodcut/planner.py`、`src/moodcut/prompts/planning_director.txt`、`src/moodcut/prompts/planning_scene.txt`、`src/moodcut/prompts/planning_shot.txt`、`assets/manifest.json`、`assets/selection.example.json`、`scripts/prepare_assets.py`、`tests/test_importer.py`、`tests/test_planner.py`、`tests/test_prepare_assets.py`、`docs/upstream-reuse.md`。归一化逻辑放在 planner.py；不另建 normalizer 模块。不要修改公共 client、validation、reviewer、renderer 或审查提示词。
 
 ## 上游定位
 
@@ -26,19 +32,19 @@ MovieAgent固定版本 `d84041bed8bc8be460664528d9e9924cdde384ba`：
 
 ## PR 1 素材与离线导入
 
-- [ ] 实现 import_synopsis(path)；MovieScript必须非空字符串、Character必须为非空字符串列表，否则报明确信息。返回 `{story, character_names}`。
-- [ ] 写prepare_assets显式准备命令：接收选定文件清单，只处理指定图片；已有本地图片优先。远端下载必须显式参数启用，记录URL/revision/hash/尺寸；遇到非图片或HTTP错误失败，不批量猜URL。
-- [ ] manifest 中的路径使用 assets/raw 下相对项目根的路径；原始图片不随PR上传。人工检查挑选的图片是否适合裁切，不能默认center_close一定是人脸。
-- [ ] 写复用说明：复制了什么、参考了什么、改编了什么、未确认的许可；未确认许可不整份复制上游源码或发布图片。
-- [ ] 用团队自制夹具测试导入、重复角色、缺字段和损坏素材；确认没有GPU依赖。
+- [x] 实现 import_synopsis(path)；MovieScript必须非空字符串、Character必须为非空字符串列表，否则报明确信息。返回 `{story, character_names}`。
+- [x] 写prepare_assets显式准备命令：接收选定文件清单，只处理指定图片；已有本地图片优先。下载统一由 prepare_references.py --assets 显式处理；prepare_assets 只校验本地选择，记录 URL/revision/hash/尺寸，--check 比对已有清单，不覆盖文件。
+- [x] manifest 中的路径使用 assets/raw 下相对项目根的路径；原始图片不随PR上传。人工检查挑选的图片是否适合裁切，不能默认center_close一定是人脸。
+- [x] 写复用说明：复制了什么、参考了什么、改编了什么、未确认的许可；未确认许可不整份复制上游源码或发布图片。
+- [x] 用团队自制夹具测试导入、重复角色、缺字段和损坏素材；确认没有GPU依赖。
 
 ## PR 2 规划适配
 
-- [ ] make_plan依次调用公共client的director、scene、shot三个stage。三组实验共用这套规划与目标tone；不为MoodCut单独生成“更好的初稿”。
-- [ ] 约束为当前一段故事、两个角色、固定素材、最多六镜头、60–90秒。素材表现不了的动作只能放叙述字幕，不请求新视频。
-- [ ] 将上游式子剧本/场景/镜头输出归一化到唯一ShotPlan schema。统一ID映射并保存上游原始响应；不靠修改story或删除beat来通过验证。
-- [ ] normalize失败保留raw response和错误，不静默丢镜头，不自动重试付费请求。
-- [ ] 先用FakeClient的三份预置响应跑通，再申请小额真实pilot。真实模型、价格和费用上限使用公共配置，并与本次运行授权一致。
+- [x] make_plan依次调用公共client的director、scene、shot三个stage。三组实验共用这套规划与目标tone；不为MoodCut单独生成“更好的初稿”。
+- [x] 约束为当前一段故事、两个角色、固定素材、最多六镜头、60–90秒。素材表现不了的动作只能放叙述字幕，不请求新视频。
+- [x] 将上游式子剧本/场景/镜头输出归一化到唯一ShotPlan schema。统一ID映射并保存上游原始响应；不靠修改story或删除beat来通过验证。
+- [x] normalize失败保留raw response和错误，不静默丢镜头，不自动重试付费请求。
+- [x] 已用 FakeClient 的三份预置响应跑通；小额真实 pilot 尚未执行。真实模型、价格和费用上限使用公共配置，并与本次运行授权一致。
 
 ## 验收
 

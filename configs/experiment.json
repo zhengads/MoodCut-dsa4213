@@ -1,0 +1,18 @@
+{
+  "status": "development_example_not_approved_for_formal_runs",
+  "scenes": [
+    "tests/fixtures/scene.json"
+  ],
+  "assets": "tests/fixtures/assets.json",
+  "tones": [
+    "suspicious"
+  ],
+  "replicates": 1,
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "source_kind": "synthetic",
+  "note": "One existing software fixture for engineering checks only. Dry-run does not call a model or select a formal sample."
+}

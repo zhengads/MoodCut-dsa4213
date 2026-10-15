@@ -1,5 +1,11 @@
 # MC-03 通用审查、情绪审查与局部修订
 
+## 当前交付
+
+两类审查、原子补丁、一次复查与失败回退已有实现，CLI/pipeline 已接入。后续围绕真实输出诊断，不重写同一套 client/validator。
+
+下列勾选项表示工程实现；不表示真实 API、正式实验或人工主观评价已完成。
+
 认领模块：P3 审查修订，账号以 Issue 为准。依赖：MC-01 PR1；使用共享夹具，不必等真实规划。首个 Draft PR：10/15；接入：10/17。
 
 ## 开工资料
@@ -16,20 +22,20 @@
 
 ## PR 1 报告与纯补丁应用
 
-- [ ] ReviewReport逐条包含shot_id、具体证据、建议、维度和严重程度；缺ID、引用不存在、重复issue_id均拒绝。
-- [ ] 实现apply_patch纯函数，deepcopy后修改；只允许契约列出的字段，不删除镜头、不改beat关联、不换角色图片、不改story或tone。
-- [ ] 应用后调用公共validate_plan；有任意错误整体回退原plan，status=rejected，保留错误列表。
-- [ ] duration的调整必须保持总时长合法；只能使用manifest允许crop；不能用叙述字幕伪装已生成新动作。
-- [ ] 测试无意见、单条有效修改、非法字段、未知镜头、多条冲突、输入对象不变、原子回退。
+- [x] ReviewReport逐条包含shot_id、具体证据、建议、维度和严重程度；缺ID、引用不存在、重复issue_id均拒绝。
+- [x] 实现apply_patch纯函数，deepcopy后修改；只允许契约列出的字段，不删除镜头、不改beat关联、不换角色图片、不改story或tone。
+- [x] 应用后调用公共validate_plan；有任意错误整体回退原plan，status=rejected，保留错误列表。
+- [x] duration的调整必须保持总时长合法；只能使用manifest允许crop；不能用叙述字幕伪装已生成新动作。
+- [x] 测试无意见、单条有效修改、非法字段、未知镜头、多条冲突、输入对象不变、原子回退。
 
 ## PR 2 两种提示与有界复查
 
-- [ ] generic提示覆盖剧情、自然度、目标tone和画面可实现性；不能故意不告诉generic目标tone或让其输出格式更弱。
-- [ ] moodcut在相同输入上要求定位“目标tone与具体台词/镜头表达之间的偏差”，提出不改剧情事实的局部建议。建议是推断，不写成客观真值。
-- [ ] 两模式用同一revise与verify模板、相同模型、max_output_tokens和一次循环。无意见可提前退出；报告实际调用差异。
-- [ ] revise产生RevisionPatch，由纯函数应用；verify只复查意见是否解决、有没有新问题，不追加第二轮修订。未解决意见留档。
-- [ ] 模型响应错误回退原plan并status=review_failed；不算成功修复。保存report/patch/verification/raw response，便于评审与复现。
-- [ ] 用FakeClient队列检查stage顺序与最多3个review请求；不要真实调用API来跑单元测试。
+- [x] generic提示覆盖剧情、自然度、目标tone和画面可实现性；不能故意不告诉generic目标tone或让其输出格式更弱。
+- [x] moodcut在相同输入上要求定位“目标tone与具体台词/镜头表达之间的偏差”，提出不改剧情事实的局部建议。建议是推断，不写成客观真值。
+- [x] 两模式用同一revise与verify模板、相同模型、max_output_tokens和一次循环。无意见可提前退出；报告实际调用差异。
+- [x] revise产生RevisionPatch，由纯函数应用；verify只复查意见是否解决、有没有新问题，不追加第二轮修订。未解决意见留档。
+- [x] 模型响应错误回退原plan并status=review_failed；不算成功修复。保存report/patch/verification/raw response，便于评审与复现。
+- [x] 用FakeClient队列检查stage顺序与最多3个review请求；不要真实调用API来跑单元测试。
 
 ## 验收
 

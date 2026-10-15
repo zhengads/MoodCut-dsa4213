@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_anna",
+      "character_id": "a",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "width": 420,
+      "height": 1000,
+      "sha256": "6086a3d86af1b14cd0ff281fc494a94e5b41d5593b0493a4af06fa067a9394dd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "MovieAgent upstream reference; project-level redistribution permission unconfirmed. Keep source image local.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_elsa",
+      "character_id": "b",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "width": 614,
+      "height": 1156,
+      "sha256": "422c12807142e392ffd0e5e20f4fd39a4001c0b7ca032a727616fe1bc59598bd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "MovieAgent upstream reference; project-level redistribution permission unconfirmed. Keep source image local.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

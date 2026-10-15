@@ -33,7 +33,7 @@ jobs:
       - name: Install rendering dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes ffmpeg
+          sudo apt-get install --yes ffmpeg fonts-noto-cjk
 
       - name: Verify rendering dependencies
         run: |
