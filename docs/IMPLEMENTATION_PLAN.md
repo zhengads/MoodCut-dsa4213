@@ -1,6 +1,8 @@
 # MoodCut 实施与验收
 
-目标：将 MovieAgent 风格文本规划、两类有界审查、固定素材 animatic 和配对评估连成可运行流程。Python 3.11、Pillow、FFmpeg/ffprobe；MVP 不依赖 GPU 或上游模型。
+目标：将 MovieAgent 风格规划、台词审查修订与人物参考图引导的视频/声音生成连成可验收流程。Python 3.11、Pillow、FFmpeg/ffprobe；通过服务接口生成视频，不要求本地 GPU 或上游模型权重。
+
+既有静态 animatic 是文本流程诊断工具。新增生成式路径与离线验收见 [GENERATIVE_VIDEO_PLAN.md](GENERATIVE_VIDEO_PLAN.md)：脚本、请求准备、异步任务和实际音视频拼接已接入，真实人物一致性、中文对白与画面质量尚未经过付费 pilot 验收。以下既有模块/命令的 60–90 秒约束仍只适用于原 animatic 契约，不作为新成片的时长要求。
 
 ## 当前工程交付
 

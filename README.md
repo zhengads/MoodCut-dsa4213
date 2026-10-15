@@ -2,7 +2,9 @@
 
 DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
-给定故事、两个角色、目标氛围与固定图片，系统生成初稿，再对同一初稿分别执行 baseline、generic_review 和 moodcut。两个审查条件共用模型、一次 critique→revise→verify 与修改白名单。输出为图片、台词/叙述字幕、裁切和停留时长组成的静态 animatic。
+给定故事、两个角色参考图与目标氛围，系统规划台词并执行审查—修订—复查。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音。第一阶段 review 只修改台词。
+
+已有 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。新增 `scripts/generate_video.py` 将已有初稿与台词修订接到 OpenRouter 的参考图视频生成接口；接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费 pilot 验收。
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
@@ -61,6 +63,43 @@ comparison.html 是本地对比页：三段视频、逐镜头字段的修改前/
 OpenRouterClient 保持 `complete_json(...) -> dict`，可直接传给规划和审查。调用者可查看 client.calls；key 和提示词不进入该费用记录。actual provider_cost_usd 来自 usage.cost，estimated_cost_usd 根据返回 token 与配置单价计算，两者分别保存。
 
 协议依据：[API 与 usage](https://openrouter.ai/docs/api_reference/overview)、[参数与价格上限](https://openrouter.ai/docs/guides/routing/provider-selection)、[平台费用控制](https://openrouter.ai/docs/guides/best-practices/spend-controls)。当前工程验证使用离线响应，不声称真实 OpenRouter 或模型效果已验证。
+
+## 生成真实画面与声音
+
+使用独立的 [生成视频计划与验收边界](docs/GENERATIVE_VIDEO_PLAN.md)。`configs/video.json` 选择 `alibaba/wan-2.7`，720p、16:9、原生声音；2026-10-15 官方 [模型页](https://openrouter.ai/alibaba/wan-2.7) 与公开 `/api/v1/videos/models` 标价 $0.10/秒，支持参考图和 2–10 秒片段。使用 `input_references` 传入人物原图，提示词指定新场景、动作、说话人和台词；不把角色卡片作为首帧。
+
+先对已有且成功的 moodcut 审查准备请求，默认完全离线、不需要 key：
+
+```powershell
+.venv/Scripts/python scripts/generate_video.py --run runs/live-demo-01 --output runs/video-preview-01
+Start-Process (Resolve-Path runs/video-preview-01/preview.html).Path
+```
+
+输入目录需要 scene.json、assets.json、baseline/initial.json、baseline/run.json、moodcut/final.json、moodcut/run.json；工具验证来源哈希，不重新调用规划/审查模型。失败回退不能冒充成功修订。配置的 scene_id、角色和 shot_id 必须与输入匹配；示例只适用已提供的读信开发故事。
+
+开发成片各三个 6 秒镜头，前后各 18 秒；不改写既有 60 秒分镜与实验配置。只采用候选版本的 dialogue 字段，其余改动列在 ignored_non_dialogue_changes；生成的派生输入不继承原复查通过结论。`bundle.json` 保存两版实际请求、台词差异、来源哈希及估算；preview.html 明确标记尚未生成视频。
+
+两版最多六次视频生成，按该价格估算 $3.60，明显超过文本 demo 的 $0.10 预算。完全相同的请求在这一对成片内复用同一视频并记录，减少费用和无关画面差异；不把复用计成新请求。仅在接受本次模型、两版规模与预算后运行：
+
+```powershell
+# Example only: requires explicit acceptance of the new video-generation budget.
+.venv/Scripts/python scripts/generate_video.py --run runs/live-demo-01 --output runs/generated-pair-01 --allow-paid --max-cost-usd 4.00
+Start-Process (Resolve-Path runs/generated-pair-01/comparison.html).Path
+```
+
+付费前检查 key、FFmpeg/ffprobe、整对估算和最新公开模型参数/价格。生成可能需要数分钟/镜头，耗时及质量不保证。POST 不重试，轮询或下载中断时保留 job ID，恢复已有任务不会提交替代任务：
+
+```powershell
+.venv/Scripts/python scripts/generate_video.py --resume-job runs/generated-pair-01/baseline/shot-01
+```
+
+恢复只下载该镜头，不自动继续整对或重新计账；先核对已有 receipt 和平台扣费，再决定后续操作。提交超时且没有 job ID 时需到平台核对，不重新提交来猜测状态。receipt.json 保留状态、已知/未知费用、generation ID 和脱敏后的服务端错误原因，不保存 key 或签名下载 URL。任一费用未知停止后续生成。
+
+成片拼接实际生成的音视频轨，不补静态占位，不把缺少音轨当作成功。输出含每镜头 generated.mp4/receipt.json、每版 film.mp4、generation.json 与 comparison.html。检查音轨存在只证明文件含音频；是否正确说出中文台词、说话人、口型、声音连续和情绪自然度仍需人工听看。固定 seed 不能保证改变台词后画面完全相同，单个样例也不能证明情绪效果提升。当前没有真实视频生成验收证据，不承诺一次调用达到最终质量。
+
+另支持 `bytedance/seedance-2.0-mini` 的参考图＋原生声音配置：保留相同输入，配置中设置该 model，移除 price_per_second_usd，使用 `price_per_million_video_tokens_usd: "3.50"`。当前仅实现 16:9 下 480p（854×480）或 720p（1280×720）、4–15 秒的明确价格契约；不覆盖音视频参考输入。2026-10-16 核对[官方模型页](https://openrouter.ai/bytedance/seedance-2.0-mini)和公开目录：费用按 `宽×高×秒数×24/1024 × $3.50/百万视频 token` 估算，带声音的 720p 六秒约 $0.4536，480p 六秒约 $0.2018。付费入口仍检查实时参数/价格及本次预算，不因切换后端而获得新运行授权。
+
+MovieAgent 官方的 ROICtrl／SVD／HunyuanVideo 自部署链路与这些商用 API 不同；论文展示不能证明服务商一定接受相同输入。更换后端不改变素材身份，不隐瞒输入或关闭审核，也不保证同一素材会被接受。首次 Wan 任务已被服务端以疑似 IP 侵权拒绝；保留失败和未知单笔费用，不能用换模型抹去该记录。Seedance 目前只完成离线适配与公开参数检查，尚未进行付费验收。
 
 ## 输入、输出与缓存
 

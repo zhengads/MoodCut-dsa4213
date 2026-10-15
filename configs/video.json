@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "scene_id": "dev_letter_movieagent_01",
+  "model": "alibaba/wan-2.7",
+  "resolution": "720p",
+  "aspect_ratio": "16:9",
+  "generate_audio": true,
+  "price_per_second_usd": "0.10",
+  "price_checked_on": "2026-10-15",
+  "price_source": "https://openrouter.ai/alibaba/wan-2.7",
+  "seed": 4213,
+  "style": "A continuous cinematic 3D animated scene in a quiet palace study at dusk. Warm window light, coherent geography and clothing across shots. Medium shots and facial close-ups, characters filling the frame. Natural body movement and readable restrained acting. Reference images specify identity and clothing only: do not copy their backgrounds, borders, blank space, or layouts. No cards, collage, slideshow, labels, subtitles or text overlays.",
+  "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied lines, with the assigned speaker, and subtle paper rustling, footsteps and quiet room ambience. No narrator, no additional dialogue and no music. Preserve each character's voice across shots. Allow time to finish the lines naturally; do not rush.",
+  "characters": [
+    {"id": "a", "asset_id": "movieagent_anna", "voice": "Young adult woman, warm middle register, measured conversational delivery."},
+    {"id": "b", "asset_id": "movieagent_elsa", "voice": "Young adult woman, slightly lower and cooler register, measured conversational delivery."}
+  ],
+  "shots": [
+    {"shot_id": "s1", "duration_s": 6, "direction": "Medium two-shot: Anna and Elsa stand beside a wooden desk. Anna hands a sealed letter to Elsa, who takes it. Frame hands and faces so the handoff is visible. Do not invent any event beyond the handoff."},
+    {"shot_id": "s2", "duration_s": 6, "direction": "Close-up of Elsa at the same desk. She reads the letter, pauses, folds it and puts it away. Anna stays nearby. Show the reading and putting away as actual continuous motion."},
+    {"shot_id": "s3", "duration_s": 6, "direction": "Medium two-shot in the same study. Anna and Elsa turn and walk out together through the doorway. Show actual walking, keeping their identities and outfits consistent. No added exchanges or new story events."}
+  ]
+}
