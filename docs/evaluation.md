@@ -1,15 +1,38 @@
-# MC-05: VBench Evaluation
+# MoodCut 配对人工评价与 VBench 工具
 
 Issue: https://github.com/zhengads/MoodCut-dsa4213/issues/9
+
+## 配对人工评价
+
+主 CLI 的 evaluate 完全离线，不启动模型。configs/experiment.json 是开发分配示例，包含已有软件夹具；--dry-run 仅列出 scene×tone×replicate×condition，不改变原 SceneInput，也不自动批量生成。实际生成使用 run 命令，一次一个明确输入的 block。configs/pilot.json 保留原 VBench 提议配置，不能作为人工评价的 scene 路径配置。
+
+```bash
+python -m moodcut evaluate --config configs/experiment.json --dry-run
+python -m moodcut evaluate --records runs/demo/block.json --blind-output runs/blind-demo
+python -m moodcut evaluate --records runs/demo/block.json --output runs/demo/coverage.json
+python -m moodcut evaluate --records runs/demo/block.json --ratings runs/blind-demo/public/ratings.csv --private-key runs/blind-demo/PRIVATE/private_key.csv --output runs/demo/human-summary.json
+```
+
+输出目录/文件必须新建。只分发 public/，包含匿名 MP4、blind_items.csv 和空 ratings.csv；PRIVATE/private_key.csv 含条件、目标 tone、初稿与视频 SHA-256，单独保管。匿名导出只核查已有非空 MP4，不能代替实际播放检查。填写评分前，团队明确评价者分配，避免同一人连续看同一故事的不同版本；导出本身不自动保证实验盲法。默认 mock 材料只用于操作检查。
+
+每个已完成的评分行需 rater_id（匿名）、item_id、perceived_tone（affectionate/suspicious/hostile/uncertain）、confidence、naturalness、story_clarity、overstatement；后四项必须为 1–5 整数。不能把空模板交给汇总；只汇总已完成行，未评分 clip 仍由原始记录留在覆盖分母。重复 rater/item、未知 item、旧映射或视频哈希不符均报错。实际评分解释和正式样本由团队确认，程序不代填答案。
+
+统计实现 summarize：每个有评分 clip 先算其 tone 命中比例和各 1–5 项均值，再按 clip 等权汇总；多评分 clip 不获得更大权重。uncertain 计作 tone 未命中并单列。混淆矩阵是 rating 次数，与 clip 等权均值的分母不同。自然度、剧情清楚度、过度表达和 confidence 分列，零评分分母返回 null。它们衡量被观看并评分的成片，不证明所有生成尝试有效，也不把 Agent verification 当人工结果。
+
+coverage 保留所有提供的运行：planned_runs、rendered_runs、review_failed/rejected、缺失评分、零调用、费用未知等。M/G 的差值只取两者均有人工评分的共同 block，逐 block 等权，显示共同数及其占已提供配对 block、全部 block 的覆盖；这不是所有运行的无条件提升。渲染成功的 review 失败回退片仍可进入观看/覆盖，必须结合 review_status 披露。planned_runs 的分母是输入记录数，工具不会自动发现未提供的丢失记录；正式汇总需传全量计划对应记录。
+
+overall.usage 和 by_condition 只统计条件运行，失败费用也保留；未知不当零，显示已知小计与未知数。完整 block.json 提供的共享规划由 CLI 另记入 block_ledger_accounting：planning 只加一次，all_phases 合计规划与三条件；只传 run.json 无法重建规划费用，all_phases 返回 null。调用完成、渲染成功和情绪识别正确是不同字段。指标没有训练模型，也没有读取测试后自动调参。
+
+## VBench 辅助工具
+
+以下保留单独 VBench 入口与已有协议说明。它衡量图像/视频质量，不能替代上面的情绪与叙事人工评价。
 
 ## Current delivery
 
 Offline helpers validate video metadata and summarize per-video scores. The second
 increment adds a pinned native imaging_quality adapter and an explicitly invoked
 CPU smoke runner. Neither synthetic-video scores nor tool success establish that
-the project generates high-quality videos. The existing
-human-rating interfaces in CONTRACTS.md are not replaced by these separately named
-helpers. The legacy MC-05 task card needs a coordinated update for Issue #9.
+the project generates high-quality videos. The paired human-rating interfaces described below are implemented independently of these VBench helpers; neither replaces the other.
 
 ## Proposed evaluation protocol
 
@@ -32,8 +55,7 @@ inputs and evaluation settings across methods. Agree on sample size and dimensio
 before inspecting formal outcomes.
 
 VBench video-quality dimensions alone do not establish emotion recognition,
-narrative quality, or audio quality. Confirm whether separate emotion evaluation
-is still required. Report dimensions separately, without inventing a total score.
+narrative quality, or audio quality. The paired human emotion evaluation below remains the primary assessment of the project hypothesis. Report dimensions separately, without inventing a total score.
 
 ## Proposed video metadata
 

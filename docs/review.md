@@ -42,7 +42,7 @@ Python 调用可从 `moodcut.reviewer` 导入 validate_report，从 `moodcut.pat
 
 2026-10-14 已同步 main 至 bf87fbe（合入 P1 #13、P5 #14）。MC-01 的
 validate_plan、FakeClient、共享 JSON 夹具及图片已经到位，原依赖缺失阻碍解除。
-公共验证器按当前工作目录解析素材路径，运行时须位于项目根目录。
+公共验证器默认按当前工作目录解析素材路径；新增可选 project_root，CLI 和 pipeline 显式传入项目根目录，避免调用目录影响校验。
 
 tests/test_patches.py 的 SharedFixtureTests 直接读取共享夹具并调用真实
 validate_plan，覆盖有效台词/裁切修改、无意见、相同值、时长上下限及非法数值、
@@ -52,7 +52,7 @@ manifest 裁切限制、角色与文本错误、素材 hash 错误、多镜头�
 
 补丁入口额外拒绝 dialogue 中 character_id/text 以外的字段，拒绝 visuals 中
 asset_id/crop 以外的字段；不允许通过嵌套字段夹带动作或其他越界修改。
-CLI review 仍待 MC-01 接入，本模块函数已可直接运行；未修改公共 CLI 或 pipeline。
+CLI review 与三条件 pipeline 已接入该实现；可用 README 的离线命令核验。review_and_revise 与 apply_patch 支持可选 project_root，保持原有调用兼容。
 
 ## PR 2 执行与失败语义
 

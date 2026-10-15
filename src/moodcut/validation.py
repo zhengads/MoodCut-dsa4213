@@ -95,30 +95,17 @@ def _validate_asset_file(asset: dict, index: int, root: Path, errors: list[str])
                 errors.append(f"{name}: SHA-256 mismatch")
 
 
-def validate_plan(scene: dict, plan: dict, manifest: dict) -> list[str]:
-    """Return structural validation errors; an empty list means checks passed.
-
-    Relative asset paths are resolved from the current working directory,
-    which must be the MoodCut project root when invoking this function.
-    """
-    errors: list[str] = []
-    if not all(isinstance(item, dict) for item in (scene, plan, manifest)):
-        return ["scene, plan, and manifest must be dictionaries"]
-
-    for name, data in (("scene", scene), ("plan", plan), ("manifest", manifest)):
+def _scene_and_assets(scene, manifest, project_root):
+    errors = []
+    for name, data in (("scene", scene), ("manifest", manifest)):
         if data.get("schema_version") != SCHEMA_VERSION:
             errors.append(f"{name}: invalid schema_version")
-
     scene_id = scene.get("scene_id")
     if not _identifier(scene_id):
         errors.append("scene: invalid scene_id")
-    if plan.get("scene_id") != scene_id or not _identifier(plan.get("scene_id")):
-        errors.append("plan: scene_id does not match scene")
     tone = scene.get("tone")
     if not isinstance(tone, str) or tone not in ALLOWED_TONES:
         errors.append("scene: invalid tone")
-    if plan.get("tone") != tone or not isinstance(plan.get("tone"), str):
-        errors.append("plan: tone does not match scene")
     if not _identifier(scene.get("story")):
         errors.append("scene: story must be a non-empty string")
 
@@ -154,7 +141,7 @@ def validate_plan(scene: dict, plan: dict, manifest: dict) -> list[str]:
     assets = _entries(manifest.get("assets"), "manifest.assets", errors)
     manifest_ids = _unique_ids(assets, "asset_id", "manifest.assets", errors)
     asset_map = {a["asset_id"]: a for a in assets if _identifier(a.get("asset_id"))}
-    root = Path.cwd().resolve()
+    root = Path(project_root).resolve() if project_root is not None else Path.cwd().resolve()
     for index, asset in enumerate(assets):
         if asset.get("character_id") not in character_ids:
             errors.append(f"manifest.assets[{index}]: unknown character_id")
@@ -180,6 +167,30 @@ def validate_plan(scene: dict, plan: dict, manifest: dict) -> list[str]:
         errors.append("scene: min_duration_s exceeds max_duration_s")
     if type(max_shots) is not int or not 1 <= max_shots <= 6:
         errors.append("scene: invalid max_shots")
+
+    return (errors, character_ids, beat_ids, allowed_scene_assets, manifest_ids,
+            asset_map, min_duration, max_duration, max_shots)
+
+
+def validate_scene(scene: dict, manifest: dict, *, project_root=None) -> list[str]:
+    """Check immutable scene and material inputs before any model request."""
+    if not isinstance(scene, dict) or not isinstance(manifest, dict):
+        return ["scene and manifest must be dictionaries"]
+    return _scene_and_assets(scene, manifest, project_root)[0]
+
+
+def validate_plan(scene: dict, plan: dict, manifest: dict, *, project_root=None) -> list[str]:
+    """Return structural errors; resolve material paths from project_root or cwd."""
+    if not all(isinstance(item, dict) for item in (scene, plan, manifest)):
+        return ["scene, plan, and manifest must be dictionaries"]
+    (errors, character_ids, beat_ids, allowed_scene_assets, manifest_ids,
+     asset_map, min_duration, max_duration, max_shots) = _scene_and_assets(scene, manifest, project_root)
+    if plan.get("schema_version") != SCHEMA_VERSION:
+        errors.append("plan: invalid schema_version")
+    if plan.get("scene_id") != scene.get("scene_id") or not _identifier(plan.get("scene_id")):
+        errors.append("plan: scene_id does not match scene")
+    if plan.get("tone") != scene.get("tone") or not isinstance(plan.get("tone"), str):
+        errors.append("plan: tone does not match scene")
 
     shots = _entries(plan.get("shots"), "plan.shots", errors)
     _unique_ids(shots, "shot_id", "plan.shots", errors)

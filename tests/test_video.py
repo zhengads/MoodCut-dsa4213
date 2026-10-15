@@ -1,3 +1,4 @@
+import os
 import json
 import shutil
 import subprocess
@@ -131,6 +132,7 @@ def _mean_abs_pixel_difference(first_path, second_path):
 
 def _font_path():
     candidates = [
+        os.environ.get("MOODCUT_TEST_FONT", "C:/Windows/Fonts/msyh.ttc"),
         "/System/Library/Fonts/PingFang.ttc",
         "/System/Library/Fonts/STHeiti Medium.ttc",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",

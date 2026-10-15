@@ -6,7 +6,7 @@ from .reviewer import validate_report
 
 
 def apply_patch(scene: dict, plan: dict, manifest: dict,
-                report: dict, patch: dict) -> dict:
+                report: dict, patch: dict, *, project_root=None) -> dict:
     """Apply one edit per shot, then defer plan validity to MC-01.
 
     Missing or failing shared validation rejects the entire transaction.
@@ -92,7 +92,8 @@ def apply_patch(scene: dict, plan: dict, manifest: dict,
     if not callable(validator):
         return rejected(["MC-01 dependency unavailable: validation.validate_plan"])
     try:
-        errors = validator(deepcopy(scene), deepcopy(candidate), deepcopy(manifest))
+        errors = validator(deepcopy(scene), deepcopy(candidate), deepcopy(manifest),
+                           **({"project_root": project_root} if project_root is not None else {}))
         if not isinstance(errors, list) or any(not isinstance(e, str) for e in errors):
             return rejected(["validate_plan must return list[str]"])
     except Exception as exc:

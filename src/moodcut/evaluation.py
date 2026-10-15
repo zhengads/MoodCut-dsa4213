@@ -1,5 +1,6 @@
 """Offline reporting and explicitly invoked local VBench CPU evaluation."""
 import csv
+import hashlib
 import json
 import math
 from collections import defaultdict
@@ -419,6 +420,329 @@ def run_imaging_quality_batch(manifest, *, video_root, upstream_dir, cache_dir,
 
     return _batch_engine(manifest, video_root=video_root, output_dir=output_dir,
                          config=config, evaluate_one=evaluate_one, resume=resume)
+
+
+PAIRED_TONES = ("affectionate", "suspicious", "hostile")
+PAIRED_CONDITIONS = ("baseline", "generic_review", "moodcut")
+RATING_FIELDS = ("rater_id", "item_id", "perceived_tone", "confidence",
+                 "naturalness", "story_clarity", "overstatement")
+
+
+def build_assignments(scenes, *, replicates, tones, conditions):
+    """List planned runs only; does not choose scenes, call models or render clips.
+
+    Replicates start at one. IDs depend on scene/tone/replicate, never list position,
+    and condition IDs extend the block ID. Changing a model/prompt requires a new
+    run directory; an assignment ID is not a content fingerprint.
+    """
+    import copy
+    import hashlib
+    if not isinstance(scenes, list):
+        raise ValueError("Scenes must be a list")
+    if type(replicates) is not int or replicates < 1:
+        raise ValueError("replicates must be a positive integer")
+    for values, allowed, label in ((tones, PAIRED_TONES, "tones"),
+                                    (conditions, PAIRED_CONDITIONS, "conditions")):
+        if (not isinstance(values, list) or not values
+                or any(not isinstance(v, str) or v not in allowed for v in values)
+                or len(set(values)) != len(values)):
+            raise ValueError(f"Choose unique supported {label}")
+    seen, result = set(), []
+    for index, scene in enumerate(scenes, 1):
+        if not isinstance(scene, dict) or not _text(scene.get("scene_id")):
+            raise ValueError(f"Scene {index}: missing scene_id")
+        scene_id = scene["scene_id"]
+        if scene_id in seen:
+            raise ValueError(f"Scene {index}: duplicate scene_id")
+        seen.add(scene_id)
+        for tone in tones:
+            for replicate in range(1, replicates + 1):
+                identity = json.dumps([scene_id, tone, replicate], ensure_ascii=False,
+                                      separators=(",", ":")).encode("utf-8")
+                block_id = "block_" + hashlib.sha256(identity).hexdigest()
+                for condition in conditions:
+                    row = dict(schema_version="1.0", run_id=f"{block_id}_{condition}",
+                               block_id=block_id, scene_id=scene_id, tone=tone,
+                               replicate=replicate, condition=condition)
+                    for field in ("source_kind", "provenance"):
+                        if field in scene:
+                            row[field] = copy.deepcopy(scene[field])
+                    result.append(row)
+    return result
+
+
+def _paired_records(records):
+    """Reject ambiguous identities and comparisons from different initial plans."""
+    if not isinstance(records, list):
+        raise ValueError("Records must be a list")
+    run_ids, slots, blocks, identities, hashes, item_ids = set(), set(), {}, {}, {}, set()
+    kinds = set()
+    for index, row in enumerate(records, 1):
+        prefix = f"Record {index}"
+        if not isinstance(row, dict):
+            raise ValueError(f"{prefix}: expected an object")
+        for field in ("run_id", "block_id", "scene_id"):
+            if not _text(row.get(field)):
+                raise ValueError(f"{prefix}: missing {field}")
+        if row.get("tone") not in PAIRED_TONES or row.get("condition") not in PAIRED_CONDITIONS:
+            raise ValueError(f"{prefix}: invalid tone or condition")
+        if type(row.get("replicate")) is not int or row["replicate"] < 1:
+            raise ValueError(f"{prefix}: replicate must be positive integer")
+        run_id, block_id = row["run_id"], row["block_id"]
+        identity = row["scene_id"], row["tone"], row["replicate"]
+        slot = block_id, row["condition"]
+        if run_id in run_ids or slot in slots:
+            raise ValueError(f"{prefix}: duplicate run_id or block/condition")
+        if block_id in blocks and blocks[block_id] != identity:
+            raise ValueError(f"{prefix}: block identity changed")
+        if identity in identities and identities[identity] != block_id:
+            raise ValueError(f"{prefix}: scene/tone/replicate has multiple block IDs")
+        blocks[block_id], identities[identity] = identity, block_id
+        run_ids.add(run_id)
+        slots.add(slot)
+        digest = row.get("initial_plan_sha256")
+        if digest is not None:
+            if (not isinstance(digest, str) or len(digest) != 64
+                    or any(c not in "0123456789abcdef" for c in digest)):
+                raise ValueError(f"{prefix}: invalid initial_plan_sha256")
+            if block_id in hashes and hashes[block_id] != digest:
+                raise ValueError(f"{prefix}: initial_plan_sha256 mismatch within block")
+            hashes[block_id] = digest
+        if row.get("render_status") == "rendered" and digest is None:
+            raise ValueError(f"{prefix}: rendered run requires initial_plan_sha256")
+        if "item_id" in row:
+            if not _text(row["item_id"]) or row["item_id"] in item_ids:
+                raise ValueError(f"{prefix}: missing or duplicate item_id")
+            item_ids.add(row["item_id"])
+        kind = row.get("source_kind", "unspecified")
+        if not _text(kind):
+            raise ValueError(f"{prefix}: source_kind must be nonempty")
+        kinds.add(kind)
+        for field in ("input_tokens", "output_tokens", "estimated_cost_usd",
+                      "provider_cost_usd", "elapsed_s"):
+            value = row.get(field)
+            if value is not None and (type(value) not in (int, float)
+                                      or not math.isfinite(value) or value < 0):
+                raise ValueError(f"{prefix}: invalid {field}")
+            if field in ("input_tokens", "output_tokens") and value is not None and type(value) is not int:
+                raise ValueError(f"{prefix}: {field} must be an integer or null")
+        calls = row.get("calls")
+        if calls is not None and not (isinstance(calls, list)
+                                      or type(calls) is int and calls >= 0):
+            raise ValueError(f"{prefix}: calls must be list, nonnegative integer or null")
+    if len(kinds) > 1:
+        raise ValueError("Do not mix source_kind values in one report/export")
+    return records
+
+
+def export_blind_items(records, *, out_dir, seed):
+    """Copy existing rendered MP4s under anonymous names and create empty ratings.
+
+    Only ``public/`` is for raters. ``PRIVATE/`` contains the answer key and must
+    stay private. Existence/nonempty bytes are checked; this is not a decoder or
+    proof a clip plays correctly. Inspect clips before distributing them. No
+    rater schedule is invented: the coordinator must avoid adjacent story variants.
+    """
+    import random
+    import shutil
+    _paired_records(records)
+    if type(seed) is not int:
+        raise ValueError("seed must be an integer")
+    out = Path(out_dir).resolve()
+    if out.exists():
+        raise FileExistsError(f"Blind export output already exists: {out}")
+    eligible = []
+    for index, row in enumerate(records, 1):
+        if row.get("render_status") != "rendered":
+            continue
+        path = row.get("video_path")
+        if not _text(path):
+            raise ValueError(f"Record {index}: rendered run requires video_path")
+        source = Path(path).resolve()
+        if (source.suffix.lower() != ".mp4" or not source.is_file()
+                or source.stat().st_size == 0):
+            raise ValueError(f"Record {index}: missing/nonempty MP4 required")
+        if source.is_relative_to(out):
+            raise ValueError(f"Record {index}: input video must be outside export output")
+        eligible.append((row, source))
+    eligible.sort(key=lambda pair: pair[0]["run_id"])
+    random.Random(seed).shuffle(eligible)
+    out.mkdir(parents=True, exist_ok=False)
+    public, private = out / "public", out / "PRIVATE"
+    videos = public / "videos"
+    videos.mkdir(parents=True)
+    private.mkdir()
+    blind, keys, record_items = [], [], []
+    for number, (row, source) in enumerate(eligible, 1):
+        item_id = f"item_{number:05d}"
+        video_file = f"videos/{item_id}.mp4"
+        destination = public / video_file
+        # Exclusive creation avoids silent replacement even if another process interferes.
+        with source.open("rb") as incoming, destination.open("xb") as outgoing:
+            shutil.copyfileobj(incoming, outgoing)
+        blind.append(dict(item_id=item_id, video_file=video_file))
+        keys.append(dict(item_id=item_id, run_id=row["run_id"], block_id=row["block_id"],
+                         scene_id=row["scene_id"], replicate=row["replicate"],
+                         condition=row["condition"], target_tone=row["tone"],
+                         initial_plan_sha256=row["initial_plan_sha256"],
+                         video_sha256=hashlib.sha256(destination.read_bytes()).hexdigest(),
+                         source_kind=row.get("source_kind", "unspecified"),
+                         provenance=json.dumps(row.get("provenance"), ensure_ascii=False)))
+        record_items.append(dict(run_id=row["run_id"], item_id=item_id))
+
+    def write_csv(path, fieldnames, rows):
+        with path.open("x", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    write_csv(public / "blind_items.csv", ("item_id", "video_file"), blind)
+    # Empty fields are intentional, not synthetic human responses.
+    write_csv(public / "ratings.csv", RATING_FIELDS,
+              [dict.fromkeys(RATING_FIELDS, "") | {"item_id": row["item_id"]} for row in blind])
+    key_fields = ("item_id", "run_id", "block_id", "scene_id", "replicate", "condition",
+                  "target_tone", "initial_plan_sha256", "video_sha256", "source_kind", "provenance")
+    write_csv(private / "private_key.csv", key_fields, keys)
+    return dict(public_dir=str(public), blind_items_path=str(public / "blind_items.csv"),
+                ratings_path=str(public / "ratings.csv"),
+                private_key_path=str(private / "private_key.csv"),
+                record_items=record_items, exported_clips=len(blind),
+                excluded_runs=len(records) - len(blind), seed=seed,
+                source_kind=records[0].get("source_kind", "unspecified") if records else None,
+                video_check="existing_nonempty_mp4_only_not_decoder_verified",
+                scheduling_note="Assign raters separately; avoid adjacent variants of one story.")
+
+
+def _paired_total(rows, field):
+    values = [row.get(field) for row in rows]
+    known = [value for value in values if value is not None]
+    return dict(total=math.fsum(known) if len(known) == len(values) else None,
+                known_subtotal=math.fsum(known), unknown_runs=len(values) - len(known))
+
+
+def summarize(records, ratings):
+    """Summarize supplied human ratings with equal clip weight and full coverage.
+
+    Ratings join via records.item_id (from PRIVATE/private_key.csv); unexported
+    callers may explicitly use run_id as item_id. Unknown/duplicate rows are
+    errors, including blank template rows. Model verification is never a rating.
+    Failures stay in coverage/cost denominators, but unrendered clips cannot get
+    human scores. Common-block differences describe the jointly rated subset.
+    """
+    records = _paired_records(records)
+    if not isinstance(ratings, list):
+        raise ValueError("Ratings must be a list")
+    by_item = {}
+    for row in records:
+        item_id = row.get("item_id", row["run_id"])
+        if item_id in by_item:
+            raise ValueError("Ambiguous item_id/run_id mapping")
+        by_item[item_id] = row
+    seen, grouped = set(), defaultdict(list)
+    for index, rating in enumerate(ratings, 2):
+        prefix = f"Rating CSV row {index}"
+        if not isinstance(rating, dict) or any(field not in rating for field in RATING_FIELDS):
+            raise ValueError(f"{prefix}: missing required fields")
+        if not _text(rating["rater_id"]) or not _text(rating["item_id"]):
+            raise ValueError(f"{prefix}: rater_id and item_id must be nonempty")
+        item_id = rating["item_id"]
+        if item_id not in by_item:
+            raise ValueError(f"{prefix}: unknown item_id")
+        row = by_item[item_id]
+        if row.get("render_status") != "rendered":
+            raise ValueError(f"{prefix}: ratings require a rendered clip")
+        key = rating["rater_id"], item_id
+        if key in seen:
+            raise ValueError(f"{prefix}: duplicate rater/item pair")
+        seen.add(key)
+        if rating["perceived_tone"] not in (*PAIRED_TONES, "uncertain"):
+            raise ValueError(f"{prefix}: invalid perceived_tone")
+        normalized = dict(rating)
+        for field in RATING_FIELDS[3:]:
+            value = rating[field]
+            if isinstance(value, str) and value in ("1", "2", "3", "4", "5"):
+                value = int(value)
+            if type(value) is not int or not 1 <= value <= 5:
+                raise ValueError(f"{prefix}: {field} must be integer 1..5")
+            normalized[field] = value
+        grouped[row["run_id"]].append(normalized)
+
+    clip_scores = {}
+    for row in records:
+        votes = grouped.get(row["run_id"], [])
+        if votes:
+            clip_scores[row["run_id"]] = dict(
+                tone_accuracy=sum(v["perceived_tone"] == row["tone"] for v in votes) / len(votes),
+                **{field: math.fsum(v[field] for v in votes) / len(votes)
+                   for field in RATING_FIELDS[3:]})
+
+    def aggregate(rows):
+        scored = [clip_scores[row["run_id"]] for row in rows if row["run_id"] in clip_scores]
+        votes = [(row["tone"], vote) for row in rows for vote in grouped.get(row["run_id"], [])]
+        confusion = {tone: {predicted: 0 for predicted in (*PAIRED_TONES, "uncertain")}
+                     for tone in PAIRED_TONES}
+        for target, vote in votes:
+            confusion[target][vote["perceived_tone"]] += 1
+        rendered = sum(row.get("render_status") == "rendered" for row in rows)
+        call_counts = []
+        for row in rows:
+            calls = row.get("calls")
+            call_counts.append(len(calls) if isinstance(calls, list) else calls)
+        known_calls = [n for n in call_counts if n is not None]
+        return dict(
+            coverage=dict(planned_runs=len(rows), rendered_runs=rendered,
+                          render_failed_runs=sum(row.get("render_status") == "render_failed" for row in rows),
+                          render_pending_or_skipped_runs=sum(row.get("render_status") not in
+                              ("rendered", "render_failed") for row in rows),
+                          review_failed_runs=sum(row.get("review_status") == "review_failed" for row in rows),
+                          review_rejected_runs=sum(row.get("review_status") == "rejected" for row in rows),
+                          timeout_runs=sum(row.get("failure_kind") == "timeout" for row in rows),
+                          budget_refused_runs=sum(row.get("failure_kind") == "budget" for row in rows),
+                          known_zero_call_runs=sum(n == 0 for n in call_counts),
+                          rated_clips=len(scored), ratings=len(votes),
+                          missing_ratings=len(rows) - len(scored),
+                          rendered_but_unrated_clips=rendered - len(scored),
+                          independent_scenes=len({row["scene_id"] for row in rows}),
+                          rated_independent_scenes=len({row["scene_id"] for row in rows
+                                                       if row["run_id"] in clip_scores}),
+                          uncertain_ratings=sum(v["perceived_tone"] == "uncertain" for _, v in votes)),
+            equal_clip_means={field: math.fsum(s[field] for s in scored) / len(scored) if scored else None
+                              for field in ("tone_accuracy", *RATING_FIELDS[3:])},
+            confusion_rating_counts=confusion,
+            usage=dict(calls=dict(total=sum(known_calls) if len(known_calls) == len(rows) else None,
+                                  known_subtotal=sum(known_calls), unknown_runs=len(rows) - len(known_calls)),
+                       **{field: _paired_total(rows, field) for field in
+                          ("input_tokens", "output_tokens", "estimated_cost_usd", "provider_cost_usd", "elapsed_s")}))
+
+    blocks = defaultdict(dict)
+    for row in records:
+        blocks[row["block_id"]][row["condition"]] = row
+    candidate = {block_id: conditions for block_id, conditions in blocks.items()
+                 if all(c in conditions for c in ("generic_review", "moodcut"))}
+    common = {block_id: conditions for block_id, conditions in candidate.items()
+              if all(conditions[c]["run_id"] in clip_scores for c in ("generic_review", "moodcut"))}
+    fields = ("tone_accuracy", *RATING_FIELDS[3:])
+    differences = {field: math.fsum(
+        clip_scores[c["moodcut"]["run_id"]][field] - clip_scores[c["generic_review"]["run_id"]][field]
+        for c in common.values()) / len(common) if common else None for field in fields}
+    return dict(schema_version="1.0", source_kind=records[0].get("source_kind", "unspecified") if records else None,
+                usage_scope="condition_run_records_only", planning_costs_included=False,
+                overall=aggregate(records),
+                by_condition={condition: aggregate([r for r in records if r["condition"] == condition])
+                              for condition in PAIRED_CONDITIONS},
+                common_moodcut_generic=dict(planned_paired_blocks=len(candidate),
+                    all_planned_blocks=len(blocks), common_evaluable_blocks=len(common),
+                    block_ids=sorted(common),
+                    common_coverage=len(common) / len(candidate) if candidate else None,
+                    common_coverage_of_all_blocks=len(common) / len(blocks) if blocks else None,
+                    blocks_missing_comparator=len(blocks) - len(candidate),
+                    mean_moodcut_minus_generic=differences),
+                interpretation=dict(weighting="equal rated clip means; common contrasts equal block means",
+                    uncertain="counted as a tone-recognition miss",
+                    coverage="Human scores describe rendered and rated clips only; failures remain in coverage and usage.",
+                    common_subset="Paired differences describe jointly evaluable blocks, not unconditional improvement.",
+                    validity="Rendering status and model verification do not establish emotion accuracy or semantic fidelity.",
+                    confounds="Human allocation, missing ratings, reused development stories and static-image limitations require disclosure."))
 
 
 if __name__ == "__main__":
