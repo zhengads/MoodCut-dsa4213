@@ -1,0 +1,7 @@
+{
+  "model": null,
+  "input_price_per_million": null,
+  "output_price_per_million": null,
+  "temperature": 0,
+  "timeout_s": 60
+}

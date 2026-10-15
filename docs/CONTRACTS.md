@@ -153,9 +153,21 @@ make_plan 依次使用 director、scene、shot 三个 planning stage，再转换
 
 review_and_revise 两种 mode 都按 critique → revise → verify 执行，最多各一次。critique 得到 report；revise 得到 patch；apply_patch 结构通过才运行 verify。无意见可不发 revise/verify。模型返回 JSON 不合法或 API 失败不自动重试；保留错误。实际用量与提前退出分别报告，不声称实际费用完全相同。
 
+### OpenRouterClient 与调用账目
+
+`OpenRouterClient(LLMClient)` 已实现；`OpenRouterClient.from_env(config_path, *, allow_paid=False, max_cost_usd=None)` 读取公开模型配置和进程环境中的 OPENROUTER_API_KEY。config_path 默认 configs/model.json；模型 ID 和每百万 token 单价必须显式填写。max_cost_usd 必须为正；只有 allow_paid=True 才能发送请求。构造和 check-client 均不联网，缺省不允许付费。
+
+complete_json 返回原有模型 JSON dict，不包裹 usage，保持 MC-02/MC-03 调用兼容。输出不是对象、JSON 非法/重复键/非有限数、内容被拒绝或截断、接口/超时错误均抛 OpenRouterError；预算不足或既往扣费未知抛 BudgetError。错误不自动重试，不带 key、提示词或原始响应正文。
+
+每次实际 HTTP 尝试在 client.calls 增加独立记录：stage、model_id、response_model、generation_id、max_output_tokens、estimated_input_tokens、reserved_cost_usd、input_tokens、output_tokens、estimated_cost_usd、provider_cost_usd、status、http_status、elapsed_s，以及失败时的 error。status 为 success/invalid_response/request_failed，只表示客户端请求及 JSON 解析，不是最终运行或研究评分。提供商 token/cost 即使模型内容解析失败仍保留；未知字段记 null。零调用的本地拒绝不增加 HTTP 尝试记录。
+
+estimated_cost_usd 基于返回的实际 token 计数和配置单价；provider_cost_usd 使用 usage.cost。两者独立，不能相互冒充。cost 未知则 spent_usd=None，该实例停止继续请求；需从平台核对未知扣费，再规划剩余额度，不直接新建客户端忽略它。spent_usd 已知时对所有尝试的实际 cost 求和，包括失败。调用者负责将记录保存到本次 runs 输出并映射到 RunRecord。
+
+本地预算使用输入 UTF-8 字节数加 64 作为 token 估计，并按 max_output_tokens 预留输出费用。它是单实例估算检查，不是精确 tokenizer 上界、跨进程账本或平台硬额度；不同实例不共享余额。提供商请求限制 token 单价和零按次附加费，仍须使用 OpenRouter 端共享 key/团队额度控制真实总支出。未知价格拒绝发送。
+
 ## 3. CLI 目标
 
-以下是 P1 将实现的命令，当前尚不可执行。
+以下 plan/review/render/smoke/evaluate 仍是 P1 待集成的命令。帮助、版本及不联网的 `python -m moodcut check-client --config configs/model.json --max-cost-usd 0.05` 已实现；check-client 只做本地配置检查，不验证远端凭据。
 
 ```bash
 python -m moodcut plan --scene tests/fixtures/scene.json --assets tests/fixtures/assets.json --mock --output runs/dev/initial.json

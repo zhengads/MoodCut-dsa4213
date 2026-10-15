@@ -68,7 +68,7 @@ pyproject.toml      Python 包安装与测试配置
 .github/            PR 模板和 CI
 ```
 
-上述代码文件和目录已纳入 Git。业务 `.py` 文件目前仅有职责说明；`__main__.py` 在 CLI 未实现时明确报错退出。`prompts/`、`configs/` 和 `tests/fixtures/` 用 `.gitkeep` 保留，提示词、配置值及夹具由任务卡实现。`assets/raw/` 和 `runs/` 按素材准备或运行需要创建，内容不提交。
+上述代码文件和目录已纳入 Git。FakeClient、结构验证、审查修订、固定素材渲染和 VBench 评估工具已有实现；规划与整体编排仍待完成。提示词、配置和共享夹具沿用任务卡指定路径。`assets/raw/` 和 `runs/` 按素材准备或运行需要创建，内容不提交。
 
 按文件范围认领任务；同一目录内的不同文件可由不同成员并行开发。共享模型/渲染配置归 MC-01，`configs/pilot.json` 等实验配置归 MC-05。
 
@@ -97,7 +97,7 @@ pyproject.toml      Python 包安装与测试配置
 
 ## 当前开发状态
 
-仓库已提供开发规则、模块契约、任务卡、代码目录骨架和可运行的参考资料准备工具。已提供最小包安装配置；CLI、FakeClient、测试夹具及业务逻辑仍待实现；`docs/CONTRACTS.md` 中的项目 CLI 是实现目标。当前不把参考资料下载成功视为生成管线已完成。
+OpenRouterClient 已接入公共 LLMClient 接口，FakeClient、结构验证、共享夹具、审查修订、渲染和 VBench 工具也已提供。`importer.py`、`planner.py`、`pipeline.py` 仍待实现。项目 CLI 当前支持帮助、版本和不联网的 check-client；plan/review/render/smoke/evaluate 子命令尚待集成。离线测试通过不代表真实情绪效果已验证。
 
 资料工具的离线验收：
 
@@ -105,6 +105,49 @@ pyproject.toml      Python 包安装与测试配置
 python -m unittest discover -s tests -p "test_prepare_references.py" -v
 python scripts/prepare_references.py --check
 ```
+
+## OpenRouter 接入
+
+安装项目后，编辑 `configs/model.json`：填写已确认的 OpenRouter 模型 ID，以及输入/输出的每百万 token 美元单价。初始值为 null，客户端不会自行选模型或猜价格。保持三条件使用同一份模型配置。`temperature` 默认 0，单次网络超时默认 60 秒。
+
+API key 只从进程环境变量 `OPENROUTER_API_KEY` 读取。`.env.example` 是空模板，程序不会自动加载 `.env`。在 PowerShell 7 中可以这样设置并检查：
+
+```powershell
+python -m pip install -e ".[dev]"
+$env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
+python -m moodcut check-client --config configs/model.json --max-cost-usd 0.05
+```
+
+`check-client` 只验证本地配置，不联网、不验证 key 是否有效，也不产生扣费。示例中的 0.05 是本地检查参数，不代表已授权运行。key 不写进共享 JSON、PR 或日志。
+
+经确认模型、规模和本次费用上限后，规划/审查通过同一个客户端调用：
+
+```python
+from moodcut.client import OpenRouterClient
+
+# Only run after the model, scale and this budget have been confirmed.
+client = OpenRouterClient.from_env(
+    "configs/model.json", allow_paid=True, max_cost_usd=0.05,
+)
+result = client.complete_json(
+    stage="connection_check",
+    system="Return only a JSON object with a boolean field ok.",
+    user='Return {"ok": true}.',
+    max_output_tokens=32,
+)
+print(result)
+print(client.calls)  # usage/fees/status; does not contain the API key or prompts
+```
+
+真实客户端维持 `complete_json(...) -> dict`，可直接传入 `review_and_revise`，其他模块无需另写 API 客户端。每次调用只发送当前 system/user，不保留聊天历史。一次方法调用至多发出一次 HTTP 请求，不重试、不自动切换模型；不支持 JSON 输出的提供商会被过滤。
+
+费用和 token 逐次保存在 `client.calls`，失败请求也记录。`provider_cost_usd` 来自 OpenRouter 的 usage.cost，`estimated_cost_usd` 根据返回 token 数和配置单价估算，缺失值为 null。`client.spent_usd` 是已知实际费用之和；任一次费用未知时返回 None，并阻止该实例继续发送请求，先核对平台账单。
+
+`max_cost_usd` 是单个客户端实例的本地估算阈值：请求前用输入 UTF-8 字节数加 64 的固定余量估算输入 token，并预留最大输出成本；实际 token 由模型 tokenizer 决定。因此它不是平台硬上限，也不能协调五个人的并发用量。请求同时设置提供商的 token 单价上限和零按次附加费。团队共享 15 美元额度应在 OpenRouter 端设置 key/团队额度并分配本次预算；重新创建客户端不会继承先前实例账目。
+
+本地离线验收：`python -m pytest tests/test_client.py tests/test_patches.py tests/test_reviewer.py -q`。测试拦截 HTTP 并使用自制响应，不需要真实 key，不调用模型。此接入尚未进行真实 API 验证。
+
+协议依据：[Chat Completions 与 usage](https://openrouter.ai/docs/api_reference/overview)、[提供商参数与价格上限](https://openrouter.ai/docs/guides/routing/provider-selection)、[平台费用控制](https://openrouter.ai/docs/guides/best-practices/spend-controls)。
 
 ## 上游参考
 

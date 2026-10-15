@@ -28,7 +28,9 @@
 
 ## PR 2 客户端、编排与集成
 
-- [ ] 实现环境变量配置的真实 LLMClient；模型ID必须显式配置，key来自环境；输出 JSON 与使用量通过统一接口返回/记录。不把任何人自己的 client 散落到模块里。
+OpenRouter 客户端接入已作为独立增量提供。使用方法及单实例估算预算的边界见 README 与 CONTRACTS；其余 CLI、缓存和整体编排继续按下列未勾选项实施。
+
+- [x] 实现 OpenRouterClient：模型与价格在 configs/model.json 显式配置，key来自 OPENROUTER_API_KEY；返回模型 JSON，usage/费用独立记录到 client.calls。check-client 只验证本地配置。已做离线传输与真实审查函数的接口测试；真实模型连接尚待确认模型与预算后验证。
 - [ ] `--mock` 默认离线；真实调用要求授权、allow-paid、max-cost-usd及价格配置同时存在。用假计费测试余额不足、价格未知、API失败与JSON失败；每个LLM阶段最多一次请求，默认无自动重试。
 - [ ] 实现按 scene/tone/replicate/model/prompt/schema/input hash 命名的初稿缓存；同块三个条件复用原稿，deepcopy后分别处理。禁止把M的修订拿给G做初稿。
 - [ ] 按 CONTRACTS 接入 plan/review/render/smoke/evaluate 命令；evaluate dry-run只列任务，不发请求。smoke fixture模式跳过实际视频渲染。

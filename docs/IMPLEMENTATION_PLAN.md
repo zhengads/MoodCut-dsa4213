@@ -208,3 +208,37 @@ def test_three_conditions_share_one_block():
 ## Execution handoff
 
 Use the five task cards in docs/tasks as module Issues. Claim one task, complete and self-review each increment, and merge the foundational contract implementation before parallel integration.
+
+
+## OpenRouter client increment (2026-10-15)
+
+**Goal:** Add an OpenRouterClient implementing the existing complete_json interface; keep callers and FakeClient compatible. This increment belongs to MC-01 / Issue #8.
+
+**Architecture:** Standard-library HTTPS POST to the fixed OpenRouter Chat Completions endpoint, with explicit model, JSON-object responses, one request per method call and no automatic retry. Each client stores separate call records and a local estimated-budget ledger; actual provider cost and unknown cost remain distinct.
+
+**Files:** src/moodcut/client.py; tests/test_client.py; .env.example; configs/model.json; README.md; docs/CONTRACTS.md; this plan and docs/tasks/MC-01-foundation.md.
+
+### Request and accounting contract
+
+- Input remains complete_json(stage, system, user, max_output_tokens); output remains the model-produced dict.
+- Configure model/pricing/timeout/temperature in configs/model.json and read OPENROUTER_API_KEY only from the process environment. Do not auto-load local secrets or make requests at import/construction.
+- Require allow_paid=True and a positive max_cost_usd for a live call. Missing/invalid model, key or token prices fail before HTTP. No default paid model or hardcoded market price.
+- Use model, system/user messages, max_tokens, stream=false, response_format=json_object and provider.require_parameters=true. Cap provider prompt/completion prices at configured USD-per-million rates and per-request surcharge at zero; disable provider fallbacks.
+- Preflight uses UTF-8 content bytes plus a fixed framing allowance as an input-token estimate and reserves the maximum requested output cost. This is an estimate, not a tokenizer proof or account-wide hard limit. Document OpenRouter key limits for the shared account.
+- Parse usage before content validation. Store stage, requested/returned model, generation ID, token counts, estimated cost, provider cost, status and elapsed time for every HTTP attempt, including malformed JSON and failures. Missing values stay null. An uncertain provider charge blocks later calls on the same client pending reconciliation.
+- Reject non-object JSON, non-finite values, duplicate JSON keys, truncated/refused/tool-call/error responses and malformed envelopes. Raise a sanitized typed error with no key, prompt or raw response body in messages; retain known usage. Never silently retry a failed stage.
+
+### Task 1: Client and offline transport coverage
+
+- [x] Add tests in tests/test_client.py using mocked urllib transport: matching JSON return, request shape and auth, configured limits, timeout/no retry, HTTP/in-band errors, malformed/truncated JSON, missing cost, usage retention and next-call budget refusal.
+- [x] Run the new tests and confirm the missing OpenRouterClient fails collection before implementation.
+- [x] Implement OpenRouterClient plus configuration and typed errors in client.py; keep existing FakeClient behavior and signature.
+- [x] Test actual reviewer integration with mocked HTTP returning the shared report/patch/verification fixtures; assert critique/revise/verify and independent contexts.
+- [x] Run client/review/patch tests, then the local non-render offline suite. The Linux CI runs the full suite with FFmpeg; no API key or model inference in tests.
+
+### Task 2: Configuration and handoff
+
+- [x] Add configs/model.json with null model/prices and .env.example with an empty OPENROUTER_API_KEY. Add a runnable Python usage example and configuration validation instructions to README.
+- [x] Document call-record fields, budget limitations and error behavior in CONTRACTS; mark only this client increment in MC-01, leaving pipeline/CLI integration open.
+- [x] Verify credential files are ignored, JSON/Python/doc links parse, inspect current diff, and record self-review and exact validation in the PR.
+Publication: create a scoped PR related to #8 with the name ZHENG MINGLIANG and date 2026-10-15. PR status and CI evidence are recorded on GitHub. Live calls require the separately confirmed model and run budget.
