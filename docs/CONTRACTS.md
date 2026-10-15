@@ -214,3 +214,5 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 `video_client.OpenRouterVideoClient` 是独立异步端点的传输适配器，复用公共 BudgetError/OpenRouterError/严格 JSON；不取代原文本 LLMClient。POST 一次，保存 job ID，GET 轮询/下载；resume 只恢复一个已有任务，不能发 POST。每任务 receipt 保留未知扣费和失败；失去提交响应时不自动补交。最新模型目录/价格由付费 CLI 在提交前核对；估算预算不是平台硬上限或共享账户账本。
 
 拼接要求每镜头同时存在实际视频和音频流、时长与请求一致，保留生成音频。generation.json 的 assembled_requires_manual_inspection 只表示文件拼接通过，不能解释为中文台词正确、动作/情绪通过。语音内容、口型、人物一致性、剧情和情绪需独立人工检查；首次真实调用尚未验收。
+
+`video_client.estimate_video_cost(config, request) -> Decimal` 是客户端预算与请求编译共用的报价入口。支持 Wan 2.7 的每秒价格，以及 Seedance 2.0 Mini 的视频 token 价格；不混用计费单位。Seedance 只允许图像参考、原生声音、16:9 的 480p/720p，使用官方 `宽×高×秒数×24/1024` 输出 token 公式；未知 SKU、价格上涨或超出已核对的规格拒绝提交。切换模型保持素材与台词身份，不自动重试被拒绝的输入；新的真实试跑另行确认预算。

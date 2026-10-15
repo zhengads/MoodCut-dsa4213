@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 
 from .pipeline import json_hash
 from .validation import validate_plan
+from .video_client import estimate_video_cost
 
 
 def _public_reference(url):
@@ -49,13 +50,8 @@ def build_video_bundle(scene: dict, initial: dict, revised: dict,
     settings = config.get("shots")
     if not isinstance(settings, list) or [s.get("shot_id") for s in settings] != original_ids:
         raise ValueError("Video directions must match the exact source shot order")
-    if config.get("model") != "alibaba/wan-2.7" or config.get("resolution") != "720p" or config.get("aspect_ratio") != "16:9":
-        raise ValueError("This adapter is pinned to Wan 2.7, 720p, 16:9; update and verify the contract to change it")
     if config.get("generate_audio") is not True or type(config.get("seed")) is not int:
         raise ValueError("Native audio and an integer seed are required")
-    rate = Decimal(str(config.get("price_per_second_usd")))
-    if not rate.is_finite() or rate <= 0:
-        raise ValueError("A known positive price is required")
     for field in ("style", "sound"):
         if not isinstance(config.get(field), str) or not config[field].strip():
             raise ValueError(f"Missing video {field}")
@@ -94,8 +90,8 @@ def build_video_bundle(scene: dict, initial: dict, revised: dict,
     total = 0
     for setting in settings:
         duration = setting.get("duration_s")
-        if type(duration) is not int or duration not in range(2, 11):
-            raise ValueError("Wan 2.7 clip duration must be an integer from 2 through 10")
+        estimate_video_cost(config, {"model":config["model"], "resolution":config["resolution"],
+                                    "aspect_ratio":config["aspect_ratio"], "duration":duration, "generate_audio":True})
         if not isinstance(setting.get("direction"), str) or not setting["direction"].strip():
             raise ValueError("Every clip requires an explicit shared direction")
         total += duration
@@ -118,13 +114,14 @@ def build_video_bundle(scene: dict, initial: dict, revised: dict,
             jobs.append({"shot_id": shot["shot_id"], "direction": setting["direction"],
                          "dialogue": deepcopy(shot["dialogue"]), "request": request,
                          "request_sha256": json_hash(request),
-                         "estimated_cost_usd": str(rate * setting["duration_s"])})
+                         "estimated_cost_usd": str(estimate_video_cost(config, request))})
         conditions.append({"condition": label, "source_plan_sha256": json_hash(plan), "jobs": jobs})
     return {"schema_version": "1.0", "kind": "derived_development_video_pair", "scene_id": scene["scene_id"],
             "initial_plan_sha256": json_hash(initial), "candidate_plan_sha256": json_hash(revised),
             "projected_plan_sha256": json_hash(projected), "projected_plan": projected,
             "projection_verification": "not_independently_verified", "source_plan_duration_s": sum(s["duration_s"] for s in initial["shots"]),
-            "duration_s_per_condition": total, "estimated_cost_usd": str(rate * total * 2),
+            "duration_s_per_condition": total, "estimated_cost_usd": str(sum(
+                (Decimal(job["estimated_cost_usd"]) for condition in conditions for job in condition["jobs"]), Decimal(0))),
             "references": reference_records, "dialogue_changes": changes,
             "ignored_non_dialogue_changes": ignored, "config": deepcopy(config), "conditions": conditions}
 

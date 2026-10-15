@@ -1,6 +1,7 @@
 """Hand-written transport fixtures, never real generation requests."""
 import io
 import json
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import Mock
 from urllib.error import URLError
@@ -9,7 +10,7 @@ from urllib.request import Request
 import pytest
 
 from moodcut.client import BudgetError, OpenRouterError
-from moodcut.video_client import OpenRouterVideoClient, check_video_model, _ContentRedirect
+from moodcut.video_client import OpenRouterVideoClient, check_video_model, estimate_video_cost, _ContentRedirect
 
 
 def response(value):
@@ -180,3 +181,36 @@ def test_catalogue_preflight_rejects_higher_price_or_missing_audio():
     model["generate_audio"] = False
     with pytest.raises(ValueError):
         check_video_model(config(), [model])
+
+
+def test_seedance_quote_uses_video_tokens_not_seconds():
+    cfg = {**config(), "model": "bytedance/seedance-2.0-mini", "price_per_million_video_tokens_usd": "3.50"}
+    cfg.pop("price_per_second_usd")
+    req = {**request(), "model": cfg["model"]}
+    assert estimate_video_cost(cfg, req) == Decimal('0.4536')
+    cfg["resolution"] = req["resolution"] = "480p"
+    assert estimate_video_cost(cfg, req) == Decimal('0.2017575')
+
+
+def test_seedance_catalogue_and_native_audio_request(tmp_path):
+    cfg = {**config(), "model": "bytedance/seedance-2.0-mini", "price_per_million_video_tokens_usd": "3.50"}
+    cfg.pop("price_per_second_usd")
+    model = {"id": cfg["model"], "supported_resolutions": ["480p", "720p"],
+             "supported_aspect_ratios": ["16:9"], "supported_durations": list(range(4,16)),
+             "generate_audio": True, "seed": True, "pricing_skus": {"video_tokens": "0.0000035",
+             "video_tokens_without_audio": "0.0000035", "video_tokens_with_video_input": "0.0000021"}}
+    check_video_model(cfg, [model])
+    opener = Mock(side_effect=[response({"id": "job-seed", "status": "completed", "usage": {"cost": .4536}}),
+                              io.BytesIO(b"synthetic-video-bytes")])
+    c = OpenRouterVideoClient(cfg, api_key="never-log-this-key", allow_paid=True, max_cost_usd="0.60", opener=opener)
+    receipt = c.generate({**request(), "model": cfg["model"]}, out_dir=str(tmp_path / "seed"))
+    assert receipt["estimated_cost_usd"] == '0.4536'
+    assert c.post_attempts == 1
+    payload = json.loads(opener.call_args_list[0].args[0].data)
+    assert payload['generate_audio'] is True and payload['input_references'] == request()['input_references']
+    model["pricing_skus"]["video_tokens"] = "0.0000040"
+    with pytest.raises(BudgetError):
+        check_video_model(cfg, [model])
+    invalid = {**request(), "model": cfg["model"], "input_references": [{"type":"video_url","video_url":{"url":"https://example.com/video.mp4"}}]}
+    with pytest.raises(ValueError):
+        estimate_video_cost(cfg, invalid)

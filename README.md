@@ -97,6 +97,10 @@ Start-Process (Resolve-Path runs/generated-pair-01/comparison.html).Path
 
 成片拼接实际生成的音视频轨，不补静态占位，不把缺少音轨当作成功。输出含每镜头 generated.mp4/receipt.json、每版 film.mp4、generation.json 与 comparison.html。检查音轨存在只证明文件含音频；是否正确说出中文台词、说话人、口型、声音连续和情绪自然度仍需人工听看。固定 seed 不能保证改变台词后画面完全相同，单个样例也不能证明情绪效果提升。当前没有真实视频生成验收证据，不承诺一次调用达到最终质量。
 
+另支持 `bytedance/seedance-2.0-mini` 的参考图＋原生声音配置：保留相同输入，配置中设置该 model，移除 price_per_second_usd，使用 `price_per_million_video_tokens_usd: "3.50"`。当前仅实现 16:9 下 480p（854×480）或 720p（1280×720）、4–15 秒的明确价格契约；不覆盖音视频参考输入。2026-10-16 核对[官方模型页](https://openrouter.ai/bytedance/seedance-2.0-mini)和公开目录：费用按 `宽×高×秒数×24/1024 × $3.50/百万视频 token` 估算，带声音的 720p 六秒约 $0.4536，480p 六秒约 $0.2018。付费入口仍检查实时参数/价格及本次预算，不因切换后端而获得新运行授权。
+
+MovieAgent 官方的 ROICtrl／SVD／HunyuanVideo 自部署链路与这些商用 API 不同；论文展示不能证明服务商一定接受相同输入。更换后端不改变素材身份，不隐瞒输入或关闭审核，也不保证同一素材会被接受。首次 Wan 任务已被服务端以疑似 IP 侵权拒绝；保留失败和未知单笔费用，不能用换模型抹去该记录。Seedance 目前只完成离线适配与公开参数检查，尚未进行付费验收。
+
 ## 输入、输出与缓存
 
 输入 SceneInput 和 AssetManifest 的字段见 [公共契约](docs/CONTRACTS.md)。故事、目标氛围 affectionate/suspicious/hostile、角色、剧情 beats、素材和来源由输入明确提供；系统不会从整部电影中静默删角色或擅自改写必需情节。

@@ -67,6 +67,23 @@ def test_inputs_unchanged(inputs):
     assert saved == inputs
 
 
+def test_seedance_bundle_keeps_identity_and_prices_native_audio(inputs):
+    from decimal import Decimal
+    original = build_video_bundle(*inputs, project_root=str(ROOT))
+    cfg = inputs[-1]
+    cfg['model'] = 'bytedance/seedance-2.0-mini'
+    cfg.pop('price_per_second_usd')
+    cfg['price_per_million_video_tokens_usd'] = '3.50'
+    seed = build_video_bundle(*inputs, project_root=str(ROOT))
+    assert Decimal(seed['estimated_cost_usd']) == Decimal('2.7216')
+    for before, after in zip(original['conditions'], seed['conditions']):
+        for a,b in zip(before['jobs'],after['jobs']):
+            assert a['request']['prompt'] == b['request']['prompt']
+            assert a['request']['input_references'] == b['request']['input_references']
+            assert b['request']['generate_audio'] is True
+            assert Decimal(b['estimated_cost_usd']) == Decimal('0.4536')
+
+
 def load_command():
     import importlib.util
     spec = importlib.util.spec_from_file_location("moodcut_generate_video_command", ROOT / "scripts/generate_video.py")

@@ -58,6 +58,31 @@ def fetch_video_models() -> list[dict]:
     return data["data"]
 
 
+def estimate_video_cost(config: dict, request: dict) -> Decimal:
+    """Quote only verified reference-image/audio configurations in USD."""
+    if any(request.get(k) != config.get(k) for k in ("model", "resolution", "aspect_ratio")):
+        raise ValueError("Video request does not match its pricing config")
+    if request.get("generate_audio") is not True or request.get("aspect_ratio") != "16:9":
+        raise ValueError("This price contract requires native audio and 16:9")
+    references = request.get("input_references", [])
+    if not isinstance(references, list) or any(not isinstance(ref, dict) or ref.get("type") != "image_url" for ref in references):
+        raise ValueError("Only image references are covered by this price contract")
+    duration = request.get("duration")
+    if config.get("model") == "alibaba/wan-2.7":
+        if request.get("resolution") != "720p" or type(duration) is not int or duration not in range(2,11):
+            raise ValueError("Unsupported Wan 2.7 request")
+        return _money(config.get("price_per_second_usd"), positive=True) * duration
+    if config.get("model") == "bytedance/seedance-2.0-mini":
+        sizes = {"480p": (854,480), "720p": (1280,720)}
+        if request.get("resolution") not in sizes or type(duration) is not int or duration not in range(4,16):
+            raise ValueError("Unsupported Seedance 2.0 Mini request")
+        width, height = sizes[request["resolution"]]
+        # Official output-token formula; not comparable to a per-second SKU.
+        tokens = Decimal(width * height * duration * 24) / Decimal(1024)
+        return tokens * _money(config.get("price_per_million_video_tokens_usd"), positive=True) / Decimal(1_000_000)
+    raise ValueError("Unverified video price contract")
+
+
 def check_video_model(config: dict, models: list[dict]) -> None:
     matches = [m for m in models if m.get("id") == config["model"]]
     if len(matches) != 1:
@@ -71,15 +96,20 @@ def check_video_model(config: dict, models: list[dict]) -> None:
     for shot in config.get("shots", []):
         if shot["duration_s"] not in (model.get("supported_durations") or []):
             raise ValueError("Video model does not support requested duration")
-    # This explicit rate parser is for the pinned Wan 2.7 contract, not a
-    # comparison across unrelated token/image/second SKU units.
-    if config["model"] != "alibaba/wan-2.7":
-        raise ValueError("Unverified video price contract")
     skus = model.get("pricing_skus") or {}
-    if set(skus) != {"duration_seconds"}:
-        raise BudgetError("Video pricing SKU contract changed; verify before submission")
-    live_rate = _money(skus["duration_seconds"], positive=True)
-    if live_rate > _money(config["price_per_second_usd"], positive=True):
+    if config["model"] == "alibaba/wan-2.7":
+        if set(skus) != {"duration_seconds"}:
+            raise BudgetError("Video pricing SKU contract changed; verify before submission")
+        live_rate = _money(skus["duration_seconds"], positive=True)
+        configured_rate = _money(config["price_per_second_usd"], positive=True)
+    elif config["model"] == "bytedance/seedance-2.0-mini":
+        if "video_tokens" not in skus or set(skus) - {"video_tokens", "video_tokens_without_audio", "video_tokens_with_video_input"}:
+            raise BudgetError("Seedance pricing SKU contract changed; verify before submission")
+        live_rate = _money(skus["video_tokens"], positive=True) * Decimal(1_000_000)
+        configured_rate = _money(config["price_per_million_video_tokens_usd"], positive=True)
+    else:
+        raise ValueError("Unverified video price contract")
+    if live_rate > configured_rate:
         raise BudgetError("Advertised video price exceeds the configured estimate")
 
 
@@ -102,7 +132,6 @@ class OpenRouterVideoClient:
         self._key = api_key if api_key is not None else os.environ.get("OPENROUTER_API_KEY", "")
         self._allow_paid = allow_paid is True
         self._limit = _money(max_cost_usd, positive=True)
-        self._rate = _money(config["price_per_second_usd"], positive=True)
         self._spent = Decimal(0)
         self._unknown = False
         self._resume_only = False
@@ -160,14 +189,9 @@ class OpenRouterVideoClient:
         allowed = {"model", "prompt", "duration", "resolution", "aspect_ratio", "generate_audio", "seed", "input_references"}
         if set(request) != allowed or not isinstance(request["prompt"], str) or not request["prompt"].strip():
             raise ValueError("Unexpected video request shape")
-        if self.config["model"] != "alibaba/wan-2.7" or any(request[k] != self.config[k] for k in ("model", "resolution", "aspect_ratio")):
-            raise ValueError("Video request does not match the verified config")
         if request["generate_audio"] is not True or type(request["seed"]) is not int or not request["input_references"]:
             raise ValueError("Native audio, seed and references are required")
-        duration = request["duration"]
-        if type(duration) is not int or duration not in range(2, 11):
-            raise ValueError("Unsupported video duration")
-        estimate = self._rate * duration
+        estimate = estimate_video_cost(self.config, request)
         if self._spent + estimate > self._limit:
             raise BudgetError("Video estimate exceeds remaining local budget")
         directory = Path(out_dir).resolve()
