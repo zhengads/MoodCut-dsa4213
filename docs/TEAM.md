@@ -22,6 +22,8 @@
 
 ### 交付顺序与文件边界
 
+公共协议现在有精确数据、签名和软件夹具，见 [CONTRACTS 6.1–6.5](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。`moodcut.contracts` 纯函数可导入；旧运行模块尚未接线。P2/P3/P4/P5 按6.5接入各自模块，不再各自猜字段或重写公共哈希。接口 PR 合入后从最新 main 开始依赖实现；合入前可审阅协议并准备独立测试。
+
 1. P1 先交一个接口小 PR，发布显式模式、共享非台词哈希、生成记录/审查字段接口。P2/P3/P4/P5 可以同时读源码、准备回归用例和软件夹具；待契约合入再接实现。
 2. P2 维护 planner/importer 与 planning_*.txt；P3 维护 reviewer/patches 与 review_*.txt；P4 维护 video_generation/媒体检查与 configs/video.json；P5 维护 evaluation 和评估配置/文档。公共 validator、CLI、pipeline、video_client 和 scripts/generate_video.py 归 P1。共享文件改动先在 Issue 协调。
 3. P2 的共同计划分别交 P3 和 P4；P1 接通全部三条件并提供 P5 所需记录。P5 不必等待真实视频，可先用标明来源的软件记录验收适配。

@@ -24,6 +24,8 @@
 
 ### 写入范围与依赖
 
+接入协议固定为 CONTRACTS 6.1 / 6.2 / 6.5：使用 `allowed_patch_fields(output_mode=...)` 与 `assert_dialogue_only_revision`，review 的 mode 和输出的 output_mode 不混用。Report/Patch 外壳保留1.0，不自行塞入新字段；verify 看到实际最终脚本。旧函数尚未接线，由本任务追加约定参数。
+
 `src/moodcut/reviewer.py`、`patches.py`、`src/moodcut/prompts/review_*.txt`、`tests/test_reviewer.py`、`tests/test_patches.py`、`docs/review.md`。字段白名单/生成模式接口先与 P1 对齐；不修改规划提示词、公共验证器或媒体编译器。可立即补已知失败的离线复现，生成式接入等 P1 接口 PR。
 
 离线验收：`python -m pytest tests/test_patches.py tests/test_reviewer.py -q`，并给出两模式的 FakeClient stage/输入与台词差异记录。Agent verification 不是人工评分，不预写效果结论。

@@ -1,0 +1,510 @@
+{
+  "fixture_kind": "software_contract_only_not_model_output",
+  "manifest_file": "tests/fixtures/assets.json",
+  "template_text": "generated-contract-software-fixture-template-v1",
+  "template_sha256": "ccb369fd93e56bfd4ae3bdaa3e53520a8ef8df19b179a27bfc222e4edc025b8e",
+  "scene": {
+    "schema_version": "1.1",
+    "scene_id": "dev_letter_01",
+    "tone": "suspicious",
+    "story": "Character A gives a letter to Character B. Character B reads the letter, puts it away, and then both characters leave.",
+    "characters": [
+      {
+        "id": "a",
+        "name": "A"
+      },
+      {
+        "id": "b",
+        "name": "B"
+      }
+    ],
+    "beats": [
+      {
+        "id": "b1",
+        "description": "Character A gives the letter to Character B."
+      },
+      {
+        "id": "b2",
+        "description": "Character B reads the letter and puts it away."
+      },
+      {
+        "id": "b3",
+        "description": "Both characters leave."
+      }
+    ],
+    "asset_ids": [
+      "dev_a",
+      "dev_b"
+    ],
+    "min_duration_s": 12,
+    "max_duration_s": 24,
+    "max_shots": 6,
+    "provenance": {
+      "kind": "team_authored_software_fixture",
+      "adaptation": "Contract test only; not generated output, a dataset or formal experiment."
+    },
+    "output_mode": "generated",
+    "min_shot_duration_s": 4,
+    "max_shot_duration_s": 8
+  },
+  "initial_plan": {
+    "schema_version": "1.1",
+    "scene_id": "dev_letter_01",
+    "tone": "suspicious",
+    "shots": [
+      {
+        "shot_id": "s1",
+        "beat_ids": [
+          "b1"
+        ],
+        "duration_s": 6,
+        "visuals": [
+          {
+            "asset_id": "dev_a",
+            "crop": "full"
+          },
+          {
+            "asset_id": "dev_b",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [
+          {
+            "character_id": "a",
+            "text": "I brought the letter you asked for."
+          }
+        ],
+        "narration": "Character A hands the letter to Character B.",
+        "direction": "A hands the letter to B."
+      },
+      {
+        "shot_id": "s2",
+        "beat_ids": [
+          "b2"
+        ],
+        "duration_s": 6,
+        "visuals": [
+          {
+            "asset_id": "dev_b",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [
+          {
+            "character_id": "b",
+            "text": "I have read it."
+          }
+        ],
+        "narration": "Character B reads the letter carefully and puts it away.",
+        "direction": "B reads and puts away the letter."
+      },
+      {
+        "shot_id": "s3",
+        "beat_ids": [
+          "b3"
+        ],
+        "duration_s": 6,
+        "visuals": [
+          {
+            "asset_id": "dev_a",
+            "crop": "full"
+          },
+          {
+            "asset_id": "dev_b",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [],
+        "narration": "Both characters leave the room.",
+        "direction": "Both leave the room together."
+      }
+    ],
+    "output_mode": "generated",
+    "scene_direction": "Two people beside a desk in one room; keep the same geography."
+  },
+  "condition_plans": {
+    "baseline": {
+      "schema_version": "1.1",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "shots": [
+        {
+          "shot_id": "s1",
+          "beat_ids": [
+            "b1"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "I brought the letter you asked for."
+            }
+          ],
+          "narration": "Character A hands the letter to Character B.",
+          "direction": "A hands the letter to B."
+        },
+        {
+          "shot_id": "s2",
+          "beat_ids": [
+            "b2"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "b",
+              "text": "I have read it."
+            }
+          ],
+          "narration": "Character B reads the letter carefully and puts it away.",
+          "direction": "B reads and puts away the letter."
+        },
+        {
+          "shot_id": "s3",
+          "beat_ids": [
+            "b3"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [],
+          "narration": "Both characters leave the room.",
+          "direction": "Both leave the room together."
+        }
+      ],
+      "output_mode": "generated",
+      "scene_direction": "Two people beside a desk in one room; keep the same geography."
+    },
+    "generic_review": {
+      "schema_version": "1.1",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "shots": [
+        {
+          "shot_id": "s1",
+          "beat_ids": [
+            "b1"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "请收好这封信。"
+            }
+          ],
+          "narration": "Character A hands the letter to Character B.",
+          "direction": "A hands the letter to B."
+        },
+        {
+          "shot_id": "s2",
+          "beat_ids": [
+            "b2"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "b",
+              "text": "I have read it."
+            }
+          ],
+          "narration": "Character B reads the letter carefully and puts it away.",
+          "direction": "B reads and puts away the letter."
+        },
+        {
+          "shot_id": "s3",
+          "beat_ids": [
+            "b3"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [],
+          "narration": "Both characters leave the room.",
+          "direction": "Both leave the room together."
+        }
+      ],
+      "output_mode": "generated",
+      "scene_direction": "Two people beside a desk in one room; keep the same geography."
+    },
+    "moodcut": {
+      "schema_version": "1.1",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "shots": [
+        {
+          "shot_id": "s1",
+          "beat_ids": [
+            "b1"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "先别打开，等我们离开这里。"
+            }
+          ],
+          "narration": "Character A hands the letter to Character B.",
+          "direction": "A hands the letter to B."
+        },
+        {
+          "shot_id": "s2",
+          "beat_ids": [
+            "b2"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [
+            {
+              "character_id": "b",
+              "text": "I have read it."
+            }
+          ],
+          "narration": "Character B reads the letter carefully and puts it away.",
+          "direction": "B reads and puts away the letter."
+        },
+        {
+          "shot_id": "s3",
+          "beat_ids": [
+            "b3"
+          ],
+          "duration_s": 6,
+          "visuals": [
+            {
+              "asset_id": "dev_a",
+              "crop": "full"
+            },
+            {
+              "asset_id": "dev_b",
+              "crop": "full"
+            }
+          ],
+          "dialogue": [],
+          "narration": "Both characters leave the room.",
+          "direction": "Both leave the room together."
+        }
+      ],
+      "output_mode": "generated",
+      "scene_direction": "Two people beside a desk in one room; keep the same geography."
+    }
+  },
+  "settings": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "model": "software-fixture/video-model",
+    "resolution": "720p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "seed": 4213,
+    "style": "Software fixture, no actual generation.",
+    "sound": "Speak only supplied Mandarin lines; no narrator or extra dialogue.",
+    "characters": [
+      {
+        "id": "a",
+        "asset_id": "dev_a",
+        "voice": "Shared voice requirement A."
+      },
+      {
+        "id": "b",
+        "asset_id": "dev_b",
+        "voice": "Shared voice requirement B."
+      }
+    ]
+  },
+  "shared_generation_sha256": "e7bbdfa83559fc75ccbd2004dcf7c747c2d9bc80028e0387b7b894ab376d474e",
+  "run_records": [
+    {
+      "schema_version": "1.1",
+      "output_mode": "generated",
+      "run_id": "contract_fixture_baseline",
+      "block_id": "contract_fixture",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "replicate": 1,
+      "condition": "baseline",
+      "initial_plan_sha256": "f63e132d02bcbe2756a417d138bc3721c33d47144dc78c0a2f1e909076a1eb2c",
+      "final_plan_sha256": "f63e132d02bcbe2756a417d138bc3721c33d47144dc78c0a2f1e909076a1eb2c",
+      "shared_generation_sha256": "e7bbdfa83559fc75ccbd2004dcf7c747c2d9bc80028e0387b7b894ab376d474e",
+      "model_id": "fake/offline",
+      "video_model_id": "software-fixture/video-model",
+      "prompt_hashes": {
+        "video_template": "ccb369fd93e56bfd4ae3bdaa3e53520a8ef8df19b179a27bfc222e4edc025b8e"
+      },
+      "review_status": "not_applicable",
+      "validation_status": "not_started",
+      "generation_status": "not_started",
+      "render_status": "not_started",
+      "run_status": "prepared",
+      "comparison_status": "not_checked",
+      "comparison_errors": [],
+      "video_path": null,
+      "calls": 0,
+      "real_http_calls": 0,
+      "review_calls": 0,
+      "generation_posts": 0,
+      "video_get_calls": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_usd": 0.0,
+      "provider_cost_usd": 0.0,
+      "elapsed_s": 0.0,
+      "source_kind": "synthetic",
+      "mock": true,
+      "provenance": {
+        "kind": "team_authored_software_fixture",
+        "adaptation": "Contract test only; not generated output, a dataset or formal experiment."
+      },
+      "generation_jobs": [],
+      "errors": []
+    },
+    {
+      "schema_version": "1.1",
+      "output_mode": "generated",
+      "run_id": "contract_fixture_generic_review",
+      "block_id": "contract_fixture",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "replicate": 1,
+      "condition": "generic_review",
+      "initial_plan_sha256": "f63e132d02bcbe2756a417d138bc3721c33d47144dc78c0a2f1e909076a1eb2c",
+      "final_plan_sha256": "63ea434b0c144f0c0ed5333b112d2c6f558429e2fc5c205abb70d0f6f544b958",
+      "shared_generation_sha256": "e7bbdfa83559fc75ccbd2004dcf7c747c2d9bc80028e0387b7b894ab376d474e",
+      "model_id": "fake/offline",
+      "video_model_id": "software-fixture/video-model",
+      "prompt_hashes": {
+        "video_template": "ccb369fd93e56bfd4ae3bdaa3e53520a8ef8df19b179a27bfc222e4edc025b8e"
+      },
+      "review_status": "applied",
+      "validation_status": "not_started",
+      "generation_status": "not_started",
+      "render_status": "not_started",
+      "run_status": "prepared",
+      "comparison_status": "not_checked",
+      "comparison_errors": [],
+      "video_path": null,
+      "calls": 0,
+      "real_http_calls": 0,
+      "review_calls": 0,
+      "generation_posts": 0,
+      "video_get_calls": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_usd": 0.0,
+      "provider_cost_usd": 0.0,
+      "elapsed_s": 0.0,
+      "source_kind": "synthetic",
+      "mock": true,
+      "provenance": {
+        "kind": "team_authored_software_fixture",
+        "adaptation": "Contract test only; not generated output, a dataset or formal experiment."
+      },
+      "generation_jobs": [],
+      "errors": []
+    },
+    {
+      "schema_version": "1.1",
+      "output_mode": "generated",
+      "run_id": "contract_fixture_moodcut",
+      "block_id": "contract_fixture",
+      "scene_id": "dev_letter_01",
+      "tone": "suspicious",
+      "replicate": 1,
+      "condition": "moodcut",
+      "initial_plan_sha256": "f63e132d02bcbe2756a417d138bc3721c33d47144dc78c0a2f1e909076a1eb2c",
+      "final_plan_sha256": "ee0f8e8effb18808266e671150451efae738e4addeaf47b7f008d486c5145f4e",
+      "shared_generation_sha256": "e7bbdfa83559fc75ccbd2004dcf7c747c2d9bc80028e0387b7b894ab376d474e",
+      "model_id": "fake/offline",
+      "video_model_id": "software-fixture/video-model",
+      "prompt_hashes": {
+        "video_template": "ccb369fd93e56bfd4ae3bdaa3e53520a8ef8df19b179a27bfc222e4edc025b8e"
+      },
+      "review_status": "applied",
+      "validation_status": "not_started",
+      "generation_status": "not_started",
+      "render_status": "not_started",
+      "run_status": "prepared",
+      "comparison_status": "not_checked",
+      "comparison_errors": [],
+      "video_path": null,
+      "calls": 0,
+      "real_http_calls": 0,
+      "review_calls": 0,
+      "generation_posts": 0,
+      "video_get_calls": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "estimated_cost_usd": 0.0,
+      "provider_cost_usd": 0.0,
+      "elapsed_s": 0.0,
+      "source_kind": "synthetic",
+      "mock": true,
+      "provenance": {
+        "kind": "team_authored_software_fixture",
+        "adaptation": "Contract test only; not generated output, a dataset or formal experiment."
+      },
+      "generation_jobs": [],
+      "errors": []
+    }
+  ]
+}

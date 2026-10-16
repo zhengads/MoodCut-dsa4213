@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。现有 1.0 接口已实现；末节列出下一阶段生成式接口的待实现约束，不表示代码已经支持。Python 3.11；包路径 `src/moodcut/`；统一使用 JSON 可序列化 dict。
+本文件定义模块间的公共接口。第1–4节为已实现的 1.0 animatic；第5节为既有开发投影；第6节发布 1.1 生成式数据与纯函数，运行接线仍待实现。Python 3.11；包路径 `src/moodcut/`；统一使用 JSON 可序列化 dict。
 
 ## 1. 公共数据
 
@@ -219,7 +219,129 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节是下一增量的验收约定，不覆盖上文已经执行的 1.0 animatic 记录。P1 先用接口 PR 定义准确字段/签名/迁移方式；P2/P3/P4/P5 按同一版本接入，不能各自发明不兼容结构。当前代码尚未完整强制下列约束。
+本节发布生成模式 **1.1** 的公共数据与接入约定。`src/moodcut/contracts.py` 中的纯函数、常量及协议软件夹具已实现；规划/审查/生成/评估/CLI 的 1.1 接线仍由各任务完成。不要把“接口可导入”解释为“当前 CLI 已支持生成模式”。上文 1.0 animatic 与历史开发投影保留，不重写既有结果。
+
+### 6.1 当前可导入的公共接口
+
+```python
+from moodcut.contracts import (
+    CONTRACT_VERSION, CONDITIONS, OUTPUT_MODES, GENERATION_SETTING_FIELDS,
+    json_hash, allowed_patch_fields, non_dialogue_plan,
+    assert_dialogue_only_revision, shared_generation_payload,
+    shared_generation_sha256,
+)
+
+# CONTRACT_VERSION == "1.1"
+# CONDITIONS == ("baseline", "generic_review", "moodcut")
+# OUTPUT_MODES == ("animatic", "generated")
+def allowed_patch_fields(*, output_mode: str) -> frozenset[str]: ...
+def non_dialogue_plan(plan: dict) -> dict: ...
+def assert_dialogue_only_revision(initial: dict, revised: dict) -> None: ...
+def shared_generation_payload(scene: dict, plan: dict, manifest: dict, settings: dict,
+                              *, template_sha256: str) -> dict: ...
+def shared_generation_sha256(scene: dict, plan: dict, manifest: dict, settings: dict,
+                             *, template_sha256: str) -> str: ...
+def json_hash(data) -> str: ...
+```
+
+所有函数无文件/网络/模型调用，不修改输入；非法协议身份或越权修改抛 `ValueError`。`pipeline.json_hash` 兼容导出同一个实现，旧序列化字节和缓存身份不变。辅助函数不检查素材文件字节、完整分镜结构、模型能力或剧情语义，调用者仍须完成这些检查。
+
+`allowed_patch_fields` 在 generated 下仅返回 dialogue；animatic 下仍为 dialogue/narration/visuals/duration_s。它是字段策略，不自动应用补丁；旧 crop、角色和原子性限制依然有效。
+
+### 6.2 数据与版本
+
+完整可加载示例：`tests/fixtures/generated_contract.json`。它引用已有 `tests/fixtures/assets.json`，包含 scene、initial_plan、三份 condition_plans、settings、template_sha256、预期 shared_generation_sha256 和三条 run_records。示例来自既有手写软件故事，不是新数据集、模型产物或效果证据；示例 `software-fixture/video-model` 不是真实模型。
+
+| 对象 | 1.1 字段与约束 |
+|---|---|
+| GeneratedScene | 保留原 SceneInput 字段；schema_version=`1.1`，output_mode=`generated`；新增 min_shot_duration_s/max_shot_duration_s。两角色、原三种 tone、必需 beats/素材引用保持不变。四个时长上下限均为正整数，镜头范围和总长范围各自有序；max_shots 仍为 1–6。 |
+| GeneratedPlan | 保留原 ShotPlan 字段；schema_version=`1.1`，output_mode=`generated`；新增非空 scene_direction。每镜头新增非空 direction，duration_s 为正整数，满足 Scene 的镜头范围及总长范围，不再强制 60–90 秒。visuals 保留素材映射，不代表卡片首帧；narration 是共同元数据，不自动变成配音。 |
+| AssetManifest | 沿用 schema_version=`1.0` 和现有路径、内容哈希、尺寸、来源及角色约定，不另复制素材。真实提交前仍需验证本地字节与实际参考输入。 |
+| GenerationSettings | 精确字段为 schema_version=`1.1`、output_mode=`generated`、model、resolution、aspect_ratio、generate_audio、seed、style、sound、characters；不允许其他键。五个文本字段非空，generate_audio 必须 true，seed 为非负整数。characters 与 Scene 角色同序，每项精确为 id/asset_id/voice，voice 非空，素材必须绑定该角色。 |
+| ReviewReport / RevisionPatch / Verification | 沿用第1节的原 JSON 外壳，report/patch 的 schema_version 仍为 `1.0`；执行模式通过 output_mode 参数传递，不把新键塞进旧闭合补丁外壳。generated 模式的每条 set 只含 dialogue；一个 shot 最多一条 edit，引用一个该镜头的有效 issue_id；revise 输入汇集该镜头全部意见，verify 仍覆盖所有原 issue_id。 |
+
+GeneratedScene/Plan/Settings 必须显式声明 1.1/generated，不能把旧 1.0 记录自动改标签升级。完整 validator 的 1.1 支持仍是 #8 后续工作；身份辅助函数对未来 scene/plan 扩展字段完整保留，不替代 schema 验证。
+
+GenerationSettings 不放运行路径、价格、计费记录、condition、单独台词或开发对的 shots 配方。动作与时长只从共同 Plan 读取，避免配置和计划各有一份互相冲突的值。原 `configs/video.json` 仍是 1.0 开发对配置；P4 显式适配到新 Settings，报价配置单独传给现有成本函数，不直接把旧配置当作 1.1 Settings。未知模型选项不能静默忽略；新增选项先修改公共契约及身份测试。
+
+### 6.3 两层哈希和比较资格
+
+`json_hash` 使用 `json.dumps(..., ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)` 的 UTF-8 SHA-256，不做 Unicode/数值归一化。字典键序不影响身份；列表顺序保留，1、1.0 和 true 不视为同一输入。1.1 身份输入仅允许 JSON 类型、字符串对象键及有限数值。
+
+`initial_plan_sha256` 是共享初稿的完整哈希，含台词。`final_plan_sha256` 是实际最终脚本完整哈希，含台词。三条件必须共享 initial_plan_sha256，不能把每个条件的 final hash 当作共同初稿身份。
+
+`shared_generation_payload` 精确返回：
+
+```text
+{
+  contract_version: "1.1",
+  scene: 完整 GeneratedScene,
+  plan: 完整 GeneratedPlan，仅删掉每镜头顶层 dialogue 键,
+  references: 按 scene.asset_ids 顺序选取的
+              [{asset_id, character_id, sha256, source_url}],
+  settings: 完整 GenerationSettings,
+  template_sha256: 编译提示模板的实际 UTF-8 内容哈希
+}
+```
+
+shared_generation_sha256 是上述载荷的 json_hash。manifest 存储顺序、本地 path、尺寸和许可说明不进入身份；内容哈希与实际 source_url 都进入。未使用的 manifest 条目不进入；scene.asset_ids 中的全部素材均进入。condition、输出位置和计费数据属于外部运行记录，不得放入 Scene/Plan/Settings；未知扩展键不会被辅助函数自动删除。台词仅从 plan.shots[].dialogue 排除，不再删除其他字段或只比较几个已知键。
+
+P3 调用 `assert_dialogue_only_revision`；P4 为每条件重新计算共享身份，只有与初稿相等才编译请求；P5 从保存的输入重新计算，不能仅信任记录里填入的 hash。完整请求另用 json_hash 保存 request_sha256，台词改变应改变请求身份。每镜头 seed 明确为 settings.seed + 镜头从0开始的序号，三条件使用同一序号，不随 condition/重试改变。
+
+固定 seed 不保证改台词后画面/语音完全相同。比较资格只说明输入符合约束，不表示视频可播放或情绪正确；不匹配保留失败及费用记录，但拒绝作为有效比较导出。不能因台词过长就替某条件延长镜头、改动作或自动加一次调用，应保留可实现性错误。
+
+### 6.4 生成记录与账目
+
+GeneratedRunRecord 保留第1节 RunRecord 字段，并使用 schema_version=`1.1`、output_mode=`generated`；三个 condition 名称固定，不接受 dialogue_revision 作为正式三条件别名。新增字段如下：
+
+| 字段 | 类型 / 含义 |
+|---|---|
+| shared_generation_sha256 | string 或 null；初稿/共享配置未就绪的失败可为 null，比较前必须重算核对 |
+| video_model_id | string；model_id 仍指文本审查模型，不混用 |
+| generation_status | not_started / prepared_offline / in_progress / assembled_requires_manual_inspection / failed / interrupted |
+| comparison_status / comparison_errors | not_checked / eligible / ineligible；原因 string[]。eligible 仅表示共同输入和审查来源满足约束，不是主观质量或正式纳入评分的决定 |
+| generation_jobs | 下述镜头记录列表；无请求时为空 |
+| review_calls / generation_posts / video_get_calls | 非负整数；分别记录逻辑审查调用、真实生成 POST 尝试和视频 GET 尝试 |
+
+每条 generation_jobs 为 `{shot_id, request_sha256, receipt_path, status, reused_from, generation_posts, estimated_cost_usd, provider_cost_usd}`。status 为 prepared_offline/submitting/in_progress/downloaded/failed/interrupted；未提交时 receipt_path 为 null，真实提交后指向已有脱敏回执，保留远端原状态/错误/job ID。reused_from 为 null 或 `{run_id, shot_id}`，且必须是本 block 内完整请求指纹相同的已下载片段；复用不算新 POST，自己的增量费用为0，来源费用只计一次。
+
+原 calls 保留逻辑调用含义：本条件 review_calls + generation_posts；real_http_calls 记实际 HTTP 尝试，含轮询/下载 GET，和 calls 分开。mock 审查的逻辑次数可以非零，实际 HTTP/费用为0；共享规划及公共预检另存在 block 账目，不重复分摊到三个 run。token 只统计可获得的文本用量，视频没有该字段时保持 null。
+
+RunRecord 的 estimated_cost_usd/provider_cost_usd 是本条件尝试的消费记录，保持 JSON number 或 null，不直接放 Decimal 字符串。请求报价另外保存为 quoted_cost_usd（十进制字符串），不能拿报价当实际支出。只要消费未知，总费用为 null，原回执和已知小计保留；没有请求的0费用必须有零尝试记录支持。
+
+run_status 新增 prepared，表示只完成离线准备；generated 下仅当脚本/审查有效、真实 A/V 拼接通过后才为 completed，否则失败为 failed。render_status 仍沿用 not_started/rendered/render_failed，不把 prepared_offline 映射为 rendered。assembled_requires_manual_inspection 表示文件检查通过，台词/口型/情绪仍未验收。`unchanged` 是合法审查结果；rejected/review_failed 回退不能冒充有效修订。
+
+Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段，不表示现有 evaluate 已实现新的共享身份验证。P5 必须先接入新资格核对，再导出生成式比较。
+
+### 6.5 各模块接入签名（后续实现，不是当前可调用参数）
+
+以下是在既有函数上追加的 keyword-only 参数，默认 animatic 兼容旧调用；生成调用必须显式传 output_mode="generated"，且与 Scene/Plan 版本一致。不允许通过 try/except 忽略未知参数或静默退回旧模式。
+
+```python
+# P1 validation.py：旧返回 list[str] 的规则不变。
+def validate_scene(scene, manifest, *, project_root=None, output_mode="animatic") -> list[str]: ...
+def validate_plan(scene, plan, manifest, *, project_root=None, output_mode="animatic") -> list[str]: ...
+# P2 planner.py：make_plan 和 make_plan_with_trace 均追加此参数。
+def make_plan(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
+def make_plan_with_trace(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
+# P3 reviewer.py / patches.py：保留 mode 的 generic_review/moodcut 含义。
+def review_and_revise(scene, initial_plan, manifest, client, *, mode,
+                      project_root=None, output_mode="animatic") -> dict: ...
+def apply_patch(scene, plan, manifest, report, patch, *, project_root=None,
+                output_mode="animatic") -> dict: ...
+# P4 video_generation.py：新入口不冒充旧的开发投影入口。
+def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
+                                 project_root, template_sha256, pricing_config) -> dict: ...
+# P5 evaluation.py：新增前置资格核对，原统计公式不变。
+def validate_generated_comparison(records, *, scene, initial, plans, manifest,
+                                  settings, template_sha256) -> list[str]: ...
+```
+
+P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
+
+P5 返回所有输入/来源不一致原因，成功为空列表；缺条件、hash 不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1 在后续集成中调用各模块并映射上文记录；CLI 计划追加 `--output-mode {animatic,generated}`，**当前尚未实现**，不得把未来命令当成现有命令验收。
+
+### 6.6 后续接线必须满足的约束
 
 1. **先共同规划，再拆分条件。** 每个 scene/tone/replicate 只产生一次初始台词及共同场景、动作、镜头和时长，冻结后 deepcopy 为 baseline/generic_review/moodcut。P2 的新规划是共享基础，不是本对照的实验变量。
 2. **只允许 dialogue 修改。** 生成模式下两类审查使用相同字段白名单；动作、表情/肢体要求、narration、镜头顺序/数量、时长、素材等全部固定。去掉每镜头 dialogue 后的完整计划必须相同，包含未知扩展字段；越权整体拒绝。旧 animatic 多字段能力以显式模式隔离，不改写历史结果。

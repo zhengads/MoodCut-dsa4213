@@ -16,7 +16,7 @@
 
 ### 本次待办与验收
 
-- [ ] 先提交接口小 PR：与 P2/P3/P4/P5 约定显式 animatic/generated 模式、生成分镜/共享动作数据、审查字段白名单、RunRecord 映射和哈希载荷；写入 CONTRACTS，再进行依赖实现。沿用扁平目录，不新增平行框架。
+- [x] 接口小 PR：在 CONTRACTS 第6节发布 1.1 字段、签名、记录/哈希约定；`contracts.py` 提供无 I/O 的白名单、非台词比较和身份纯函数，配有离线协议夹具及回归测试。运行模式与各模块接线仍按下面未勾选项实施。
 - [ ] 修复 `unchanged` 状态兼容；FakeClient 覆盖无意见、空补丁、有效补丁、rejected、review_failed，失败回退不得冒充有效修订。
 - [ ] 实现生成模式的可配置镜头/总时长验证，旧 animatic 行为与旧记录兼容；不把短片强行补到 60 秒，也不暗改既有结果。
 - [ ] 每个 scene/tone/replicate 只规划一次并深拷贝三份；审查前后比较去掉每镜头 dialogue 后的完整计划。动作、场景、镜头、时长、素材及未知扩展字段有变即拒绝。
@@ -25,6 +25,8 @@
 - [ ] 配对资格与失败状态分开记录：保留失败条件/账目，但不将其作为有效修订对比。P5 导出前再次检查共享输入；规划费用只计一次。
 
 ### 写入范围与依赖
+
+公共协议归 P1：`src/moodcut/contracts.py`、`tests/test_contracts.py` 和 `tests/fixtures/generated_contract.json`；其他模块导入它，不复制哈希/白名单实现。具体当前接口与未来接线签名见 CONTRACTS 6.1 / 6.5。
 
 主改 `src/moodcut/__main__.py`、`pipeline.py`、`validation.py`、`video_client.py`、`scripts/generate_video.py` 及对应现有测试、`docs/CONTRACTS.md`。P1 维护共享夹具；不要改 P2/P3 提示词或 P4 编译器。`configs/video.json` 由 P4 维护，传输/价格字段变更先协调。入口选项及新字段在接口 PR 中给出准确用法后，队友再接入。
 
