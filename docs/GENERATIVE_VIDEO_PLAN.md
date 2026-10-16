@@ -1,6 +1,6 @@
 # Reference-guided video implementation plan
 
-> For agentic workers: execute this plan sequentially using the existing executing-plans workflow and repository PR rules. Offline implementation is authorized; paid generation needs a separately accepted model, scale and budget.
+> Historical offline adapter increment (merged in PR #21). For agentic workers: execute this plan sequentially using the existing executing-plans workflow and repository PR rules. Offline implementation is authorized; paid generation needs a separately accepted model, scale and budget.
 
 **Goal:** Produce short generated scenes with character-reference images and native audio, comparing original dialogue with dialogue-only revisions.
 
@@ -101,3 +101,11 @@ These describe service contracts, not independent evidence of MoodCut's effectiv
 ## Offline execution evidence
 
 2026-10-15: 277 tests and 67 subtests passed using the dsa4213 virtual environment. Thirty focused tests cover request compilation, mocked asynchronous transport, timeout/resume, cost handling, CLI defaults, source hash checks and synthetic moving-video/audio concatenation. The real source-record preview has three clips per version, 18 seconds per version, two dialogue changes and one excluded narration change; five unique request fingerprints among six clip slots. Public catalogue preflight passed for Wan 2.7 at $0.10/second. No video generation POST was sent. Synthetic media are software fixtures; model output and speech quality remain unverified.
+
+## Follow-up integration (not implemented by this plan)
+
+The checked items above describe the offline development-pair adapter, not completion of the generated three-condition system. Follow CONTRACTS section 6 and the next-increment sections of MC-01–MC-05. P1 publishes mode/schema/hash/record contracts; P2 plans one shared action sequence; P3 enforces dialogue-only revision before verification; P4 consumes shared directions and supplies inspection materials; P5 adapts generation records to existing blind export and statistics.
+
+Actions, camera, duration, references, voice requirements, model/settings and seeds are frozen across conditions. Only dialogue changes. Shared planning is infrastructure, not a separately established contribution; fixed seeds cannot hold generated performance identical after dialogue changes. Do not add ablation arms or formal samples without team confirmation.
+
+2026-10-16 status: one Wan six-second submission failed with no video. The provider reported suspected IP infringement; the individual charge is unknown. Seedance has offline compatibility only. No successful native speech/identity/visual-quality acceptance exists. The current scope is offline development and Issue maintenance; no paid calls, retries, VBench/GPU or formal runs are authorized.
