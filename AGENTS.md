@@ -15,9 +15,11 @@
 
 ## 当前生成式增量
 
-遵守 docs/CONTRACTS.md 第6节的 1.1 协议：共同规划一次，三条件仅台词可变；公共纯函数从 `moodcut.contracts` 导入。`validation.validate_scene/validate_plan` 已支持显式 `output_mode="generated"`，默认仍按1.0 animatic；规划/审查/生成/CLI 入口的接线仍待各任务实施，不能把6.5其余未来参数当成已可调用。不得混入单组动作/镜头增强；开发投影不是完整三条件实验，固定 seed 不保证视觉一致。任务未勾选项不当成已实现功能。
+遵守docs/CONTRACTS.md第6节的1.1协议：共同规划一次，三条件仅台词可变；公共纯函数从moodcut.contracts导入。公共验证器、脚本编排和离线CLI边界已实现，默认仍兼容1.0 animatic；规划/审查/编译器与视频/资格的真实接线由所属任务完成，不能把6.5未来参数当成已可调用。不得混入单组动作/镜头增强；开发投影不是完整三条件实验，固定seed不保证视觉一致。任务未勾选项不当成已实现功能。
 
 `pipeline.run_experiment/run_condition` 的generated脚本编排及共享哈希记录已实现，参数/依赖见CONTRACTS 6.7。它只保存prepared脚本，不编译请求、生成视频或调用animatic renderer；P2/P3缺接口时明确失败。边界测试的依赖替身不当成真实模块联调，后续接入沿用公共身份检查和记录，不另写编排框架。
+
+`run --output-mode generated --source-block ... [--shot-id ...]`及pipeline.prepare_generated_run的离线入口边界已实现，见CONTRACTS 6.8。它依赖P4正式编译器，缺接口明确失败；测试替身不作为生产实现。保留完整计划/原索引seed，requests/prepared_offline与脚本prepared及视频completed分开，报价不当支出，不允许由此入口发起付费调用。
 
 ## 目录与参考资料
 

@@ -232,3 +232,362 @@ def test_evaluate_blind_export_then_ratings_with_private_key(tmp_path):
 
 def test_ratings_without_private_key_rejected(tmp_path):
     assert main(["evaluate", "--records", "missing.json", "--ratings", "ratings.csv"]) == 1
+
+
+@pytest.fixture
+def generated_source(tmp_path, monkeypatch):
+    """Persist real pipeline records using explicitly labeled P2/P3 doubles."""
+    from copy import deepcopy
+    from moodcut import pipeline
+    data = read_json(ROOT / "tests/fixtures/generated_contract.json")
+    manifest = read_json(ROOT / "tests/fixtures/assets.json")
+    data["settings"]["model"] = "alibaba/wan-2.7"
+    def plan(scene, assets, client, *, project_root, output_mode):
+        return {"plan": deepcopy(data["initial_plan"]), "raw_responses": {"software_double": True}}
+    def review(scene, initial, assets, client, *, mode, project_root, output_mode):
+        return {"plan": deepcopy(data["condition_plans"][mode]), "status": "applied", "errors": [],
+                "software_double": "P3 test dependency, not model output"}
+    monkeypatch.setattr(pipeline, "make_plan_with_trace", plan)
+    monkeypatch.setattr(pipeline, "review_and_revise", review)
+    source = tmp_path / "source"
+    block = pipeline.run_experiment(data["scene"], manifest, pipeline.FakeClient([]), out_dir=source,
+                                    project_root=ROOT, output_mode="generated", generation_settings=data["settings"],
+                                    template_sha256=data["template_sha256"])
+    assert block["status"] == "prepared"
+    monkeypatch.setattr(pipeline, "make_plan_with_trace", lambda *a, **k: pytest.fail("Do not replan saved scripts"))
+    monkeypatch.setattr(pipeline, "review_and_revise", lambda *a, **k: pytest.fail("Do not review saved scripts again"))
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("No real network"))
+    return source, block
+
+
+def software_compiler(monkeypatch):
+    """P4 protocol double only; does not implement or validate film generation."""
+    from moodcut import video_generation
+    from moodcut.contracts import json_hash, shared_generation_sha256
+    from moodcut.video_client import estimate_video_cost
+    calls = []
+    def compile(scene, initial, plans, manifest, settings, *, project_root, template_sha256, pricing_config):
+        calls.append((scene, initial, plans, manifest, settings))
+        conditions = []
+        for condition in CONDITIONS:
+            jobs = []
+            for index, shot in enumerate(plans[condition]["shots"]):
+                request = {"model": settings["model"], "resolution": settings["resolution"],
+                           "aspect_ratio": settings["aspect_ratio"], "generate_audio": True,
+                           "seed": settings["seed"] + index, "duration": shot["duration_s"],
+                           "input_references": [{"type": "image_url", "image_url": {"url": "https://example.invalid/software.png"}}],
+                           "prompt": json.dumps({"software_double": True, "dialogue": shot["dialogue"]})}
+                jobs.append({"shot_id": shot["shot_id"], "request": request,
+                             "request_sha256": json_hash(request),
+                             "quoted_cost_usd": str(estimate_video_cost(pricing_config, request))})
+            conditions.append({"condition": condition, "final_plan_sha256": json_hash(plans[condition]), "jobs": jobs})
+        return {"schema_version": "1.1", "output_mode": "generated", "kind": "generated_three_condition_bundle",
+                "initial_plan_sha256": json_hash(initial), "shared_generation_sha256": shared_generation_sha256(
+                    scene, initial, manifest, settings, template_sha256=template_sha256),
+                "settings": settings, "conditions": conditions}
+    monkeypatch.setattr(video_generation, "build_generated_video_bundle", compile, raising=False)
+    return calls
+
+
+def generated_args(source, output, *extra):
+    return ["run", "--project-root", str(ROOT), "--output-mode", "generated",
+            "--source-block", str(source / "block.json"), "--pricing-config", "configs/video.json",
+            "--output", str(output), *extra]
+
+
+def test_generated_cli_single_shot_keeps_original_index_seed_and_hash(generated_source, tmp_path, monkeypatch):
+    source, block = generated_source
+    calls = software_compiler(monkeypatch)
+    output = tmp_path / "one-shot"
+    assert main(generated_args(source, output, "--shot-id", "s2")) == 0
+    prepared = read_json(output / "preparation.json")
+    bundle = read_json(output / "bundle.json")
+    assert prepared["preparation_stage"] == "requests" and prepared["status"] == "prepared_offline"
+    assert prepared["selected_shot_ids"] == ["s2"] and len(calls) == 1
+    assert prepared["shared_generation_sha256"] == block["shared_generation_sha256"]
+    assert prepared["generation_posts"] == prepared["video_get_calls"] == prepared["real_http_calls"] == 0
+    assert prepared["provider_cost_usd"] == 0.0 and prepared["quoted_cost_usd"] == "1.80"
+    assert prepared["comparison_status"] == "not_checked" and prepared["video_path"] is None
+    for condition in bundle["conditions"]:
+        assert len(condition["jobs"]) == 1
+        job = condition["jobs"][0]
+        assert job["shot_id"] == "s2" and job["shot_index"] == 1 and job["request"]["seed"] == 4214
+    # Full source plans remain unchanged; do not truncate before compiler input.
+    assert all(len(plan["shots"]) == 3 for plan in calls[0][2].values())
+    assert read_json(source / "block.json") == block
+
+
+def rewrite_generated_block(source, block, *, sync_runs=True):
+    (source / "block.json").write_text(json.dumps(block, ensure_ascii=False), encoding="utf-8")
+    if sync_runs:
+        for row in block["runs"]:
+            path = source / row["condition"] / "run.json"
+            if path.parent.exists():
+                path.write_text(json.dumps(row, ensure_ascii=False), encoding="utf-8")
+
+
+def test_generated_cli_all_shots_directory_source_no_clients_and_preserves_ledger(generated_source, tmp_path, monkeypatch):
+    from moodcut import pipeline, video_client
+    source, block = generated_source
+    calls = software_compiler(monkeypatch)
+    for module, name in ((client_module.OpenRouterClient, "from_env"), (video_client, "OpenRouterVideoClient"),
+                         (video_client, "fetch_video_models"), (pipeline, "resolve_render_dependencies")):
+        monkeypatch.setattr(module, name, lambda *a, **k: pytest.fail("Preparation must not create clients or fetch/render"))
+    # Software ledger with unknown historical expense; preparation cannot erase it.
+    block["planning"]["provider_cost_usd"] = None
+    (source / "planning.json").write_text(json.dumps(block["planning"]), encoding="utf-8")
+    rewrite_generated_block(source, block)
+    before = {p.relative_to(source): p.read_bytes() for p in source.rglob("*.json")}
+    output = tmp_path / "all-shots"
+    args = generated_args(source, output)
+    args[args.index("--source-block") + 1] = str(source)
+    monkeypatch.chdir(tmp_path)
+    assert main(args) == 0
+    assert len(calls) == 1
+    prep = read_json(output / "preparation.json")
+    assert prep["selected_shot_ids"] == ["s1", "s2", "s3"] and prep["quoted_cost_usd"] == "5.40"
+    assert prep["calls"] == 0 and prep["provider_cost_usd"] == prep["estimated_cost_usd"] == 0.0
+    assert read_json(output / "source_block.json")["planning"]["provider_cost_usd"] is None
+    assert {p.relative_to(source): p.read_bytes() for p in source.rglob("*.json")} == before
+    bundle = read_json(output / "bundle.json")
+    for condition in bundle["conditions"]:
+        assert [j["request"]["seed"] for j in condition["jobs"]] == [4213, 4214, 4215]
+        assert [j["shot_index"] for j in condition["jobs"]] == [0, 1, 2]
+    snapshot = read_json(output / "source_inputs.json")
+    assert len(snapshot["initial"]["shots"]) == 3 and len(snapshot["plans"]) == 3
+
+
+def test_generated_missing_compiler_is_explicit_and_never_uses_old_pair(generated_source, tmp_path, monkeypatch, capsys):
+    from moodcut import video_generation
+    source, _ = generated_source
+    monkeypatch.delattr(video_generation, "build_generated_video_bundle", raising=False)
+    monkeypatch.setattr(video_generation, "build_video_bundle", lambda *a, **k: pytest.fail("No legacy fallback"))
+    output = tmp_path / "missing-compiler"
+    assert main(generated_args(source, output)) == 1
+    assert "#24" in capsys.readouterr().err and not output.exists()
+
+
+@pytest.mark.parametrize("shot_id", ["unknown", "", "s0"])
+def test_generated_unknown_shot_fails_before_compiling(generated_source, tmp_path, monkeypatch, shot_id):
+    source, _ = generated_source
+    calls = software_compiler(monkeypatch)
+    output = tmp_path / "bad-shot"
+    assert main(generated_args(source, output, "--shot-id", shot_id)) == 1
+    assert calls == [] and not output.exists()
+
+
+@pytest.mark.parametrize("kind", ["version", "mode", "block_failed", "missing_condition", "old_condition", "disk_run",
+    "scene", "model", "seed", "template", "initial", "non_dialogue", "final_hash", "unchanged_changed",
+    "rejected", "review_failed", "no_changes", "condition_input", "prompt_hashes", "submitted", "planning",
+    "review_source", "review_plan", "boolean_attempts"])
+def test_generated_source_tampering_rejected_before_compiler(generated_source, tmp_path, monkeypatch, kind):
+    from moodcut.contracts import json_hash
+    source, block = generated_source
+    calls = software_compiler(monkeypatch)
+    sync_runs = True
+    if kind == "version":
+        block["schema_version"] = "1.0"
+    elif kind == "mode":
+        block["output_mode"] = "animatic"
+    elif kind == "block_failed":
+        block["status"] = "failed"
+    elif kind == "missing_condition":
+        block["runs"].pop()
+    elif kind == "old_condition":
+        block["runs"][2]["condition"] = "dialogue_revision"
+    elif kind == "disk_run":
+        record = read_json(source / "generic_review/run.json")
+        record["calls"] += 1
+        (source / "generic_review/run.json").write_text(json.dumps(record), encoding="utf-8")
+        sync_runs = False
+    elif kind in ("scene", "model", "seed", "initial"):
+        name = {"scene": "scene.json", "model": "generation_settings.json", "seed": "generation_settings.json",
+                "initial": "initial.json"}[kind]
+        data = read_json(source / name)
+        if kind == "scene":
+            data["story"] += " altered"
+        elif kind == "model":
+            data["model"] += "-altered"
+        elif kind == "seed":
+            data["seed"] += 1
+        else:
+            data["shots"][0]["dialogue"][0]["text"] += " altered"
+        (source / name).write_text(json.dumps(data), encoding="utf-8")
+    elif kind == "template":
+        block["template_sha256"] = "a" * 64
+    elif kind in ("non_dialogue", "final_hash", "unchanged_changed"):
+        final = read_json(source / "generic_review/final.json")
+        if kind == "non_dialogue":
+            final["shots"][0]["direction"] += " altered"
+        else:
+            final["shots"][0]["dialogue"][0]["text"] += " altered"
+        (source / "generic_review/final.json").write_text(json.dumps(final), encoding="utf-8")
+        if kind != "final_hash":
+            block["runs"][1]["final_plan_sha256"] = json_hash(final)
+        if kind == "unchanged_changed":
+            block["runs"][1]["review_status"] = "unchanged"
+    elif kind in ("rejected", "review_failed", "no_changes"):
+        block["runs"][1]["review_status"] = kind
+    elif kind == "condition_input":
+        (source / "moodcut/initial.json").write_text("{}", encoding="utf-8")
+    elif kind == "prompt_hashes":
+        block["runs"][1]["prompt_hashes"] = []
+    elif kind in ("review_source", "review_plan"):
+        review = read_json(source / "generic_review/review.json")
+        if kind == "review_source":
+            review["status"] = "rejected"
+        else:
+            review["plan"]["shots"][0]["dialogue"][0]["text"] += " inconsistent review candidate"
+        (source / "generic_review/review.json").write_text(json.dumps(review), encoding="utf-8")
+    elif kind == "boolean_attempts":
+        block["runs"][1]["generation_posts"] = False
+    elif kind == "submitted":
+        block["runs"][1]["generation_posts"] = 1
+    else:
+        block["planning"]["calls"] += 1  # Disk planning.json remains unchanged.
+    rewrite_generated_block(source, block, sync_runs=sync_runs)
+    output = tmp_path / "rejected"
+    assert main(generated_args(source, output)) == 1
+    assert calls == [] and not output.exists()
+
+
+@pytest.mark.parametrize("kind", ["version", "kind", "initial", "shared", "settings", "conditions", "final",
+    "shots", "shot_order", "request_hash", "seed", "seed_type", "duration", "audio", "frame_images",
+    "references", "prompt", "quote", "nonfinite_quote", "quote_type", "mutated_inputs"])
+def test_generated_rejects_invalid_compiler_protocol(generated_source, tmp_path, monkeypatch, kind):
+    from moodcut import video_generation
+    from moodcut.contracts import json_hash
+    source, _ = generated_source
+    software_compiler(monkeypatch)
+    original = video_generation.build_generated_video_bundle
+    def faulty(*args, **kwargs):
+        bundle = original(*args, **kwargs)
+        condition, job = bundle["conditions"][0], bundle["conditions"][0]["jobs"][0]
+        request = job["request"]
+        if kind == "version":
+            bundle["schema_version"] = "1.0"
+        elif kind == "kind":
+            bundle["kind"] = "derived_development_video_pair"
+        elif kind in ("initial", "shared"):
+            bundle["initial_plan_sha256" if kind == "initial" else "shared_generation_sha256"] = "a" * 64
+        elif kind == "settings":
+            bundle["settings"] = dict(bundle["settings"], seed=1)
+        elif kind == "conditions":
+            bundle["conditions"].pop()
+        elif kind == "final":
+            condition["final_plan_sha256"] = "a" * 64
+        elif kind == "shots":
+            condition["jobs"].pop()
+        elif kind == "shot_order":
+            condition["jobs"].reverse()
+        elif kind == "request_hash":
+            job["request_sha256"] = "a" * 64
+        elif kind == "seed":
+            request["seed"] = 1
+        elif kind == "seed_type":
+            request["seed"] = float(request["seed"])
+        elif kind == "duration":
+            request["duration"] += 1
+        elif kind == "audio":
+            request["generate_audio"] = False
+        elif kind == "frame_images":
+            request["frame_images"] = ["software frame"]
+        elif kind == "references":
+            request["input_references"] = []
+        elif kind == "prompt":
+            request["prompt"] = " "
+        elif kind == "quote":
+            job["quoted_cost_usd"] = "100.00"
+        elif kind == "nonfinite_quote":
+            job["quoted_cost_usd"] = "NaN"
+        elif kind == "quote_type":
+            job["quoted_cost_usd"] = 0.60
+        else:
+            args[1]["shots"][0]["direction"] += " tampered by compiler"
+        if kind != "request_hash":
+            job["request_sha256"] = json_hash(request)
+        return bundle
+    monkeypatch.setattr(video_generation, "build_generated_video_bundle", faulty)
+    output = tmp_path / "bad-compiler"
+    assert main(generated_args(source, output)) == 1
+    assert not output.exists()
+
+
+def test_generated_existing_output_kept_before_compiler(generated_source, tmp_path, monkeypatch):
+    source, _ = generated_source
+    calls = software_compiler(monkeypatch)
+    output = tmp_path / "existing"
+    output.mkdir()
+    marker = output / "original.txt"
+    marker.write_text("preserve", encoding="utf-8")
+    assert main(generated_args(source, output)) == 1
+    assert calls == [] and marker.read_text(encoding="utf-8") == "preserve"
+
+
+@pytest.mark.parametrize("extra", [("--allow-paid",), ("--max-cost-usd", "0.1"), ("--responses", "missing.json"),
+    ("--cache-dir", "cache"), ("--scene", "other.json"), ("--assets", "other.json"), ("--no-render",),
+    ("--font", "font.ttf"), ("--replicate", "2"), ("--source-kind", "formal"), ("--model-config", "other.json")])
+def test_generated_rejects_live_and_planning_overrides_before_clients(generated_source, tmp_path, monkeypatch, extra):
+    source, _ = generated_source
+    monkeypatch.setattr(client_module.OpenRouterClient, "from_env", lambda *a, **k: pytest.fail("No client permitted"))
+    assert main(generated_args(source, tmp_path / "bad-options", *extra)) == 1
+    assert not (tmp_path / "bad-options").exists()
+
+
+def test_generated_mode_is_explicit_and_source_is_required(generated_source, tmp_path):
+    source, _ = generated_source
+    args = generated_args(source, tmp_path / "implicit")
+    args[args.index("--output-mode") + 1] = "animatic"
+    assert main(args) == 1
+    assert main(["run", "--output-mode", "generated", "--output", str(tmp_path / "no-source")]) == 1
+    with pytest.raises(SystemExit) as exc:
+        main(["run", "--output-mode", "unknown", "--output", str(tmp_path / "unknown")])
+    assert exc.value.code == 2
+
+
+def test_generated_valid_unchanged_source_is_accepted(generated_source, tmp_path, monkeypatch):
+    from moodcut.contracts import json_hash
+    source, block = generated_source
+    software_compiler(monkeypatch)
+    initial = read_json(source / "initial.json")
+    for row in block["runs"][1:]:
+        row["review_status"] = "unchanged"
+        row["final_plan_sha256"] = json_hash(initial)
+        (source / row["condition"] / "final.json").write_text(json.dumps(initial), encoding="utf-8")
+        review = read_json(source / row["condition"] / "review.json")
+        review.update(plan=initial, status="unchanged")
+        (source / row["condition"] / "review.json").write_text(json.dumps(review), encoding="utf-8")
+    rewrite_generated_block(source, block)
+    output = tmp_path / "unchanged"
+    assert main(generated_args(source, output, "--shot-id", "s3")) == 0
+    prepared = read_json(output / "preparation.json")
+    assert prepared["selected_shot_ids"] == ["s3"] and prepared["calls"] == 0
+    assert {j["request"]["seed"] for c in read_json(output / "bundle.json")["conditions"] for j in c["jobs"]} == {4215}
+
+
+@pytest.mark.parametrize("change", ["source", "output_race"])
+def test_generated_changes_during_compilation_are_not_overwritten(generated_source, tmp_path, monkeypatch, change):
+    from moodcut import video_generation
+    source, block = generated_source
+    software_compiler(monkeypatch)
+    original = video_generation.build_generated_video_bundle
+    output = tmp_path / "concurrent"
+    def concurrent(*args, **kwargs):
+        bundle = original(*args, **kwargs)
+        if change == "source":
+            block["planning"]["provider_cost_usd"] = None
+            (source / "planning.json").write_text(json.dumps(block["planning"]), encoding="utf-8")
+            rewrite_generated_block(source, block)
+        else:
+            output.mkdir()
+            (output / "other-result.txt").write_text("keep", encoding="utf-8")
+        return bundle
+    monkeypatch.setattr(video_generation, "build_generated_video_bundle", concurrent)
+    assert main(generated_args(source, output)) == 1
+    if change == "source":
+        assert not output.exists()
+        assert read_json(source / "planning.json")["provider_cost_usd"] is None
+    else:
+        assert (output / "other-result.txt").read_text(encoding="utf-8") == "keep"
+        assert not (output / "bundle.json").exists()

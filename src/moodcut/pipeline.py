@@ -432,3 +432,177 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                      template_sha256=template_sha256)
     write_json(output / "block.json", block)
     return block
+
+
+def _require_generated(condition, message):
+    if not condition:
+        raise ValueError("Generated preparation: " + message)
+
+
+def _load_generated_block(path, project_root):
+    """Recompute saved script identities; never follow final_plan_path pointers."""
+    path = Path(path).resolve(strict=True)
+    path = path / "block.json" if path.is_dir() else path
+    block = read_json(path)
+    need = _require_generated
+    need(isinstance(block, dict) and block.get("schema_version") == CONTRACT_VERSION
+         and block.get("output_mode") == "generated" and block.get("status") == "prepared",
+         "source must be a prepared 1.1/generated script block")
+    folder = path.parent
+    scene, manifest, initial, settings = [read_json(folder / name) for name in
+        ("scene.json", "assets.json", "initial.json", "generation_settings.json")]
+    template = block.get("template_sha256")
+    errors = validate_plan(scene, initial, manifest, project_root=project_root, output_mode="generated")
+    need(not errors, "; ".join(errors))
+    shared = shared_generation_sha256(scene, initial, manifest, settings, template_sha256=template)
+    need(block.get("shared_generation_sha256") == shared
+         and block.get("initial_plan_sha256") == json_hash(initial)
+         and json_hash(block.get("generation_settings")) == json_hash(settings), "block shared/initial/settings identity mismatch")
+    need(block.get("scene_id") == scene["scene_id"] and block.get("tone") == scene["tone"], "block scene/tone mismatch")
+    planning = read_json(folder / "planning.json")
+    need(isinstance(planning, dict) and planning.get("status") == "completed"
+         and json_hash(planning) == json_hash(block.get("planning")), "source planning record mismatch")
+    rows = block.get("runs")
+    need(isinstance(rows, list) and len(rows) == 3 and all(isinstance(r, dict) for r in rows)
+         and [r.get("condition") for r in rows] == list(CONDITIONS), "exactly three ordered conditions are required")
+    plans, run_ids = {}, set()
+    for row in rows:
+        condition = row["condition"]
+        directory = folder / condition
+        need(json_hash(read_json(directory / "run.json")) == json_hash(row), "embedded/disk run mismatch: " + condition)
+        need(row.get("schema_version") == CONTRACT_VERSION and row.get("output_mode") == "generated"
+             and row.get("run_status") == "prepared" and row.get("validation_status") == "passed"
+             and row.get("comparison_status") == "not_checked", "invalid script source state: " + condition)
+        for field in ("block_id", "scene_id", "tone", "replicate", "initial_plan_sha256", "shared_generation_sha256",
+                      "model_id", "source_kind", "mock"):
+            need(field in row and field in block and json_hash(row[field]) == json_hash(block[field]),
+                 "run/block mismatch: " + field)
+        run_id = row.get("run_id")
+        need(isinstance(run_id, str) and bool(run_id.strip()) and run_id not in run_ids, "run IDs must be nonempty and unique")
+        run_ids.add(run_id)
+        need(row.get("video_model_id") == settings["model"] and isinstance(row.get("prompt_hashes"), dict)
+             and row["prompt_hashes"].get("video_template") == template, "run model/template mismatch")
+        need(row.get("generation_status") == row.get("render_status") == "not_started"
+             and row.get("generation_jobs") == [] and row.get("video_path") is None
+             and all(type(row.get(k)) is int and row[k] == 0 for k in ("generation_posts", "video_get_calls")),
+             "source is not an unsubmitted script")
+        for name, expected in (("scene.json", scene), ("assets.json", manifest),
+                               ("initial.json", initial), ("generation_settings.json", settings)):
+            need(json_hash(read_json(directory / name)) == json_hash(expected), "condition input mismatch: " + name)
+        final = read_json(directory / "final.json")
+        errors = validate_plan(scene, final, manifest, project_root=project_root, output_mode="generated")
+        need(not errors, "; ".join(errors))
+        assert_dialogue_only_revision(initial, final)
+        need(row.get("final_plan_sha256") == json_hash(final), "final plan hash mismatch")
+        need(shared_generation_sha256(scene, final, manifest, settings, template_sha256=template) == shared,
+             "condition shared identity mismatch")
+        status = row.get("review_status")
+        need(status == "not_applicable" if condition == "baseline" else status in ("applied", "unchanged"),
+             "invalid review source: " + condition)
+        if condition == "baseline" or status == "unchanged":
+            need(json_hash(final) == json_hash(initial), "baseline/unchanged must retain the initial plan")
+        if condition != "baseline":
+            reviewed = read_json(directory / "review.json")
+            need(isinstance(reviewed, dict) and reviewed.get("status") == status
+                 and json_hash(reviewed.get("plan")) == json_hash(final), "saved review/final script mismatch")
+        plans[condition] = final
+    return path, block, dict(scene=scene, initial=initial, plans=plans, manifest=manifest,
+                            settings=settings, template_sha256=template)
+
+
+def _validate_generated_bundle(bundle, source, block, pricing):
+    """Check the compiler protocol and identities without recreating its prompts."""
+    from .contracts import _json_copy
+    from .video_client import _money, estimate_video_cost
+    need = _require_generated
+    bundle = _json_copy(bundle)
+    need(isinstance(bundle, dict) and bundle.get("schema_version") == CONTRACT_VERSION
+         and bundle.get("output_mode") == "generated" and bundle.get("kind") == "generated_three_condition_bundle",
+         "compiler must return the generated three-condition contract")
+    for name in ("initial_plan_sha256", "shared_generation_sha256"):
+        need(bundle.get(name) == block[name], "compiler identity mismatch: " + name)
+    settings, initial = source["settings"], source["initial"]
+    need(json_hash(bundle.get("settings")) == json_hash(settings), "compiler settings mismatch")
+    conditions = bundle.get("conditions")
+    need(isinstance(conditions, list) and len(conditions) == 3 and all(isinstance(c, dict) for c in conditions)
+         and [c.get("condition") for c in conditions] == list(CONDITIONS), "compiler conditions mismatch")
+    shot_ids = [s["shot_id"] for s in initial["shots"]]
+    for condition in conditions:
+        need(condition.get("final_plan_sha256") == json_hash(source["plans"][condition["condition"]]),
+             "compiler final plan identity mismatch")
+        jobs = condition.get("jobs")
+        need(isinstance(jobs, list) and all(isinstance(j, dict) for j in jobs)
+             and [j.get("shot_id") for j in jobs] == shot_ids, "compiler must preserve all original shots and their order")
+        for index, job in enumerate(jobs):
+            request = job.get("request")
+            need(isinstance(request, dict) and job.get("request_sha256") == json_hash(request), "request hash mismatch")
+            need(all(request.get(k) == settings[k] for k in ("model", "resolution", "aspect_ratio"))
+                 and request.get("generate_audio") is True, "request generation settings mismatch")
+            need(type(request.get("seed")) is int and request["seed"] == settings["seed"] + index,
+                 "request seed must use the original shot index")
+            need(type(request.get("duration")) is int and request["duration"] == initial["shots"][index]["duration_s"],
+                 "request duration mismatch")
+            refs = request.get("input_references")
+            need(isinstance(refs, list) and bool(refs) and "frame_images" not in request,
+                 "request requires character references, not card frames")
+            need(isinstance(request.get("prompt"), str) and bool(request["prompt"].strip()), "request prompt is empty")
+            quote = job.get("quoted_cost_usd")
+            need(isinstance(quote, str) and _money(quote) == estimate_video_cost(pricing, request),
+                 "compiler quote must match the configured local price")
+    return bundle
+
+
+def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=None, pricing_config):
+    """Prepare requests from saved scripts only; no client, key, lookup or POST.
+
+    P4's pure compiler is an explicit dependency, never replaced by the old pair
+    compiler. Compile full plans first, then select jobs without reindexing seeds.
+    """
+    from decimal import Decimal
+    from . import video_generation
+    output = Path(out_dir).resolve()
+    if output.exists() or output.is_symlink():
+        raise FileExistsError("Output already exists; choose a new path: " + str(output))
+    root = Path(project_root).resolve()
+    path, block, source = _load_generated_block(source_block, root)
+    shot_ids = [shot["shot_id"] for shot in source["initial"]["shots"]]
+    _require_generated(shot_id is None or isinstance(shot_id, str) and shot_id in shot_ids, "unknown shot_id")
+    selected = shot_ids if shot_id is None else [shot_id]
+    compiler = getattr(video_generation, "build_generated_video_bundle", None)
+    if not callable(compiler):
+        raise RuntimeError("Missing generated request compiler (#24): build_generated_video_bundle is not implemented; no fallback or submission")
+    pricing = read_json(pricing_config)
+    _require_generated(isinstance(pricing, dict), "pricing config must be an object")
+    compiler_inputs = deepcopy(source)
+    before = json_hash(compiler_inputs)
+    bundle = compiler(compiler_inputs["scene"], compiler_inputs["initial"], compiler_inputs["plans"],
+                      compiler_inputs["manifest"], compiler_inputs["settings"], project_root=root,
+                      template_sha256=compiler_inputs["template_sha256"], pricing_config=deepcopy(pricing))
+    _require_generated(json_hash(compiler_inputs) == before, "compiler mutated its shared inputs")
+    bundle = _validate_generated_bundle(bundle, source, block, pricing)
+    # A local editor/compiler must not silently replace inputs during preparation.
+    _, current_block, current_source = _load_generated_block(path, root)
+    _require_generated(json_hash(current_block) == json_hash(block) and json_hash(current_source) == json_hash(source),
+                       "saved source changed while compiling requests")
+    total = Decimal(0)
+    for condition in bundle["conditions"]:
+        condition["jobs"] = [dict(job, shot_index=index) for index, job in enumerate(condition["jobs"])
+                             if job["shot_id"] in selected]
+        total += sum((Decimal(job["quoted_cost_usd"]) for job in condition["jobs"]), Decimal(0))
+    bundle.update(selected_shot_ids=selected, full_plan_shot_ids=shot_ids)
+    prepared = {"schema_version": CONTRACT_VERSION, "output_mode": "generated",
+                "kind": "generated_request_preparation", "preparation_stage": "requests", "status": "prepared_offline",
+                "source_block_path": str(path), "source_block_sha256": json_hash(block),
+                "initial_plan_sha256": block["initial_plan_sha256"],
+                "shared_generation_sha256": block["shared_generation_sha256"],
+                "selected_shot_ids": selected, "quoted_cost_usd": str(total), "pricing_config_sha256": json_hash(pricing),
+                "quote_scope": "selected jobs before any future request reuse; not actual spending or live pricing",
+                "calls": 0, "real_http_calls": 0, "generation_posts": 0, "video_get_calls": 0,
+                "estimated_cost_usd": 0.0, "provider_cost_usd": 0.0, "video_path": None,
+                "comparison_status": "not_checked", "source_kind": block["source_kind"], "mock": block["mock"]}
+    output.mkdir(parents=True, exist_ok=False)
+    write_json(output / "source_block.json", block)  # Prior fees retained here, never counted as new attempts.
+    write_json(output / "source_inputs.json", source)  # Keep full plans for identity/seed provenance.
+    write_json(output / "bundle.json", bundle)
+    write_json(output / "preparation.json", prepared)
+    return prepared

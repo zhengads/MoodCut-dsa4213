@@ -66,6 +66,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--replicate", type=int, default=1)
     run.add_argument("--cache-dir", help="Optional verified initial-plan cache.")
     run.add_argument("--source-kind", choices=("synthetic", "development", "formal"), default="development")
+    run.add_argument("--output-mode", choices=("animatic", "generated"), default="animatic")
+    run.add_argument("--source-block", help="Existing generated script block.json (or its directory); no replanning.")
+    run.add_argument("--shot-id", help="Prepare only this original shot in all three generated conditions.")
+    run.add_argument("--pricing-config", help="Local video pricing JSON; no live price lookup.")
 
     imported = common("import-synopsis", "Normalize a local MovieAgent synopsis without selecting scenes.")
     imported.add_argument("--input", required=True)
@@ -203,6 +207,21 @@ def _run(args, root):
     from .pipeline import CONDITIONS, run_experiment
     output = _path(root, args.output)
     _new_outputs(output)
+    if getattr(args, "output_mode", "animatic") == "generated":
+        from .pipeline import prepare_generated_run
+        if not args.source_block:
+            raise ValueError("generated requires --source-block; prepare scripts first")
+        if (args.allow_paid or args.max_cost_usd is not None or args.responses or args.cache_dir
+                or args.font or args.no_render or args.replicate != 1 or args.source_kind != "development"
+                or args.scene != "tests/fixtures/scene.json" or args.assets != "tests/fixtures/assets.json"
+                or args.model_config != "configs/model.json"):
+            raise ValueError("generated preparation is offline and reads saved block inputs; do not pass live/planning/render overrides")
+        result = prepare_generated_run(_path(root, args.source_block), out_dir=output, project_root=root,
+                                       shot_id=args.shot_id, pricing_config=_path(root, args.pricing_config or "configs/video.json"))
+        print(f"Requests prepared offline (no video submitted): {output / 'preparation.json'}")
+        return 0 if result["status"] == "prepared_offline" else 1
+    if any(getattr(args, option, None) is not None for option in ("source_block", "shot_id", "pricing_config")):
+        raise ValueError("--source-block/--shot-id/--pricing-config require explicit generated mode")
     scene, manifest = _load_inputs(args, root)
     render = args.command == "run" and not args.no_render
     font = None

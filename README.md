@@ -4,7 +4,7 @@ DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，系统规划台词并执行审查—修订—复查。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音。第一阶段 review 只修改台词。
 
-已有 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。新增 `scripts/generate_video.py` 将已有初稿与台词修订接到 OpenRouter 的参考图视频生成接口；接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费 pilot 验收。
+默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 提供读取已有三条件脚本的离线请求入口边界，依赖P4编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费pilot验收。
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
@@ -30,6 +30,20 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 ```
 
 该命令产生一份初稿、三个条件的完整记录与三段 MP4。离线响应为明确标注的软件夹具，两种审查使用同样的测试修改，不能据此比较方法效果。测试故事、图片和模拟结果均不属于正式数据。
+
+### 生成模式：从已有脚本离线准备请求
+
+正式入口已支持读取1.1/generated的脚本block，保留共同初稿与原镜头索引，不重新规划或审查。以下是依赖接口就绪后的用法示例，source-block需来自CONTRACTS 6.7的成功脚本编排，不接受旧开发对或animatic记录：
+
+```powershell
+.venv/Scripts/python -m moodcut run --output-mode generated --source-block runs/generated-scripts/block.json --shot-id s2 --pricing-config configs/video.json --output runs/generated-s2
+```
+
+省略 `--shot-id` 准备全部镜头；各条件选择同一个镜头，seed仍按原完整计划中的索引计算。此入口始终离线、无需key，不支持 `--allow-paid`、规划/响应/渲染覆盖参数，也不查询实时价格；原默认animatic命令不变。
+
+**当前P4的 `build_generated_video_bundle` 尚未实现**：真实调用会明确报告缺少#24依赖，不创建准备结果、不回退旧开发对。CLI和编排边界已用明确标注的P2/P3/P4软件替身测试，不表示完整真实联调已完成。
+
+编译器接入并通过身份/请求检查后，输出 `bundle.json`、`preparation.json`、完整 `source_inputs.json` 和原账目 `source_block.json` 快照。preparation只记请求prepared_offline、零新调用/消费，报价另存且不等于支出；不产生视频，也不宣称比较eligible。来源或编译失败返回非零，已有结果不覆盖。完整接口与验收边界见 [CONTRACTS 6.8](docs/CONTRACTS.md#68-离线生成入口与单镜头选择)。
 
 ## 接入 OpenRouter
 
