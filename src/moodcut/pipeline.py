@@ -11,14 +11,12 @@ import shutil
 from time import monotonic
 
 from .client import BudgetError, FakeClient, _strict_json
+from .contracts import CONDITIONS, json_hash
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
 from .reviewer import review_and_revise
 from .validation import validate_plan, validate_scene
-
-CONDITIONS = ("baseline", "generic_review", "moodcut")
-
 
 def resolve_render_dependencies(*, project_root=".", font_path=None, config_path="configs/render.json"):
     """Verify local rendering dependencies before planning can incur any cost."""
@@ -59,11 +57,6 @@ def write_json(path, data):
     text = json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     with path.open("x", encoding="utf-8", newline="\n") as stream:
         stream.write(text)
-
-
-def json_hash(data):
-    text = json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
-    return hashlib.sha256(text.encode()).hexdigest()
 
 
 def _mock_plan(scene, manifest):

@@ -173,6 +173,8 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 ## 当前任务入口
 
+1.1 公共协议、已实现纯函数和各模块后续接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。可从 `moodcut.contracts` 导入白名单、非台词检查和共享身份；软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py -q`。旧 CLI/validator 仍为 1.0，不能把协议发布当作生成式端到端已经接通。
+
 五人本轮分别认领：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。已有模块直接复用，做 Issue 中未勾选项，先提交 PR，不自动合并。
 
 生成式下一增量要求共同场景/动作/镜头只规划一次，各条件只改台词；这些约束尚待代码落地。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。

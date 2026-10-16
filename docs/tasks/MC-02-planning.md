@@ -23,6 +23,8 @@
 
 ### 写入范围与依赖
 
+接入协议固定为 CONTRACTS 6.2 / 6.5：Scene/Plan 1.1 显式 generated，公共动作采用 scene_direction 与 shots[].direction；沿用既有函数并追加 output_mode，不能把未来参数当成当前已有功能。`moodcut.contracts` 由 P1 维护，软件输入示例见 `tests/fixtures/generated_contract.json`。
+
 `src/moodcut/planner.py`、`importer.py`（仅必要输入适配）、`src/moodcut/prompts/planning_*.txt`、`tests/test_planner.py`、`tests/test_importer.py` 与模块说明。素材清单只在明确输入适配需要时调整。不修改公共 validator、审查模块、生成编译器和公共夹具；所需新字段先交 P1。
 
 依赖 P1 接口小 PR；交付给 P3 同一个初稿，给 P4 共同动作数据。离线验收：规划/导入相关测试，加上述共享/非读信/旧模式回归。命令与输出示例随 PR 给出，全部使用 FakeClient。
