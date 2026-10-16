@@ -2,6 +2,8 @@
 
 当前任务：[GitHub Issue #23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
+首个增量建议分支：`fix/issue-23-dialogue-review`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
 ## 下一增量：在审查源头强制只改台词（待实现）
 
 **目标**：generic_review 和 moodcut 共享同一修改能力，真正复查最终采用的台词脚本。

@@ -2,6 +2,8 @@
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
+首个增量建议分支：`feat/issue-9-generated-evaluation`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
 ## 下一增量：生成式记录接入三条件评估（待实现）
 
 **目标**：复用现有盲评/统计工具，为真实生成视频补齐输入适配与比较资格校验；VBench 继续仅作视觉质量辅助。

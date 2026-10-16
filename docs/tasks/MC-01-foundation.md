@@ -2,6 +2,8 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
+首个增量建议分支：`feat/issue-8-generated-contracts`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
 ## 下一增量：生成式公共契约与三条件入口（待实现）
 
 **目标**：发布供 P2/P3/P4/P5 共用的生成式数据约定，再串通三条件；不重写现有客户端。

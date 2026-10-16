@@ -2,6 +2,8 @@
 
 当前任务：[GitHub Issue #24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
+首个增量建议分支：`feat/issue-24-video-inspection`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
 ## 下一增量：消费共同动作并提供音视频检查材料（待实现）
 
 **目标**：复用已有参考图请求、异步任务和真实音视频拼接，让任意符合共同契约的分镜都能准备请求并检查交付。

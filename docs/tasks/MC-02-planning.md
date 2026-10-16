@@ -2,6 +2,8 @@
 
 当前任务：[GitHub Issue #22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
+首个增量建议分支：`feat/issue-22-shared-planning`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
 ## 下一增量：一次规划、三组共用的生成式分镜（待实现）
 
 **目标**：把读信示例的手写场景/动作抽成可复用的规划输出；它是各条件共用的生成基础，不是额外消融因素。

@@ -179,6 +179,8 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 ## 用 AI 开发一个任务
 
+任务分支使用 `<type>/issue-<GitHub编号>-<英文内容>`，例如 `feat/issue-22-shared-planning` 或 `fix/issue-23-dialogue-review`。历史分支已统一放在 `archive/`，不作为新任务起点；本地旧分支同步方法见 [分支规则与迁移表](docs/BRANCHES.md)。
+
 在 GitHub Issue 中认领一个模块，拉取最新 main 后，将以下指令交给编码助手并替换编号：
 
 ```text
@@ -186,6 +188,8 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 .agents/skills/moodcut-team/SKILL.md、docs/TEAM.md、docs/CONTRACTS.md、
 docs/REFERENCES.md、docs/upstream-reuse.md 和该 Issue 关联的任务卡。
 先检查任务认领和已有 PR，避免重复开发。
+读取 docs/BRANCHES.md，使用 <type>/issue-<实际GitHub编号>-<英文内容>，
+如 feat/issue-22-shared-planning；不使用工具名或成员代号，不在 archive/ 上开发。
 执行 python scripts/prepare_references.py --check；若资料缺失，
 允许执行 python scripts/prepare_references.py 下载固定公开来源并重新校验。
 若哈希不符，保留原文件并报告。按索引阅读本模块所需源码。
