@@ -128,7 +128,7 @@ print(out)
 
 ## 本地状态记录（2026-10-14）
 
-- 负责人 FAN XUYANG；工作分支 `p3提前测试`。同步 main 时无冲突，保留原 5 个
+- 负责人 FAN XUYANG；当时工作分支为 `p3提前测试`，现已改名归档为 `archive/pr-17-dialogue-review`，不用于新任务。同步 main 时无冲突，保留原 5 个
   MC-03 未提交文件；没有修改本地 main，没有 commit、push、创建 PR 或合并 PR。
 - Windows / PowerShell，使用 `.venv\Scripts\python.exe`；补齐项目声明的
   Pillow 依赖，安装版本 12.3.0。同步后原测试为 86 passed、38 subtests passed。

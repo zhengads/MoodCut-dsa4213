@@ -11,8 +11,8 @@ Read all paths relative to the MoodCut repository root. Team members claim modul
 
 1. Verify the checkout remote is `zhengads/MoodCut-dsa4213`. Inspect git status and preserve unrelated changes.
 2. Read `AGENTS.md`, `docs/TEAM.md`, `docs/CONTRACTS.md`, `docs/REFERENCES.md`, `docs/upstream-reuse.md`, the claimed GitHub Issue and its `docs/tasks/MC-*.md` card. Identify one task owner, allowed paths, acceptance criteria and dependencies. MC identifiers are not GitHub Issue numbers.
-3. Inspect open Issues and PRs, including drafts. Continue the owner's existing branch/PR rather than duplicating work. Resolve overlapping claims with the involved members in the Issue. If remote state is unavailable, disclose that ownership is unverified and use the human's stated assignment for local work.
-4. Fetch latest main. Start a branch `codex/issue-<number>-<short-name>` or continue the matching branch. Never reset unrelated work or force-push a shared branch.
+3. Inspect open Issues and PRs, including drafts. Continue the owner's existing active branch/PR rather than duplicating work; archive/ branches are historical, not active tasks. Resolve overlapping claims with the involved members in the Issue. If remote state is unavailable, disclose that ownership is unverified and use the human's stated assignment for local work.
+4. Fetch latest main and read `docs/BRANCHES.md`. Start `<type>/issue-<actual-GitHub-number>-<short-name>` (for example `feat/issue-22-shared-planning` or `fix/issue-23-dialogue-review`), or continue the matching active branch. Use a lowercase task type and descriptive English slug, never an AI tool/member name or a standalone P/MC code. Issue-less repository maintenance may use `docs/branch-naming` or `chore/<short-name>`. Do not develop on archive/ branches or recreate retired remote names. Preserve local work during migration; never reset unrelated work or force-push a shared branch.
 
 ## Prepare source references
 
