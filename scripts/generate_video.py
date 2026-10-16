@@ -20,13 +20,16 @@ def load_source(run: Path):
     candidate = read_json(run / "moodcut/final.json")
     record = read_json(run / "moodcut/run.json")
     baseline = read_json(run / "baseline/run.json")
-    if record.get("review_status") not in {"applied", "no_changes"} or record.get("run_status") != "completed":
+    review_status = record.get("review_status")
+    if review_status not in ("applied", "unchanged", "no_changes") or record.get("run_status") != "completed":
         raise ValueError("A successful source review is required; failed fallback is not a revision")
     for item in (record, baseline):
         if item.get("initial_plan_sha256") != json_hash(initial):
             raise ValueError("Source initial-plan hash mismatch")
     if record.get("final_plan_sha256") != json_hash(candidate):
         raise ValueError("Source candidate-plan hash mismatch")
+    if review_status in ("unchanged", "no_changes") and json_hash(candidate) != json_hash(initial):
+        raise ValueError("Unchanged review must retain the exact initial plan")
     return scene, initial, candidate, manifest
 
 

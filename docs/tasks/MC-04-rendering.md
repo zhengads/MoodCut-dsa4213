@@ -25,6 +25,8 @@
 
 接入协议固定为 CONTRACTS 6.2–6.5：共同动作只来自 Plan；GenerationSettings 与报价配置分离，调用公共 shared_generation_sha256 重算三条件身份。实现约定的 build_generated_video_bundle，旧 build_video_bundle 保留为开发投影，不默认为正式三条件。Job/请求/费用字段见6.4，公共纯函数由 P1 维护。
 
+公共 validate_scene/validate_plan 已接受显式 generated，可直接验证1.1软件输入。旧开发对脚本只修复了 unchanged 来源兼容，尚未成为1.1三条件入口；本任务的新编译器与旧投影保持明确区别。
+
 `src/moodcut/video_generation.py`、`renderer.py`（仅复用检查能力所需）、`configs/video.json`、`tests/test_video_generation.py`、必要的 `tests/test_renderer.py`/`test_video.py`、`docs/rendering.md`。新检查命令确需脚本时限 `scripts/inspect_generated_video.py`。`scripts/generate_video.py` 入口和传输/价格逻辑由 P1 维护，接口修改先协调；不改 P2/P3 提示词。
 
 依赖 P1 契约与 P2 数据；检查工具可先用本地软件媒体开发。离线验收：相关测试 + 一份标明 synthetic 的检查材料；所有网络传输用 mock。真实人物、中文对白和情绪质量只能在另行授权的 pilot 后验收。

@@ -26,6 +26,8 @@
 
 接入协议固定为 CONTRACTS 6.3–6.5：新增 validate_generated_comparison 前置核对，重算共享身份而非只比较声明值。GeneratedRunRecord 使用1.1、数字/null消费和独立 generation_status；软件例子见 `tests/fixtures/generated_contract.json`。旧 summarize 可读基础字段，不代表旧 evaluate 已有1.1资格验证；保留全部失败/费用与原统计口径。
 
+可用公共验证器显式 generated 检查源场景/计划；unchanged 是合法无修改状态，不代表所有意见解决，也不是情绪评分。失败回退与无视频仍保留，正式纳入规则不随软件兼容修复自动改变。
+
 `src/moodcut/evaluation.py`、`tests/test_evaluation_paired.py`、`tests/test_evaluation.py`、`docs/evaluation.md`；`configs/experiment.json` / `pilot.json` 仅在本任务已确认边界内补充兼容元数据，保留 development/proposal 标记，不擅自启用正式运行。生成账目协议由 P1 发布，媒体由 P4 提供。
 
 依赖 P1 记录契约，可立即用软件合成记录开发；不等待真实模型视频。离线验收：`python -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q` 和现有 evaluate dry-run；不下载模型、不跑 VBench/GPU、不生成主观评分。

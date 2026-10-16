@@ -146,6 +146,91 @@ def test_command_refuses_tampered_source(inputs, tmp_path):
         command.load_source(run)
 
 
+@pytest.mark.parametrize("case,status,accepted", [
+    ("no_issues", "unchanged", True), ("empty_patch", "unchanged", True),
+    ("changed", "applied", True), ("rejected", "rejected", False),
+    ("failed", "review_failed", False),
+])
+def test_real_review_records_feed_source_gate_offline(inputs, tmp_path, case, status, accepted):
+    """Use real review/pipeline code with FakeClient; no video job or network."""
+    from moodcut.client import FakeClient
+    from moodcut.pipeline import run_condition, write_json
+    command = load_command()
+    scene, initial, _, manifest, _ = inputs
+    shutil.copytree(ROOT / "tests/fixtures", tmp_path / "tests/fixtures")
+    run = tmp_path / "runs/integrated"
+    write_json(run / "scene.json", scene)
+    write_json(run / "assets.json", manifest)
+    report = {"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": "moodcut", "issues": []}
+    responses = []
+    if case != "failed":
+        if case != "no_issues":
+            report["issues"] = [{"issue_id": "r1", "shot_id": "s1", "dimension": "tone",
+                                 "evidence": "Software fixture", "suggestion": "Revise dialogue", "severity": "minor"}]
+        responses.append(report)
+        if case != "no_issues":
+            changes = {"story": "invalid"} if case == "rejected" else {
+                "dialogue": [{"character_id": "a", "text": "请你收好。"}]}
+            responses.append({"schema_version": "1.0", "scene_id": scene["scene_id"],
+                              "edits": [] if case == "empty_patch" else [
+                                  {"issue_id": "r1", "shot_id": "s1", "set": changes}]})
+            if case != "rejected":
+                responses.append({"scene_id": scene["scene_id"], "resolved_issue_ids": [],
+                                  "unresolved_issue_ids": ["r1"], "new_concerns": []})
+    for condition, client in (("baseline", FakeClient([])), ("moodcut", FakeClient(responses))):
+        record = run_condition(scene, initial, manifest, client, condition=condition,
+                               out_dir=str(run / condition), project_root=str(tmp_path), font_path=None, render=False)
+    assert record["review_status"] == status
+    assert record["run_status"] == ("completed" if accepted else "failed")
+    assert record["real_http_calls"] == 0
+    if accepted:
+        source = command.load_source(run)
+        assert json_hash(source[2]) == record["final_plan_sha256"]
+        if status == "unchanged":
+            assert source[1] == source[2]
+    else:
+        with pytest.raises(ValueError, match="successful source review"):
+            command.load_source(run)
+
+
+@pytest.mark.parametrize("status", ["unchanged", "no_changes"])
+def test_unchanged_alias_requires_actual_unchanged_plan(inputs, tmp_path, status):
+    command = load_command()
+    run = prepare_command_root(inputs, tmp_path)
+    record = json.loads((run / "moodcut/run.json").read_text())
+    record["review_status"] = status
+    (run / "moodcut/run.json").write_text(json.dumps(record), encoding="utf-8")
+    # Consistent hashes alone cannot make a changed plan an unchanged result.
+    with pytest.raises(ValueError, match="[Uu]nchanged"):
+        command.load_source(run)
+    initial = json.loads((run / "baseline/initial.json").read_text())
+    (run / "moodcut/final.json").write_text(json.dumps(initial), encoding="utf-8")
+    record["final_plan_sha256"] = json_hash(initial)
+    (run / "moodcut/run.json").write_text(json.dumps(record), encoding="utf-8")
+    source = command.load_source(run)
+    assert source[1] == source[2]
+    record["run_status"] = "failed"
+    (run / "moodcut/run.json").write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="successful source review"):
+        command.load_source(run)
+
+
+def test_unchanged_source_can_prepare_offline_without_submitting(inputs, tmp_path, monkeypatch):
+    command = load_command()
+    run = prepare_command_root(inputs, tmp_path)
+    initial = json.loads((run / "baseline/initial.json").read_text())
+    (run / "moodcut/final.json").write_text(json.dumps(initial), encoding="utf-8")
+    record = json.loads((run / "moodcut/run.json").read_text())
+    record.update(review_status="unchanged", final_plan_sha256=json_hash(initial))
+    (run / "moodcut/run.json").write_text(json.dumps(record), encoding="utf-8")
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr(command, "fetch_video_models", lambda: pytest.fail("Offline means no network"))
+    monkeypatch.setattr(command, "OpenRouterVideoClient", lambda *a, **k: pytest.fail("No client permitted"))
+    assert command.main(["--project-root", str(tmp_path), "--run", "runs/source", "--output", "runs/unchanged"]) == 0
+    bundle = json.loads((tmp_path / "runs/unchanged/bundle.json").read_text())
+    assert bundle["dialogue_changes"] == []
+
+
 def test_complete_command_with_synthetic_generated_media(inputs, tmp_path, monkeypatch):
     """Transport double + moving/sine fixture; not a real model demonstration."""
     from decimal import Decimal
