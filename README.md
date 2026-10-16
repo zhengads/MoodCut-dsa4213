@@ -173,7 +173,7 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 ## 当前任务入口
 
-1.1 公共协议、已实现纯函数和各模块后续接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。可从 `moodcut.contracts` 导入白名单、非台词检查和共享身份；软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py -q`。旧 CLI/validator 仍为 1.0，不能把协议发布当作生成式端到端已经接通。
+1.1 公共协议与各模块接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。`moodcut.contracts` 提供白名单、非台词检查和共享身份；公共 `validate_scene/validate_plan` 已支持显式 `output_mode="generated"`。软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py tests/test_validation.py -q`。旧 CLI 和业务入口仍默认1.0，完整生成链路尚待接通。
 
 五人本轮分别认领：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。已有模块直接复用，做 Issue 中未勾选项，先提交 PR，不自动合并。
 

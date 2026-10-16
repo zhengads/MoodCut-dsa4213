@@ -113,8 +113,8 @@ class LLMClient:
                       max_output_tokens: int) -> dict: ...
 
 # validation.py — P1；返回错误列表，空列表表示结构通过
-def validate_scene(scene: dict, manifest: dict, *, project_root=None) -> list[str]: ...
-def validate_plan(scene: dict, plan: dict, manifest: dict, *, project_root=None) -> list[str]: ...
+def validate_scene(scene: dict, manifest: dict, *, project_root=None, output_mode="animatic") -> list[str]: ...
+def validate_plan(scene: dict, plan: dict, manifest: dict, *, project_root=None, output_mode="animatic") -> list[str]: ...
 
 # importer.py — P2；只读本地上游文件，无网络
 def import_synopsis(path: str) -> dict: ... # {story: str, character_names: list[str]}
@@ -219,7 +219,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。`src/moodcut/contracts.py` 中的纯函数、常量及协议软件夹具已实现；规划/审查/生成/评估/CLI 的 1.1 接线仍由各任务完成。不要把“接口可导入”解释为“当前 CLI 已支持生成模式”。上文 1.0 animatic 与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。`contracts.py` 的纯函数、常量及软件夹具已实现；`validation.py` 的公共验证器也已支持显式生成模式。规划/审查/生成/评估/CLI 接线仍由各任务完成，不能把接口可导入解释为 CLI 已支持生成模式。上文 1.0 animatic 与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -260,7 +260,15 @@ def json_hash(data) -> str: ...
 | GenerationSettings | 精确字段为 schema_version=`1.1`、output_mode=`generated`、model、resolution、aspect_ratio、generate_audio、seed、style、sound、characters；不允许其他键。五个文本字段非空，generate_audio 必须 true，seed 为非负整数。characters 与 Scene 角色同序，每项精确为 id/asset_id/voice，voice 非空，素材必须绑定该角色。 |
 | ReviewReport / RevisionPatch / Verification | 沿用第1节的原 JSON 外壳，report/patch 的 schema_version 仍为 `1.0`；执行模式通过 output_mode 参数传递，不把新键塞进旧闭合补丁外壳。generated 模式的每条 set 只含 dialogue；一个 shot 最多一条 edit，引用一个该镜头的有效 issue_id；revise 输入汇集该镜头全部意见，verify 仍覆盖所有原 issue_id。 |
 
-GeneratedScene/Plan/Settings 必须显式声明 1.1/generated，不能把旧 1.0 记录自动改标签升级。完整 validator 的 1.1 支持仍是 #8 后续工作；身份辅助函数对未来 scene/plan 扩展字段完整保留，不替代 schema 验证。
+GeneratedScene/Plan/Settings 必须显式声明 1.1/generated，不能把旧 1.0 记录自动改标签升级。公共 validator 已检查1.1场景/计划结构及本地素材；身份辅助函数完整保留未来 scene/plan 扩展字段，不替代完整验证。台词项只允许 character_id/text，不能夹带音色或动作控制。
+
+```python
+from moodcut.validation import validate_scene, validate_plan
+scene_errors = validate_scene(scene, manifest, project_root=".", output_mode="generated")
+plan_errors = validate_plan(scene, plan, manifest, project_root=".", output_mode="generated")
+```
+
+两函数返回 list[str]，空列表表示结构通过，不修改输入。默认 animatic 仍使用1.0和60–90秒；显式 generated 要求1.1/generated、整数秒、镜头/总长上下限、scene_direction 和每镜头 direction。未知模式不自动推断或回退。沿用素材路径、文件哈希、尺寸、crop、角色/beat引用、覆盖和镜头数量检查。验证器不检查提供商能力、实际视频表演或台词情绪，也不自动补长片段；模型可用参数仍由提交前预检处理。
 
 GenerationSettings 不放运行路径、价格、计费记录、condition、单独台词或开发对的 shots 配方。动作与时长只从共同 Plan 读取，避免配置和计划各有一份互相冲突的值。原 `configs/video.json` 仍是 1.0 开发对配置；P4 显式适配到新 Settings，报价配置单独传给现有成本函数，不直接把旧配置当作 1.1 Settings。未知模型选项不能静默忽略；新增选项先修改公共契约及身份测试。
 
@@ -311,17 +319,19 @@ RunRecord 的 estimated_cost_usd/provider_cost_usd 是本条件尝试的消费�
 
 run_status 新增 prepared，表示只完成离线准备；generated 下仅当脚本/审查有效、真实 A/V 拼接通过后才为 completed，否则失败为 failed。render_status 仍沿用 not_started/rendered/render_failed，不把 prepared_offline 映射为 rendered。assembled_requires_manual_inspection 表示文件检查通过，台词/口型/情绪仍未验收。`unchanged` 是合法审查结果；rejected/review_failed 回退不能冒充有效修订。
 
+既有 `scripts/generate_video.py` 开发对入口现已接受 completed 且 review_status 为 applied/unchanged 的来源，并兼容旧 no_changes 只读别名；unchanged/no_changes 的最终完整计划哈希必须等于初稿。仍核对来源哈希，failed/rejected/review_failed 不接受。无意见与空补丁可以合法 unchanged，不表示所有复查意见已经解决。本修复不把该旧入口升级为1.1三条件生成。
+
 Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段，不表示现有 evaluate 已实现新的共享身份验证。P5 必须先接入新资格核对，再导出生成式比较。
 
-### 6.5 各模块接入签名（后续实现，不是当前可调用参数）
+### 6.5 各模块接入签名（验证器已实现，其余仍待接线）
 
-以下是在既有函数上追加的 keyword-only 参数，默认 animatic 兼容旧调用；生成调用必须显式传 output_mode="generated"，且与 Scene/Plan 版本一致。不允许通过 try/except 忽略未知参数或静默退回旧模式。
+公共 validate_scene/validate_plan 的下列参数已实现；其余函数仍是各模块的后续目标签名，不是已有参数。默认 animatic 兼容旧调用；生成调用必须显式传 output_mode="generated"，与 Scene/Plan 版本一致。不要忽略未知参数或静默退回旧模式。
 
 ```python
-# P1 validation.py：旧返回 list[str] 的规则不变。
+# P1 validation.py：已实现，返回 list[str]。
 def validate_scene(scene, manifest, *, project_root=None, output_mode="animatic") -> list[str]: ...
 def validate_plan(scene, plan, manifest, *, project_root=None, output_mode="animatic") -> list[str]: ...
-# P2 planner.py：make_plan 和 make_plan_with_trace 均追加此参数。
+# 以下仍待所属模块实现。P2 planner.py：两个函数均追加此参数。
 def make_plan(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
 def make_plan_with_trace(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
 # P3 reviewer.py / patches.py：保留 mode 的 generic_review/moodcut 含义。
