@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的 1.0 animatic；第5节为既有开发投影；第6节发布 1.1 生成式数据与纯函数，运行接线仍待实现。Python 3.11；包路径 `src/moodcut/`；统一使用 JSON 可序列化 dict。
+本文件定义模块间的公共接口。第1–4节为已实现的 1.0 animatic；第5节为既有开发投影；第6节定义1.1生成式数据、公共验证与脚本编排，真实规划/审查、请求编译和CLI接线仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用 JSON 可序列化 dict。
 
 ## 1. 公共数据
 
@@ -146,11 +146,15 @@ def summarize(records: list[dict], ratings: list[dict]) -> dict: ...
 def run_condition(scene: dict, initial_plan: dict, manifest: dict,
                   client: LLMClient, *, condition: str, out_dir: str,
                   project_root: str, font_path: str | None, render=True,
-                  replicate=1, source_kind="development") -> dict: ... # RunRecord
+                  replicate=1, source_kind="development", output_mode="animatic",
+                  generation_settings=None, template_sha256=None,
+                  expected_initial_plan_sha256=None,
+                  expected_shared_generation_sha256=None) -> dict: ... # RunRecord
 
 def run_experiment(scene: dict, manifest: dict, client=None, *, out_dir: str,
                    project_root=".", font_path=None, render=True, replicate=1,
-                   cache_dir=None, source_kind="development") -> dict: ... # block.json
+                   cache_dir=None, source_kind="development", output_mode="animatic",
+                   generation_settings=None, template_sha256=None) -> dict: ... # block.json
 ```
 
 上述 `...` 用于缩写已实现函数的签名。project_root 为 None 时沿用当前目录；CLI/pipeline 显式传项目根目录。FakeClient 使用预置响应队列，record 每次 stage 和上限；队列耗尽、网络企图或非法响应报错。
@@ -219,7 +223,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。`contracts.py` 的纯函数、常量及软件夹具已实现；`validation.py` 的公共验证器也已支持显式生成模式。规划/审查/生成/评估/CLI 接线仍由各任务完成，不能把接口可导入解释为 CLI 已支持生成模式。上文 1.0 animatic 与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器及pipeline的生成脚本编排/共享哈希记录已实现；编排的准确参数与依赖见6.7。P2/P3真实接口、P4请求编译、P5资格核对及CLI接线仍由各任务完成，不能把脚本记录解释为生成请求或成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -362,3 +366,19 @@ P5 返回所有输入/来源不一致原因，成功为空列表；缺条件、h
 7. **短片模式独立。** 新 generated 模式使用显式的镜头/总时长范围，不强行补到 60 秒。旧 animatic 保留原约束；接口 PR 发布前不要假定 schema_version=1.0 已接受新字段或新时长。
 
 本对照可回答共同规划/生成设置下，情绪专项台词审查相对通用审查的端到端效果。固定 seed 不保证改台词后画面、表情和语音相同，不能单独归因于面部表情、动作规划或 Agent 数量。新增消融条件、数据集、评分口径及正式运行规模须另行确认；本节不授权实验或付费调用。
+
+### 6.7 已实现的生成脚本编排与共享身份记录
+
+`pipeline.run_experiment` 在既有编排上增加keyword-only参数 `output_mode="animatic", generation_settings=None, template_sha256=None`。显式generated要求1.1 Scene/Plan及第6.2节完整Settings；template_sha256由P4按实际编译模板内容计算，P1只检查输入身份，不声明已验证模板实现。默认animatic不变，不允许省略模式而暗传生成设置。
+
+生成模式向P2的 `make_plan_with_trace` 和P3的 `review_and_revise` 显式传递 `output_mode="generated"`。依赖尚未支持时记录失败，不捕获未知参数后改用旧调用。当前离线边界测试使用标注清楚的P2/P3替身及FakeClient，不表示真实模块已经完成联调；client=None不会生成旧animatic假稿来冒充1.1计划。
+
+同一block只有一次规划；缓存有效时不再规划。生成缓存身份另含1.1模式、完整GenerationSettings和模板哈希，并核对保存的计划/共享哈希；损坏缓存保留并失败，不重新调用。编排保存Scene/Manifest/Settings快照，给各条件和审查依赖深拷贝，公共输入不能被审查修改后传染到后续条件。
+
+`run_condition` 同样增加上述三个参数，以及 `expected_initial_plan_sha256`、`expected_shared_generation_sha256`。generated下两个期望值必须与block冻结输入相等，不能省略；standalone调用也必须传。进入审查前重算输入，审查后重新验证本地素材字节和完整计划，调用 `assert_dialogue_only_revision`、重算共享哈希并核对冻结身份。baseline/unchanged另需最终完整哈希等于初稿；审查只接受applied/unchanged，no_changes仅是旧开发对加载别名。非法候选保留审查及最终脚本供审计，run标failed，不作为有效修订。
+
+根输出保存 `scene.json`、`assets.json`、`generation_settings.json`、成功规划后的 `initial.json`、`planning.json`、`block.json`。每条件保存独立输入、generation_settings、initial/final、审查记录（如已执行）及run.json；final_plan_path指向实际保存的候选。block和run记录共享哈希，run.prompt_hashes.video_template保存模板身份，足够从留存输入重算。共享哈希排除台词和输出位置，初稿/最终完整哈希仍包含台词。
+
+此入口只准备脚本，**不编译视频请求、不创建视频任务、不调用animatic renderer**，包括render=True时。通过时block.status和run_status为prepared，generation_status与render_status均为not_started，generation_jobs为空，POST/视频GET为0，video_path为null。失败保留run和账目；共同输入/来源无效时comparison_status为ineligible，通过时仍为not_checked，须等P4/P5后续核对；不宣称eligible或情绪合格。
+
+规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。完整CLI、三条件请求/单镜头选择、request_sha256和视频/资格装配仍待后续增量。

@@ -2,7 +2,7 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-首个增量建议分支：`feat/issue-8-generated-contracts`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+本次编排增量分支：`feat/issue-8-generated-orchestration`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
 ## 下一增量：生成式公共契约与三条件入口（待实现）
 
@@ -12,21 +12,23 @@
 
 - 已修复 `unchanged` 来源兼容：旧开发对入口接受合法无修改记录，仍拒绝失败回退及“标记无修改但计划改变”的来源。
 - 生成脚本目前只支持 baseline / dialogue_revision 开发对，不是完整三条件入口；没有仓库内可复用的单镜头选择入口。
-- 公共验证器已支持显式1.1/generated的镜头/总长约束；生成记录与三条件 RunRecord/评估入口及全链路非台词核对仍待接通。
+- 公共验证器与pipeline生成脚本编排已支持1.1/generated、非台词核对和共享哈希记录；P2/P3真实接线、P4请求编译、CLI及P5资格装配仍待完成。边界软件测试不当成全链路完成。
 
 ### 本次待办与验收
 
 - [x] 接口小 PR：在 CONTRACTS 第6节发布 1.1 字段、签名、记录/哈希约定；`contracts.py` 提供无 I/O 的白名单、非台词比较和身份纯函数，配有离线协议夹具及回归测试。运行模式与各模块接线仍按下面未勾选项实施。
 - [x] 修复 `unchanged` 状态兼容；FakeClient 覆盖无意见、空补丁、有效补丁、rejected、review_failed，失败回退不得冒充有效修订。
 - [x] 实现生成模式的可配置镜头/总时长验证，旧 animatic 行为与旧记录兼容；不把短片强行补到 60 秒，也不暗改既有结果。
-- [ ] 每个 scene/tone/replicate 只规划一次并深拷贝三份；审查前后比较去掉每镜头 dialogue 后的完整计划。动作、场景、镜头、时长、素材及未知扩展字段有变即拒绝。
-- [ ] 记录共享非台词输入哈希 `shared_generation_sha256`：包括共同计划、参考图内容身份、动作/镜头/声音要求、生成模型/参数/seed 和提示模板版本。哈希规范与实现同步；condition 标签、实际台词及输出路径不进入共享哈希。实际请求另存完整哈希。
-- [ ] 接通 baseline/generic_review/moodcut 的离线请求准备与记录；提供正式的单镜头选择参数。默认零网络、无需 key，显式付费标志/范围/预算仍为必要条件；未知费用停止，不自动重试 POST。
+- [x] pipeline生成模式复用一次规划/缓存、深拷贝三份并冻结初稿；调用公共非台词检查，动作、场景、镜头、时长、素材及未知扩展字段变化即拒绝。依赖真实接线另由P2/P3完成，当前以软件替身验收边界。
+- [x] 脚本编排保存 `shared_generation_sha256`、initial/final完整哈希及可重算输入，包括共同计划、参考图内容身份、声音/模型/参数/seed和模板身份；台词与输出位置不进入共享哈希。精确参数和记录见CONTRACTS 6.7。
+- [ ] 接通 baseline/generic_review/moodcut 的离线视频请求准备与记录，保存实际request_sha256；提供正式单镜头选择参数。脚本prepared不当成请求或视频完成；默认零网络、无需key，付费仍需显式授权/范围/预算，未知费用停止，不自动重试POST。
 - [ ] 配对资格与失败状态分开记录：保留失败条件/账目，但不将其作为有效修订对比。P5 导出前再次检查共享输入；规划费用只计一次。
 
 ### 写入范围与依赖
 
 公共协议归 P1：`src/moodcut/contracts.py`、`tests/test_contracts.py` 和 `tests/fixtures/generated_contract.json`；其他模块导入它，不复制哈希/白名单实现。具体当前接口与未来接线签名见 CONTRACTS 6.1 / 6.5。
+
+本次已实现边界见CONTRACTS 6.7及tests/test_pipeline.py：一次规划/缓存、条件隔离、非台词越权与身份篡改拒绝、unchanged、失败/未知费用保留。P2/P3依赖替身明确标为软件测试，不补写队友模块，不静默降级旧模式。
 
 主改 `src/moodcut/__main__.py`、`pipeline.py`、`validation.py`、`video_client.py`、`scripts/generate_video.py` 及对应现有测试、`docs/CONTRACTS.md`。P1 维护共享夹具；不要改 P2/P3 提示词或 P4 编译器。`configs/video.json` 由 P4 维护，传输/价格字段变更先协调。入口选项及新字段在接口 PR 中给出准确用法后，队友再接入。
 
