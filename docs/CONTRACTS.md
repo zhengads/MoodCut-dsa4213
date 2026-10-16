@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的 1.0 animatic；第5节为既有开发投影；第6节定义1.1生成式数据、公共验证与脚本编排，真实规划/审查、请求编译和CLI接线仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用 JSON 可序列化 dict。
+本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义1.1生成式数据、验证/脚本编排及离线CLI边界，真实规划/审查、请求编译及视频/资格装配仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
 
 ## 1. 公共数据
 
@@ -223,7 +223,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器及pipeline的生成脚本编排/共享哈希记录已实现；编排的准确参数与依赖见6.7。P2/P3真实接口、P4请求编译、P5资格核对及CLI接线仍由各任务完成，不能把脚本记录解释为生成请求或成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排及离线CLI边界已实现，详见6.7/6.8。P2/P3真实接口、P4请求编译及P5/视频装配仍由各任务完成，不能把脚本记录或替身请求解释为真实成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -353,7 +353,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
 P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
 
-P5 返回所有输入/来源不一致原因，成功为空列表；缺条件、hash 不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1 在后续集成中调用各模块并映射上文记录；CLI 计划追加 `--output-mode {animatic,generated}`，**当前尚未实现**，不得把未来命令当成现有命令验收。
+P5返回所有输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1后续集成视频/资格记录；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法与缺依赖行为见6.8，不代表P2/P3/P4/P5接口或付费入口均已完成。
 
 ### 6.6 后续接线必须满足的约束
 
@@ -381,4 +381,32 @@ P5 返回所有输入/来源不一致原因，成功为空列表；缺条件、h
 
 此入口只准备脚本，**不编译视频请求、不创建视频任务、不调用animatic renderer**，包括render=True时。通过时block.status和run_status为prepared，generation_status与render_status均为not_started，generation_jobs为空，POST/视频GET为0，video_path为null。失败保留run和账目；共同输入/来源无效时comparison_status为ineligible，通过时仍为not_checked，须等P4/P5后续核对；不宣称eligible或情绪合格。
 
-规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。完整CLI、三条件请求/单镜头选择、request_sha256和视频/资格装配仍待后续增量。
+规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，真实P4编译与视频/资格装配仍待后续增量。
+
+### 6.8 离线生成入口与单镜头选择
+
+已实现P1入口与编译器调用边界，真实P4编译器仍待#24完成；6.7的脚本编排、此处的请求准备及后续视频生成是三个不同阶段。
+
+```text
+python -m moodcut run --output-mode generated --source-block runs/generated-scripts/block.json --shot-id s2 --pricing-config configs/video.json --output runs/generated-s2
+```
+
+source-block接受已有block.json或其目录，必须为6.7产生的prepared、1.1/generated三条件脚本。shot-id省略时选全部；不重新规划/审查，不接受旧dialogue_revision/animatic、失败回退或已提交的视频运行。默认run仍为animatic；generated入口始终无需key、零HTTP，无付费执行路径。它拒绝allow-paid、预算、responses、cache、scene/assets、model-config、font、no-render、replicate/source-kind等非默认覆盖；mock只表示显式选择离线，不改写来源mock/provenance。CLI输入/输出相对project-root解析，已有输出不覆盖。
+
+程序接口在 `pipeline.py`（路径与既有pipeline调用一样，由调用者相对当前目录解析；CLI负责project-root解析）：
+
+```python
+def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=None, pricing_config) -> dict: ...
+```
+
+它重读block及planning/run/review磁盘记录，核对根与各条件的Scene/Manifest/Settings/初稿、版本、状态、角色素材字节、完整/共享哈希和模板身份。baseline/unchanged必须完整等于初稿，两类审查只准applied/unchanged；最终脚本只改台词，且与留存review.json的状态/候选计划一致。忽略不可信的final_plan_path指针，读取对应条件目录的final.json。source中的逻辑调用/历史账目保留，不充当本次调用。生成中或已提交的来源不能用作此脚本准备入口。
+
+随后调用P4的 `build_generated_video_bundle`（6.5原签名），传完整三组计划、共同设置/模板、独立本地报价配置。函数不存在则报Missing generated request compiler (#24)，不导入旧build_video_bundle替代；不得加生产用fake编译器。P1核对编译输入未被修改，返回bundle的版本/kind、初稿/最终/共享身份、完整镜头顺序、设置、每请求哈希、声音/参考输入、时长、原索引seed及本地报价，之后再次核对来源未被同时编辑。P4仍负责提示模板内容、人物参考映射、语义控制及模型参数实现，不把P1边界检查当成其验收。
+
+编译完整计划后才按shot-id筛选jobs；不截断Plan、不重排镜头或重新编号seed。各条件同一个选择，job另存shot_index，request.seed仍为settings.seed+原完整计划索引。bundle保留完整初稿/共享身份及full_plan_shot_ids、selected_shot_ids，每条实际请求使用公共json_hash记录request_sha256。所有完整请求先通过边界验证，即使仅选择一个镜头。
+
+成功输出四份JSON：bundle.json为筛选后的编译结果；source_inputs.json为完整源Scene/Manifest/initial/plans/settings/template；source_block.json保留原block与历史费用；preparation.json为独立的generated_request_preparation对象，preparation_stage=requests、status=prepared_offline、comparison_status=not_checked、video_path=null，新calls/HTTP/视频POST/GET及消费均为0。它不是完整GeneratedRunRecord，也不当作视频completed或比较eligible；后续#8/#9仍需装配实际任务和资格记录。
+
+preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
+
+当前回归用真实pipeline保存源JSON，明确的P2/P3替身生成软件源，P4替身仅验入口协议；所有真实网络连接禁止。旧animatic回归保留。P2/P3/P4真实实现与视频/资格装配未完成，不把替身通过写成端到端已可运行。

@@ -2,7 +2,7 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-本次编排增量分支：`feat/issue-8-generated-orchestration`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+本次离线入口增量分支：`feat/issue-8-generated-cli`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
 ## 下一增量：生成式公共契约与三条件入口（待实现）
 
@@ -11,8 +11,8 @@
 ### 已核实的缺口
 
 - 已修复 `unchanged` 来源兼容：旧开发对入口接受合法无修改记录，仍拒绝失败回退及“标记无修改但计划改变”的来源。
-- 生成脚本目前只支持 baseline / dialogue_revision 开发对，不是完整三条件入口；没有仓库内可复用的单镜头选择入口。
-- 公共验证器与pipeline生成脚本编排已支持1.1/generated、非台词核对和共享哈希记录；P2/P3真实接线、P4请求编译、CLI及P5资格装配仍待完成。边界软件测试不当成全链路完成。
+- 旧scripts/generate_video.py保留开发对；新run --output-mode generated已支持已有三条件脚本的离线入口与单镜头选择。P4正式编译器尚未实现，真实运行明确报缺#24，不回退旧开发对。
+- 公共验证器/pipeline编排及离线CLI边界已支持1.1/generated；P2/P3真实接线、P4请求编译、视频与P5资格装配仍待完成。边界软件测试不当成全链路完成。
 
 ### 本次待办与验收
 
@@ -21,7 +21,8 @@
 - [x] 实现生成模式的可配置镜头/总时长验证，旧 animatic 行为与旧记录兼容；不把短片强行补到 60 秒，也不暗改既有结果。
 - [x] pipeline生成模式复用一次规划/缓存、深拷贝三份并冻结初稿；调用公共非台词检查，动作、场景、镜头、时长、素材及未知扩展字段变化即拒绝。依赖真实接线另由P2/P3完成，当前以软件替身验收边界。
 - [x] 脚本编排保存 `shared_generation_sha256`、initial/final完整哈希及可重算输入，包括共同计划、参考图内容身份、声音/模型/参数/seed和模板身份；台词与输出位置不进入共享哈希。精确参数和记录见CONTRACTS 6.7。
-- [ ] 接通 baseline/generic_review/moodcut 的离线视频请求准备与记录，保存实际request_sha256；提供正式单镜头选择参数。脚本prepared不当成请求或视频完成；默认零网络、无需key，付费仍需显式授权/范围/预算，未知费用停止，不自动重试POST。
+- [x] P1离线入口与单镜头边界：读取并核对6.7来源，调用6.5编译接口，验证请求/报价并按原索引选择jobs，保存request_sha256和requests/prepared_offline产物。用明确P4软件替身验收，缺真实接口时明确失败；不调用付费API。
+- [ ] 接通真实P2/P3/P4后的baseline/generic_review/moodcut请求准备联调与实际任务记录。入口边界已实现，不等于真实编译器就绪；脚本/请求prepared不当成视频完成。付费仍需显式授权/范围/预算，未知费用停止，不自动重试POST。
 - [ ] 配对资格与失败状态分开记录：保留失败条件/账目，但不将其作为有效修订对比。P5 导出前再次检查共享输入；规划费用只计一次。
 
 ### 写入范围与依赖
@@ -29,6 +30,8 @@
 公共协议归 P1：`src/moodcut/contracts.py`、`tests/test_contracts.py` 和 `tests/fixtures/generated_contract.json`；其他模块导入它，不复制哈希/白名单实现。具体当前接口与未来接线签名见 CONTRACTS 6.1 / 6.5。
 
 本次已实现边界见CONTRACTS 6.7及tests/test_pipeline.py：一次规划/缓存、条件隔离、非台词越权与身份篡改拒绝、unchanged、失败/未知费用保留。P2/P3依赖替身明确标为软件测试，不补写队友模块，不静默降级旧模式。
+
+离线CLI与单镜头选择见CONTRACTS 6.8、tests/test_cli.py；复用prepare_generated_run。来源/编译失败不写成功产物，所有已有结果保留，P4模块不在本任务代写。
 
 主改 `src/moodcut/__main__.py`、`pipeline.py`、`validation.py`、`video_client.py`、`scripts/generate_video.py` 及对应现有测试、`docs/CONTRACTS.md`。P1 维护共享夹具；不要改 P2/P3 提示词或 P4 编译器。`configs/video.json` 由 P4 维护，传输/价格字段变更先协调。入口选项及新字段在接口 PR 中给出准确用法后，队友再接入。
 

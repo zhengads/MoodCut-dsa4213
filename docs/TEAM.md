@@ -22,9 +22,11 @@
 
 ### 交付顺序与文件边界
 
-公共协议和软件夹具见 [CONTRACTS 6.1–6.5](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。公共身份纯函数、显式生成模式验证器均已实现；规划/审查/生成/CLI接线仍待所属任务完成。依赖 PR 合入后同步 main，用真实公共验证器联调，不复制哈希/白名单/validator；其他模块的未来参数不当成已实现。
+公共协议和软件夹具见 [CONTRACTS第6节](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。公共身份纯函数、验证器、脚本编排及离线CLI边界已实现；规划/审查/编译器、视频/资格的真实接线仍待所属任务完成。依赖PR合入后同步main，用公共实现联调，不复制哈希/白名单/validator/入口；其他模块的未来参数不当成已实现。
 
-pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见CONTRACTS 6.7。其P2/P3边界已用软件替身离线验收；真实依赖、P4请求/视频、P5资格核对和CLI仍待接通。脚本prepared不等于视频完成，各成员继续所属文件，不重复实现公共编排。
+pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见CONTRACTS 6.7。其P2/P3边界已用软件替身离线验收；真实依赖、P4请求/视频及P5资格核对仍待接通。脚本prepared不等于视频完成，各成员继续所属文件，不重复实现公共编排。
+
+P1离线生成入口及单镜头边界已提供，见CONTRACTS 6.8；P4编译器未实现时明确失败，不能用旧开发对或生产fake替代。真实P2/P3/P4接入后再验联调；其余模块不重复写入口，离线准备不创建视频任务或调用付费API。
 
 1. P1 先交一个接口小 PR，发布显式模式、共享非台词哈希、生成记录/审查字段接口。P2/P3/P4/P5 可以同时读源码、准备回归用例和软件夹具；待契约合入再接实现。
 2. P2 维护 planner/importer 与 planning_*.txt；P3 维护 reviewer/patches 与 review_*.txt；P4 维护 video_generation/媒体检查与 configs/video.json；P5 维护 evaluation 和评估配置/文档。公共 validator、CLI、pipeline、video_client 和 scripts/generate_video.py 归 P1。共享文件改动先在 Issue 协调。
