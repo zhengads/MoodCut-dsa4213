@@ -17,6 +17,8 @@
 
 遵守 docs/CONTRACTS.md 第6节的 1.1 协议：共同规划一次，三条件仅台词可变；公共纯函数从 `moodcut.contracts` 导入。`validation.validate_scene/validate_plan` 已支持显式 `output_mode="generated"`，默认仍按1.0 animatic；规划/审查/生成/CLI 入口的接线仍待各任务实施，不能把6.5其余未来参数当成已可调用。不得混入单组动作/镜头增强；开发投影不是完整三条件实验，固定 seed 不保证视觉一致。任务未勾选项不当成已实现功能。
 
+`pipeline.run_experiment/run_condition` 的generated脚本编排及共享哈希记录已实现，参数/依赖见CONTRACTS 6.7。它只保存prepared脚本，不编译请求、生成视频或调用animatic renderer；P2/P3缺接口时明确失败。边界测试的依赖替身不当成真实模块联调，后续接入沿用公共身份检查和记录，不另写编排框架。
+
 ## 目录与参考资料
 
 - 项目代码：`src/moodcut/` 下按功能平铺 `.py` 文件；提示词集中在 `src/moodcut/prompts/`，模型/实验配置在根目录 `configs/`。
