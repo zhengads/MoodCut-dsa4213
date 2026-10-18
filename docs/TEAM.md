@@ -22,15 +22,17 @@
 
 ### 交付顺序与文件边界
 
-公共协议和软件夹具见 [CONTRACTS第6节](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。公共身份纯函数、验证器、脚本编排、离线CLI及P2/P3/P4规划/审查/请求编译已实现；实际任务、媒体检查材料/资格仍待所属任务完成。依赖PR合入后同步main，用公共实现联调，不复制哈希/白名单/validator/入口；P5目标签名不当成已实现。
+公共协议和软件夹具见 [CONTRACTS第6节](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。公共身份纯函数、验证器、脚本编排、离线CLI及P2/P3/P4规划/审查/请求编译/本地检查材料已实现；实际任务/资格仍待所属任务完成。依赖PR合入后同步main，用公共实现联调，不复制哈希/白名单/validator/入口；P5目标签名不当成已实现。
 
 pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见CONTRACTS 6.7。原协议替身测试保留，实际P2/P3/P4加FakeClient的离线请求联调见6.12；真实视频及P5资格核对仍待接通。脚本prepared不等于视频完成，各成员继续所属文件，不重复实现公共编排。
 
-P2/P3生成式规划及台词限定审查已实现，见CONTRACTS 6.10/6.11；实际planner/reviewer加FakeClient可在既有pipeline保存三条件prepared脚本，核对共同初稿/非台词身份、实际复查与独立调用账目。P4通用编译器已实现（6.12），消费共同scene_direction和shots[].direction/时长/素材，不沿用读信手写配方。后续继续已有片段检查材料/成片来源绑定；请求准备不等于成片。
+P2/P3生成式规划及台词限定审查已实现，见CONTRACTS 6.10/6.11；实际planner/reviewer加FakeClient可在既有pipeline保存三条件prepared脚本，核对共同初稿/非台词身份、实际复查与独立调用账目。P4通用编译器已实现（6.12），消费共同scene_direction和shots[].direction/时长/素材，不沿用读信手写配方。已有本地片段检查材料/成片来源绑定见6.13；请求准备不等于成片，软件媒体检查不等于模型质量验收。
 
 P1离线生成入口及单镜头边界已接实际P4编译器，见CONTRACTS 6.8/6.12；缺依赖故障仍明确失败，不用旧开发对或生产fake替代。规划前冻结get_video_template_sha256()，共同模板变化时不改写旧block冒充新输入。其余模块不重复写入口，离线准备不创建视频任务或调用付费API。
 
 本地回执/费用记录装配见CONTRACTS 6.9，复用P1的assemble_generated_records，不另建账目框架。#24提供已有拼接结果及片段/成片哈希绑定，#9做资格复核；旧回执GET缺失为null，报价不当消费，completed只证明所选范围的文件检查通过。完整真实模块接线尚未完成，生成式CLI盲评导出/ratings在#9接线前禁止。
+
+本地观看检查入口为scripts/inspect_generated_video.py及P4 inspect_generated_video（6.13），复用P1预检/最终重检、原拼接器和接触表布局。观看页/ffprobe/实际抽帧及空CSV/JSON检查表已提供，明确声明synthetic/provided_local，主观判断不自动填写。最终记录仍不设eligible；preflight与records是同一历史的两个快照，只使用最终records账目，不能重复累加。#22的P4消费联调已随PR #34合入，工程任务已关闭。
 
 1. P1 先交一个接口小 PR，发布显式模式、共享非台词哈希、生成记录/审查字段接口。P2/P3/P4/P5 可以同时读源码、准备回归用例和软件夹具；待契约合入再接实现。
 2. P2 维护 planner/importer 与 planning_*.txt；P3 维护 reviewer/patches 与 review_*.txt；P4 维护 video_generation/媒体检查与 configs/video.json；P5 维护 evaluation 和评估配置/文档。公共 validator、CLI、pipeline、video_client 和 scripts/generate_video.py 归 P1。共享文件改动先在 Issue 协调。

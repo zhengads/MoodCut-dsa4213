@@ -2,6 +2,7 @@
 from copy import deepcopy
 from decimal import Decimal
 from pathlib import Path
+import hashlib
 import json
 import shutil
 import subprocess
@@ -325,13 +326,17 @@ def test_local_synthetic_video_and_audio_are_preserved(tmp_path):
 
 @pytest.fixture(params=["letter", "umbrella"])
 def generated_inputs(request, monkeypatch):
+    return _generated_case(request.param, monkeypatch)
+
+
+def _generated_case(kind, monkeypatch):
     """Task-local hand-written software stories, not model outputs or a dataset."""
     data = json.loads((ROOT / "tests/fixtures/generated_contract.json").read_text(encoding="utf-8"))
     scene, initial, settings = data["scene"], data["initial_plan"], data["settings"]
     manifest = json.loads((ROOT / "tests/fixtures/assets.json").read_text(encoding="utf-8"))
     pricing = json.loads((ROOT / "configs/video.json").read_text(encoding="utf-8"))
     settings["model"] = pricing["model"]
-    if request.param == "umbrella":
+    if kind == "umbrella":
         scene.update(scene_id="software_bus_stop", tone="affectionate", story="Lin returns Bo's umbrella; they walk to the bus.",
                      characters=[{"id": "lin", "name": "林"}, {"id": "bo", "name": "博"}],
                      beats=[{"id": "handover", "description": "Lin returns the umbrella."},
@@ -662,3 +667,289 @@ def test_actual_compiler_requests_reuse_existing_records_accounting(generated_in
     assert [r["generation_posts"] for r in result["runs"]] == [1, 0, 0]
     assert [r["provider_cost_usd"] for r in result["runs"]] == [.23, 0, 0]
     assert all(r["run_status"] == "completed" and r["comparison_status"] == "not_checked" for r in result["runs"])
+
+
+@pytest.fixture
+def inspection_inputs(tmp_path, monkeypatch):
+    """Actual P1/P2/P3/P4 requests + synthetic moving/sine files and receipts."""
+    from moodcut import client, video_client
+    from moodcut.pipeline import prepare_generated_run, read_json, write_json
+    case = _generated_case('umbrella', monkeypatch)
+    scene, initial, plans = case[:3]
+    scene.update(min_duration_s=4, max_duration_s=4, min_shot_duration_s=2, max_shot_duration_s=2)
+    for plan in [initial, *plans.values()]:
+        for shot in plan['shots']:
+            shot['duration_s'] = 2
+    # Deliberately awkward IDs exercise safe file naming and escaped HTML/CSV.
+    for plan in [initial, *plans.values()]:
+        plan['shots'][0]['shot_id'] = '=1+1<script>alert(1)</script>'
+    for module, name in ((video_client, 'OpenRouterVideoClient'), (video_client, 'fetch_video_models'),
+                         (client.OpenRouterClient, 'from_env')):
+        monkeypatch.setattr(module, name, lambda *a, **k: pytest.fail('No clients/catalogue/network during inspection'))
+    source = tmp_path / 'scripts'
+    block = script_source(case, source)
+    prep = tmp_path / 'prepared'
+    prepare_generated_run(source, out_dir=prep, project_root=ROOT, pricing_config=ROOT / 'configs/video.json')
+    bundle = read_json(prep / 'bundle.json')
+    media = []
+    for index in range(2):
+        path = tmp_path / f'synthetic-pattern-{index}.mp4'
+        subprocess.run(['ffmpeg', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=160x90:rate=24:duration=2',
+            '-f', 'lavfi', '-i', f'sine=frequency={440+index*220}:duration=2', '-c:v', 'libx264', '-pix_fmt', 'yuv420p',
+            '-c:a', 'aac', '-shortest', str(path)], check=True, capture_output=True, timeout=30)
+        media.append(path)
+    supplied = {'schema_version': '1.1', 'block_id': block['block_id'], 'provenance': 'Synthetic software media/receipts; no model output or actual charges.',
+                'conditions': []}
+    for condition_index, condition in enumerate(bundle['conditions']):
+        entries = []
+        for index, job in enumerate(condition['jobs']):
+            if condition_index and index == 1:
+                entries.append({'shot_id': job['shot_id'], 'reused_from': {'run_id': block['runs'][0]['run_id'], 'shot_id': job['shot_id']}})
+                continue
+            receipt = tmp_path / f'receipt-{condition_index}-{index}.json'
+            write_json(receipt, {'schema_version': '1.1', 'model': job['request']['model'], 'status': 'downloaded',
+                'job_id': f'synthetic-job-{condition_index}-{index}', 'request_sha256': job['request_sha256'],
+                'estimated_cost_usd': job['quoted_cost_usd'], 'provider_cost_usd': '0.07', 'video_path': media[index].name,
+                'post_attempts': 1, 'poll_attempts': 2, 'download_attempts': 1, 'download_redirect_attempts': 0})
+            entries.append({'shot_id': job['shot_id'], 'receipt_path': receipt.name})
+        supplied['conditions'].append({'condition': condition['condition'], 'jobs': entries})
+    evidence = tmp_path / 'evidence.json'
+    write_json(evidence, supplied)
+    return {'case': case, 'source': source, 'prep': prep, 'block': block, 'bundle': bundle, 'media': media,
+            'evidence': evidence, 'supplied': supplied, 'output': tmp_path / 'inspection'}
+
+
+def inspect_local(case, **options):
+    from moodcut.video_generation import inspect_generated_video
+    return inspect_generated_video(case['prep'], evidence=case['evidence'], out_dir=options.get('out_dir', case['output']),
+        pricing_config=ROOT / 'configs/video.json', project_root=ROOT, media_origin=options.get('media_origin', 'synthetic'))
+
+
+def test_inspection_binds_real_local_media_and_leaves_subjective_cells_blank(inspection_inputs):
+    import csv
+    from PIL import Image, ImageChops
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    original = {p: p.read_bytes() for p in [*case['source'].rglob('*.json'), *case['prep'].glob('*.json'),
+                case['evidence'], *case['evidence'].parent.glob('receipt-*.json'), *case['media']]}
+    result = inspect_local(case)
+    output = case['output']
+    assert result['status'] == 'ready_requires_manual_inspection' and result['comparison_status'] == 'not_checked'
+    assert result['media_origin'] == 'synthetic' and result['speech_and_visual_quality'] == 'not_reviewed'
+    assert all(v == 0 for v in result['inspection_activity'].values())
+    records = read_json(output / 'records/block.json')
+    assert records['status'] == 'completed' and records['accounting']['provider_cost_usd'] == .28
+    assert records['accounting']['generation_posts'] == 4 and records['accounting']['planning_counted_once'] is True
+    assert records['accounting'] == read_json(output / 'preflight_records/block.json')['accounting']
+    assert [r['generation_posts'] for r in records['runs']] == [2, 1, 1]
+    for index, row in enumerate(result['conditions']):
+        folder = output / row['condition']
+        check = read_json(folder / 'media_check.json')
+        assert check['video_path'] == 'film.mp4' and check['sha256'] == hashlib.sha256((folder/'film.mp4').read_bytes()).hexdigest()
+        expected = [{'shot_id': job['shot_id'], 'request_sha256': job['request_sha256'],
+                     'sha256': hashlib.sha256(case['media'][j].read_bytes()).hexdigest()}
+                    for j, job in enumerate(case['bundle']['conditions'][index]['jobs'])]
+        assert check['source_clips'] == expected
+        assert check['selected_shot_ids'] == result['selected_shot_ids']
+        assert check['shared_generation_sha256'] == case['block']['shared_generation_sha256']
+        assert check['speech_and_visual_quality'] == 'requires_manual_inspection'
+        assert records['runs'][index]['media_check']['sha256'] == check['sha256']
+        probe = read_json(folder / 'ffprobe.json')
+        assert probe['film']['has_audio'] is True and abs(probe['film']['duration_s']-4) < .5
+        assert {'video', 'audio'} <= {s['codec_type'] for s in probe['film']['ffprobe']['streams']}
+        assert len(probe['clips']) == 2 and len(check['frame_samples']) == 6
+        assert (folder / 'contact_sheet.png').is_file()
+        frames = [Image.open(folder / sample['path']).convert('RGB') for sample in check['frame_samples'][:3]]
+        assert ImageChops.difference(frames[0], frames[2]).getbbox() is not None  # Synthetic motion really changes pixels.
+    checklist = read_json(output / 'manual_checks.json')
+    assert checklist['status'] == 'not_reviewed' and len(checklist['items']) == 6
+    for item in checklist['items']:
+        assert all(item[k] is None for k in ('character_action','dialogue_speaker','audio_lipsync','continuity'))
+        assert item['notes'] == '' and item['film_sha256']
+    with (output/'manual_checks.csv').open(encoding='utf-8-sig', newline='') as stream:
+        items = list(csv.DictReader(stream))
+    assert items[0]['shot_id'].startswith("'=1+1")
+    assert all(item[k] == '' for item in items for k in ('character_action','dialogue_speaker','audio_lipsync','continuity','notes'))
+    page = (output/'index.html').read_text(encoding='utf-8')
+    assert 'synthetic' in page and '不用于盲评' in page and '不是语音识别结果' in page
+    assert '<script>alert(1)</script>' not in page and '&lt;script&gt;' in page
+    assert page.count('<video controls') == 3
+    assert all(p.read_bytes() == content for p, content in original.items())
+    with pytest.raises(FileExistsError):
+        inspect_local(case)
+
+
+@pytest.mark.parametrize('problem', ['silent', 'duration', 'failed_unknown', 'missing_receipt', 'invalid_pointer', 'unsubmitted'])
+def test_inspection_preserves_failed_or_missing_media_and_unknown_costs(inspection_inputs, problem):
+    from moodcut.pipeline import read_json, write_json
+    case = inspection_inputs
+    receipt = case['evidence'].parent / 'receipt-0-0.json'
+    data = read_json(receipt)
+    if problem in ('silent', 'duration'):
+        invalid = case['evidence'].parent / 'synthetic-invalid.mp4'
+        args = ['ffmpeg','-v','error','-i',str(case['media'][0])]
+        args += ['-an','-c:v','copy'] if problem == 'silent' else ['-t','0.4','-c','copy']
+        subprocess.run([*args,str(invalid)],check=True,capture_output=True,timeout=30)
+        data['video_path'] = invalid.name
+    elif problem == 'failed_unknown':
+        data.update(status='failed', video_path=None, provider_cost_usd=None)
+        data.pop('download_attempts')
+    elif problem == 'missing_receipt':
+        receipt.unlink()
+    elif problem == 'invalid_pointer':
+        case['supplied']['conditions'][0]['jobs'][0]['receipt_path'] = 123
+    else:
+        case['supplied']['conditions'][0]['jobs'] = []
+        # A reuse of an unsubmitted origin is also invalid and must not generate a film.
+    if problem not in ('missing_receipt','invalid_pointer','unsubmitted'):
+        receipt.write_text(json.dumps(data),encoding='utf-8')
+    case['evidence'].write_text(json.dumps(case['supplied']),encoding='utf-8')
+    result = inspect_local(case)
+    assert result['status'] == 'failed'
+    assert result['conditions'][0]['status'] in ('failed','not_ready')
+    assert not (case['output']/'baseline/film.mp4').exists()
+    records = read_json(case['output']/'records/block.json')
+    if problem in ('failed_unknown','missing_receipt','invalid_pointer'):
+        assert records['accounting']['provider_cost_usd'] is None
+    else:
+        assert records['runs'][0]['provider_cost_usd'] == (.14 if problem != 'unsubmitted' else 0)
+    assert (case['output']/'index.html').is_file()
+    assert result['inspection_activity']['real_http_calls'] == 0
+
+
+def test_inspection_cli_and_unsubmitted_records_are_explicit(inspection_inputs, monkeypatch):
+    import importlib.util
+    from moodcut.pipeline import write_json, read_json
+    case = inspection_inputs
+    spec = importlib.util.spec_from_file_location('inspect_video_command', ROOT/'scripts/inspect_generated_video.py')
+    command = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(command)
+    for condition in case['supplied']['conditions']:
+        condition['jobs'] = []
+    case['evidence'].write_text(json.dumps(case['supplied']),encoding='utf-8')
+    monkeypatch.chdir(case['evidence'].parent)
+    args = ['--project-root',str(ROOT),'--preparation',str(case['prep']),'--evidence',str(case['evidence']),
+            '--output',str(case['output']),'--media-origin','synthetic']
+    assert command.main(args) == 1
+    result = read_json(case['output']/'inspection.json')
+    assert result['status'] == 'incomplete' and result['comparison_status'] == 'not_checked'
+    assert not list(case['output'].rglob('*.mp4'))
+    assert read_json(case['output']/'records/block.json')['accounting']['generation_posts'] == 0
+    assert command.main(args) == 1
+    with pytest.raises(SystemExit):
+        command.main([*args, '--allow-paid'])
+
+
+def test_inspection_rejects_tampered_preparation_before_output(inspection_inputs):
+    from moodcut.pipeline import read_json, write_json
+    case = inspection_inputs
+    bundle = read_json(case['prep']/'bundle.json')
+    bundle['conditions'][0]['jobs'][0]['request']['seed'] += 1
+    (case['prep']/'bundle.json').write_text(json.dumps(bundle),encoding='utf-8')
+    with pytest.raises(ValueError, match='hash mismatch'):
+        inspect_local(case)
+    assert not case['output'].exists()
+
+
+def test_inspection_reuses_validated_existing_assembly_without_reencoding(inspection_inputs, monkeypatch):
+    from moodcut import video_generation
+    case = inspection_inputs
+    first = inspect_local(case)
+    # Reuse a bound local film, never regenerate or silently repair it.
+    case['evidence'] = case['output'] / 'evidence.json'
+    monkeypatch.setattr(video_generation, 'assemble_generated_clips', lambda *a, **k: pytest.fail('Existing assembly should be copied'))
+    second = inspect_local(case, out_dir=case['output'].parent / 'inspection-copy', media_origin='provided_local')
+    assert second['status'] == 'ready_requires_manual_inspection'
+    assert [r['sha256'] for r in second['conditions']] == [r['sha256'] for r in first['conditions']]
+    assert second['media_origin'] == 'provided_local'
+
+
+def test_inspection_detects_media_changed_during_assembly(inspection_inputs, monkeypatch):
+    from moodcut import video_generation
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    original = video_generation.assemble_generated_clips
+    def mutate_after_assembly(*args, **kwargs):
+        result = original(*args, **kwargs)
+        with case['media'][0].open('ab') as stream:
+            stream.write(b'changed-after-preflight')
+        return result
+    monkeypatch.setattr(video_generation, 'assemble_generated_clips', mutate_after_assembly)
+    result = inspect_local(case)
+    assert result['status'] == 'failed' and result['comparison_status'] == 'ineligible'
+    assert any('changed during inspection' in e for e in result['conditions'][0]['errors'])
+    assert '<video controls' not in (case['output']/'index.html').read_text(encoding='utf-8')
+    records = read_json(case['output']/'records/block.json')
+    assert records['accounting']['provider_cost_usd'] == .28
+    assert all(r['run_status'] == 'failed' for r in records['runs'])
+
+
+def test_inspection_valid_media_retains_unknown_legacy_bill(inspection_inputs):
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    receipt = case['evidence'].parent / 'receipt-0-0.json'
+    data = read_json(receipt)
+    data.update(schema_version='1.0', provider_cost_usd=None)
+    data.pop('download_attempts')
+    data.pop('download_redirect_attempts')
+    receipt.write_text(json.dumps(data),encoding='utf-8')
+    result = inspect_local(case)
+    assert result['status'] == 'ready_requires_manual_inspection'
+    records = read_json(case['output']/'records/block.json')
+    assert records['accounting']['provider_cost_usd'] is None
+    assert records['accounting']['real_http_calls'] is None
+    assert records['accounting']['known_subtotals']['provider_cost_usd'] == .21
+    assert records['runs'][0]['generation_jobs'][0]['missing_counters'] == ['download_attempts','download_redirect_attempts']
+    assert all(r['run_status'] == 'completed' and r['comparison_status'] == 'not_checked' for r in records['runs'])
+
+
+def test_inspection_cli_single_shot_retains_full_plan_identity(inspection_inputs):
+    import importlib.util
+    from moodcut.pipeline import prepare_generated_run, read_json
+    case = inspection_inputs
+    prep = case['prep'].parent / 'one-prepared'
+    prepare_generated_run(case['source'], out_dir=prep, project_root=ROOT, shot_id='walk-to-bus',
+                          pricing_config=ROOT/'configs/video.json')
+    for condition in case['supplied']['conditions']:
+        condition['jobs'] = [j for j in condition['jobs'] if j['shot_id'] == 'walk-to-bus']
+    case['evidence'].write_text(json.dumps(case['supplied']),encoding='utf-8')
+    spec = importlib.util.spec_from_file_location('inspect_single_command',ROOT/'scripts/inspect_generated_video.py')
+    command = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(command)
+    assert command.main(['--project-root',str(ROOT),'--preparation',str(prep),'--evidence',str(case['evidence']),
+                         '--output',str(case['output']),'--media-origin','synthetic']) == 0
+    result = read_json(case['output']/'inspection.json')
+    assert result['selected_shot_ids'] == ['walk-to-bus']
+    assert result['initial_plan_sha256'] == case['block']['initial_plan_sha256']
+    assert result['shared_generation_sha256'] == case['block']['shared_generation_sha256']
+    check = read_json(case['output']/'baseline/media_check.json')
+    assert abs(check['duration_s']-2) < .5 and len(check['source_clips']) == 1
+    assert read_json(case['output']/'records/block.json')['accounting']['provider_cost_usd'] == .07
+
+
+def test_inspection_requires_explicit_media_origin(tmp_path):
+    from moodcut.video_generation import inspect_generated_video
+    with pytest.raises(ValueError, match='media_origin'):
+        inspect_generated_video('missing', evidence='missing', out_dir=tmp_path/'out', pricing_config='missing',
+                                media_origin='generated-and-passed')
+    assert not (tmp_path/'out').exists()
+
+
+def test_inspection_final_receipt_recheck_can_downgrade_readiness(inspection_inputs, monkeypatch):
+    from moodcut import video_generation
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    original = video_generation._inspection_frames
+    def change_receipt(*args, **kwargs):
+        result = original(*args, **kwargs)
+        receipt = case['evidence'].parent/'receipt-0-0.json'
+        data = read_json(receipt)
+        data['status'] = 'pending'
+        receipt.write_text(json.dumps(data),encoding='utf-8')
+        return result
+    monkeypatch.setattr(video_generation, '_inspection_frames', change_receipt)
+    result = inspect_local(case)
+    assert result['status'] == 'incomplete' and result['conditions'][0]['status'] == 'not_ready'
+    assert 'completion changed' in result['conditions'][0]['errors'][0]
+    assert read_json(case['output']/'records/block.json')['runs'][0]['run_status'] == 'prepared'
+    assert (case['output']/'index.html').read_text(encoding='utf-8').count('<video controls') == 2

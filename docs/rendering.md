@@ -77,10 +77,76 @@ FakeClient JSON for letter and bus-stop umbrella software stories. Local moving
 test patterns and sine audio exercise the existing receipt assembler and
 same-request reuse accounting; they are not generated acting or speech.
 Existing `assemble_generated_clips` and the asynchronous video client remain
-the media/transport implementations. Three-condition paid execution, bound
-multi-shot inspection packages (watch page/contact sheet/ffprobe/blank human
-checklist), P5 qualification and actual quality acceptance remain unfinished.
+the media/transport implementations. Local bound inspection packages are
+implemented below. Three-condition paid execution, P5 qualification and actual
+quality acceptance remain unfinished.
 Fixed seeds do not guarantee unchanged visuals or voices after a dialogue edit.
+
+## Local video inspection and source binding (1.1)
+
+Use already-prepared requests and the local receipt/evidence format from
+CONTRACTS 6.9. This command cannot submit, resume or download a video job:
+
+```bash
+python scripts/inspect_generated_video.py --preparation runs/generated-requests --evidence runs/local-evidence.json --media-origin provided_local --output runs/video-inspection
+```
+
+Use `--media-origin synthetic` for software test media. `provided_local` only
+declares supplied local files; it does not certify provider output. This flag is
+required. `--project-root` resolves CLI paths; pricing defaults to the existing
+`configs/video.json` snapshot and must match preparation. No key or paid flags
+are accepted. Source preparation, scripts, assets and receipts must remain
+available. Existing output directories are rejected.
+
+The program API is `inspect_generated_video(preparation, *, evidence, out_dir,
+pricing_config, media_origin, project_root=".")`. It uses the existing P1
+`assemble_generated_records` for preflight, including actual local A/V and reuse
+checks. It copies verified clips to fixed numeric file names, reuses a validated
+existing assembly or calls `assemble_generated_clips`, then rechecks bytes and
+durations. It binds every film to the ordered
+`source_clips=[{shot_id, request_sha256, sha256}]` plus the film's SHA-256 and
+relative `video_path`. Block/shared/initial/selected identities and source-file
+details are retained. No shot IDs become output paths.
+
+The output contains:
+
+- `index.html`: local development viewing page, showing conditions, target,
+  common directions and expected dialogue. This is not blind evaluation or ASR.
+- Per ready condition: `film.mp4`, copied `clips/`, `frames/`,
+  `contact_sheet.png`, `ffprobe.json` (actual streams/format and summary), and
+  `media_check.json` with source/request/file bindings. Each contact-sheet row
+  samples a shot at 10%, 50%, 90%; sample hashes/times are recorded.
+- `manual_checks.csv` and `manual_checks.json`: identity-linked rows for
+  character/action, dialogue/speaker, audio/lip sync, continuity and notes.
+  Judgment cells are blank/null, status `not_reviewed`. Save a separate filled
+  copy after watching. CSV identifiers with formula prefixes are escaped;
+  JSON retains exact identifiers.
+- `inspection.json`: readiness, declared origin, identities and zero new API
+  activity; `evidence.json`: derived local pointers to the checks, with original
+  evidence preserved in `preflight_records/evidence.json`.
+- `records/block.json`: P1's final revalidation of original receipts, source
+  clips and new bound films. `preflight_records/` is an earlier snapshot of the
+  **same** history; do not add its fees to `records/`. Neither pass sends requests.
+
+Failed, missing or unfinished clips keep their P1 states and known/unknown bills;
+they do not acquire a static-image substitute. Other valid conditions can still
+produce diagnostic materials. Binding, byte, A/V or assembly errors stay failed,
+with no player advertised for that condition. New outputs retained after a
+processing failure are diagnostics, not a completed inspection. Structural
+preflight rejection creates no successful package. Records remain
+`comparison_status=not_checked` or `ineligible`, never `eligible`.
+
+CLI exit 0 means all selected conditions have materials ready for manual
+inspection, not that quality passed. Missing work returns `incomplete`/exit 1;
+errors return `failed`/exit 1. Single-shot preparation inspects only that shot
+while retaining full-plan identity; it is not a complete multi-shot film.
+Unknown legacy cost/GET history stays null even if the files pass checks.
+
+The page and packaged media use relative links and need no server or network.
+P1 record revalidation still requires original source inputs/receipts. Actual
+motion, speech, speaker, lip sync, continuity and emotion require a viewer;
+sampled frames and audio-stream presence are not automatic quality judgments.
+Tests use labeled synthetic moving patterns/sine audio, not real model footage.
 
 ## Static animatic (1.0)
 

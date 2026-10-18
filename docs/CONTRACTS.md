@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译及离线CLI/本地记录装配。实际任务接线、媒体检查材料和比较资格仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
+本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。实际任务接线和比较资格仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
 
 ## 1. 公共数据
 
@@ -223,7 +223,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译已实现，详见6.7–6.12。P4媒体检查材料及P5资格/真实任务接线仍由各任务完成，不能把prepared脚本或请求解释为真实成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/真实任务接线仍由各任务完成，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -413,7 +413,7 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
 
 preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
 
-原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。真实任务/媒体检查材料/资格尚未完成，不把离线准备写成成片端到端可运行。
+原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；真实任务/资格尚未完成，不把离线准备写成成片端到端可运行。
 
 ### 6.9 本地生成回执与费用记录装配
 
@@ -494,7 +494,7 @@ scene、manifest、来源provenance和原始响应均深拷贝；完整源Scene�
 
 规划提示哈希按模式读取。pipeline的缓存身份与planning.prompt_hashes使用同一模式的实际提示，原有planner代码哈希继续参与缓存身份；不能把animatic提示身份记在generated规划上。复用现有一次规划/条件深拷贝，不增加第二套编排。tests/test_planner.py以实际planner和pipeline加FakeClient覆盖既有读信与临时非读信软件输入、短片时长、阶段失败留档、三条件初稿/共享哈希及缓存；临时夹具不是新数据集或模型效果证据。
 
-P2/P3/P4实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本并离线编译请求（见6.11/6.12），不能解释为成片或eligible比较；#24媒体检查材料、实际任务及P5资格仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
+P2/P3/P4实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本并离线编译请求（见6.11/6.12），不能解释为成片或eligible比较；本地媒体材料见6.13，实际任务及P5资格仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
 
 ### 6.11 台词限定审查与实际最终脚本复查
 
@@ -533,4 +533,31 @@ scene.asset_ids全部图像按原顺序成为input_references，公共URL检查�
 
 P1既有prepare_generated_run重读/核对来源后调用真实编译器，完整编译后再选镜头，保留完整计划和原索引seed。实际planner/reviewer/validator/compiler/pipeline加FakeClient已覆盖读信与公交站还伞10秒软件输入、全镜头/单镜头CLI、源文件不变、哈希/模板/设置/引用篡改拒绝。协议替身测试仍明确标注；新联调不替换业务函数。完全相同请求交给现有assemble_generated_records，以动态图案/正弦音和手写回执验证同块复用及费用一次记账，软件账目不是实际扣费。
 
-本增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；#24的成片来源绑定/观看页/接触表/ffprobe/空人工检查表、三条件真实任务接线、#9资格及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
+编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。三条件真实任务接线、#9资格及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
+
+### 6.13 本地成片来源绑定与观看检查材料
+
+P4在video_generation.py提供inspect_generated_video，复用6.9的P1记录装配和既有assemble_generated_clips，不更改其签名、传输、报价或账目。原_probe默认结果不变；include_raw=True可附本次ffprobe实际streams/format供侧车材料保存。
+
+```python
+def inspect_generated_video(preparation, *, evidence, out_dir, pricing_config,
+                            media_origin, project_root=".") -> dict: ...
+```
+
+```bash
+python scripts/inspect_generated_video.py --preparation runs/generated-requests --evidence runs/local-evidence.json --media-origin provided_local --output runs/video-inspection
+```
+
+preparation及evidence完全沿用6.8/6.9。media_origin必须声明synthetic或provided_local；前者为软件媒体，后者仅指提供的本地文件，不认证为模型产物。CLI路径相对project-root，程序接口沿用调用者路径语义；pricing默认configs/video.json且须匹配已准备的价格身份。无key/allow-paid/提交/恢复路径，不构造客户端、查询目录或联网。输出已存在即拒绝。
+
+先调用assemble_generated_records写preflight_records，复用它对原脚本、资产、请求、回执、复用、文件A/V/时长及账目的核对；源结构预检失败不创建成功检查包。failed条件保留错误，不修复失败回执；未下载/未提交不产出成片。对可检查条件复制实际片段到固定数字文件名（不用shot_id拼路径），重新核对原件/副本字节。已有合法绑定成片直接复制，否则调用原A/V拼接器；不生成静态替代，不另写HTTP/拼接实现。
+
+每条件media_check.json兼容6.9，至少保留有序source_clips（精确shot_id/request_sha256/源片段字节sha256）、成片sha256、相对video_path；另保存block/initial/shared/selected身份、实际源文件及采样绑定。ffprobe.json含实际片段和成片的探测摘要及原streams/format。处理后再次检查字节，派生evidence仅调整本地路径和media_check_path，原输入/回执/账目不改；原证据快照保留。
+
+再调用同一个assemble_generated_records写records，重新核对原回执/片段及成片来源绑定和A/V/时长。最终记录失败或不再completed时不广告为可检查成片；处理中失败可保留诊断文件，状态不冒充完成。records/block.json为最终本地账目，preflight_records只是同一历史的较早快照，二者费用不能累加。报价不当消费、planning一次、同请求复用增量0、失败/未知费用/null历史GET仍由原P1实现保留。本次inspection_activity的0仅表示新请求/消费为0，不清空历史未知消费。
+
+检查包输出index.html、inspection.json、派生evidence及两次记录快照；就绪条件另有film.mp4、clips、frames、contact_sheet.png、media_check.json和ffprobe.json。接触表复用renderer已有布局，每镜头10%/50%/90%取实际帧，保存样本时间/哈希，ASCII序号对应页面原镜头名。相对页面媒体链接无需服务器；记录再次核验仍依赖原始来源/回执。
+
+manual_checks.json/CSV按条件/镜头保存请求/片段/成片身份，以及character_action、dialogue_speaker、audio_lipsync、continuity、notes。判断为null/空白，状态not_reviewed；CSV防公式前缀转义不改JSON原ID。页面展示条件、目标、共同方向及“预期台词”，不是ASR或盲评，不含自动质量分数。由实际观看者另存填写，不因A/V存在或抽帧成功填通过。
+
+顶层status为ready_requires_manual_inspection/incomplete/failed；仅全部所选条件材料就绪时CLI返回0，其余返回1。单镜头保留完整计划身份和selected范围，不冒充全片。所有comparison_status仍not_checked或ineligible，永不设eligible；#9资格/正式评分口径不变。以实际P1/P2/P3/P4+FakeClient、动态图案/正弦音及手写回执覆盖绑定、费用去重/未知、缺音轨/时长、字节变化、单镜头/原成片、失败/未提交和安全路径/页面。软件媒体并非模型或效果证据；真实人物、中文台词、口型、连续性、情绪及实际任务仍需另行授权/验收。

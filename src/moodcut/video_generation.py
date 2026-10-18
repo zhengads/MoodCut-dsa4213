@@ -1,12 +1,15 @@
 """Offline reference-guided request compilers and real A/V concatenation."""
 from copy import deepcopy
 from decimal import Decimal
+import csv
 import hashlib
+import html
 import ipaddress
 import json
 import math
 from pathlib import Path
 import subprocess
+import shutil
 from string import Template
 from urllib.parse import urlsplit
 
@@ -214,7 +217,7 @@ def build_video_bundle(scene: dict, initial: dict, revised: dict,
             "ignored_non_dialogue_changes": ignored, "config": deepcopy(config), "conditions": conditions}
 
 
-def _probe(path):
+def _probe(path, *, include_raw=False):
     process = subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(path)],
                              check=True, capture_output=True, text=True, encoding="utf-8", timeout=60)
     data = json.loads(process.stdout)
@@ -226,7 +229,8 @@ def _probe(path):
     duration = float(data["format"]["duration"])
     if not math.isfinite(duration) or duration <= 0:
         raise ValueError("Invalid generated clip duration")
-    return {"duration_s": duration, "has_audio": True, "width": videos[0]["width"], "height": videos[0]["height"]}
+    result = {"duration_s": duration, "has_audio": True, "width": videos[0]["width"], "height": videos[0]["height"]}
+    return {**result, "ffprobe": data} if include_raw else result
 
 
 def assemble_generated_clips(paths: list[str], *, durations: list[int], out_path: str) -> dict:
@@ -256,3 +260,209 @@ def assemble_generated_clips(paths: list[str], *, durations: list[int], out_path
     if abs(result["duration_s"] - sum(p["duration_s"] for p in probes)) > .5:
         raise ValueError("Assembled duration differs from generated source durations")
     return {**result, "video_path": str(target), "speech_and_visual_quality": "requires_manual_inspection"}
+
+
+def _file_sha256(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _inspection_frames(clips, directory):
+    """Extract actual clip pixels; reuse the existing contact-sheet layout."""
+    from PIL import ImageFont
+    from .renderer import _make_contact_sheet
+    frames, samples = [], []
+    directory.mkdir()
+    for index, (path, duration, shot_id) in enumerate(clips, 1):
+        for fraction in (.1, .5, .9):
+            target = directory / f"shot{index:02d}_t{int(fraction*100):02d}.png"
+            subprocess.run(["ffmpeg", "-v", "error", "-n", "-ss", str(duration*fraction), "-i", str(path),
+                "-frames:v", "1", "-vf", "scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2",
+                str(target)], check=True, capture_output=True, timeout=60)
+            if not target.is_file():
+                raise ValueError("Could not extract an actual video frame")
+            frames.append(target)
+            samples.append({"shot_id": shot_id, "time_s": duration*fraction,
+                            "path": "frames/"+target.name, "sha256": _file_sha256(target)})
+    _make_contact_sheet(frames, directory.parent / "contact_sheet.png", ImageFont.load_default())
+    return samples
+
+
+def _inspection_page(output, summary, source):
+    escape = lambda value: html.escape(str(value), quote=True)
+    page = ['<!doctype html><html lang="zh-CN"><meta charset="utf-8">',
+        '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; media-src \'self\' file:; img-src \'self\' file:; style-src \'unsafe-inline\'">',
+        '<title>MoodCut · 本地视频检查</title><style>body{font:17px system-ui;max-width:1100px;margin:32px auto;padding:0 20px;color:#202a32;background:#f4f1e9}video,img{width:100%;max-height:650px;object-fit:contain;background:#151a20}section{margin:32px 0}table{width:100%;border-collapse:collapse}td,th{padding:10px;text-align:left;vertical-align:top;border-bottom:1px solid #aaa}pre{white-space:pre-wrap;overflow-wrap:anywhere}a{color:#235c68}</style>',
+        '<h1>MoodCut · 本地视频检查</h1>',
+        '<p><strong>开发检查材料：含条件、目标和台词，不用于盲评。文件检查通过不表示人物、台词、口型或情绪合格。</strong></p>',
+        '<p><strong>素材来源声明：'+escape(summary['media_origin'])+
+        ('；synthetic 为动态图案/正弦音等软件媒体，不是模型生成视频或效果证据。' if summary['media_origin'] == 'synthetic' else '；仅使用提供的本地文件，来源与真实质量未经本工具独立认定。')+'</strong></p>',
+        '<p>检查包状态：'+escape(summary['status'])+' · 目标：'+escape(source['scene']['tone'])+'</p>',
+        '<p><a href="manual_checks.csv" download>空白人工检查表 CSV</a> · <a href="manual_checks.json">JSON 检查表</a> · <a href="inspection.json">检查记录</a> · <a href="'+escape(summary['records_path'])+'">原回执与费用记录</a></p>',
+        '<p>请另存填写人物/动作、台词/说话人、声音/口型、连续性及备注；本工具不自动评分。</p>']
+    for row in summary['conditions']:
+        condition = row['condition']  # Fixed public condition names; file names never use shot IDs.
+        page += ['<section><h2>'+escape(condition)+'</h2><p>'+escape(row['status'])+'</p>']
+        if row['status'] == 'ready_requires_manual_inspection':
+            page += [f'<video controls preload="metadata" src="{condition}/film.mp4"></video>',
+                     f'<p><a href="{condition}/media_check.json">成片来源绑定</a> · <a href="{condition}/ffprobe.json">ffprobe 信息</a></p>',
+                     f'<img src="{condition}/contact_sheet.png" alt="实际片段在10%、50%、90%处的抽帧接触表">',
+                     '<p>每行依次为同镜头10%、50%、90%处的真实抽帧；抽样画面不能替代完整听看。</p>']
+        if row['errors']:
+            page += ['<pre>'+escape('\n'.join(row['errors']))+'</pre>']
+        page += ['<table><tr><th>镜头/共同动作</th><th>预期台词（不是语音识别结果）</th></tr>']
+        selected = set(summary['selected_shot_ids'])
+        for shot in source['plans'][condition]['shots']:
+            if shot['shot_id'] in selected:
+                spoken = '\n'.join(line['character_id']+': '+line['text'] for line in shot['dialogue']) or '（无台词）'
+                page += ['<tr><td>'+escape(shot['shot_id'])+'<br>'+escape(shot['direction'])+'</td><td><pre>'+escape(spoken)+'</pre></td></tr>']
+        page += ['</table></section>']
+    page += ['</html>']
+    (output / 'index.html').write_text('\n'.join(page), encoding='utf-8')
+
+
+def inspect_generated_video(preparation, *, evidence, out_dir, pricing_config,
+                            media_origin, project_root=".") -> dict:
+    """Bind and inspect existing local A/V through the P1 receipt boundary.
+
+    No client, model, catalogue, download or retry. Subjective checklist cells
+    stay empty. Failed/unknown receipts remain in the original accounting path.
+    """
+    from .pipeline import assemble_generated_records, read_json, write_json
+    if media_origin not in ("synthetic", "provided_local"):
+        raise ValueError("Declare media_origin as synthetic or provided_local")
+    output = Path(out_dir).resolve()
+    if output.exists() or output.is_symlink():
+        raise FileExistsError("Output already exists; choose a new inspection directory")
+    evidence_path = Path(evidence).resolve(strict=True)
+    # P1 validates prepared sources, receipts, reuse, A/V and costs before it
+    # creates the first output. Do not duplicate that validation/accounting here.
+    preflight = assemble_generated_records(preparation, evidence=evidence_path, out_dir=output / "preflight_records",
+        pricing_config=pricing_config, project_root=project_root)
+    source = read_json(output / "preflight_records/source_inputs.json")
+    bundle = read_json(output / "preflight_records/bundle.json")
+    supplied = read_json(output / "preflight_records/evidence.json")
+    # Preserve the supplied evidence snapshot; resolve pointers for a new file
+    # rather than modifying receipts, costs or the original evidence manifest.
+    def absolute_pointer(value):
+        # Invalid/missing receipt pointers remain invalid evidence for P1; do
+        # not reinterpret a failed URL or non-string as a different local file.
+        if not isinstance(value, str) or not value.strip() or '://' in value:
+            return value
+        path = Path(value)
+        return str((path if path.is_absolute() else evidence_path.parent / path).resolve())
+    for condition in supplied['conditions']:
+        if condition.get('media_check_path') is not None:
+            condition['media_check_path'] = absolute_pointer(condition['media_check_path'])
+        for job in condition.get('jobs', []):
+            if job.get('receipt_path') is not None:
+                job['receipt_path'] = absolute_pointer(job['receipt_path'])
+    rows = []
+    for run, compiled, condition in zip(preflight['runs'], bundle['conditions'], supplied['conditions']):
+        name = run['condition']
+        row = {'condition': name, 'status': 'not_ready', 'errors': list(run['errors'])}
+        rows.append(row)
+        jobs = run['generation_jobs']
+        if run['run_status'] == 'failed':
+            row['status'] = 'failed'
+            continue
+        if not all(job['status'] == 'downloaded' for job in jobs):
+            continue
+        directory = output / name
+        directory.mkdir()
+        check_path = directory / 'media_check.json'
+        condition['media_check_path'] = str(check_path)
+        try:
+            (directory / 'clips').mkdir()
+            bindings, files, clips, probes = [], [], [], []
+            for index, (job, request_job) in enumerate(zip(jobs, compiled['jobs'])):
+                original = Path(job['video_path']).resolve(strict=True)
+                expected = job['media_check']['sha256']
+                if _file_sha256(original) != expected:
+                    raise ValueError('Source clip changed after receipt validation')
+                copied = directory / 'clips' / f'shot{index:02d}.mp4'
+                shutil.copyfile(original, copied)
+                if _file_sha256(copied) != expected:
+                    raise ValueError('Source clip changed while copying')
+                duration = request_job['request']['duration']
+                checked = _probe(copied, include_raw=True)
+                if abs(checked['duration_s'] - duration) > .5:
+                    raise ValueError('Copied clip duration differs from its request')
+                bindings.append({'shot_id': job['shot_id'], 'request_sha256': job['request_sha256'], 'sha256': expected})
+                files.append({'path': 'clips/'+copied.name, 'original_path': str(original), 'sha256': expected})
+                clips.append((copied, duration, job['shot_id']))
+                probes.append({'shot_id': job['shot_id'], **checked})
+            film = directory / 'film.mp4'
+            if run['run_status'] == 'completed':
+                # Existing assembly has already passed P1's binding and byte check.
+                shutil.copyfile(run['video_path'], film)
+                if _file_sha256(film) != run['media_check']['sha256']:
+                    raise ValueError('Existing assembly changed while copying')
+            else:
+                assemble_generated_clips([str(c[0]) for c in clips], durations=[c[1] for c in clips], out_path=str(film))
+            film_probe = _probe(film, include_raw=True)
+            if abs(film_probe['duration_s'] - sum(c[1] for c in clips)) > .5:
+                raise ValueError('Assembled duration differs from selected requests')
+            film_hash = _file_sha256(film)
+            samples = _inspection_frames(clips, directory / 'frames')
+            # Check both originals and packaged copies again after FFmpeg work.
+            if _file_sha256(film) != film_hash or any(
+                    _file_sha256(Path(f['original_path'])) != f['sha256'] or
+                    _file_sha256(directory / f['path']) != f['sha256'] for f in files):
+                raise ValueError('Media bytes changed during inspection')
+            check = {k: v for k, v in film_probe.items() if k != 'ffprobe'}
+            check.update(schema_version=CONTRACT_VERSION, output_mode='generated', kind='generated_media_check',
+                block_id=preflight['block_id'], condition=name, media_origin=media_origin,
+                initial_plan_sha256=preflight['initial_plan_sha256'], shared_generation_sha256=preflight['shared_generation_sha256'],
+                selected_shot_ids=preflight['selected_shot_ids'], video_path='film.mp4', sha256=film_hash,
+                source_clips=bindings, source_files=files, frame_samples=samples,
+                speech_and_visual_quality='requires_manual_inspection')
+            write_json(check_path, check)
+            write_json(directory / 'ffprobe.json', {'film': film_probe, 'clips': probes})
+            row.update(status='ready_requires_manual_inspection', media_check_path=name+'/media_check.json',
+                       video_path=name+'/film.mp4', sha256=film_hash, source_clips=bindings)
+        except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
+            row.update(status='failed', errors=[f'{type(exc).__name__}: {exc}'])
+            write_json(check_path, {'status': 'failed', 'errors': row['errors'], 'speech_and_visual_quality': 'not_reviewed'})
+    write_json(output / 'evidence.json', supplied)
+    errors = []
+    records_path = 'records/block.json'
+    try:
+        records = assemble_generated_records(preparation, evidence=output / 'evidence.json', out_dir=output / 'records',
+            pricing_config=pricing_config, project_root=project_root)
+        for row, run in zip(rows, records['runs']):
+            if run['run_status'] == 'failed':
+                row.update(status='failed', errors=list(dict.fromkeys(row['errors']+run['errors'])))
+            elif row['status'] == 'ready_requires_manual_inspection' and run['run_status'] != 'completed':
+                row.update(status='not_ready', errors=['Receipt/media completion changed during inspection'])
+    except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
+        errors = [f'Final source revalidation failed: {type(exc).__name__}: {exc}']
+        records_path = 'preflight_records/block.json'
+        for row in rows:
+            row.update(status='failed', errors=row['errors']+errors)
+    status = ('failed' if errors or any(r['status'] == 'failed' for r in rows) else
+              'ready_requires_manual_inspection' if all(r['status'] == 'ready_requires_manual_inspection' for r in rows) else 'incomplete')
+    summary = {'schema_version': CONTRACT_VERSION, 'output_mode': 'generated', 'kind': 'generated_media_inspection',
+        'status': status, 'media_origin': media_origin, 'block_id': preflight['block_id'],
+        'initial_plan_sha256': preflight['initial_plan_sha256'], 'shared_generation_sha256': preflight['shared_generation_sha256'],
+        'selected_shot_ids': preflight['selected_shot_ids'], 'conditions': rows, 'records_path': records_path,
+        'comparison_status': 'ineligible' if status == 'failed' else 'not_checked', 'errors': errors,
+        'speech_and_visual_quality': 'not_reviewed',
+        'inspection_activity': {'calls': 0, 'real_http_calls': 0, 'generation_posts': 0, 'video_get_calls': 0,
+                                'provider_cost_usd': 0.0}}
+    checks = []
+    for row, compiled in zip(rows, bundle['conditions']):
+        for job in compiled['jobs']:
+            clip = next((c for c in row.get('source_clips', []) if c['shot_id'] == job['shot_id']), {})
+            checks.append({'condition': row['condition'], 'shot_id': job['shot_id'], 'request_sha256': job['request_sha256'],
+                'clip_sha256': clip.get('sha256'), 'film_sha256': row.get('sha256'), 'material_status': row['status'],
+                'character_action': None, 'dialogue_speaker': None, 'audio_lipsync': None, 'continuity': None, 'notes': ''})
+    write_json(output / 'manual_checks.json', {'status': 'not_reviewed', 'media_origin': media_origin, 'items': checks})
+    with (output / 'manual_checks.csv').open('x', encoding='utf-8-sig', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(checks[0]))
+        writer.writeheader()
+        writer.writerows({key: "'"+value if isinstance(value, str) and value.lstrip().startswith(('=', '+', '-', '@'))
+                          else value for key, value in item.items()} for item in checks)
+    write_json(output / 'inspection.json', summary)
+    _inspection_page(output, summary, source)
+    return summary
