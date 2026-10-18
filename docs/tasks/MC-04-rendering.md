@@ -4,30 +4,34 @@
 
 首个增量建议分支：`feat/issue-24-video-inspection`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 下一增量：消费共同动作并提供音视频检查材料（待实现）
+## 当前增量：生成请求编译已实现；音视频检查材料待完成
 
 **目标**：复用已有参考图请求、异步任务和真实音视频拼接，让任意符合共同契约的分镜都能准备请求并检查交付。
 
 ### 已核实的缺口
 
-`video_generation.py` 已能编译开发对并拼接真实 A/V，但动作取自读信专用配置；尚无三条件通用接入。音轨存在不代表正确说出台词；目前没有成功生成的视频质量验收。
+`build_generated_video_bundle`已消费1.1共同计划编译三条件请求，实际planner/reviewer/pipeline加FakeClient已接通完整/单镜头离线准备。旧build_video_bundle保留1.0开发投影，其动作配方不用于新主路径。音轨存在不代表正确说出台词；目前没有成功生成的视频质量验收。
 
 ### 本次待办与验收
 
-- [ ] 按 P1/P2 契约消费一次规划冻结的场景、动作、镜头和时长；移除主路径对 Anna/Elsa、递信及 s1/s2/s3 的硬依赖，示例配置保留明确来源。
-- [ ] 为 baseline/generic_review/moodcut 用同一编译模板、参考图、共同方向、声音要求、模型参数及对应镜头 seed 构造请求。条件标签/审查意见不进入模型提示；只有 dialogue 片段随条件变化，生成前核对共享哈希。
-- [ ] 使用 `input_references` 保持人物参考，不发送卡片首帧；保留原生声音。不得替某一条件另加表情/动作/滤镜、专属音色或时长。
+- [x] 按 P1/P2 契约消费一次规划冻结的场景、动作、镜头和时长；移除主路径对 Anna/Elsa、递信及 s1/s2/s3 的硬依赖，示例配置保留明确来源。
+- [x] 为 baseline/generic_review/moodcut 用同一编译模板、参考图、共同方向、声音要求、模型参数及对应镜头 seed 构造请求。条件标签/审查意见不进入模型提示；只有 dialogue 片段随条件变化，生成前核对共享哈希。
+- [x] 使用 `input_references` 保持人物参考，不发送卡片首帧；保留原生声音。不得替某一条件另加表情/动作/滤镜、专属音色或时长。
 - [ ] 复用 `assemble_generated_clips` 与 `video_client.py`，保留真实视频/音频/时长检查、失败/未知费用；缺少音轨或失败镜头不能用静态图顶替成功。不再实现另一个 HTTP client 或 FFmpeg 拼接器。
 - [ ] 提供可对已有本地片段生成的观看页、接触表、ffprobe 信息及空人工检查表：人物/动作、台词/说话人、声音/口型、连续性。检查结果留给实际观看者填写，不编造通过结论。
 - [ ] 离线测试覆盖非读信输入、三条件非台词提示一致、篡改共享动作拒绝、完全相同请求在同块复用且费用不重复、缺音轨/时长错误，以及有运动和正弦音的软件媒体夹具。
 
 ### 写入范围与依赖
 
-接入协议固定为 CONTRACTS 6.2–6.5：共同动作只来自 Plan；GenerationSettings 与报价配置分离，调用公共 shared_generation_sha256 重算三条件身份。实现约定的 build_generated_video_bundle，旧 build_video_bundle 保留为开发投影，不默认为正式三条件。Job/请求/费用字段见6.4，公共纯函数由 P1 维护。
+接入协议固定为 CONTRACTS 6.2–6.5/6.12：共同动作只来自 Plan；GenerationSettings 与报价配置分离，调用公共 shared_generation_sha256 重算三条件身份。build_generated_video_bundle已实现，旧 build_video_bundle 保留为开发投影，不默认为正式三条件。Job/请求/费用字段见6.4，公共纯函数由 P1 维护。
+
+先用get_video_template_sha256()取得实际video_generated.txt文本身份，在规划前冻结到P1 block；编译器拒绝旧/虚假模板哈希，不改写历史记录。使用既有run --output-mode generated --source-block入口，无需另建CLI/客户端。完整和单镜头均已用实际P2/P3/P4代码加FakeClient离线联调；非读信软件输入为公交站还伞10秒，不是新数据集或模型效果证据。本地报价与实际消费分开，相同请求沿用P1记录装配做复用和费用去重。
+
+下一步仍为：给既有本地拼接结果添加source_clips/request/字节哈希绑定，提供观看页/接触表/ffprobe/空人工检查表并补齐媒体检查材料验收；上述后三项不因编译器交付而勾选。真实人物/中文对白/口型/情绪质量另行授权后检查。
 
 公共 validate_scene/validate_plan 已接受显式 generated，可直接验证1.1软件输入。旧开发对脚本只修复了 unchanged 来源兼容，尚未成为1.1三条件入口；本任务的新编译器与旧投影保持明确区别。
 
-`src/moodcut/video_generation.py`、`renderer.py`（仅复用检查能力所需）、`configs/video.json`、`tests/test_video_generation.py`、必要的 `tests/test_renderer.py`/`test_video.py`、`docs/rendering.md`。新检查命令确需脚本时限 `scripts/inspect_generated_video.py`。`scripts/generate_video.py` 入口和传输/价格逻辑由 P1 维护，接口修改先协调；不改 P2/P3 提示词。
+`src/moodcut/video_generation.py`、`prompts/video_generated.txt`（P4公共生成模板）、`renderer.py`（仅复用检查能力所需）、`configs/video.json`、`tests/test_video_generation.py`、必要的 `tests/test_renderer.py`/`test_video.py`、`docs/rendering.md`。新检查命令确需脚本时限 `scripts/inspect_generated_video.py`。`scripts/generate_video.py` 入口和传输/价格逻辑由 P1 维护，接口修改先协调；不改 P2/P3 提示词。
 
 依赖 P1 契约与 P2 数据；检查工具可先用本地软件媒体开发。离线验收：相关测试 + 一份标明 synthetic 的检查材料；所有网络传输用 mock。真实人物、中文对白和情绪质量只能在另行授权的 pilot 后验收。
 
