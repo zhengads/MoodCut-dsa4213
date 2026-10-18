@@ -1,16 +1,37 @@
 """Report checks and one bounded critique/revise/verify pass."""
 
 from copy import deepcopy
+import hashlib
 from importlib.resources import files
 import json
 import logging
 
 from .client import LLMClient
 from . import validation
+from .contracts import allowed_patch_fields, assert_dialogue_only_revision, _json_copy
 
 
 MAX_OUTPUT_TOKENS = 2048
 TRACE_LOGGER = logging.getLogger("moodcut.review.trace")
+
+
+def _review_prompts(*, output_mode="animatic"):
+    allowed_patch_fields(output_mode=output_mode)
+    prefix = "review_generated" if output_mode == "generated" else "review"
+    return {name: files("moodcut").joinpath("prompts", f"{prefix}_{name}.txt").read_text(encoding="utf-8")
+            for name in ("generic", "moodcut", "revise", "verify")}
+
+
+def get_review_prompt_hashes(*, output_mode="animatic"):
+    """Identity of the exact text supplied to the review client for this mode."""
+    return {name: hashlib.sha256(text.encode("utf-8")).hexdigest()
+            for name, text in _review_prompts(output_mode=output_mode).items()}
+
+
+def _issues_by_shot(plan, report):
+    """Group all validated opinions in shot order, without dropping issue IDs."""
+    return [{"shot_id": shot["shot_id"], "issues": deepcopy(issues)} for shot in plan["shots"]
+            if (issues := [issue for issue in report["issues"] if issue["shot_id"] == shot["shot_id"]])]
 
 
 def validate_report(scene: dict, plan: dict, report: dict) -> list[str]:
@@ -89,7 +110,7 @@ def validate_verification(report: dict, verification: dict) -> list[str]:
 
 
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
-                      client: LLMClient, *, mode: str, project_root=None) -> dict:
+                      client: LLMClient, *, mode: str, project_root=None, output_mode="animatic") -> dict:
     """Return ReviewResult; make at most three calls through the supplied client.
 
     Attach an INFO handler to moodcut.review.trace to persist request/response
@@ -119,7 +140,7 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
     def request(name, prompt, payload):
         nonlocal calls, stage
         stage = name
-        system = files("moodcut").joinpath("prompts", prompt).read_text(encoding="utf-8")
+        system = prompts[prompt]
         user = json.dumps(payload, ensure_ascii=False, allow_nan=False)
         calls += 1
         trace("request", stage=name, max_output_tokens=MAX_OUTPUT_TOKENS,
@@ -130,13 +151,19 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         if not isinstance(response, dict):
             raise ValueError(f"{name} response must be a JSON object")
         json.dumps(response, allow_nan=False)
+        if output_mode == "generated":
+            _json_copy(response)
         return deepcopy(response)
 
     try:
         if mode not in ("generic_review", "moodcut"):
             raise ValueError("mode must be generic_review or moodcut")
+        allowed_patch_fields(output_mode=output_mode)
+        options = {"project_root": project_root} if project_root is not None else {}
+        if output_mode == "generated":
+            options["output_mode"] = output_mode
         errors = validation.validate_plan(deepcopy(scene), deepcopy(original), deepcopy(manifest),
-                                          **({"project_root": project_root} if project_root is not None else {}))
+                                          **options)
         if not isinstance(errors, list) or any(not isinstance(e, str) for e in errors):
             raise ValueError("validate_plan must return list[str]")
         if errors:
@@ -144,7 +171,10 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             return result
         context = {"scene": deepcopy(scene), "plan": deepcopy(original),
                    "manifest": deepcopy(manifest), "mode": mode}
-        prompt = "review_generic.txt" if mode == "generic_review" else "review_moodcut.txt"
+        if output_mode == "generated":
+            context["output_mode"] = output_mode
+        prompts = _review_prompts(output_mode=output_mode)
+        prompt = "generic" if mode == "generic_review" else "moodcut"
         result["report"] = request("critique", prompt, context)
         errors = validate_report(scene, original, result["report"])
         if result["report"].get("mode") != mode:
@@ -155,14 +185,25 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         if not result["report"]["issues"]:
             result["status"] = "unchanged"
             return result
-        result["patch"] = request("revise", "review_revise.txt",
-                                  {**context, "report": result["report"]})
-        applied = apply_patch(scene, original, manifest, result["report"], result["patch"],
-                              **({"project_root": project_root} if project_root is not None else {}))
+        result["patch"] = request("revise", "revise",
+                                  {**context, "report": result["report"],
+                                   "issues_by_shot": _issues_by_shot(original, result["report"])})
+        applied = apply_patch(deepcopy(scene), deepcopy(original), deepcopy(manifest),
+                              deepcopy(result["report"]), deepcopy(result["patch"]), **options)
         if applied["status"] == "rejected":
             result.update(applied)
             return result
-        result["verification"] = request("verify", "review_verify.txt",
+        if applied["status"] not in ("applied", "unchanged"):
+            raise ValueError("Unexpected patch application status")
+        if output_mode == "generated":
+            try:
+                # Check the actual plan before verifying it. Never verify a
+                # multi-field candidate and then project it to a different plan.
+                assert_dialogue_only_revision(original, applied["plan"])
+            except ValueError as exc:
+                result.update(status="rejected", plan=deepcopy(original), errors=[str(exc)])
+                return result
+        result["verification"] = request("verify", "verify",
                                          {**context, "revised_plan": applied["plan"],
                                           "report": result["report"], "patch": result["patch"]})
         errors = validate_verification(result["report"], result["verification"])

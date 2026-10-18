@@ -1,34 +1,34 @@
 # MC-03 通用审查、情绪审查与局部修订
 
-当前任务：[GitHub Issue #23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
+当前任务：[GitHub Issue #23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)。本次审查实现与离线验收已提供；先核对Issue中的PR合并状态，不重复实现已勾选模块。末尾既有交付用于复用与回归。
 
 首个增量建议分支：`fix/issue-23-dialogue-review`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 下一增量：在审查源头强制只改台词（待实现）
+## 台词限定审查（生成式适配已实现）
 
 **目标**：generic_review 和 moodcut 共享同一修改能力，真正复查最终采用的台词脚本。
 
 ### 已核实的缺口
 
-- 当前补丁和提示仍允许 dialogue/narration/crop/duration；视频编译器事后丢弃非台词改动，投影后的脚本没有独立复查。
-- 已有真实开发输出因同一 shot 多条 edit 被拒绝：`edits[3]: conflicting or duplicate edit`。需要离线复现，不放宽重复/冲突拒绝规则。
+- 默认animatic保留dialogue/narration/crop/duration；显式generated使用独立提示与公共白名单，在补丁源头限制dialogue，并核对实际候选的完整非台词身份后再verify，不使用投影。
+- 既有开发错误`edits[3]: conflicting or duplicate edit`已用最小手写软件夹具复现；保持拒绝规则，按镜头汇集全部意见后生成单条edit，verify仍覆盖所有原issue_id。
 
 ### 本次待办与验收
 
-- [ ] 采用 P1 发布的显式生成模式/字段白名单；在 review prompt、revise、补丁验证三处限制 `set` 只能含 dialogue。保留旧 animatic 合法补丁兼容，不能全局悄悄改变旧实验行为。
-- [ ] 两类审查接收同一故事/目标 tone/共同初稿，使用相同模型、输出上限、最多一次 critique→revise→verify。仅审查准则不同；允许无意见提前退出并记录实际调用差异。
-- [ ] revise 输入按 shot 汇集全部意见，输出一个 shot 最多一条 edit；保留现有有效 issue_id 引用，额外关联信息不能破坏旧 schema。verify 仍逐条覆盖原 report 的所有 issue_id，不通过删掉意见规避重复问题。
-- [ ] verify 接收实际会送入生成器的最终 dialogue-only 计划；不先复查多字段候选再把它投影成另一个脚本。旧投影路径保留为开发派生记录，不升级为正式复查通过。
-- [ ] 越权修改动作、narration、crop、duration、镜头顺序/数量或新扩展字段时整体拒绝、保留原稿与诊断；输入对象不变。
-- [ ] FakeClient 回归：同一镜头多意见汇集、重复 edit 被拒绝、非法非台词字段、无意见 `unchanged`、原子回退、verify 覆盖所有原意见且看到实际最终脚本。只使用脱敏/自制最小软件夹具，不依赖成员本地 runs。
+- [x] review_and_revise/apply_patch接显式output_mode与公共白名单/完整非台词比较，generated的critique/revise/补丁均限制dialogue，默认animatic允许字段保持兼容。
+- [x] 两类审查接收同一故事/tone/初稿，调用者传同一模型配置，各阶段2048输出上限及最多一次critique→revise→verify；无意见1次退出并保留真实调用数。
+- [x] issues_by_shot完整汇集原意见，单shot最多一条edit，保留原issue_id引用；不改Report/Patch外壳或删意见，verify覆盖全部原ID。
+- [x] verify看到实际补丁应用后的dialogue-only计划，成功返回同一计划，保存review.json/final.json一致性；不投影后继承候选复查结论。
+- [x] 越权字段、未知扩展或镜头变化整体拒绝并回退，输入不变；真实字段门禁与候选故障注入分别验收。
+- [x] FakeClient覆盖聚合、edits[3]重复拒绝、非法字段、unchanged/空补丁、原子回退、完整复查覆盖和实际P2/P3/P1脚本链；最小夹具手写，不依赖本地历史runs，也不作为模型效果。
 
 ### 写入范围与依赖
 
-接入协议固定为 CONTRACTS 6.1 / 6.2 / 6.5：使用 `allowed_patch_fields(output_mode=...)` 与 `assert_dialogue_only_revision`，review 的 mode 和输出的 output_mode 不混用。Report/Patch 外壳保留1.0，不自行塞入新字段；verify 看到实际最终脚本。旧函数尚未接线，由本任务追加约定参数。
+接入协议固定为CONTRACTS 6.1/6.2/6.5，实际用法与失败语义见6.11。已使用allowed_patch_fields与assert_dialogue_only_revision，mode和output_mode不混用；Report/Patch外壳仍为1.0。公共验证器、实际P2规划及P1编排均已可用。
 
 公共验证器现已接受 output_mode="generated"；本任务把同一输出模式传到验证器。既有视频来源入口已兼容合法 unchanged，仍拒绝 failed/rejected/review_failed；不要为通过来源检查把失败状态改成 unchanged。
 
-`src/moodcut/reviewer.py`、`patches.py`、`src/moodcut/prompts/review_*.txt`、`tests/test_reviewer.py`、`tests/test_patches.py`、`docs/review.md`。字段白名单/生成模式接口先与 P1 对齐；不修改规划提示词、公共验证器或媒体编译器。可立即补已知失败的离线复现，生成式接入等 P1 接口 PR。
+`src/moodcut/reviewer.py`、`patches.py`、`src/moodcut/prompts/review_*.txt`、对应测试及docs/review.md；不修改规划提示、公共验证器或媒体编译器。P1协同只为pipeline按模式记录实际审查提示哈希；P2测试协同只把先前“P3缺接口”断言改为真实reviewer加软件无意见响应，不替换业务函数。这些协调记录在#8/#22。
 
 离线验收：`python -m pytest tests/test_patches.py tests/test_reviewer.py -q`，并给出两模式的 FakeClient stage/输入与台词差异记录。Agent verification 不是人工评分，不预写效果结论。
 

@@ -1,6 +1,6 @@
 # MC-03：报告检查、原子补丁与一次审查复查
 
-负责人：FAN XUYANG。PR 1 实现 `validate_report(scene, plan, report)` 与契约中的
+既有基础实现：FAN XUYANG。PR 1 实现 `validate_report(scene, plan, report)` 与契约中的
 `apply_patch(scene, plan, manifest, report, patch)`。PR 2 实现
 `review_and_revise(scene, initial_plan, manifest, client, *, mode)` 和四份审查提示。
 本地验收均使用共享 FakeClient，未调用真实模型。
@@ -10,11 +10,26 @@
 证据须有具体内容，但程序无法证明意见真实或语义上足够具体。
 
 补丁先 deepcopy，限制每镜头一条 edit，要求 issue_id 对应该镜头的报告意见。
-只替换 dialogue、narration、duration_s 或 visuals 的 crop；素材列表和顺序保持。
+默认animatic只替换dialogue、narration、duration_s或visuals的crop；素材列表和顺序保持。
 任一错误返回原计划的独立副本、status=rejected 与 errors，不返回部分修改。
 有效候选交由公共 validate_plan 检查，总时长、允许裁切、角色引用等以 MC-01
 验证器为准。验证器缺失、抛异常或返回格式错误也整体拒绝，绝不绕过验证。
 无修改且验证通过返回 unchanged；有效变化返回 applied。
+
+## 生成式台词限定增量
+
+本次增量由ZHENG MINGLIANG实现，准确接口见CONTRACTS 6.11。review_and_revise及apply_patch追加output_mode="animatic"；显式generated使用1.1场景/计划与独立review_generated_*.txt，只允许set中的dialogue。Report/Patch仍为1.0，review的mode仍为generic_review/moodcut，不将两种参数混用。旧animatic允许字段和既有历史结果保留。
+
+两类审查共用相同输入、修订/复查模板及2048输出上限，模型由传入client决定。revise在完整report之外接issues_by_shot，把同镜头所有意见一起处理成最多一条edit；edit只引用该镜头的一条原issue_id，其他原ID仍由verify逐条覆盖，不添加关联字段或删除意见。默认animatic也使用这一聚合输入，修复同shot逐意见输出多个edit的诱因，但重复/冲突仍整体拒绝。
+
+generated同时在补丁函数和verify前比较完整非台词内容（含未知扩展字段）。越权不投影、不修复、不调用verify，返回原稿与rejected；verify接实际最终候选，成功返回的plan与其输入一致。无意见1次返回unchanged；空/同值补丁有意见时仍3阶段复查；覆盖缺失或模型异常为review_failed且回退，保留report/patch/verification和诊断。applied、unchanged和未解决意见均不等同于情绪效果通过。
+
+```python
+result = review_and_revise(scene, initial, manifest, client, mode="moodcut",
+                           project_root=project_root, output_mode="generated")
+```
+
+离线传FakeClient，不创建客户端或生成视频。get_review_prompt_hashes(output_mode=...)按实际system文本计算哈希，pipeline保存对应模式的身份。实际P2/P3/P1软件链现可输出三条件prepared脚本，并通过P1源block加载检查；#24编译/真实视频、#9资格与人工效果仍待验收，不能把prepared当成成片或有效比较。
 
 ## Windows / PowerShell 运行
 

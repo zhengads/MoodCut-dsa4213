@@ -1,12 +1,13 @@
 """Atomic patch unit tests and integration with MC-01 shared fixtures."""
 import json
 import unittest
+import pytest
 from copy import deepcopy
 from pathlib import Path
 from unittest.mock import patch as mock_patch
 from moodcut.patches import apply_patch
 from moodcut.validation import validate_plan
-from test_reviewer import inputs
+from test_reviewer import inputs, _review_case_data
 
 
 class PatchTests(unittest.TestCase):
@@ -228,3 +229,45 @@ class SharedFixtureTests(unittest.TestCase):
                 self.assertEqual(result["status"], "rejected")
                 self.assertEqual(result["plan"], self.plan)
                 self.plan["shots"] = original_shots
+
+
+def test_generated_patch_preserves_complete_non_dialogue_identity():
+    from moodcut.contracts import assert_dialogue_only_revision
+    scene, plan, manifest, report, patch_data, _verification, _mode = _review_case_data("generated")
+    plan["future_extension"] = {"frozen": [1, {"continuity": True}]}
+    before = deepcopy((scene, plan, manifest, report, patch_data))
+    result = apply_patch(scene, plan, manifest, report, patch_data,
+                         project_root=Path(__file__).resolve().parents[1], output_mode="generated")
+    assert result["status"] == "applied" and result["errors"] == []
+    assert_dialogue_only_revision(plan, result["plan"])
+    assert result["plan"]["future_extension"] == plan["future_extension"]
+    assert (scene, plan, manifest, report, patch_data) == before
+
+
+@pytest.mark.parametrize("field", ("narration", "visuals", "duration_s", "direction", "scene_direction",
+    "shot_id", "beat_ids", "shots", "future_extension"))
+def test_generated_non_dialogue_edit_rejects_the_whole_patch(field):
+    scene, plan, manifest, report, patch_data, _verification, _mode = _review_case_data("generated")
+    patch_data["edits"][1]["set"] = {field: "forbidden change"}
+    before = deepcopy((scene, plan, manifest, report, patch_data))
+    result = apply_patch(scene, plan, manifest, report, patch_data,
+                         project_root=Path(__file__).resolve().parents[1], output_mode="generated")
+    assert result["status"] == "rejected" and result["plan"] == plan and result["errors"]
+    assert (scene, plan, manifest, report, patch_data) == before
+
+
+@pytest.mark.parametrize("field", ("actions", "voice", "direction"))
+def test_generated_dialogue_cannot_hide_extra_controls(field):
+    scene, plan, manifest, report, patch_data, _verification, _mode = _review_case_data("generated")
+    patch_data["edits"][0]["set"]["dialogue"][0][field] = "hidden control"
+    result = apply_patch(scene, plan, manifest, report, patch_data,
+                         project_root=Path(__file__).resolve().parents[1], output_mode="generated")
+    assert result["status"] == "rejected" and result["plan"] == plan
+
+
+@pytest.mark.parametrize("mode", ("animatic", "unknown", None))
+def test_generated_records_require_explicit_valid_output_mode(mode):
+    scene, plan, manifest, report, patch_data, _verification, _mode = _review_case_data("generated")
+    result = apply_patch(scene, plan, manifest, report, patch_data,
+                         project_root=Path(__file__).resolve().parents[1], output_mode=mode)
+    assert result["status"] == "rejected" and result["plan"] == plan
