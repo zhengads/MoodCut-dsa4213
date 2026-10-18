@@ -191,7 +191,9 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 五人本轮分别认领：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。已有模块直接复用，做 Issue 中未勾选项，先提交 PR，不自动合并。
 
-生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共脚本/离线入口边界已强制核对，真实规划、审查、编译与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共脚本/离线入口边界已强制核对，规划适配已支持显式generated，审查、编译与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+
+生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。离线传入FakeClient；当前CLI plan仍默认animatic。规划代码已实际接入pipeline，但#23审查/#24编译器缺失时仍明确失败，不表示三条件成片已可运行。
 
 本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后仍待人工听看与#9比较资格复核；当前CLI禁止生成式盲评导出/ratings，不以旧导出绕过资格检查。
 

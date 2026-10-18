@@ -26,6 +26,8 @@
 
 pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见CONTRACTS 6.7。其P2/P3边界已用软件替身离线验收；真实依赖、P4请求/视频及P5资格核对仍待接通。脚本prepared不等于视频完成，各成员继续所属文件，不重复实现公共编排。
 
+P2生成式规划适配已实现，见CONTRACTS 6.10；实际planner加FakeClient可在既有pipeline完成一次规划、三份初稿/共同身份及缓存验证。P3 generated接口尚缺，当前两类审查明确失败，不能当完整三条件成功；P4继续消费scene_direction和shots[].direction/时长/素材，不沿用读信手写配方。
+
 P1离线生成入口及单镜头边界已提供，见CONTRACTS 6.8；P4编译器未实现时明确失败，不能用旧开发对或生产fake替代。真实P2/P3/P4接入后再验联调；其余模块不重复写入口，离线准备不创建视频任务或调用付费API。
 
 本地回执/费用记录装配见CONTRACTS 6.9，复用P1的assemble_generated_records，不另建账目框架。#24提供已有拼接结果及片段/成片哈希绑定，#9做资格复核；旧回执GET缺失为null，报价不当消费，completed只证明所选范围的文件检查通过。完整真实模块接线尚未完成，生成式CLI盲评导出/ratings在#9接线前禁止。
