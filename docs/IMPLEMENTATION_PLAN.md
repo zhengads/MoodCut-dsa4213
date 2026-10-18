@@ -18,7 +18,7 @@ Spec：Issue #8 首个接口待办、CONTRACTS 第6节；不改实验设计，�
 - [x] 写 `tests/test_contracts.py`：旧哈希兼容、台词变化不影响共享身份，动作/声音/参考图/模板/未知字段变化会影响身份，非法值拒绝、输入不变、软件记录可读。缺接口时先确认 ModuleNotFoundError，完成后31项通过。
 - [x] 实现 `contracts.py` 公共常量、白名单、非台词比较和共享身份纯函数；在 `pipeline.py` 兼容导出原 json_hash。新增 `tests/fixtures/generated_contract.json` 协议软件示例，实际内容哈希可重新计算。
 - [x] 用 CONTRACTS 取代模糊的未来约束，明确字段、状态、签名、模块接入步骤及已实现/后续实现边界；同步五张任务卡与统一入口，不勾选后续集成任务。
-- [x] 完整离线回归312 passed / 67 subtests；固定33份资料校验通过、零下载。媒体回归已使用本机 FFmpeg 和 H 盘临时目录完成。不关闭 Issue、不自动合并，保留原负责信息。
+- [x] 完整离线回归312 passed / 67 subtests；固定33份资料校验通过、零下载。媒体回归已在配置 FFmpeg 的离线环境完成。不关闭 Issue、不自动合并，保留原负责信息。
 
 ## 当前工程交付
 
