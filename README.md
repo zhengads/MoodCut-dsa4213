@@ -45,6 +45,16 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 通过身份/请求检查后，输出 `bundle.json`、`preparation.json`、完整 `source_inputs.json` 和原账目 `source_block.json` 快照。preparation只记请求prepared_offline、零新调用/消费，报价另存且不等于支出；不产生视频，也不宣称比较eligible。报价可读取configs/video.json的模型/规格/费率，旧读信配方不用于新编译。来源或编译失败返回非零，已有结果不覆盖。完整接口与验收边界见 [CONTRACTS 6.8](docs/CONTRACTS.md#68-离线生成入口与单镜头选择)。
 
+### 已有本地视频的观看检查包
+
+```powershell
+.venv/Scripts/python scripts/inspect_generated_video.py --preparation runs/generated-requests --evidence runs/local-evidence.json --media-origin provided_local --output runs/video-inspection
+```
+
+输入为上述请求准备目录及[本地回执证据](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)，无需key，不提交/恢复任务。软件媒体必须声明`--media-origin synthetic`；provided_local仅说明提供了本地文件，不认证为模型产物。输出观看页、来源/请求/字节哈希绑定、实际抽帧接触表、ffprobe信息和空CSV/JSON人工检查表；复用原拼接器和P1预检/最终记录装配，保留失败与未知费用。详细状态和命令见[CONTRACTS 6.13](docs/CONTRACTS.md#613-本地成片来源绑定与观看检查材料)。
+
+打开输出index.html检查选中范围；页面含条件、目标和预期台词，不用于盲评，也不自动判断说话/口型/情绪是否正确。所有材料就绪只表示ready_requires_manual_inspection；判断项仍留空，comparison仍not_checked/ineligible。只使用records中的最终账目，不把preflight_records的同一历史再累加一次。现有输出不覆盖，失败/不完整返回非零。真实任务、#9资格和模型质量仍待完成。
+
 ## 接入 OpenRouter
 
 `configs/model.json` 已选择第一轮开发 demo 使用的 `openai/gpt-4.1-mini`：输入 $0.40/百万 token、输出 $1.60/百万 token，temperature=0，单次网络超时 120 秒。三个条件共用这份配置，不自动换模型或重试。2026-10-15 核验了 [OpenRouter 模型页](https://openrouter.ai/openai/gpt-4.1-mini) 和 [公开端点参数/价格](https://openrouter.ai/api/v1/models/openai/gpt-4.1-mini/endpoints)：当前 OpenAI 端点支持 max_tokens、temperature、response_format。该选择用于先查看真实输出，不代表已经证明它最适合正式实验。价格变化时同步更新配置；未知价格继续拒绝发送。
@@ -189,9 +199,9 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 1.1 公共协议与各模块接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。`moodcut.contracts` 提供白名单、非台词检查和共享身份；公共 `validate_scene/validate_plan` 已支持显式 `output_mode="generated"`。软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py tests/test_validation.py -q`。旧 CLI 和业务入口仍默认1.0，完整生成链路尚待接通。
 
-五人本轮分别认领：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。已有模块直接复用，做 Issue 中未勾选项，先提交 PR，不自动合并。
+五模块任务索引：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。以Issue实时状态为准；已交付模块直接复用，只认领未完成项，先提交 PR，不自动合并。
 
-生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译已支持显式generated，媒体检查材料/实际任务与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，实际任务与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
 生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3/P4代码加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic，媒体/资格尚待接线，不能视为三条件成片已可运行。
 

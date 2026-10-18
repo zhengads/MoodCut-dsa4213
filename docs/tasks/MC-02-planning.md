@@ -1,25 +1,25 @@
 # MC-02 MovieAgent 输入素材与规划适配
 
-当前任务：[GitHub Issue #22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
+任务记录：[GitHub Issue #22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)，工程交付已关闭。复用下列已完成实现，不重新认领同一增量；新需求另记Issue。末尾既有交付用于复用和回归。
 
 首个增量建议分支：`feat/issue-22-shared-planning`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 生成式共同规划与消费联调（规划适配已实现）
+## 生成式共同规划与消费联调（工程交付已合入）
 
-本模块规划实现及离线验收已提供；剩余未勾选项是依赖#24的实际消费联调，不在P2中重复实现P4编译器。真实模型质量与完整三条件链路尚未验收。
+规划适配及P4消费联调已随PR #32/#34合入，Issue #22工程任务已关闭，不在P2中重复实现P4编译器。真实模型质量、实际视频任务和完整比较链路尚未验收。
 
 **目标**：把读信示例的手写场景/动作抽成可复用的规划输出；它是各条件共用的生成基础，不是额外消融因素。
 
 ### 已核实的缺口
 
-默认`planning_shot.txt`保留静态animatic；显式generated使用独立planning_generated_*.txt，已按输入范围输出共同scene_direction/逐镜头direction。`configs/video.json`仍是手写读信开发对示例，P4真实消费及去除旧配方依赖待#24完成。不能为每个条件单独规划动作，再把视频差异归因于台词审查。
+默认`planning_shot.txt`保留静态animatic；显式generated使用独立planning_generated_*.txt，已按输入范围输出共同scene_direction/逐镜头direction。P4实际编译器已消费这些字段，旧configs/video.json只留作独立读信开发示例/报价快照，不提供新主路径的动作配方。不能为每个条件单独规划动作，再把视频差异归因于台词审查。
 
 ### 本次待办与验收
 
 - [x] 沿用 director→scene→shot 接入显式generated和真实公共验证器，输出共同场景/动作/镜头/短片时长与初始台词；animatic默认行为及提示保留。
 - [x] 复用pipeline一次规划与条件深拷贝，以真实planner加FakeClient验证三组初稿/非台词哈希及共同Settings一致；不为moodcut单独增强表演。缺P3接口时两个审查条件明确失败，不伪装完整成功。
 - [x] 按输入镜头/总长范围排整数时长，不补到60秒；全部beat顺序覆盖、来源provenance和原始响应保留，缺字段/越权引用明确拒绝，不静默修复。
-- [ ] P4真实消费与去除旧配方的跨模块联调：P2已输出通用共同动作字段，无读信名字/镜头特判；实际build_generated_video_bundle与主路径替换仍依赖#24。原配置保留为明确开发示例，不代写P4模块。
+- [x] P4实际build_generated_video_bundle已消费P2通用共同动作字段，主路径不依赖读信名字/镜头/动作配方；真实planner/reviewer/compiler加FakeClient覆盖完整和单镜头请求准备。原配置保留为明确开发示例，不代写P4模块。
 - [x] FakeClient覆盖既有读信及临时公交站还伞结构夹具；不同角色/beat/镜头ID与10秒计划均经真实规划代码验证。夹具只作软件测试，不是数据集、正式样本或效果证据。
 - [x] stage顺序、源输入不变、共同身份/缓存、缺动作/越权引用及失败原样留档均有离线回归，不自动重试。
 
@@ -31,7 +31,7 @@
 
 `src/moodcut/planner.py`、`importer.py`（仅必要输入适配）、`src/moodcut/prompts/planning_*.txt`、`tests/test_planner.py`、`tests/test_importer.py` 与模块说明。素材清单只在明确输入适配需要时调整。不修改公共 validator、审查模块、生成编译器和公共夹具；所需新字段先交 P1。
 
-P1公共契约/验证/编排已合入。交付给P3同一个初稿，给P4共同动作；基础声音仍来自共同GenerationSettings。pipeline的唯一协同改动为读取规划提示哈希时传mode_options，已在#8记录，以确保generated缓存身份对应真实提示。离线验收为`python -m pytest tests/test_planner.py tests/test_importer.py tests/test_pipeline.py -q`及完整回归，全部使用FakeClient；P3/P4真实接线仍待其任务交付。
+P1公共契约/验证/编排已合入。交付给P3同一个初稿，给P4共同动作；基础声音仍来自共同GenerationSettings。pipeline的唯一协同改动为读取规划提示哈希时传mode_options，已在#8记录，以确保generated缓存身份对应真实提示。离线验收为`python -m pytest tests/test_planner.py tests/test_importer.py tests/test_pipeline.py -q`及完整回归，全部使用FakeClient；P2/P3/P4实际代码的脚本/请求接线已交付，真实任务和P5资格仍待后续。
 
 ### 实验解释边界
 
