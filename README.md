@@ -4,7 +4,7 @@ DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，系统规划台词并执行审查—修订—复查。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音。第一阶段 review 只修改台词。
 
-默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 提供读取已有三条件脚本的离线请求入口边界，依赖P4编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费pilot验收。
+默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费pilot验收。
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
@@ -33,7 +33,7 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 ### 生成模式：从已有脚本离线准备请求
 
-正式入口已支持读取1.1/generated的脚本block，保留共同初稿与原镜头索引，不重新规划或审查。以下是依赖接口就绪后的用法示例，source-block需来自CONTRACTS 6.7的成功脚本编排，不接受旧开发对或animatic记录：
+正式入口已支持读取1.1/generated的脚本block，保留共同初稿与原镜头索引，不重新规划或审查。source-block需来自CONTRACTS 6.7的成功脚本编排，并在规划前冻结实际get_video_template_sha256()身份；不接受旧开发对或animatic记录：
 
 ```powershell
 .venv/Scripts/python -m moodcut run --output-mode generated --source-block runs/generated-scripts/block.json --shot-id s2 --pricing-config configs/video.json --output runs/generated-s2
@@ -41,9 +41,9 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 省略 `--shot-id` 准备全部镜头；各条件选择同一个镜头，seed仍按原完整计划中的索引计算。此入口始终离线、无需key，不支持 `--allow-paid`、规划/响应/渲染覆盖参数，也不查询实时价格；原默认animatic命令不变。
 
-**当前P4的 `build_generated_video_bundle` 尚未实现**：真实调用会明确报告缺少#24依赖，不创建准备结果、不回退旧开发对。CLI和编排边界已用明确标注的P2/P3/P4软件替身测试，不表示完整真实联调已完成。
+`build_generated_video_bundle`已消费共同scene_direction、逐镜头direction/时长和明确的1.1 GenerationSettings；同一生成模板、人物图、声音和原索引seed跨三条件复用，只有台词部分变化。实际P2/P3/P4代码加FakeClient已通过读信/非读信输入与完整/单镜头离线联调；不等于真实模型或成片验收。模板哈希不匹配、非台词改动或素材验证失败会拒绝，不改写旧block。详见[CONTRACTS 6.12](docs/CONTRACTS.md#612-三条件生成请求编译)和[生成编译说明](docs/rendering.md#generated-request-compilation-11)。
 
-编译器接入并通过身份/请求检查后，输出 `bundle.json`、`preparation.json`、完整 `source_inputs.json` 和原账目 `source_block.json` 快照。preparation只记请求prepared_offline、零新调用/消费，报价另存且不等于支出；不产生视频，也不宣称比较eligible。来源或编译失败返回非零，已有结果不覆盖。完整接口与验收边界见 [CONTRACTS 6.8](docs/CONTRACTS.md#68-离线生成入口与单镜头选择)。
+通过身份/请求检查后，输出 `bundle.json`、`preparation.json`、完整 `source_inputs.json` 和原账目 `source_block.json` 快照。preparation只记请求prepared_offline、零新调用/消费，报价另存且不等于支出；不产生视频，也不宣称比较eligible。报价可读取configs/video.json的模型/规格/费率，旧读信配方不用于新编译。来源或编译失败返回非零，已有结果不覆盖。完整接口与验收边界见 [CONTRACTS 6.8](docs/CONTRACTS.md#68-离线生成入口与单镜头选择)。
 
 ## 接入 OpenRouter
 
@@ -191,9 +191,9 @@ selection.example.json 引用 Anna/Elsa，原图保留本地、许可状态明�
 
 五人本轮分别认领：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。已有模块直接复用，做 Issue 中未勾选项，先提交 PR，不自动合并。
 
-生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查适配已支持显式generated，编译与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译已支持显式generated，媒体检查材料/实际任务与资格接线仍待所属模块完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
-生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3代码加FakeClient现可准备三条件脚本；当前CLI plan/review仍默认animatic，#24编译器仍缺，不能视为三条件成片已可运行。
+生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3/P4代码加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic，媒体/资格尚待接线，不能视为三条件成片已可运行。
 
 本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后仍待人工听看与#9比较资格复核；当前CLI禁止生成式盲评导出/ratings，不以旧导出绕过资格检查。
 

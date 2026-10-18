@@ -1,5 +1,6 @@
 """Offline reference-to-video preparation and local synthetic media checks."""
 from copy import deepcopy
+from decimal import Decimal
 from pathlib import Path
 import json
 import shutil
@@ -7,7 +8,9 @@ import subprocess
 
 import pytest
 
-from moodcut.video_generation import build_video_bundle, assemble_generated_clips
+from moodcut.video_generation import (build_video_bundle, assemble_generated_clips,
+                                     build_generated_video_bundle, get_video_template_sha256)
+from moodcut.contracts import CONDITIONS, assert_dialogue_only_revision, shared_generation_sha256
 from moodcut.pipeline import json_hash
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -318,3 +321,344 @@ def test_local_synthetic_video_and_audio_are_preserved(tmp_path):
                    check=True, capture_output=True)
     with pytest.raises(ValueError, match="audio"):
         assemble_generated_clips([str(silent)], durations=[1], out_path=str(tmp_path / "reject.mp4"))
+
+
+@pytest.fixture(params=["letter", "umbrella"])
+def generated_inputs(request, monkeypatch):
+    """Task-local hand-written software stories, not model outputs or a dataset."""
+    data = json.loads((ROOT / "tests/fixtures/generated_contract.json").read_text(encoding="utf-8"))
+    scene, initial, settings = data["scene"], data["initial_plan"], data["settings"]
+    manifest = json.loads((ROOT / "tests/fixtures/assets.json").read_text(encoding="utf-8"))
+    pricing = json.loads((ROOT / "configs/video.json").read_text(encoding="utf-8"))
+    settings["model"] = pricing["model"]
+    if request.param == "umbrella":
+        scene.update(scene_id="software_bus_stop", tone="affectionate", story="Lin returns Bo's umbrella; they walk to the bus.",
+                     characters=[{"id": "lin", "name": "林"}, {"id": "bo", "name": "博"}],
+                     beats=[{"id": "handover", "description": "Lin returns the umbrella."},
+                            {"id": "depart", "description": "Both walk to the bus."}],
+                     asset_ids=["lin_portrait", "bo_portrait"], min_duration_s=10, max_duration_s=10,
+                     min_shot_duration_s=4, max_shot_duration_s=6, max_shots=2)
+        initial.update(scene_id=scene["scene_id"], tone=scene["tone"],
+                       scene_direction="A rainy bus stop at dawn. The parked bus is to the right.", shots=[
+            {"shot_id": "return-umbrella", "beat_ids": ["handover"], "duration_s": 4,
+             "direction": "Medium two-shot: Lin hands the closed umbrella to Bo, who takes it.",
+             "visuals": [{"asset_id": a, "crop": "full"} for a in scene["asset_ids"]],
+             "dialogue": [{"character_id": "lin", "text": "伞还给你。"}], "narration": "Lin returns the umbrella."},
+            {"shot_id": "walk-to-bus", "beat_ids": ["depart"], "duration_s": 6,
+             "direction": "Wide tracking shot: Lin and Bo walk together toward the parked bus.",
+             "visuals": [{"asset_id": a, "crop": "full"} for a in scene["asset_ids"]],
+             "dialogue": [], "narration": "Both walk toward the bus."}])
+        for asset, character, binding in zip(manifest["assets"], scene["characters"], settings["characters"]):
+            asset.update(asset_id=character["id"]+"_portrait", character_id=character["id"])
+            binding.update(id=character["id"], asset_id=asset["asset_id"])
+    for asset in manifest["assets"]:
+        # This domain is inert: the compiler must never download the URL.
+        asset["source_url"] = "https://example.invalid/" + asset["asset_id"] + ".png"
+    plans = {c: deepcopy(initial) for c in CONDITIONS}
+    speaker = scene["characters"][0]["id"]
+    for condition, text in (("generic_review", "请你收好。"), ("moodcut", "下次下雨，我还陪你。")):
+        plans[condition]["shots"][0]["dialogue"] = [{"character_id": speaker, "text": text}]
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("Offline tests must not connect"))
+    return scene, initial, plans, manifest, settings, pricing
+
+
+def compile_generated(case, **overrides):
+    scene, initial, plans, manifest, settings, pricing = case
+    return build_generated_video_bundle(scene, initial, plans, manifest, settings, project_root=ROOT,
+        template_sha256=overrides.get("template_sha256", get_video_template_sha256()), pricing_config=pricing)
+
+
+def prompt_parts(request):
+    shared, dialogue = request["prompt"].split("SHARED_REQUIREMENTS_JSON:\n", 1)[1].split("\n\nDIALOGUE_JSON:\n", 1)
+    return json.loads(shared), json.loads(dialogue)
+
+
+def test_generated_requests_use_frozen_plan_and_only_dialogue_varies(generated_inputs):
+    scene, initial, plans, manifest, settings, pricing = generated_inputs
+    saved = deepcopy(generated_inputs)
+    bundle = compile_generated(generated_inputs)
+    assert saved == generated_inputs
+    assert [c["condition"] for c in bundle["conditions"]] == list(CONDITIONS)
+    assert bundle["kind"] == "generated_three_condition_bundle" and bundle["schema_version"] == "1.1"
+    assert bundle["initial_plan_sha256"] == json_hash(initial)
+    assert bundle["shared_generation_sha256"] == shared_generation_sha256(
+        scene, initial, manifest, settings, template_sha256=get_video_template_sha256())
+    for index, shot in enumerate(initial["shots"]):
+        requests = []
+        for condition in bundle["conditions"]:
+            job = condition["jobs"][index]
+            request = deepcopy(job["request"])
+            assert set(request) == {"model", "prompt", "duration", "resolution", "aspect_ratio", "generate_audio", "seed", "input_references"}
+            shared, spoken = prompt_parts(request)
+            assert shared["scene_direction"] == initial["scene_direction"]
+            assert shared["shot"] == {k: shot[k] for k in ("direction", "duration_s", "visuals")}
+            assert spoken == plans[condition["condition"]]["shots"][index]["dialogue"]
+            assert request["seed"] == settings["seed"] + index and request["duration"] == shot["duration_s"]
+            assert request["generate_audio"] is True and len(request["input_references"]) == len(scene["asset_ids"])
+            assert all(c not in request["prompt"] for c in CONDITIONS)
+            assert job["request_sha256"] == json_hash(request)
+            assert job["quoted_cost_usd"] == str(Decimal("0.10") * shot["duration_s"])
+            assert "estimated_cost_usd" not in job and "provider_cost_usd" not in job
+            request["prompt"] = shared
+            requests.append(request)
+        assert requests[0] == requests[1] == requests[2]
+    assert compile_generated(generated_inputs) == bundle
+    # Empty/unchanged shots compile to exactly equal full requests, not only equal settings.
+    assert len({c["jobs"][-1]["request_sha256"] for c in bundle["conditions"]}) == 1
+    if scene["scene_id"] == "software_bus_stop":
+        assert sum(s["duration_s"] for s in initial["shots"]) == 10
+        assert not any(token in str(bundle) for token in ("Anna", "Elsa", "letter", "s1", "s2", "s3"))
+    bundle["settings"]["characters"][0]["voice"] = "changed output"
+    assert generated_inputs == saved
+
+
+@pytest.mark.parametrize("field", ["scene_direction", "direction", "duration_s", "visuals", "narration", "extension", "order"])
+def test_generated_compiler_rejects_non_dialogue_changes(generated_inputs, field):
+    candidate = generated_inputs[2]["moodcut"]
+    if field == "scene_direction":
+        candidate[field] += " Additional setting."
+    elif field == "order":
+        candidate["shots"].reverse()
+    elif field == "duration_s":
+        candidate["shots"][0][field] += 1
+    elif field == "visuals":
+        candidate["shots"][0][field][0]["crop"] = "center_close"
+    else:
+        candidate["shots"][0][field] = "Only this condition gets an enhancement."
+    with pytest.raises(ValueError):
+        compile_generated(generated_inputs)
+
+
+@pytest.mark.parametrize("mutation", ["missing", "extra", "baseline", "speaker", "dialogue_control", "long",
+    "old_header", "asset_hash", "binding", "audio", "seed", "setting_extra", "price_model", "price_unknown"])
+def test_generated_compiler_rejects_invalid_input(generated_inputs, mutation):
+    scene, initial, plans, manifest, settings, pricing = generated_inputs
+    if mutation == "missing":
+        del plans["generic_review"]
+    elif mutation == "extra":
+        plans["dialogue_revision"] = deepcopy(initial)
+    elif mutation == "baseline":
+        plans["baseline"]["shots"][0]["dialogue"] = []
+    elif mutation == "speaker":
+        plans["moodcut"]["shots"][0]["dialogue"][0]["character_id"] = "unknown"
+    elif mutation == "dialogue_control":
+        plans["moodcut"]["shots"][0]["dialogue"][0]["voice"] = "Special enhancement"
+    elif mutation == "long":
+        plans["moodcut"]["shots"][0]["dialogue"][0]["text"] = "长" * 500
+    elif mutation == "old_header":
+        initial["schema_version"] = "1.0"
+    elif mutation == "asset_hash":
+        manifest["assets"][0]["sha256"] = "0" * 64
+    elif mutation == "binding":
+        settings["characters"][0]["asset_id"] = settings["characters"][1]["asset_id"]
+    elif mutation == "audio":
+        settings["generate_audio"] = False
+    elif mutation == "seed":
+        settings["seed"] = True
+    elif mutation == "setting_extra":
+        settings["shots"] = pricing["shots"]
+    elif mutation == "price_model":
+        pricing["model"] = "different/model"
+    else:
+        pricing.pop("price_per_second_usd")
+    with pytest.raises(ValueError):
+        compile_generated(generated_inputs)
+
+
+@pytest.mark.parametrize("url", [None, "file:///private.png", "https://localhost/a.png", "http://example.com/a.png"])
+def test_generated_references_require_public_https_without_fetching(generated_inputs, url):
+    generated_inputs[3]["assets"][0]["source_url"] = url
+    with pytest.raises(ValueError, match="Reference"):
+        compile_generated(generated_inputs)
+
+
+def test_generated_template_is_actual_content_not_a_declared_hash(generated_inputs, tmp_path, monkeypatch):
+    import hashlib
+    from moodcut import video_generation
+    path = video_generation._GENERATED_TEMPLATE
+    expected = hashlib.sha256(path.read_text(encoding="utf-8").encode("utf-8")).hexdigest()
+    assert get_video_template_sha256() == expected
+    with pytest.raises(ValueError, match="actual generated video template"):
+        compile_generated(generated_inputs, template_sha256="a" * 64)
+    modified = tmp_path / "template.txt"
+    modified.write_text(path.read_text(encoding="utf-8") + "\nChanged common template.\n", encoding="utf-8")
+    monkeypatch.setattr(video_generation, "_GENERATED_TEMPLATE", modified)
+    assert get_video_template_sha256() != expected
+    with pytest.raises(ValueError, match="actual generated video template"):
+        compile_generated(generated_inputs, template_sha256=expected)
+    bundle = compile_generated(generated_inputs)
+    assert bundle["template_sha256"] == get_video_template_sha256()
+
+
+def test_generated_seedance_uses_existing_local_quote_without_changing_prompt(generated_inputs):
+    from decimal import Decimal
+    original = compile_generated(generated_inputs)
+    settings, pricing = generated_inputs[-2:]
+    settings["model"] = pricing["model"] = "bytedance/seedance-2.0-mini"
+    pricing.pop("price_per_second_usd")
+    pricing["price_per_million_video_tokens_usd"] = "3.50"
+    changed = compile_generated(generated_inputs)
+    assert changed["shared_generation_sha256"] != original["shared_generation_sha256"]
+    for before, after in zip(original["conditions"], changed["conditions"]):
+        for a, b in zip(before["jobs"], after["jobs"]):
+            assert a["request"]["prompt"] == b["request"]["prompt"]
+            assert a["request"]["input_references"] == b["request"]["input_references"]
+            assert Decimal(b["quoted_cost_usd"]) == Decimal("0.0756") * b["request"]["duration"]
+
+
+def test_generated_does_not_consume_legacy_letter_recipe(generated_inputs):
+    before = compile_generated(generated_inputs)
+    pricing = generated_inputs[-1]
+    for key in list(pricing):
+        if key not in {"model", "resolution", "aspect_ratio", "price_per_second_usd"}:
+            del pricing[key]
+    assert compile_generated(generated_inputs) == before
+
+
+def test_generated_all_reference_images_map_in_shared_order(generated_inputs):
+    scene, _initial, _plans, manifest, _settings, _pricing = generated_inputs
+    # An extra selected image of the same character still receives an explicit
+    # character mapping; manifest storage order must not change the request.
+    extra = deepcopy(manifest["assets"][0])
+    extra.update(asset_id="software_secondary_view", source_url="https://example.invalid/secondary.png")
+    scene["asset_ids"].append(extra["asset_id"])
+    manifest["assets"].append(extra)
+    before = compile_generated(generated_inputs)
+    manifest["assets"].reverse()
+    after = compile_generated(generated_inputs)
+    assert before == after
+    request = after["conditions"][0]["jobs"][0]["request"]
+    shared, _spoken = prompt_parts(request)
+    assert [r["asset_id"] for r in shared["reference_images"]] == scene["asset_ids"]
+    assert shared["reference_images"][-1] == {"reference_index": 3, "asset_id": extra["asset_id"],
+        "character_id": extra["character_id"], "name": scene["characters"][0]["name"], "primary_identity": False}
+    assert request["input_references"][-1]["image_url"]["url"] == extra["source_url"]
+
+
+def test_generated_valid_plan_with_unsupported_provider_duration_is_rejected(generated_inputs):
+    scene, initial, plans, _manifest, _settings, _pricing = generated_inputs
+    scene.update(max_shot_duration_s=11, max_duration_s=40)
+    initial["shots"][0]["duration_s"] = 11
+    for plan in plans.values():
+        plan["shots"][0]["duration_s"] = 11
+    with pytest.raises(ValueError, match="Unsupported Wan"):
+        compile_generated(generated_inputs)
+
+
+def script_source(case, output):
+    """Actual P1/P2/P3 with FakeClient JSON; no business-function doubles."""
+    from moodcut.client import FakeClient
+    from moodcut.pipeline import run_experiment
+    scene, initial, plans, manifest, settings, _pricing = case
+    responses = [{"scene_id": scene["scene_id"], "tone": scene["tone"],
+                  "beat_order": [b["id"] for b in scene["beats"]], "approach": "Software planning only."},
+                 {"scene_id": scene["scene_id"], "scene_direction": initial["scene_direction"], "segments": [
+                     {"beat_ids": s["beat_ids"], "direction": s["direction"], "duration_s": s["duration_s"],
+                      "description": s["narration"]} for s in initial["shots"]]}, initial]
+    shot_id = initial["shots"][0]["shot_id"]
+    for mode in CONDITIONS[1:]:
+        responses += [{"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": mode, "issues": [
+            {"issue_id": "software-issue", "shot_id": shot_id, "dimension": "naturalness", "severity": "minor",
+             "evidence": "Hand-written software concern.", "suggestion": "Revise the dialogue only."}]},
+            {"schema_version": "1.0", "scene_id": scene["scene_id"], "edits": [
+                {"issue_id": "software-issue", "shot_id": shot_id, "set": {"dialogue": plans[mode]["shots"][0]["dialogue"]}}]},
+            {"scene_id": scene["scene_id"], "resolved_issue_ids": ["software-issue"], "unresolved_issue_ids": [], "new_concerns": []}]
+    client = FakeClient(responses)
+    block = run_experiment(scene, manifest, client, out_dir=output, project_root=ROOT,
+        output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256())
+    assert block["status"] == "prepared" and block["planning"]["calls"] == 3 and len(client.calls) == 9
+    assert [r["review_calls"] for r in block["runs"]] == [0, 3, 3]
+    return block
+
+
+def test_actual_planning_review_compiler_cli_all_and_single_shot(generated_inputs, tmp_path, monkeypatch):
+    from moodcut import client, video_client
+    from moodcut.__main__ import main
+    from moodcut.pipeline import read_json
+    monkeypatch.setattr(client.OpenRouterClient, "from_env", lambda *a, **k: pytest.fail("No text client"))
+    monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k: pytest.fail("No video client"))
+    monkeypatch.setattr(video_client, "fetch_video_models", lambda *a, **k: pytest.fail("No catalogue"))
+    source = tmp_path / "scripts"
+    block = script_source(generated_inputs, source)
+    before = {p: p.read_bytes() for p in source.rglob("*.json")}
+    full_ids = [s["shot_id"] for s in generated_inputs[1]["shots"]]
+    bundles = []
+    for selection in (None, full_ids[-1]):
+        output = tmp_path / ("all" if selection is None else "selected")
+        args = ["run", "--project-root", str(ROOT), "--output-mode", "generated", "--source-block", str(source),
+                "--pricing-config", "configs/video.json", "--output", str(output)]
+        if selection is not None:
+            args += ["--shot-id", selection]
+        assert main(args) == 0
+        prepared = read_json(output / "preparation.json")
+        bundle = read_json(output / "bundle.json")
+        bundles.append(bundle)
+        assert prepared["status"] == "prepared_offline" and prepared["comparison_status"] == "not_checked"
+        assert prepared["shared_generation_sha256"] == block["shared_generation_sha256"]
+        assert prepared["calls"] == prepared["generation_posts"] == prepared["video_get_calls"] == prepared["real_http_calls"] == 0
+        assert prepared["provider_cost_usd"] == 0.0 and prepared["video_path"] is None
+        assert not list(output.rglob("*.mp4"))
+        assert read_json(output / "source_block.json") == block
+        assert read_json(output / "source_inputs.json")["plans"] == generated_inputs[2]
+        for condition in bundle["conditions"]:
+            assert condition["final_plan_sha256"] == json_hash(generated_inputs[2][condition["condition"]])
+            for job in condition["jobs"]:
+                assert job["request"]["seed"] == generated_inputs[4]["seed"] + job["shot_index"]
+                assert_dialogue_only_revision(generated_inputs[1], generated_inputs[2][condition["condition"]])
+        assert {p: p.read_bytes() for p in source.rglob("*.json")} == before
+        assert main(args) == 1  # Existing artifacts stay intact.
+    for full, selected in zip(*[b["conditions"] for b in bundles]):
+        assert selected["jobs"] == [full["jobs"][-1]]
+
+
+def test_actual_cli_refuses_template_changed_after_source_freeze(generated_inputs, tmp_path, monkeypatch):
+    from moodcut import video_generation
+    from moodcut.__main__ import main
+    source = tmp_path / "scripts"
+    script_source(generated_inputs, source)
+    before = {p: p.read_bytes() for p in source.rglob("*.json")}
+    changed = tmp_path / "changed-template.txt"
+    changed.write_text(video_generation._GENERATED_TEMPLATE.read_text(encoding="utf-8") + "\nNew template\n", encoding="utf-8")
+    monkeypatch.setattr(video_generation, "_GENERATED_TEMPLATE", changed)
+    output = tmp_path / "requests"
+    assert main(["run", "--project-root", str(ROOT), "--output-mode", "generated", "--source-block", str(source),
+                 "--pricing-config", "configs/video.json", "--output", str(output)]) == 1
+    assert not output.exists()
+    assert {p: p.read_bytes() for p in source.rglob("*.json")} == before
+
+
+def test_actual_compiler_requests_reuse_existing_records_accounting(generated_inputs, tmp_path):
+    """Synthetic moving/sine media, a hand-written receipt; no HTTP generation."""
+    from moodcut.pipeline import prepare_generated_run, assemble_generated_records, write_json
+    source = tmp_path / "scripts"
+    block = script_source(generated_inputs, source)
+    shot_id = generated_inputs[1]["shots"][-1]["shot_id"]
+    prep = tmp_path / "prepared"
+    prepare_generated_run(source, out_dir=prep, project_root=ROOT, shot_id=shot_id, pricing_config=ROOT / "configs/video.json")
+    bundle = json.loads((prep / "bundle.json").read_text(encoding="utf-8"))
+    jobs = [c["jobs"][0] for c in bundle["conditions"]]
+    assert len({j["request_sha256"] for j in jobs}) == 1
+    media = tmp_path / "synthetic-moving-sine.mp4"
+    duration = jobs[0]["request"]["duration"]
+    subprocess.run(["ffmpeg", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=size=160x90:rate=24:duration={duration}",
+        "-f", "lavfi", "-i", f"sine=frequency=440:duration={duration}", "-c:v", "libx264", "-c:a", "aac",
+        "-shortest", str(media)], check=True, capture_output=True, timeout=30)
+    receipt = tmp_path / "synthetic-receipt.json"
+    write_json(receipt, {"schema_version": "1.1", "model": jobs[0]["request"]["model"], "status": "downloaded",
+        "job_id": "synthetic-not-a-real-task", "request_sha256": jobs[0]["request_sha256"],
+        "estimated_cost_usd": jobs[0]["quoted_cost_usd"], "provider_cost_usd": "0.23", "video_path": str(media),
+        "post_attempts": 1, "poll_attempts": 2, "download_attempts": 1, "download_redirect_attempts": 0})
+    evidence = tmp_path / "synthetic-evidence.json"
+    write_json(evidence, {"schema_version": "1.1", "block_id": block["block_id"], "provenance": "Software evidence only",
+        "conditions": [{"condition": c, "jobs": [{"shot_id": shot_id, **(
+            {"receipt_path": str(receipt)} if c == "baseline" else
+            {"reused_from": {"run_id": block["runs"][0]["run_id"], "shot_id": shot_id}})}]} for c in CONDITIONS]})
+    result = assemble_generated_records(prep, evidence=evidence, out_dir=tmp_path / "records",
+        pricing_config=ROOT / "configs/video.json", project_root=ROOT)
+    assert result["accounting"]["generation_posts"] == 1
+    assert result["accounting"]["provider_cost_usd"] == .23
+    assert result["assembly_activity"]["real_http_calls"] == 0
+    assert [r["generation_posts"] for r in result["runs"]] == [1, 0, 0]
+    assert [r["provider_cost_usd"] for r in result["runs"]] == [.23, 0, 0]
+    assert all(r["run_status"] == "completed" and r["comparison_status"] == "not_checked" for r in result["runs"])

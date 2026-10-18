@@ -1,19 +1,107 @@
-"""Reference-guided development video requests and real A/V concatenation.
-
-This path does not change the legacy animatic contract or formal experiment.
-"""
+"""Offline reference-guided request compilers and real A/V concatenation."""
 from copy import deepcopy
 from decimal import Decimal
+import hashlib
 import ipaddress
 import json
 import math
 from pathlib import Path
 import subprocess
+from string import Template
 from urllib.parse import urlsplit
 
-from .pipeline import json_hash
+from .contracts import (CONDITIONS, CONTRACT_VERSION, _json_copy,
+                        assert_dialogue_only_revision, json_hash, shared_generation_sha256)
 from .validation import validate_plan
 from .video_client import estimate_video_cost
+
+_GENERATED_TEMPLATE = Path(__file__).with_name("prompts") / "video_generated.txt"
+
+
+def get_video_template_sha256() -> str:
+    """Identity of the actual UTF-8 template text used by the 1.1 compiler.
+
+    Read text with universal newlines, just as when rendering the prompt, so
+    Windows/Linux checkouts identify the same effective template content.
+    """
+    text = _GENERATED_TEMPLATE.read_text(encoding="utf-8")
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
+                                 project_root, template_sha256, pricing_config) -> dict:
+    """Compile full plans without clients, network or media generation.
+
+    Local asset bytes and the actual template are checked. Quotes use only the
+    supplied price snapshot; they are neither spending nor live model preflight.
+    Invalid candidates are rejected, never projected onto a different script.
+    """
+    scene, initial, plans, manifest, settings, pricing = _json_copy(
+        [scene, initial, plans, manifest, settings, pricing_config])
+    if not isinstance(plans, dict) or set(plans) != set(CONDITIONS):
+        raise ValueError("plans must contain exactly baseline/generic_review/moodcut")
+    if not isinstance(pricing, dict):
+        raise ValueError("pricing_config must be an object")
+    template = _GENERATED_TEMPLATE.read_text(encoding="utf-8")
+    actual_template_sha256 = hashlib.sha256(template.encode("utf-8")).hexdigest()
+    if template_sha256 != actual_template_sha256:
+        raise ValueError("template_sha256 does not match the actual generated video template; prepare a new source block")
+    shared = shared_generation_sha256(scene, initial, manifest, settings, template_sha256=actual_template_sha256)
+    for label, plan in [("initial", initial), *[(c, plans[c]) for c in CONDITIONS]]:
+        errors = validate_plan(scene, plan, manifest, project_root=project_root, output_mode="generated")
+        if errors:
+            raise ValueError(label + ": " + "; ".join(errors))
+        assert_dialogue_only_revision(initial, plan)
+        if shared_generation_sha256(scene, plan, manifest, settings, template_sha256=actual_template_sha256) != shared:
+            raise ValueError(label + ": shared generation identity mismatch")
+    initial_hash = json_hash(initial)
+    if json_hash(plans["baseline"]) != initial_hash:
+        raise ValueError("baseline must equal the complete initial plan")
+
+    assets = {a["asset_id"]: a for a in manifest["assets"]}
+    names = {c["id"]: c["name"] for c in scene["characters"]}
+    bindings = {c["id"]: c for c in settings["characters"]}
+    references, reference_records, reference_notes = [], [], []
+    # Include every selected reference, in the same order as the shared identity;
+    # multiple images of one character need not become a new first-frame layout.
+    for index, asset_id in enumerate(scene["asset_ids"], 1):
+        asset = assets[asset_id]
+        url = _public_reference(asset.get("source_url"))
+        references.append({"type": "image_url", "image_url": {"url": url}})
+        reference_records.append({k: asset[k] for k in ("asset_id", "character_id", "source_url", "sha256")})
+        reference_notes.append({"reference_index": index, "asset_id": asset_id,
+                                "character_id": asset["character_id"], "name": names[asset["character_id"]],
+                                "primary_identity": bindings[asset["character_id"]]["asset_id"] == asset_id})
+    common = {"style": settings["style"], "sound": settings["sound"], "target_tone": scene["tone"],
+              "scene_direction": initial["scene_direction"], "reference_images": reference_notes,
+              "characters": [dict(c, name=names[c["id"]]) for c in settings["characters"]]}
+
+    def prompt_json(value):
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+    conditions = []
+    for condition in CONDITIONS:
+        jobs = []
+        for index, shot in enumerate(plans[condition]["shots"]):
+            # Same conservative feasibility check as the development pair. It is
+            # not a language-specific speech-rate predictor or quality judgment.
+            if sum(len(line["text"]) for line in shot["dialogue"]) > shot["duration_s"] * 8:
+                raise ValueError(f"{condition}/{shot['shot_id']}: dialogue too long for the fixed clip duration")
+            context = {**common, "shot": {k: initial["shots"][index][k]
+                                         for k in ("direction", "duration_s", "visuals")}}
+            prompt = Template(template).substitute(shared=prompt_json(context), dialogue=prompt_json(shot["dialogue"]))
+            request = {"model": settings["model"], "prompt": prompt, "duration": shot["duration_s"],
+                       "resolution": settings["resolution"], "aspect_ratio": settings["aspect_ratio"],
+                       "generate_audio": True, "seed": settings["seed"] + index,
+                       "input_references": deepcopy(references)}
+            jobs.append({"shot_id": shot["shot_id"], "request": request,
+                         "request_sha256": json_hash(request),
+                         "quoted_cost_usd": str(estimate_video_cost(pricing, request))})
+        conditions.append({"condition": condition, "final_plan_sha256": json_hash(plans[condition]), "jobs": jobs})
+    return {"schema_version": CONTRACT_VERSION, "output_mode": "generated", "kind": "generated_three_condition_bundle",
+            "scene_id": scene["scene_id"], "initial_plan_sha256": initial_hash,
+            "shared_generation_sha256": shared, "template_sha256": actual_template_sha256,
+            "references": reference_records, "settings": settings, "conditions": conditions}
 
 
 def _public_reference(url):
