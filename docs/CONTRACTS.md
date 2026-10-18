@@ -223,7 +223,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2规划适配已实现，详见6.7–6.10。P3审查、P4请求编译及P5资格/真实任务接线仍由各任务完成，不能把脚本记录或替身请求解释为真实成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3规划审查适配已实现，详见6.7–6.11。P4请求编译及P5资格/真实任务接线仍由各任务完成，不能把prepared脚本解释为真实成片。上文1.0 animatic与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -329,9 +329,9 @@ run_status 新增 prepared，表示只完成离线准备；generated 下仅当�
 
 Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段，不表示现有 evaluate 已实现新的共享身份验证。P5 必须先接入新资格核对，再导出生成式比较。
 
-### 6.5 各模块接入签名（验证器与规划已实现，其余仍待接线）
+### 6.5 各模块接入签名（验证器、规划与审查已实现，其余仍待接线）
 
-公共 validate_scene/validate_plan 及P2 make_plan/make_plan_with_trace 的下列参数已实现；P3/P4/P5函数仍是各模块的后续目标签名，不是已有参数。默认 animatic 兼容旧调用；生成调用必须显式传 output_mode="generated"，与 Scene/Plan 版本一致。不要忽略未知参数或静默退回旧模式。
+公共validate_scene/validate_plan、P2 make_plan/make_plan_with_trace及P3 review_and_revise/apply_patch的下列参数已实现；P4/P5函数仍是各模块的后续目标签名，不是已有参数。默认animatic兼容旧调用；生成调用必须显式传output_mode="generated"，与Scene/Plan版本一致。不要忽略未知参数或静默退回旧模式。
 
 ```python
 # P1 validation.py：已实现，返回 list[str]。
@@ -340,12 +340,12 @@ def validate_plan(scene, plan, manifest, *, project_root=None, output_mode="anim
 # P2 planner.py：已实现，具体阶段约束与提示身份见6.10。
 def make_plan(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
 def make_plan_with_trace(scene, manifest, client, *, project_root=None, output_mode="animatic") -> dict: ...
-# 以下仍待所属模块实现。P3 reviewer.py / patches.py：保留 mode 的 generic_review/moodcut 含义。
+# P3 reviewer.py / patches.py：已实现，mode仍指generic_review/moodcut；详见6.11。
 def review_and_revise(scene, initial_plan, manifest, client, *, mode,
                       project_root=None, output_mode="animatic") -> dict: ...
 def apply_patch(scene, plan, manifest, report, patch, *, project_root=None,
                 output_mode="animatic") -> dict: ...
-# P4 video_generation.py：新入口不冒充旧的开发投影入口。
+# 以下仍待所属模块实现。P4 video_generation.py：新入口不冒充旧的开发投影入口。
 def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
                                  project_root, template_sha256, pricing_config) -> dict: ...
 # P5 evaluation.py：新增前置资格核对，原统计公式不变。
@@ -355,7 +355,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
 P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
 
-P5返回所有输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1后续集成实际任务/资格；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法与缺依赖行为见6.8，不代表P3/P4/P5接口或付费入口均已完成。
+P5返回所有输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1后续集成实际任务/资格；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法与缺依赖行为见6.8，不代表P4/P5接口或付费入口均已完成。
 
 ### 6.6 后续接线必须满足的约束
 
@@ -492,4 +492,27 @@ scene、manifest、来源provenance和原始响应均深拷贝；完整源Scene�
 
 规划提示哈希按模式读取。pipeline的缓存身份与planning.prompt_hashes使用同一模式的实际提示，原有planner代码哈希继续参与缓存身份；不能把animatic提示身份记在generated规划上。复用现有一次规划/条件深拷贝，不增加第二套编排。tests/test_planner.py以实际planner和pipeline加FakeClient覆盖既有读信与临时非读信软件输入、短片时长、阶段失败留档、三条件初稿/共享哈希及缓存；临时夹具不是新数据集或模型效果证据。
 
-P2输出可交P3/P4消费，但#23审查与#24编译器仍未实现generated接口。实际规划接入pipeline时baseline可准备，两个审查条件明确失败，不把它解释为完整三条件成功；真实视频、P4去除旧开发配方的消费联调及P5资格仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
+P2/P3实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本（见6.11），不能解释为成片或eligible比较；#24真实编译器、去除旧开发配方的消费联调、实际任务及P5资格仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
+
+### 6.11 台词限定审查与实际最终脚本复查
+
+review_and_revise/apply_patch已支持6.5的显式output_mode参数；mode仍只指generic_review/moodcut，两者不能混用。默认animatic保留dialogue/narration/visuals crop/duration_s能力；generated只允许set包含dialogue，复用allowed_patch_fields和assert_dialogue_only_revision，并传显式模式给实际公共验证器。Report/Patch外壳仍为1.0，不添加关联字段或自动升级旧计划。
+
+```python
+from moodcut.reviewer import review_and_revise, get_review_prompt_hashes
+result = review_and_revise(scene, initial, manifest, client, mode="moodcut",
+                           project_root=project_root, output_mode="generated")
+hashes = get_review_prompt_hashes(output_mode="generated")
+```
+
+两类审查接收相同故事、目标tone、共同初稿和manifest，调用者传入同一模型配置；模块不创建/切换客户端。所有阶段统一MAX_OUTPUT_TOKENS=2048，每阶段最多一次critique→revise→verify，不自动重试。generated使用review_generated_generic/moodcut/revise/verify.txt；只有critique准则不同，修订/复查模板与字段能力相同。声音、动作、表情/镜头/时长/素材及未知扩展字段均固定；某意见无法只靠台词安全解决时可保留未解决，不强行改剧情或扩能力。
+
+revise的新增输入字段issues_by_shot为按原计划镜头顺序的`[{shot_id, issues:[完整原意见...]}]`，同镜头意见按报告顺序保留；完整原report仍单独传入。每镜头至多一条edit，issue_id选择该镜头的一条有效原意见；其余ID不从report删除，也不塞进闭合Patch外壳。animatic共用这一聚合输入/修订提示改进，原允许字段与重复/冲突拒绝规则不放宽。
+
+补丁原子应用后，reviewer再次核对实际候选的完整非台词内容，再把该候选作为revised_plan传verify。verify仍覆盖原report全部issue_id，包括未被edit直接引用的同镜头意见；覆盖缺失、重复或冲突为review_failed并回退初稿。不存在“先复查多字段候选、再投影成另一计划”的路径；成功返回的plan就是该次verify看到的计划。request/response、错误和实际次数写入既有review.trace；pipeline将review.json/final.json一起保存并核对来源。
+
+无意见可在critique后返回unchanged（1次）；有意见但空补丁/同值补丁仍verify全部原意见（最多3次），合法时unchanged。越权补丁为rejected，任何模型/响应/复查失败为review_failed，保留初稿、原report/patch/verification及诊断；失败不能改标签冒充unchanged。未解决意见或new_concerns不触发第二轮，applied/unchanged都不是人工效果评分。CLI review仍为默认animatic，generated可从程序接口/既有pipeline调用。
+
+get_review_prompt_hashes返回按模式选取的实际system文本UTF-8 SHA-256，pipeline的prompt_hashes使用同一入口；原历史记录不重写。与P1的协同只限提示身份接线，不另建编排。tests/test_reviewer.py/test_patches.py使用手写最小软件夹具重建edits[3]重复shot错误：仍拒绝重复edit，同时验证多意见汇集、单edit合法修订及逐ID完整复查。恶意候选故障注入验证完整非台词检查，不能当真实模块联调。
+
+实际P2/P3/P1链路测试只用FakeClient返回软件JSON，不替换planner/reviewer/validator；可得到baseline/generic_review/moodcut的prepared脚本及applied/unchanged、独立调用账目和共同身份，且通过真实P1源block加载检查。#24请求编译、真实视频、#9比较资格和人工效果尚未完成，脚本prepared/Agent意见不当成成片、有效比较或情绪改善证据。数据集、条件和评分口径不变。

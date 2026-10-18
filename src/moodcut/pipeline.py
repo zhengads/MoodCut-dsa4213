@@ -17,7 +17,7 @@ from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import review_and_revise
+from .reviewer import get_review_prompt_hashes, review_and_revise
 from .validation import validate_plan, validate_scene
 
 def resolve_render_dependencies(*, project_root=".", font_path=None, config_path="configs/render.json"):
@@ -121,9 +121,8 @@ def _model_settings(client):
             "temperature": getattr(client, "temperature", None)}
 
 
-def _review_hashes():
-    return {name: hashlib.sha256(files("moodcut").joinpath("prompts", f"review_{name}.txt").read_bytes()).hexdigest()
-            for name in ("generic", "moodcut", "revise", "verify")}
+def _review_hashes(*, output_mode="animatic"):
+    return get_review_prompt_hashes(output_mode=output_mode)
 
 
 def _assignment(scene, replicate, condition):
@@ -173,7 +172,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
               "source_kind": "synthetic" if mock else source_kind, "mock": mock,
               "provenance": deepcopy(scene.get("provenance", {})),
               "initial_plan_sha256": json_hash(initial_plan) if initial_plan is not None and not generated else None,
-              "final_plan_sha256": None, "prompt_hashes": _review_hashes(),
+              "final_plan_sha256": None, "prompt_hashes": _review_hashes(**mode_options),
               "review_status": "not_applicable" if condition == "baseline" else "not_started",
               "validation_status": "not_started", "render_status": "not_started",
               "run_status": "failed", "failure_kind": None, "video_path": None, "errors": []}

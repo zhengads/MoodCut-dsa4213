@@ -1,12 +1,14 @@
 """Task-local synthetic data; not shared fixtures or model evidence."""
 import unittest
 import json
+import hashlib
+import pytest
 from copy import deepcopy
 from pathlib import Path
 from unittest.mock import patch
 from moodcut.client import FakeClient
 from moodcut.reviewer import (MAX_OUTPUT_TOKENS, review_and_revise,
-                             validate_report, validate_verification)
+                             get_review_prompt_hashes, validate_report, validate_verification)
 
 
 def inputs():
@@ -203,3 +205,215 @@ class ReviewFlowTests(unittest.TestCase):
         self.assertEqual(result["status"], "review_failed")
         events = [json.loads(record.getMessage()) for record in logs.records]
         self.assertEqual(events[1]["response"], "not JSON")
+
+
+def _review_case_data(output_mode):
+    """Minimal reconstruction of the duplicate-shot error; no private runs/model evidence."""
+    root = Path(__file__).resolve().parent / "fixtures"
+    if output_mode == "generated":
+        data = json.loads((root / "generated_contract.json").read_text(encoding="utf-8"))
+        scene, plan = data["scene"], data["initial_plan"]
+    else:
+        scene, plan = [json.loads((root / f"{name}.json").read_text(encoding="utf-8")) for name in ("scene", "plan")]
+    manifest = json.loads((root / "assets.json").read_text(encoding="utf-8"))
+    # Four opinions, but the fourth shares the second shot. The original
+    # failure was edits[3]: conflicting or duplicate edit; keep that rule.
+    report = {"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": "moodcut", "issues": [
+        {"issue_id": f"q{i+1}", "shot_id": plan["shots"][index]["shot_id"], "dimension": "tone",
+         "severity": "minor", "evidence": "Synthetic concern about this line.",
+         "suggestion": "Consider a restrained dialogue revision."} for i, index in enumerate((0, 1, 2, 1))]}
+    edits = [{"issue_id": f"q{i+1}", "shot_id": shot["shot_id"], "set": {"dialogue": [
+        {"character_id": scene["characters"][0]["id"], "text": f"Software revision {i+1}."}]}}
+        for i, shot in enumerate(plan["shots"])]
+    patch_data = {"schema_version": "1.0", "scene_id": scene["scene_id"], "edits": edits}
+    verification = {"scene_id": scene["scene_id"], "resolved_issue_ids": ["q1", "q2", "q3", "q4"],
+                    "unresolved_issue_ids": [], "new_concerns": []}
+    return scene, plan, manifest, report, patch_data, verification, output_mode
+
+
+@pytest.fixture(params=("animatic", "generated"))
+def review_case(request, monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("No real network in review tests"))
+    return _review_case_data(request.param)
+
+
+@pytest.fixture
+def generated_review_case(monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("No real network in review tests"))
+    return _review_case_data("generated")
+
+
+def call_review(case, client, *, mode="moodcut"):
+    scene, plan, manifest, *_rest, output_mode = case
+    return review_and_revise(scene, plan, manifest, client, mode=mode,
+                             project_root=Path(__file__).resolve().parents[1], output_mode=output_mode)
+
+
+@pytest.mark.parametrize("mode", ("generic_review", "moodcut"))
+def test_grouped_opinions_retain_all_ids_and_verify_the_returned_plan(review_case, mode):
+    scene, plan, manifest, report, patch_data, verification, output_mode = review_case
+    report["mode"] = mode
+    before = deepcopy(review_case)
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(review_case, client, mode=mode)
+    assert result["status"] == "applied" and review_case == before
+    assert [c["stage"] for c in client.calls] == ["critique", "revise", "verify"]
+    assert all(c["max_output_tokens"] == MAX_OUTPUT_TOKENS for c in client.calls)
+    revision = json.loads(client.calls[1]["user"])
+    assert [len(g["issues"]) for g in revision["issues_by_shot"]] == [1, 2, 1]
+    assert [i["issue_id"] for i in revision["issues_by_shot"][1]["issues"]] == ["q2", "q4"]
+    assert revision["report"] == report
+    checked = json.loads(client.calls[2]["user"])
+    assert checked["plan"] == plan and checked["revised_plan"] == result["plan"]
+    assert checked["report"] == report and result["verification"] == verification
+    assert json.loads(client.calls[0]["user"])["scene"]["tone"] == scene["tone"]
+    names = ("generic" if mode == "generic_review" else "moodcut", "revise", "verify")
+    hashes = get_review_prompt_hashes(output_mode=output_mode)
+    assert [hashlib.sha256(c["system"].encode("utf-8")).hexdigest() for c in client.calls] == [hashes[n] for n in names]
+    if output_mode == "generated":
+        from moodcut.contracts import assert_dialogue_only_revision
+        assert_dialogue_only_revision(plan, result["plan"])
+        assert revision["output_mode"] == "generated"
+
+
+def test_fourth_edit_for_same_shot_is_still_rejected_before_verify(review_case):
+    _scene, plan, _manifest, report, patch_data, verification, _mode = review_case
+    fourth = deepcopy(patch_data["edits"][1])
+    fourth["issue_id"] = "q4"
+    patch_data["edits"].append(fourth)
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(review_case, client)
+    assert result["status"] == "rejected" and result["plan"] == plan
+    assert "edits[3]: conflicting or duplicate edit" in result["errors"]
+    assert result["patch"] == patch_data and client.remaining == 1 and len(client.calls) == 2
+
+
+@pytest.mark.parametrize("path", ("no_issues", "empty_patch", "same_value"))
+def test_valid_unchanged_paths_keep_actual_call_counts(review_case, path):
+    _scene, plan, _manifest, report, patch_data, verification, _mode = review_case
+    if path == "no_issues":
+        report["issues"] = []
+    elif path == "empty_patch":
+        patch_data["edits"] = []
+    else:
+        for edit, shot in zip(patch_data["edits"], plan["shots"]):
+            edit["set"]["dialogue"] = deepcopy(shot["dialogue"])
+    verification.update(resolved_issue_ids=[], unresolved_issue_ids=[i["issue_id"] for i in report["issues"]])
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(review_case, client)
+    assert result["status"] == "unchanged" and result["plan"] == plan
+    assert len(client.calls) == (1 if path == "no_issues" else 3)
+    assert (result["verification"] is None) == (path == "no_issues")
+
+
+def test_verification_cannot_omit_unreferenced_grouped_issue(review_case):
+    _scene, plan, _manifest, report, patch_data, verification, _mode = review_case
+    verification["resolved_issue_ids"].remove("q4")
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(review_case, client)
+    assert result["status"] == "review_failed" and result["plan"] == plan
+    assert result["patch"] == patch_data and result["verification"] == verification
+    assert len(client.calls) == 3 and len(json.loads(client.calls[2]["user"])["report"]["issues"]) == 4
+
+
+@pytest.mark.parametrize("field", ("narration", "direction", "duration_s", "visuals"))
+def test_actual_generated_patch_policy_rejects_non_dialogue_before_verify(generated_review_case, field):
+    _scene, plan, _manifest, report, patch_data, verification, _mode = generated_review_case
+    patch_data["edits"][1]["set"] = {field: "forbidden change"}
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(generated_review_case, client)
+    assert result["status"] == "rejected" and result["plan"] == plan and result["patch"] == patch_data
+    assert len(client.calls) == 2 and result["verification"] is None and client.remaining == 1
+
+
+@pytest.mark.parametrize("output_mode", ("animatic", "unknown", None))
+def test_generated_review_requires_explicit_valid_output_mode(generated_review_case, output_mode):
+    scene, plan, manifest, _report, _patch, _verify, _mode = generated_review_case
+    client = FakeClient([])
+    result = review_and_revise(scene, plan, manifest, client, mode="moodcut", output_mode=output_mode,
+                              project_root=Path(__file__).resolve().parents[1])
+    assert result["status"] == "review_failed" and result["plan"] == plan and client.calls == []
+
+
+@pytest.mark.parametrize("count", (0, 1, 2))
+def test_generated_and_legacy_transport_failure_do_not_retry(review_case, count):
+    _scene, plan, _manifest, report, patch_data, verification, _mode = review_case
+    client = FakeClient([report, patch_data, verification][:count])
+    result = call_review(review_case, client)
+    assert result["status"] == "review_failed" and result["plan"] == plan
+    assert len(client.calls) == count + 1 and result["errors"]
+
+
+@pytest.mark.parametrize("change", ("scene", "direction", "narration", "duration", "crop", "order", "extension"))
+def test_generated_reviewer_guards_actual_candidate_before_verify(generated_review_case, monkeypatch, change):
+    from moodcut import patches
+    review_case = generated_review_case
+    _scene, plan, _manifest, report, patch_data, verification, output_mode = review_case
+    def faulty_patch(*args, **kwargs):
+        candidate = deepcopy(plan)
+        if change == "scene":
+            candidate["scene_direction"] += " tampered"
+        elif change == "direction":
+            candidate["shots"][0]["direction"] += " tampered"
+        elif change == "narration":
+            candidate["shots"][0]["narration"] += " tampered"
+        elif change == "duration":
+            candidate["shots"][0]["duration_s"] += 1
+        elif change == "crop":
+            candidate["shots"][0]["visuals"][0]["crop"] = "center_close"
+        elif change == "order":
+            candidate["shots"].reverse()
+        else:
+            candidate["future_extension"] = {"changed": True}
+        return {"plan": candidate, "status": "applied", "errors": []}
+    monkeypatch.setattr(patches, "apply_patch", faulty_patch)
+    client = FakeClient([report, patch_data, verification])
+    result = call_review(review_case, client)
+    assert result["status"] == "rejected" and result["plan"] == plan and result["errors"]
+    assert len(client.calls) == 2 and result["verification"] is None
+
+
+def test_actual_planner_reviewer_pipeline_prepares_three_conditions(tmp_path, monkeypatch):
+    from moodcut import pipeline
+    from moodcut.contracts import assert_dialogue_only_revision
+    root = Path(__file__).resolve().parents[1]
+    data = pipeline.read_json(root / "tests/fixtures/generated_contract.json")
+    scene, plan = data["scene"], data["initial_plan"]
+    manifest = pipeline.read_json(root / "tests/fixtures/assets.json")
+    staged = [{"scene_id": scene["scene_id"], "tone": scene["tone"],
+               "beat_order": [b["id"] for b in scene["beats"]], "approach": "Software planning intent."},
+              {"scene_id": scene["scene_id"], "scene_direction": plan["scene_direction"], "segments": [
+                  {"beat_ids": s["beat_ids"], "description": s["narration"], "direction": s["direction"],
+                   "duration_s": s["duration_s"]} for s in plan["shots"]]}, plan]
+    report = {"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": "generic_review", "issues": [
+        {"issue_id": i, "shot_id": "s2", "dimension": "tone", "severity": "minor",
+         "evidence": "Software concern.", "suggestion": "Consider a dialogue change."} for i in ("g1", "g2")]}
+    revision = {"schema_version": "1.0", "scene_id": scene["scene_id"], "edits": [
+        {"issue_id": "g1", "shot_id": "s2", "set": {"dialogue": [{"character_id": "b", "text": "Who else read it?"}]}}]}
+    verified = {"scene_id": scene["scene_id"], "resolved_issue_ids": ["g1", "g2"], "unresolved_issue_ids": [], "new_concerns": []}
+    empty = {"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": "moodcut", "issues": []}
+    client = FakeClient([*staged, report, revision, verified, empty])
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("No real network"))
+    output = tmp_path / "actual-script-chain"
+    block = pipeline.run_experiment(scene, manifest, client, out_dir=output, project_root=root,
+        output_mode="generated", generation_settings=data["settings"], template_sha256=data["template_sha256"])
+    assert block["status"] == "prepared" and block["planning"]["calls"] == 3
+    assert [r["review_calls"] for r in block["runs"]] == [0, 3, 1]
+    assert [r["review_status"] for r in block["runs"]] == ["not_applicable", "applied", "unchanged"]
+    assert len({r["shared_generation_sha256"] for r in block["runs"]}) == 1
+    assert len(client.calls) == 7 and all(r["video_path"] is None and r["generation_posts"] == 0 for r in block["runs"])
+    assert all(r["comparison_status"] == "not_checked" for r in block["runs"])
+    for row in block["runs"]:
+        final = pipeline.read_json(output / row["condition"] / "final.json")
+        assert_dialogue_only_revision(plan, final)
+        assert row["prompt_hashes"] == get_review_prompt_hashes(output_mode="generated") | {"video_template": data["template_sha256"]}
+    checked = json.loads(client.calls[5]["user"])["revised_plan"]
+    assert checked == pipeline.read_json(output / "generic_review/final.json")
+    assert pipeline.read_json(output / "generic_review/review.json")["plan"] == checked
+    # The real P1 source gate now accepts the real P2/P3 script chain. No P4
+    # compiler, video client or paid/model call is required or substituted.
+    _path, saved, source = pipeline._load_generated_block(output, root)
+    assert saved == block and source["plans"]["generic_review"] == checked

@@ -4,6 +4,11 @@ for either mode. Do not rewrite the full plan or add a second review round.
 
 Each edit must reference a unique issue_id in the report and that issue's shot_id.
 At most one edit per shot; combine compatible changes for that shot in one set.
+Use issues_by_shot to consider ALL opinions for a shot together, rather than
+emitting an edit for each issue. Choose one valid issue_id from that shot as the
+edit reference; do not add issue_ids or other fields to the patch schema. Keep
+every original report issue available for verify, including those not referenced
+by the single edit. Empty edits are allowed; never delete report issues to fit.
 Only dialogue, narration, duration_s and visuals crop may change. A dialogue entry
 contains only character_id and text; use existing scene characters. A visuals entry
 contains only asset_id and crop. Preserve the exact asset IDs and order, using only

@@ -255,7 +255,9 @@ def test_actual_generated_planner_runs_once_before_three_condition_split(generat
     from moodcut import pipeline
     from moodcut.contracts import CONDITIONS, json_hash, shared_generation_sha256
     scene, manifest, plan, responses, settings, template = generated_planning_data
-    client = FakeClient(responses)
+    empty_reviews = [{"schema_version": "1.0", "scene_id": scene["scene_id"], "mode": mode, "issues": []}
+                     for mode in ("generic_review", "moodcut")]
+    client = FakeClient([*responses, *empty_reviews])
     cache = tmp_path / "cache"
     output = tmp_path / "shared"
     block = pipeline.run_experiment(scene, manifest, client, out_dir=output, project_root=ROOT,
@@ -263,7 +265,7 @@ def test_actual_generated_planner_runs_once_before_three_condition_split(generat
                                    template_sha256=template)
     assert block["planning"]["status"] == "completed" and block["planning"]["calls"] == 3
     assert block["planning"]["prompt_hashes"] == get_planning_prompt_hashes(output_mode="generated")
-    assert [c["stage"] for c in client.calls] == ["director", "scene", "shot"]
+    assert [c["stage"] for c in client.calls] == ["director", "scene", "shot", "critique", "critique"]
     assert pipeline.read_json(output / "scene.json") == scene
     assert pipeline.read_json(output / "initial.json") == plan
     shared = shared_generation_sha256(scene, plan, manifest, settings, template_sha256=template)
@@ -273,15 +275,17 @@ def test_actual_generated_planner_runs_once_before_three_condition_split(generat
         assert pipeline.read_json(output / condition / "generation_settings.json") == settings
         assert row["shared_generation_sha256"] == shared
     assert block["runs"][0]["run_status"] == "prepared"
-    # Actual P3 generated mode is still missing. Do not patch it into a fake
-    # success or describe this planning boundary as a completed three-condition run.
-    assert block["status"] == "failed" and all(row["run_status"] == "failed" for row in block["runs"][1:])
-    second_client = FakeClient([])
+    # Actual planner/reviewer business code, software model responses only.
+    # Prepared scripts are not generated media or eligible comparisons.
+    assert block["status"] == "prepared" and all(row["run_status"] == "prepared" for row in block["runs"])
+    assert all(row["review_status"] == "unchanged" for row in block["runs"][1:])
+    second_client = FakeClient(empty_reviews)
     cached = pipeline.run_experiment(scene, manifest, second_client, out_dir=tmp_path / "cached", project_root=ROOT,
                                     cache_dir=cache, output_mode="generated", generation_settings=settings,
                                     template_sha256=template)
     assert cached["planning"]["cache_hit"] is True and cached["planning"]["calls"] == 0
-    assert second_client.calls == [] and cached["initial_plan_sha256"] == block["initial_plan_sha256"]
+    assert [c["stage"] for c in second_client.calls] == ["critique", "critique"]
+    assert cached["initial_plan_sha256"] == block["initial_plan_sha256"]
 
 
 def test_actual_pipeline_keeps_generated_planning_failure_artifacts(generated_planning_data, tmp_path):

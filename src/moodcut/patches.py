@@ -3,10 +3,11 @@
 from copy import deepcopy
 from . import validation
 from .reviewer import validate_report
+from .contracts import allowed_patch_fields, assert_dialogue_only_revision, _json_copy, json_hash
 
 
 def apply_patch(scene: dict, plan: dict, manifest: dict,
-                report: dict, patch: dict, *, project_root=None) -> dict:
+                report: dict, patch: dict, *, project_root=None, output_mode="animatic") -> dict:
     """Apply one edit per shot, then defer plan validity to MC-01.
 
     Missing or failing shared validation rejects the entire transaction.
@@ -18,6 +19,12 @@ def apply_patch(scene: dict, plan: dict, manifest: dict,
     def rejected(errors):
         return {"plan": original, "status": "rejected", "errors": errors}
 
+    try:
+        allowed = allowed_patch_fields(output_mode=output_mode)
+        if output_mode == "generated":
+            _json_copy([scene, plan, manifest, report, patch])
+    except (ValueError, RecursionError) as exc:
+        return rejected([str(exc)])
     errors = validate_report(scene, plan, report)
     if errors:
         return rejected(errors)
@@ -64,7 +71,7 @@ def apply_patch(scene: dict, plan: dict, manifest: dict,
         if not isinstance(changes, dict) or not changes:
             errors.append(f"{prefix}.set must be a nonempty object")
             continue
-        if set(changes) - {"dialogue", "narration", "visuals", "duration_s"}:
+        if set(changes) - allowed:
             errors.append(f"{prefix}: forbidden field")
             continue
         if "dialogue" in changes:
@@ -88,16 +95,24 @@ def apply_patch(scene: dict, plan: dict, manifest: dict,
         shots[sid].update(deepcopy(changes))
     if errors:
         return rejected(errors)
+    if output_mode == "generated":
+        try:
+            assert_dialogue_only_revision(original, candidate)
+        except ValueError as exc:
+            return rejected([str(exc)])
     validator = getattr(validation, "validate_plan", None)
     if not callable(validator):
         return rejected(["MC-01 dependency unavailable: validation.validate_plan"])
     try:
-        errors = validator(deepcopy(scene), deepcopy(candidate), deepcopy(manifest),
-                           **({"project_root": project_root} if project_root is not None else {}))
+        options = {"project_root": project_root} if project_root is not None else {}
+        if output_mode == "generated":
+            options["output_mode"] = output_mode
+        errors = validator(deepcopy(scene), deepcopy(candidate), deepcopy(manifest), **options)
         if not isinstance(errors, list) or any(not isinstance(e, str) for e in errors):
             return rejected(["validate_plan must return list[str]"])
     except Exception as exc:
         return rejected([f"validate_plan failed: {type(exc).__name__}: {exc}"])
     if errors:
         return rejected(errors)
-    return {"plan": candidate, "status": "unchanged" if candidate == original else "applied", "errors": []}
+    unchanged = json_hash(candidate) == json_hash(original) if output_mode == "generated" else candidate == original
+    return {"plan": candidate, "status": "unchanged" if unchanged else "applied", "errors": []}
