@@ -26,3 +26,5 @@ FilmAgent 当前所在仓库的根 LICENSE 标注 MIT。原始声明随参考文
 ## 独立适配实现
 
 importer.py 读取上游 MovieScript/Character 字段；planner.py 和 planning_*.txt 参考分阶段组织方式，独立定义本项目的 director/scene/shot JSON 协议，没有复制上游 Python 执行代码或原提示词全文。reviewer.py 参考 FilmAgent 的 CCV 方法，保留本项目受限补丁及一次循环。图像清单仅提交元数据，原始图片仍留在忽略目录。
+
+生成式规划沿用MovieAgent固定版本的ScenePlanning/ShotPlotCreate组织思路，在planner.py及planning_generated_director/scene/shot.txt独立实现MoodCut的1.1共同场景、动作与短片时长协议。未复制上游执行代码或原提示全文，不导入视频/GPU工具；不称为原论文完整复现。测试中的公交站还伞故事由本项目临时手写，仅验软件结构泛用性，不是上游素材、新数据集或模型效果证据。

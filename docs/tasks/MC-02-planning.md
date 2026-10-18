@@ -4,32 +4,34 @@
 
 首个增量建议分支：`feat/issue-22-shared-planning`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 下一增量：一次规划、三组共用的生成式分镜（待实现）
+## 生成式共同规划与消费联调（规划适配已实现）
+
+本模块规划实现及离线验收已提供；剩余未勾选项是依赖#24的实际消费联调，不在P2中重复实现P4编译器。真实模型质量与完整三条件链路尚未验收。
 
 **目标**：把读信示例的手写场景/动作抽成可复用的规划输出；它是各条件共用的生成基础，不是额外消融因素。
 
 ### 已核实的缺口
 
-`planning_shot.txt` 仍面向静态图片和 60–90 秒 animatic；`configs/video.json` 的三个动作由读信故事手写。不能为每个条件单独规划动作，再把视频差异归因于台词审查。
+默认`planning_shot.txt`保留静态animatic；显式generated使用独立planning_generated_*.txt，已按输入范围输出共同scene_direction/逐镜头direction。`configs/video.json`仍是手写读信开发对示例，P4真实消费及去除旧配方依赖待#24完成。不能为每个条件单独规划动作，再把视频差异归因于台词审查。
 
 ### 本次待办与验收
 
-- [ ] 等 P1 的生成式契约合入，沿用 director→scene→shot 输出场景、人物、必需动作、镜头要求、共同短片时长与初始台词；旧 animatic 模式保持兼容。
-- [ ] 对同一 scene/tone/replicate 仅规划一次，在拆分三条件前冻结。动作、表情/肢体要求、镜头、时长、素材和基础声音要求均为共同输入；不为 moodcut 单独增强表演。
-- [ ] 输入明确决定短片时长，不继承固定 60 秒凑时长。保留所有必需 beats 和来源信息；不可因为模型难生成而静默删情节或改人物。
-- [ ] 将共同动作交给 P4 编译器消费，移除生成主路径对读信 shot_id/人物名/动作文本的特判；保留原配置为明确开发示例。
-- [ ] FakeClient 覆盖原故事及一个临时的非读信结构夹具，证明不是靠手写故事特判。夹具标为软件测试，不作为新数据集、正式样本或效果证据。
-- [ ] 检查 stage 顺序、源输入不变、三组初稿/非台词哈希一致，缺动作/越权引用报错；错误原样留档，不自动重试。
+- [x] 沿用 director→scene→shot 接入显式generated和真实公共验证器，输出共同场景/动作/镜头/短片时长与初始台词；animatic默认行为及提示保留。
+- [x] 复用pipeline一次规划与条件深拷贝，以真实planner加FakeClient验证三组初稿/非台词哈希及共同Settings一致；不为moodcut单独增强表演。缺P3接口时两个审查条件明确失败，不伪装完整成功。
+- [x] 按输入镜头/总长范围排整数时长，不补到60秒；全部beat顺序覆盖、来源provenance和原始响应保留，缺字段/越权引用明确拒绝，不静默修复。
+- [ ] P4真实消费与去除旧配方的跨模块联调：P2已输出通用共同动作字段，无读信名字/镜头特判；实际build_generated_video_bundle与主路径替换仍依赖#24。原配置保留为明确开发示例，不代写P4模块。
+- [x] FakeClient覆盖既有读信及临时公交站还伞结构夹具；不同角色/beat/镜头ID与10秒计划均经真实规划代码验证。夹具只作软件测试，不是数据集、正式样本或效果证据。
+- [x] stage顺序、源输入不变、共同身份/缓存、缺动作/越权引用及失败原样留档均有离线回归，不自动重试。
 
 ### 写入范围与依赖
 
 接入协议固定为 CONTRACTS 6.2 / 6.5：Scene/Plan 1.1 显式 generated，公共动作采用 scene_direction 与 shots[].direction；沿用既有函数并追加 output_mode，不能把未来参数当成当前已有功能。`moodcut.contracts` 由 P1 维护，软件输入示例见 `tests/fixtures/generated_contract.json`。
 
-公共 `validate_scene/validate_plan` 已实现 output_mode="generated"；本模块传入该参数并使用真实验证器，不另造验证或静默退回1.0。规划函数自身的模式接线仍由本任务完成。
+公共 `validate_scene/validate_plan` 已实现 output_mode="generated"；本模块已传入该参数并使用真实验证器，不另造验证或静默退回1.0。规划适配的阶段/外壳/提示身份准确约定见CONTRACTS 6.10。
 
 `src/moodcut/planner.py`、`importer.py`（仅必要输入适配）、`src/moodcut/prompts/planning_*.txt`、`tests/test_planner.py`、`tests/test_importer.py` 与模块说明。素材清单只在明确输入适配需要时调整。不修改公共 validator、审查模块、生成编译器和公共夹具；所需新字段先交 P1。
 
-依赖 P1 接口小 PR；交付给 P3 同一个初稿，给 P4 共同动作数据。离线验收：规划/导入相关测试，加上述共享/非读信/旧模式回归。命令与输出示例随 PR 给出，全部使用 FakeClient。
+P1公共契约/验证/编排已合入。交付给P3同一个初稿，给P4共同动作；基础声音仍来自共同GenerationSettings。pipeline的唯一协同改动为读取规划提示哈希时传mode_options，已在#8记录，以确保generated缓存身份对应真实提示。离线验收为`python -m pytest tests/test_planner.py tests/test_importer.py tests/test_pipeline.py -q`及完整回归，全部使用FakeClient；P3/P4真实接线仍待其任务交付。
 
 ### 实验解释边界
 

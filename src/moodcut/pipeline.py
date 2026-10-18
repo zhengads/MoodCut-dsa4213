@@ -326,7 +326,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     settings = _model_settings(client)
     identity = {"schema_version": "1.0", "scene": scene, "manifest": manifest,
                 "replicate": replicate, "settings": settings,
-                "planning_prompt_hashes": get_planning_prompt_hashes(),
+                "planning_prompt_hashes": get_planning_prompt_hashes(**mode_options),
                 "planning_token_limits": MAX_OUTPUT_TOKENS,
                 "planner_code_sha256": hashlib.sha256(files("moodcut").joinpath("planner.py").read_bytes()).hexdigest()}
     if generated:
