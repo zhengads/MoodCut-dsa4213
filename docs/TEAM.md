@@ -28,6 +28,8 @@ pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见
 
 P1离线生成入口及单镜头边界已提供，见CONTRACTS 6.8；P4编译器未实现时明确失败，不能用旧开发对或生产fake替代。真实P2/P3/P4接入后再验联调；其余模块不重复写入口，离线准备不创建视频任务或调用付费API。
 
+本地回执/费用记录装配见CONTRACTS 6.9，复用P1的assemble_generated_records，不另建账目框架。#24提供已有拼接结果及片段/成片哈希绑定，#9做资格复核；旧回执GET缺失为null，报价不当消费，completed只证明所选范围的文件检查通过。完整真实模块接线尚未完成，生成式CLI盲评导出/ratings在#9接线前禁止。
+
 1. P1 先交一个接口小 PR，发布显式模式、共享非台词哈希、生成记录/审查字段接口。P2/P3/P4/P5 可以同时读源码、准备回归用例和软件夹具；待契约合入再接实现。
 2. P2 维护 planner/importer 与 planning_*.txt；P3 维护 reviewer/patches 与 review_*.txt；P4 维护 video_generation/媒体检查与 configs/video.json；P5 维护 evaluation 和评估配置/文档。公共 validator、CLI、pipeline、video_client 和 scripts/generate_video.py 归 P1。共享文件改动先在 Issue 协调。
 3. P2 的共同计划分别交 P3 和 P4；P1 接通全部三条件并提供 P5 所需记录。P5 不必等待真实视频，可先用标明来源的软件记录验收适配。

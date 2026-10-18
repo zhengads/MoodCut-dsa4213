@@ -23,6 +23,8 @@
 
 ## 目录与参考资料
 
+本地生成回执/费用装配使用pipeline.assemble_generated_records或assemble-generated-records，准确本地证据格式见CONTRACTS 6.9。报价与消费分开，旧回执缺HTTP历史时保留null/已知小计；准备不当成完成，媒体完成不当成比较eligible。入口不创建客户端、提交/恢复任务或拼接视频；#9资格接线前CLI禁止生成式盲评导出/ratings。
+
 - 项目代码：`src/moodcut/` 下按功能平铺 `.py` 文件；提示词集中在 `src/moodcut/prompts/`，模型/实验配置在根目录 `configs/`。
 - 测试：`tests/`，共享夹具：`tests/fixtures/`；测试发现限定 tests，排除参考缓存。
 - 任务卡：`docs/tasks/`；分工与交付顺序：`docs/TEAM.md`。

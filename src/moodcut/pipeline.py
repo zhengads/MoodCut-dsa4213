@@ -5,6 +5,7 @@ import hashlib
 from importlib.resources import files
 import json
 import logging
+import math
 import os
 from pathlib import Path
 import shutil
@@ -510,7 +511,7 @@ def _load_generated_block(path, project_root):
                             settings=settings, template_sha256=template)
 
 
-def _validate_generated_bundle(bundle, source, block, pricing):
+def _validate_generated_bundle(bundle, source, block, pricing, *, selected_shot_ids=None):
     """Check the compiler protocol and identities without recreating its prompts."""
     from .contracts import _json_copy
     from .video_client import _money, estimate_video_cost
@@ -527,13 +528,19 @@ def _validate_generated_bundle(bundle, source, block, pricing):
     need(isinstance(conditions, list) and len(conditions) == 3 and all(isinstance(c, dict) for c in conditions)
          and [c.get("condition") for c in conditions] == list(CONDITIONS), "compiler conditions mismatch")
     shot_ids = [s["shot_id"] for s in initial["shots"]]
+    selected = shot_ids if selected_shot_ids is None else selected_shot_ids
+    need(isinstance(selected, list) and bool(selected) and selected == [s for s in shot_ids if s in selected],
+         "selected shots must preserve original order without duplicates")
     for condition in conditions:
         need(condition.get("final_plan_sha256") == json_hash(source["plans"][condition["condition"]]),
              "compiler final plan identity mismatch")
         jobs = condition.get("jobs")
         need(isinstance(jobs, list) and all(isinstance(j, dict) for j in jobs)
-             and [j.get("shot_id") for j in jobs] == shot_ids, "compiler must preserve all original shots and their order")
-        for index, job in enumerate(jobs):
+             and [j.get("shot_id") for j in jobs] == selected, "compiler must preserve selected original shots and their order")
+        for job in jobs:
+            index = shot_ids.index(job["shot_id"])
+            if selected_shot_ids is not None:
+                need(type(job.get("shot_index")) is int and job["shot_index"] == index, "original shot index mismatch")
             request = job.get("request")
             need(isinstance(request, dict) and job.get("request_sha256") == json_hash(request), "request hash mismatch")
             need(all(request.get(k) == settings[k] for k in ("model", "resolution", "aspect_ratio"))
@@ -606,3 +613,328 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
     write_json(output / "bundle.json", bundle)
     write_json(output / "preparation.json", prepared)
     return prepared
+
+
+def _generated_totals(rows, fields):
+    """Conservative totals with separate known subtotals; quotes are never inputs."""
+    from decimal import Decimal
+    result, known, missing = {}, {}, []
+    for field in fields:
+        values = [r.get(field) for r in rows]
+        cost = field.endswith("cost_usd")
+        valid = lambda v: (type(v) in (int, float) and v >= 0
+                           and math.isfinite(v)) if cost else (type(v) is int and v >= 0)
+        if any(v is not None and not valid(v) for v in values):
+            raise ValueError("Invalid accounting field: " + field)
+        subtotal = sum((Decimal(str(v)) for v in values if v is not None), Decimal(0)) if cost else sum(v for v in values if v is not None)
+        known[field] = float(subtotal) if cost else subtotal
+        result[field] = None if None in values else known[field]
+        if result[field] is None:
+            missing.append(field)
+    return {**result, "known_subtotals": known, "incomplete_fields": missing}
+
+
+def _generated_receipt_counts(receipt):
+    """Count client HTTP attempts, including content redirects, without guessing old GETs."""
+    keys = ("post_attempts", "poll_attempts", "download_attempts", "download_redirect_attempts")
+    counts, missing, errors = {}, [], []
+    for key in keys:
+        value = receipt.get(key)
+        if value is not None and (type(value) is not int or value < 0):
+            errors.append("Invalid receipt counter: " + key)
+            value = None
+        counts[key] = value
+        if value is None:
+            missing.append(key)
+    get_counts = [counts[k] for k in keys[1:]]
+    gets = None if None in get_counts else sum(get_counts)
+    posts = counts["post_attempts"]
+    http = None if gets is None or posts is None else posts + gets
+    for field, expected in (("video_get_calls", gets), ("real_http_calls", http)):
+        if field in receipt and (type(receipt[field]) is not type(expected) or receipt[field] != expected):
+            errors.append("Receipt counter total mismatch: " + field)
+    known_gets = sum(v for v in get_counts if v is not None)
+    # Observations made by a new client while resuming an incomplete old receipt
+    # are lower bounds, never replacements for the missing history.
+    for key in missing:
+        value = receipt.get("observed_" + key, 0)
+        if type(value) is not int or value < 0:
+            errors.append("Invalid observed receipt counter: " + key)
+            value = 0
+        if key != "post_attempts":
+            known_gets += value
+    return {"generation_posts": posts, "video_get_calls": gets, "real_http_calls": http,
+            "known_video_get_calls": known_gets,
+            "known_real_http_calls": known_gets + (posts or 0), "missing_counters": missing, "counter_errors": errors}
+
+
+def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config, project_root="."):
+    """Read local prepared requests/receipts/media only; never construct a client.
+
+    Evidence is a JSON manifest, not a transport command. Absent jobs remain
+    unsubmitted. Completed requires re-probing every downloaded clip and the
+    bound assembly on disk. P5 comparison qualification remains not_checked.
+    """
+    from decimal import Decimal
+    import re
+    import subprocess
+    from .video_client import _money
+    from .video_generation import _probe
+
+    output = Path(out_dir).resolve()
+    if output.exists() or output.is_symlink():
+        raise FileExistsError("Output already exists; choose a new path: " + str(output))
+    directory = Path(preparation).resolve(strict=True)
+    saved = read_json(directory / "preparation.json")
+    original = read_json(directory / "source_block.json")
+    source = read_json(directory / "source_inputs.json")
+    bundle = read_json(directory / "bundle.json")
+    pricing = read_json(pricing_config)
+    need = _require_generated
+    need(isinstance(saved, dict) and isinstance(pricing, dict) and isinstance(bundle, dict),
+         "preparation/pricing/bundle must be objects")
+    need(saved.get("schema_version") == CONTRACT_VERSION and saved.get("output_mode") == "generated"
+         and saved.get("kind") == "generated_request_preparation" and saved.get("status") == "prepared_offline",
+         "not a generated request preparation")
+    _, block, current_source = _load_generated_block(saved["source_block_path"], Path(project_root).resolve())
+    need(json_hash(block) == json_hash(original) == saved.get("source_block_sha256")
+         and json_hash(source) == json_hash(current_source), "preparation/source provenance mismatch")
+    need(json_hash(pricing) == saved.get("pricing_config_sha256"), "local pricing config identity mismatch")
+    selected = saved.get("selected_shot_ids")
+    need(selected == bundle.get("selected_shot_ids") and selected is not None, "selected shot identity mismatch")
+    need(bundle.get("full_plan_shot_ids") == [s["shot_id"] for s in source["initial"]["shots"]], "full plan identity mismatch")
+    for field in ("initial_plan_sha256", "shared_generation_sha256"):
+        need(saved.get(field) == block[field], "preparation identity mismatch: " + field)
+    _validate_generated_bundle(bundle, source, block, pricing, selected_shot_ids=selected)
+    quoted = sum((_money(j["quoted_cost_usd"]) for c in bundle["conditions"] for j in c["jobs"]), Decimal(0))
+    need(_money(saved.get("quoted_cost_usd")) == quoted, "preparation quote mismatch")
+    evidence_path = Path(evidence).resolve(strict=True)
+    evidence_data = read_json(evidence_path)
+    need(isinstance(evidence_data, dict) and evidence_data.get("schema_version") == CONTRACT_VERSION
+         and evidence_data.get("block_id") == block["block_id"], "evidence block/version mismatch")
+    conditions = evidence_data.get("conditions")
+    need(isinstance(conditions, list) and all(isinstance(c, dict) for c in conditions)
+         and [c.get("condition") for c in conditions] == list(CONDITIONS), "evidence needs three ordered conditions")
+
+    def local_path(value, base):
+        if not isinstance(value, str) or not value.strip() or re.match(r"^[a-z]+://", value, re.I):
+            raise ValueError("Expected a local file path")
+        path = Path(value)
+        return (path if path.is_absolute() else base / path).resolve(strict=True)
+
+    def file_hash(path):
+        with path.open("rb") as stream:
+            return hashlib.file_digest(stream, "sha256").hexdigest()
+
+    def check_clip(path, duration):
+        if not path.is_file():
+            raise ValueError("Video file is missing")
+        probe = _probe(path)
+        if abs(probe["duration_s"] - duration) > .5:
+            raise ValueError("Video duration does not match the selected request")
+        return {**probe, "video_path": str(path), "sha256": file_hash(path)}
+
+    fields = ("calls", "real_http_calls", "input_tokens", "output_tokens", "estimated_cost_usd", "provider_cost_usd")
+    runs, jobs_by_id, pending_reuse, snapshots, owners = [], {}, [], {}, {}
+    for row, compiled, supplied in zip(block["runs"], bundle["conditions"], conditions):
+        need(not set(supplied) - {"condition", "jobs", "media_check_path"}, "unknown condition evidence fields")
+        run = deepcopy(row)
+        run.update(generation_status="prepared_offline", generation_jobs=[], generation_posts=0, video_get_calls=0,
+                   selected_shot_ids=deepcopy(selected), comparison_status="not_checked", comparison_errors=[],
+                   video_path=None, render_status="not_started", failure_kind=None)
+        need(type(run.get("review_calls")) is int and run["review_calls"] >= 0
+             and run.get("calls") == run["review_calls"], "source review call count mismatch")
+        run["source_run_record_sha256"] = json_hash(row)
+        run["source_preparation_path"] = str(directory)
+        supplied_jobs = supplied.get("jobs", [])
+        need(isinstance(supplied_jobs, list) and all(isinstance(j, dict) for j in supplied_jobs), "evidence jobs must be objects")
+        ids = [j.get("shot_id") for j in supplied_jobs]
+        need(all(isinstance(s, str) and s in selected for s in ids) and len(ids) == len(set(ids)), "unknown/duplicate evidence shot")
+        supplied_jobs = {j["shot_id"]: j for j in supplied_jobs}
+        for job in compiled["jobs"]:
+            item = supplied_jobs.get(job["shot_id"], {})
+            need(not set(item) - {"shot_id", "receipt_path", "reused_from"}, "unknown job evidence fields")
+            entry = {"shot_id": job["shot_id"], "shot_index": job["shot_index"], "request_sha256": job["request_sha256"],
+                     "receipt_path": None, "status": "prepared_offline", "reused_from": None, "errors": [],
+                     "generation_posts": 0, "video_get_calls": 0, "real_http_calls": 0,
+                     "quoted_cost_usd": job["quoted_cost_usd"], "estimated_cost_usd": 0.0, "provider_cost_usd": 0.0,
+                     "video_path": None, "missing_counters": []}
+            run["generation_jobs"].append(entry)
+            jobs_by_id[(run["run_id"], job["shot_id"])] = entry
+            conflicting_reuse = item.get("reused_from") is not None and item.get("receipt_path") is not None
+            if conflicting_reuse:
+                # Still account for the supplied attempted task; a bad reuse
+                # declaration cannot turn its actual receipt into free usage.
+                entry["rejected_reuse_from"] = deepcopy(item["reused_from"])
+            elif item.get("reused_from") is not None:
+                entry["reused_from"] = deepcopy(item["reused_from"])
+                pending_reuse.append((entry, job, item))
+                continue
+            if item.get("receipt_path") is None:
+                continue
+            # Missing or malformed receipts cannot establish zero attempts/cost.
+            entry.update(generation_posts=None, video_get_calls=None, real_http_calls=None,
+                         estimated_cost_usd=None, provider_cost_usd=None)
+            try:
+                receipt_path = local_path(item["receipt_path"], evidence_path.parent)
+                entry["receipt_path"] = str(receipt_path)
+                receipt = read_json(receipt_path)
+                need(isinstance(receipt, dict), "receipt must be an object")
+                entry["receipt_sha256"] = json_hash(receipt)
+                # Keep the original sanitized evidence, including provider errors and attempts.
+                snapshots[f"{row['condition']}/{job['shot_id']}"] = deepcopy(receipt)
+                entry["remote_status"] = receipt.get("status")
+                entry["job_id"] = receipt.get("job_id")
+                if "provider_error" in receipt:
+                    entry["provider_error"] = deepcopy(receipt["provider_error"])
+                counts = _generated_receipt_counts(receipt)
+                entry.update(counts)
+                entry["errors"].extend(counts["counter_errors"])
+                # The video client's estimated_cost_usd is a quote, not consumption.
+                if receipt.get("provider_cost_usd") is not None:
+                    cost = float(_money(receipt["provider_cost_usd"]))
+                    need(math.isfinite(cost), "provider cost is outside the JSON numeric range")
+                    entry["provider_cost_usd"] = cost
+                need(receipt.get("schema_version") in ("1.0", CONTRACT_VERSION), "unsupported video receipt version")
+                owner = (receipt.get("model"), receipt.get("job_id") or str(receipt_path))
+                if owner in owners:
+                    origin = owners[owner]
+                    if origin["receipt_sha256"] != entry["receipt_sha256"]:
+                        # Conflicting snapshots cannot establish complete task totals.
+                        origin.update(generation_posts=None, video_get_calls=None, real_http_calls=None,
+                                      provider_cost_usd=None, status="failed")
+                        origin["errors"].append("Conflicting duplicate receipt snapshots")
+                    entry.update(generation_posts=0, video_get_calls=0, real_http_calls=0,
+                                 known_real_http_calls=0, known_video_get_calls=0,
+                                 estimated_cost_usd=0.0, provider_cost_usd=0.0,
+                                 accounting_counted_in=origin["receipt_path"])
+                    raise ValueError("Duplicate task receipt; use explicit same-block reuse")
+                owners[owner] = entry
+                need(receipt.get("request_sha256") == job["request_sha256"]
+                     and receipt.get("model") == source["settings"]["model"], "receipt request/model identity mismatch")
+                status = receipt.get("status")
+                need(entry["generation_posts"] is None or entry["generation_posts"] == 1,
+                     "a submitted job must have exactly one POST attempt")
+                if not isinstance(entry["job_id"], str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,160}", entry["job_id"]):
+                    raise ValueError("No usable job ID; do not resubmit automatically")
+                if status == "downloaded":
+                    path = local_path(receipt.get("video_path"), receipt_path.parent)
+                    entry["media_check"] = check_clip(path, job["request"]["duration"])
+                    entry.update(status="downloaded", video_path=str(path))
+                elif status in ("submitted", "pending", "in_progress", "completed"):
+                    entry["status"] = "in_progress"  # Provider completed is not downloaded or assembled.
+                elif status in ("submitting", "submission_unknown", "polling_timeout", "polling_interrupted", "download_interrupted"):
+                    entry["status"] = "interrupted"
+                    entry["errors"].append("Incomplete video task: " + status)
+                else:
+                    entry["status"] = "failed"
+                    entry["errors"].append("Video task ended as: " + str(status))
+            except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
+                entry["status"] = "failed"
+                entry["errors"].append(f"{type(exc).__name__}: {exc}")
+            if entry.get("counter_errors"):
+                entry["status"] = "failed"
+            if conflicting_reuse:
+                entry["status"] = "failed"
+                entry["errors"].append("Receipt and reuse cannot be combined; receipt charges retained")
+        runs.append(run)
+
+    # Resolve against owned, downloaded receipts only: no chains, cycles or cross-block lookup.
+    for entry, job, item in pending_reuse:
+        try:
+            ref = entry["reused_from"]
+            need(isinstance(ref, dict) and set(ref) == {"run_id", "shot_id"} and item.get("receipt_path") is None,
+                 "reuse requires only a same-block run_id/shot_id")
+            origin = jobs_by_id.get((ref["run_id"], ref["shot_id"]))
+            need(origin is not None and origin is not entry and origin["reused_from"] is None
+                 and origin["status"] == "downloaded" and origin["request_sha256"] == entry["request_sha256"]
+                 and ref["shot_id"] == entry["shot_id"], "reuse source is not an identical downloaded request in this block")
+            entry.update(status="downloaded", receipt_path=origin["receipt_path"], receipt_sha256=origin["receipt_sha256"],
+                         video_path=origin["video_path"], media_check=deepcopy(origin["media_check"]),
+                         source_provider_cost_usd=origin["provider_cost_usd"], job_id=origin["job_id"])
+        except (ValueError, TypeError, KeyError) as exc:
+            entry.update(status="failed", errors=[f"{type(exc).__name__}: {exc}"])
+
+    for run, source_row, supplied in zip(runs, block["runs"], conditions):
+        jobs = run["generation_jobs"]
+        video = _generated_totals(jobs, ("generation_posts", "video_get_calls", "real_http_calls", "estimated_cost_usd", "provider_cost_usd"))
+        for key in ("video_get_calls", "real_http_calls"):
+            video["known_subtotals"][key] = sum(j.get("known_" + key, j[key] or 0) for j in jobs)
+        run["video_accounting"] = video
+        run["generation_posts"], run["video_get_calls"] = video["generation_posts"], video["video_get_calls"]
+        video_usage = {k: video[k] for k in fields if k in video}
+        video_usage.update(calls=video["generation_posts"],
+                           input_tokens=0 if video["generation_posts"] == 0 else None,
+                           output_tokens=0 if video["generation_posts"] == 0 else None)
+        totals = _generated_totals([source_row, video_usage], fields)
+        for key in ("estimated_cost_usd", "provider_cost_usd"):
+            totals["known_subtotals"][key] = float(Decimal(str(source_row.get(key) or 0)) + Decimal(str(video["known_subtotals"][key])))
+        run.update({k: totals[k] for k in fields})
+        run["accounting"] = totals
+        run["accounting"]["known_subtotals"]["real_http_calls"] = (source_row.get("real_http_calls") or 0) + video["known_subtotals"]["real_http_calls"]
+        for key in ("generation_posts", "video_get_calls"):
+            run["accounting"]["known_subtotals"][key] = video["known_subtotals"][key]
+        run["accounting_complete"] = not totals["incomplete_fields"]
+        generation_errors = [f"{j['shot_id']}: {e}" for j in jobs for e in j["errors"]]
+        run["errors"].extend(generation_errors)
+        if generation_errors:
+            run.update(run_status="failed", generation_status="failed" if any(j["status"] == "failed" for j in jobs) else "interrupted",
+                       failure_kind="generation", comparison_status="ineligible", comparison_errors=list(run["errors"]))
+        elif all(j["status"] == "downloaded" for j in jobs):
+            run["generation_status"] = "in_progress"
+            if len(jobs) > 1 and supplied.get("media_check_path") is None:
+                # Downloaded clips await P4's assembly; absence is not a media failure.
+                continue
+            try:
+                # A single saved clip is already a complete single-shot assembly.
+                if len(jobs) == 1 and supplied.get("media_check_path") is None:
+                    checked = deepcopy(jobs[0]["media_check"])
+                else:
+                    path = local_path(supplied.get("media_check_path"), evidence_path.parent)
+                    result = read_json(path)
+                    need(isinstance(result, dict), "media check must be an object")
+                    expected = [{"shot_id": j["shot_id"], "request_sha256": j["request_sha256"],
+                                 "sha256": j["media_check"]["sha256"]} for j in jobs]
+                    need(result.get("source_clips") == expected, "assembled media source binding mismatch")
+                    video_path = local_path(result.get("video_path"), path.parent)
+                    duration = sum(j["request"]["duration"] for c in bundle["conditions"] if c["condition"] == run["condition"] for j in c["jobs"])
+                    checked = check_clip(video_path, duration)
+                    need(result.get("sha256") == checked["sha256"], "assembled video hash mismatch")
+                    checked.update(source_media_check_path=str(path), source_media_check_sha256=json_hash(result))
+                run.update(run_status="completed", generation_status="assembled_requires_manual_inspection", render_status="rendered",
+                           video_path=checked["video_path"], media_check=checked,
+                           speech_and_visual_quality="requires_manual_inspection")
+            except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
+                run.update(run_status="failed", generation_status="failed", render_status="render_failed", failure_kind="media",
+                           comparison_status="ineligible", comparison_errors=[str(exc)], errors=[str(exc)])
+        else:
+            run["generation_status"] = "prepared_offline" if all(j["status"] == "prepared_offline" for j in jobs) else "in_progress"
+    ledger_rows = [block["planning"], *runs]
+    ledger = _generated_totals(ledger_rows, fields)
+    # Known components inside an otherwise unknown condition must not disappear.
+    for key in fields:
+        ledger["known_subtotals"][key] = _generated_totals(
+            [{key: block["planning"].get(key)}, *[{key: r["accounting"]["known_subtotals"][key]} for r in runs]], (key,))["known_subtotals"][key]
+    ledger.update(review_calls=sum(r["review_calls"] for r in runs),
+                  generation_posts=_generated_totals(runs, ("generation_posts",))["generation_posts"],
+                  video_get_calls=_generated_totals(runs, ("video_get_calls",))["video_get_calls"],
+                  planning_counted_once=True)
+    for key in ("generation_posts", "video_get_calls"):
+        ledger["known_subtotals"][key] = sum(r["accounting"]["known_subtotals"][key] for r in runs)
+    result = deepcopy(block)
+    result.update(kind="generated_record_block", runs=runs, accounting=ledger,
+                  status="failed" if any(r["run_status"] == "failed" for r in runs) else
+                         "completed" if all(r["run_status"] == "completed" for r in runs) else "prepared",
+                  comparison_status="ineligible" if any(r["comparison_status"] == "ineligible" for r in runs) else "not_checked",
+                  selected_shot_ids=deepcopy(selected), source_preparation_path=str(directory),
+                  source_preparation_sha256=json_hash(saved), source_block_sha256=json_hash(block),
+                  evidence_path=str(evidence_path), evidence_sha256=json_hash(evidence_data),
+                  assembly_activity={"calls": 0, "real_http_calls": 0, "generation_posts": 0, "video_get_calls": 0})
+    output.mkdir(parents=True, exist_ok=False)
+    for name, value in (("source_block.json", block), ("source_inputs.json", source), ("bundle.json", bundle),
+                        ("preparation.json", saved), ("evidence.json", evidence_data), ("receipts.json", snapshots)):
+        write_json(output / name, value)
+    for run in runs:
+        write_json(output / run["condition"] / "run.json", run)
+    write_json(output / "block.json", result)
+    return result
