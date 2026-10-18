@@ -591,3 +591,369 @@ def test_generated_changes_during_compilation_are_not_overwritten(generated_sour
     else:
         assert (output / "other-result.txt").read_text(encoding="utf-8") == "keep"
         assert not (output / "bundle.json").exists()
+
+
+@pytest.fixture
+def prepared_records(generated_source, tmp_path, monkeypatch):
+    """Explicit P2/P3/P4 software doubles and a local manifest, never a model run."""
+    from moodcut import video_client
+    source, block = generated_source
+    software_compiler(monkeypatch)
+    preparation = tmp_path / "prepared-requests"
+    assert main(generated_args(source, preparation, "--shot-id", "s2")) == 0
+    monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k: pytest.fail("No video client"))
+    monkeypatch.setattr(video_client, "fetch_video_models", lambda *a, **k: pytest.fail("No catalogue"))
+    monkeypatch.setattr(client_module.OpenRouterClient, "from_env", lambda *a, **k: pytest.fail("No text client"))
+    evidence = {"schema_version": "1.1", "block_id": block["block_id"],
+                "provenance": "hand-written software evidence; not independent model results",
+                "conditions": [{"condition": c, "jobs": []} for c in CONDITIONS]}
+    return preparation, evidence
+
+
+def save_record_evidence(tmp_path, evidence):
+    path = tmp_path / "evidence-input.json"
+    path.write_text(json.dumps(evidence), encoding="utf-8")
+    return path
+
+
+def records_args(preparation, evidence, output):
+    return ["assemble-generated-records", "--project-root", str(ROOT), "--preparation", str(preparation),
+            "--evidence", str(evidence), "--pricing-config", "configs/video.json", "--output", str(output)]
+
+
+def local_receipt(preparation, evidence, tmp_path, condition=0, job_index=0, **changes):
+    job = read_json(preparation / "bundle.json")["conditions"][condition]["jobs"][job_index]
+    receipt = {"schema_version": "1.1", "model": job["request"]["model"], "status": "pending",
+               "job_id": f"synthetic-job-{condition}-{job_index}", "post_attempts": 1, "poll_attempts": 2,
+               "download_attempts": 0, "download_redirect_attempts": 0,
+               "request_sha256": job["request_sha256"], "estimated_cost_usd": "0.60",
+               "provider_cost_usd": None, "video_path": None, **changes}
+    path = tmp_path / f"receipt-{condition}-{job_index}.json"
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+    evidence["conditions"][condition]["jobs"].append({"shot_id": job["shot_id"], "receipt_path": str(path)})
+    return path
+
+
+def synthetic_av(tmp_path, *, audio=True, duration=6):
+    """Moving test pattern plus sine wave: file validation only, not generated acting/speech."""
+    path = tmp_path / f"synthetic-{audio}-{duration}.mp4"
+    args = ["ffmpeg", "-v", "error", "-f", "lavfi", "-i", f"testsrc2=size=160x90:rate=24:duration={duration}"]
+    if audio:
+        args += ["-f", "lavfi", "-i", f"sine=frequency=440:duration={duration}", "-c:a", "aac"]
+    subprocess.run([*args, "-c:v", "libx264", "-pix_fmt", "yuv420p", str(path)], check=True, capture_output=True, timeout=30)
+    return path
+
+
+def test_records_unsubmitted_is_prepared_and_preserves_source(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    before = {p: p.read_bytes() for p in preparation.glob("*.json")}
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 0
+    block = read_json(output / "block.json")
+    assert block["status"] == "prepared" and block["comparison_status"] == "not_checked"
+    assert block["accounting"]["planning_counted_once"] is True
+    assert block["accounting"]["generation_posts"] == block["accounting"]["video_get_calls"] == 0
+    assert block["assembly_activity"]["real_http_calls"] == 0
+    for row in block["runs"]:
+        assert row["generation_status"] == "prepared_offline" and row["video_path"] is None
+        assert row["generation_jobs"][0]["quoted_cost_usd"] == "0.60"
+        assert row["provider_cost_usd"] == 0
+    assert {p: p.read_bytes() for p in preparation.glob("*.json")} == before
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    assert read_json(output / "block.json") == block
+
+
+@pytest.mark.parametrize("status,expected", [("pending", "in_progress"), ("completed", "in_progress"),
+    ("failed", "failed"), ("expired", "failed"), ("cancelled", "failed"),
+    ("polling_timeout", "interrupted"), ("polling_interrupted", "interrupted"),
+    ("download_interrupted", "interrupted"), ("invalid_usage", "failed")])
+def test_records_states_keep_known_failure_costs(prepared_records, tmp_path, status, expected):
+    preparation, evidence = prepared_records
+    local_receipt(preparation, evidence, tmp_path, status=status, provider_cost_usd="0.23",
+                  provider_error={"code": "SYNTHETIC_FAILURE"})
+    output = tmp_path / "records"
+    code = main(records_args(preparation, save_record_evidence(tmp_path, evidence), output))
+    block = read_json(output / "block.json")
+    row = block["runs"][0]
+    assert row["generation_status"] == expected
+    assert row["provider_cost_usd"] == .23 and row["estimated_cost_usd"] is None
+    assert row["generation_posts"] == 1 and row["video_get_calls"] == 2 and row["real_http_calls"] == 3
+    assert block["accounting"]["provider_cost_usd"] == .23
+    assert row["generation_jobs"][0]["provider_error"]["code"] == "SYNTHETIC_FAILURE"
+    assert row["video_path"] is None and row["run_status"] != "completed"
+    assert code == (1 if expected in ("failed", "interrupted") else 0)
+
+
+@pytest.mark.parametrize("mutation", ["missing_id", "request_hash", "model", "missing_file", "silent", "duration", "corrupt"])
+def test_records_invalid_receipt_or_media_is_retained(prepared_records, tmp_path, mutation):
+    preparation, evidence = prepared_records
+    changes = {"status": "downloaded", "download_attempts": 1, "provider_cost_usd": "0.15"}
+    if mutation == "missing_id":
+        changes["job_id"] = None
+    elif mutation == "request_hash":
+        changes["request_sha256"] = "a" * 64
+    elif mutation == "model":
+        changes["model"] = "wrong/model"
+    elif mutation in ("silent", "duration"):
+        changes["video_path"] = str(synthetic_av(tmp_path, audio=mutation != "silent", duration=2 if mutation == "duration" else 6))
+    elif mutation == "corrupt":
+        path = tmp_path / "corrupt.mp4"
+        path.write_bytes(b"not a video")
+        changes["video_path"] = str(path)
+    else:
+        changes["video_path"] = str(tmp_path / "missing.mp4")
+    local_receipt(preparation, evidence, tmp_path, **changes)
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    row = read_json(output / "block.json")["runs"][0]
+    assert row["run_status"] == "failed" and row["comparison_status"] == "ineligible"
+    assert row["generation_jobs"][0]["errors"] and row["provider_cost_usd"] == .15
+    assert row["generation_posts"] == 1 and row["video_path"] is None
+    assert read_json(output / "receipts.json")
+
+
+def test_records_unknown_cost_and_legacy_gets_do_not_become_zero(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    path = local_receipt(preparation, evidence, tmp_path, status="failed")
+    receipt = read_json(path)
+    receipt.pop("download_attempts")
+    receipt.pop("download_redirect_attempts")
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+    local_receipt(preparation, evidence, tmp_path, condition=1, status="failed", provider_cost_usd="0.4")
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    block = read_json(output / "block.json")
+    row = block["runs"][0]
+    assert row["video_get_calls"] is None and row["real_http_calls"] is None
+    assert row["generation_jobs"][0]["missing_counters"] == ["download_attempts", "download_redirect_attempts"]
+    assert row["accounting"]["known_subtotals"]["real_http_calls"] == 3
+    assert row["accounting_complete"] is False
+    assert block["accounting"]["provider_cost_usd"] is None
+    assert block["accounting"]["known_subtotals"]["provider_cost_usd"] == .4
+    assert block["accounting"]["known_subtotals"]["real_http_calls"] == 6
+
+
+def test_records_downloaded_legacy_unknown_bill_can_be_inspected(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    path = local_receipt(preparation, evidence, tmp_path, status="downloaded", video_path=str(synthetic_av(tmp_path)))
+    receipt = read_json(path)
+    for field in ("download_attempts", "download_redirect_attempts"):
+        receipt.pop(field)
+    receipt["schema_version"] = "1.0"
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 0
+    block = read_json(output / "block.json")
+    row = block["runs"][0]
+    assert row["run_status"] == "completed" and row["comparison_status"] == "not_checked"
+    assert row["provider_cost_usd"] is row["real_http_calls"] is None
+    assert block["accounting"]["provider_cost_usd"] is None
+    assert row["accounting_complete"] is False
+
+
+@pytest.mark.parametrize("change", [{"post_attempts": True}, {"poll_attempts": -1}, {"video_get_calls": 50},
+    {"real_http_calls": 0}, {"download_attempts": 1.5}])
+def test_records_invalid_counts_cannot_become_complete(prepared_records, tmp_path, change):
+    preparation, evidence = prepared_records
+    local_receipt(preparation, evidence, tmp_path, status="failed", provider_cost_usd="0.2", **change)
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    row = read_json(output / "block.json")["runs"][0]
+    assert row["accounting_complete"] is False and row["comparison_status"] == "ineligible"
+    assert row["generation_jobs"][0]["counter_errors"]
+    assert row["provider_cost_usd"] == .2
+
+
+@pytest.mark.parametrize("cost", ["NaN", "-1", True, "1e999"])
+def test_records_invalid_cost_keeps_known_http_attempts(prepared_records, tmp_path, cost):
+    preparation, evidence = prepared_records
+    local_receipt(preparation, evidence, tmp_path, status="failed", provider_cost_usd=cost)
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    row = read_json(output / "block.json")["runs"][0]
+    assert row["generation_posts"] == 1 and row["real_http_calls"] == 3
+    assert row["provider_cost_usd"] is None and row["generation_jobs"][0]["errors"]
+
+
+def test_records_conflicting_reuse_keeps_receipt_charges(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    local_receipt(preparation, evidence, tmp_path, status="failed", provider_cost_usd="0.6")
+    evidence["conditions"][0]["jobs"][0]["reused_from"] = {"run_id": "invalid", "shot_id": "s2"}
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    block = read_json(output / "block.json")
+    assert block["accounting"]["provider_cost_usd"] == .6 and block["accounting"]["generation_posts"] == 1
+
+
+@pytest.mark.parametrize("kind", ["missing", "malformed"])
+def test_records_missing_receipt_is_unknown_not_unsubmitted(prepared_records, tmp_path, kind):
+    preparation, evidence = prepared_records
+    path = tmp_path / "broken.json"
+    if kind == "malformed":
+        path.write_text("{broken", encoding="utf-8")
+    evidence["conditions"][0]["jobs"] = [{"shot_id": "s2", "receipt_path": str(path)}]
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    row = read_json(output / "block.json")["runs"][0]
+    assert row["run_status"] == "failed" and row["generation_posts"] is None and row["provider_cost_usd"] is None
+
+
+def test_records_success_and_identical_reuse_charge_once(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    # The software compiler emits identical requests for s2 across these fixture plans.
+    bundle = read_json(preparation / "bundle.json")
+    assert len({c["jobs"][0]["request_sha256"] for c in bundle["conditions"]}) == 1
+    movie = synthetic_av(tmp_path)
+    local_receipt(preparation, evidence, tmp_path, status="downloaded", download_attempts=1,
+                  video_path=str(movie), provider_cost_usd="0.60")
+    source_run = read_json(preparation / "source_block.json")["runs"][0]
+    for c in evidence["conditions"][1:]:
+        c["jobs"] = [{"shot_id": "s2", "reused_from": {"run_id": source_run["run_id"], "shot_id": "s2"}}]
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 0
+    block = read_json(output / "block.json")
+    assert block["status"] == "completed" and block["comparison_status"] == "not_checked"
+    assert block["accounting"]["provider_cost_usd"] == .6 and block["accounting"]["generation_posts"] == 1
+    assert block["accounting"]["video_get_calls"] == 3 and block["accounting"]["real_http_calls"] == 4
+    assert [r["provider_cost_usd"] for r in block["runs"]] == [.6, 0, 0]
+    for r in block["runs"]:
+        assert r["run_status"] == "completed" and r["render_status"] == "rendered"
+        assert r["generation_status"] == "assembled_requires_manual_inspection"
+        assert r["media_check"]["has_audio"] is True and r["selected_shot_ids"] == ["s2"]
+        assert r["speech_and_visual_quality"] == "requires_manual_inspection"
+    # P1's CLI gate must not let the old animatic exporter treat file completion
+    # as the not-yet-implemented P5 generated comparison qualification.
+    exported = tmp_path / "blind"
+    assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output / "block.json"),
+                 "--blind-output", str(exported)]) == 1
+    assert not exported.exists()
+    assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output / "block.json"),
+                 "--output", str(tmp_path / "ledger-summary.json")]) == 0
+
+
+@pytest.mark.parametrize("kind", ["cross_block", "cycle", "undownloaded", "hash", "receipt_and_reuse"])
+def test_records_invalid_reuse_rejected(prepared_records, tmp_path, kind):
+    preparation, evidence = prepared_records
+    origin = read_json(preparation / "source_block.json")["runs"][0]["run_id"]
+    ref = {"run_id": "other-block" if kind == "cross_block" else origin, "shot_id": "s2"}
+    evidence["conditions"][1]["jobs"] = [{"shot_id": "s2", "reused_from": ref}]
+    if kind == "cycle":
+        evidence["conditions"][0]["jobs"] = [{"shot_id": "s2", "reused_from": ref}]
+    elif kind in ("hash", "receipt_and_reuse"):
+        local_receipt(preparation, evidence, tmp_path, request_sha256="b" * 64)
+        if kind == "receipt_and_reuse":
+            evidence["conditions"][1]["jobs"][0]["receipt_path"] = "unused.json"
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    assert read_json(output / "block.json")["runs"][1]["comparison_status"] == "ineligible"
+
+
+@pytest.mark.parametrize("kind", ["source", "initial", "shared", "seed", "selection", "pricing", "quote"])
+def test_records_preparation_tampering_does_not_write_success(prepared_records, tmp_path, kind):
+    preparation, evidence = prepared_records
+    file = "bundle.json" if kind in ("seed", "selection") else "preparation.json"
+    data = read_json(preparation / file)
+    if kind == "seed":
+        from moodcut.contracts import json_hash
+        job = data["conditions"][0]["jobs"][0]
+        job["request"]["seed"] += 1
+        job["request_sha256"] = json_hash(job["request"])
+    else:
+        key = {"source": "source_block_sha256", "initial": "initial_plan_sha256", "shared": "shared_generation_sha256",
+               "selection": "selected_shot_ids", "pricing": "pricing_config_sha256", "quote": "quoted_cost_usd"}[kind]
+        data[key] = ["s1"] if kind == "selection" else "1" if kind == "quote" else "a" * 64
+    (preparation / file).write_text(json.dumps(data), encoding="utf-8")
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    assert not output.exists()
+
+
+def test_records_planning_once_and_condition_usage_separate(generated_source, tmp_path, monkeypatch):
+    # Synthetic ledger values exercise accounting, not actual FakeClient billing.
+    source, block = generated_source
+    block["planning"].update(calls=3, provider_cost_usd=.10, estimated_cost_usd=.12)
+    (source / "planning.json").write_text(json.dumps(block["planning"]), encoding="utf-8")
+    for i, row in enumerate(block["runs"]):
+        row.update(review_calls=i, calls=i, provider_cost_usd=i * .01, estimated_cost_usd=i * .02)
+    rewrite_generated_block(source, block)
+    software_compiler(monkeypatch)
+    preparation = tmp_path / "prepared"
+    assert main(generated_args(source, preparation, "--shot-id", "s2")) == 0
+    evidence = {"schema_version": "1.1", "block_id": block["block_id"],
+                "conditions": [{"condition": c, "jobs": []} for c in CONDITIONS]}
+    local_receipt(preparation, evidence, tmp_path, status="failed", provider_cost_usd="0.6")
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    ledger = read_json(output / "block.json")["accounting"]
+    assert ledger["provider_cost_usd"] == .73  # .10 planning + .03 review + .60 video.
+    assert ledger["calls"] == 7 and ledger["review_calls"] == 3 and ledger["generation_posts"] == 1
+    assert ledger["estimated_cost_usd"] is None and ledger["known_subtotals"]["estimated_cost_usd"] == .18
+
+
+def test_records_changed_request_cannot_reuse_downloaded_origin(generated_source, tmp_path, monkeypatch):
+    source, block = generated_source
+    software_compiler(monkeypatch)
+    preparation = tmp_path / "prepared"
+    assert main(generated_args(source, preparation, "--shot-id", "s1")) == 0
+    bundle = read_json(preparation / "bundle.json")
+    assert bundle["conditions"][0]["jobs"][0]["request_sha256"] != bundle["conditions"][1]["jobs"][0]["request_sha256"]
+    evidence = {"schema_version": "1.1", "block_id": block["block_id"],
+                "conditions": [{"condition": c, "jobs": []} for c in CONDITIONS]}
+    local_receipt(preparation, evidence, tmp_path, status="downloaded", provider_cost_usd="0.6",
+                  download_attempts=1, video_path=str(synthetic_av(tmp_path)))
+    evidence["conditions"][1]["jobs"] = [{"shot_id": "s1", "reused_from": {"run_id": block["runs"][0]["run_id"], "shot_id": "s1"}}]
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    rows = read_json(output / "block.json")["runs"]
+    assert rows[0]["run_status"] == "completed" and rows[1]["run_status"] == "failed"
+    assert rows[1]["generation_posts"] == 0
+
+
+def test_records_duplicate_receipt_is_invalid_without_duplicate_charge(prepared_records, tmp_path):
+    preparation, evidence = prepared_records
+    path = local_receipt(preparation, evidence, tmp_path, status="failed", provider_cost_usd="0.6")
+    evidence["conditions"][1]["jobs"] = [{"shot_id": "s2", "receipt_path": str(path)}]
+    output = tmp_path / "records"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
+    block = read_json(output / "block.json")
+    assert block["accounting"]["generation_posts"] == 1 and block["accounting"]["provider_cost_usd"] == .6
+    assert block["runs"][1]["generation_jobs"][0]["accounting_counted_in"] == str(path)
+
+
+def test_records_multishot_requires_bound_assembly_and_reprobes(generated_source, tmp_path, monkeypatch):
+    from moodcut.video_generation import assemble_generated_clips
+    import hashlib
+    source, block = generated_source
+    software_compiler(monkeypatch)
+    preparation = tmp_path / "prepared"
+    assert main(generated_args(source, preparation)) == 0
+    evidence = {"schema_version": "1.1", "block_id": block["block_id"],
+                "conditions": [{"condition": c, "jobs": []} for c in CONDITIONS]}
+    clip = synthetic_av(tmp_path)
+    for i in range(3):
+        local_receipt(preparation, evidence, tmp_path, job_index=i, status="downloaded", download_attempts=1,
+                      video_path=str(clip), provider_cost_usd="0.6")
+    output = tmp_path / "waiting"
+    assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 0
+    assert read_json(output / "block.json")["runs"][0]["generation_status"] == "in_progress"
+    media = assemble_generated_clips([str(clip)] * 3, durations=[6] * 3, out_path=str(tmp_path / "assembled.mp4"))
+    digest = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+    media.update(sha256=digest(media["video_path"]), source_clips=[
+        {"shot_id": j["shot_id"], "request_sha256": j["request_sha256"], "sha256": digest(clip)}
+        for j in read_json(preparation / "bundle.json")["conditions"][0]["jobs"]])
+    check = tmp_path / "media.json"
+    evidence["conditions"][0]["media_check_path"] = str(check)
+    for variant in ("valid", "hash", "sources", "duration"):
+        from copy import deepcopy
+        candidate = deepcopy(media)
+        if variant == "hash":
+            candidate["sha256"] = "a" * 64
+        elif variant == "sources":
+            candidate["source_clips"].reverse()
+        elif variant == "duration":
+            candidate.update(video_path=str(clip), sha256=digest(clip))
+        check.write_text(json.dumps(candidate), encoding="utf-8")
+        target = tmp_path / variant
+        assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), target)) == (0 if variant == "valid" else 1)
+        row = read_json(target / "block.json")["runs"][0]
+        assert row["run_status"] == ("completed" if variant == "valid" else "failed")

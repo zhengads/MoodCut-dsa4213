@@ -71,6 +71,12 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--shot-id", help="Prepare only this original shot in all three generated conditions.")
     run.add_argument("--pricing-config", help="Local video pricing JSON; no live price lookup.")
 
+    records = common("assemble-generated-records", "Assemble local video receipts and accounting; no network.")
+    records.add_argument("--preparation", required=True, help="Existing generated request-preparation directory.")
+    records.add_argument("--evidence", required=True, help="Local three-condition receipt/media manifest JSON.")
+    records.add_argument("--pricing-config", required=True, help="Same local pricing JSON used in preparation.")
+    records.add_argument("--output", required=True, help="New record output directory; never overwrite.")
+
     imported = common("import-synopsis", "Normalize a local MovieAgent synopsis without selecting scenes.")
     imported.add_argument("--input", required=True)
     imported.add_argument("--output", required=True)
@@ -312,6 +318,8 @@ def _evaluate(args, root):
         if args.private_key and not args.ratings:
             raise ValueError("--private-key is used only with --ratings")
         records = _records(args.records, root)
+        if (args.blind_output or args.ratings) and any(row.get("output_mode") == "generated" for row in records):
+            raise RuntimeError("Generated comparison qualification (#9) is not integrated; blind export/ratings disabled, even if media completed")
         if args.blind_output and args.ratings:
             raise ValueError("Export blind items and summarize completed ratings in separate commands")
         if args.blind_output:
@@ -376,6 +384,12 @@ def main(argv=None) -> int:
             return _review(args, root)
         if args.command in ("smoke", "run"):
             return _run(args, root)
+        if args.command == "assemble-generated-records":
+            from .pipeline import assemble_generated_records
+            result = assemble_generated_records(_path(root, args.preparation), evidence=_path(root, args.evidence),
+                out_dir=_path(root, args.output), pricing_config=_path(root, args.pricing_config), project_root=root)
+            print(f"Generated records {result['status']}: {_path(root, args.output)}; no network request sent.")
+            return 1 if result["status"] == "failed" else 0
         if args.command == "render":
             from .pipeline import read_json, resolve_render_dependencies, write_json
             from .renderer import render_plan

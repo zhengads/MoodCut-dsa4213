@@ -313,11 +313,13 @@ GeneratedRunRecord 保留第1节 RunRecord 字段，并使用 schema_version=`1.
 | generation_status | not_started / prepared_offline / in_progress / assembled_requires_manual_inspection / failed / interrupted |
 | comparison_status / comparison_errors | not_checked / eligible / ineligible；原因 string[]。eligible 仅表示共同输入和审查来源满足约束，不是主观质量或正式纳入评分的决定 |
 | generation_jobs | 下述镜头记录列表；无请求时为空 |
-| review_calls / generation_posts / video_get_calls | 非负整数；分别记录逻辑审查调用、真实生成 POST 尝试和视频 GET 尝试 |
+| review_calls / generation_posts / video_get_calls | review_calls 为非负整数；POST/GET 为非负整数或 null（旧回执缺计数）。null 不当成0，缺失原因及已知小计另存 |
 
 每条 generation_jobs 为 `{shot_id, request_sha256, receipt_path, status, reused_from, generation_posts, estimated_cost_usd, provider_cost_usd}`。status 为 prepared_offline/submitting/in_progress/downloaded/failed/interrupted；未提交时 receipt_path 为 null，真实提交后指向已有脱敏回执，保留远端原状态/错误/job ID。reused_from 为 null 或 `{run_id, shot_id}`，且必须是本 block 内完整请求指纹相同的已下载片段；复用不算新 POST，自己的增量费用为0，来源费用只计一次。
 
 原 calls 保留逻辑调用含义：本条件 review_calls + generation_posts；real_http_calls 记实际 HTTP 尝试，含轮询/下载 GET，和 calls 分开。mock 审查的逻辑次数可以非零，实际 HTTP/费用为0；共享规划及公共预检另存在 block 账目，不重复分摊到三个 run。token 只统计可获得的文本用量，视频没有该字段时保持 null。
+
+缺历史尝试计数时 calls/real_http_calls 也可以为 null；只对已知成分求小计，见6.9。HTTP尝试指客户端发起的请求（包括被跟随的内容重定向），不表示服务端已处理或计费；网络栈内部重传不另计。prepared_offline 的0必须来自明确未提交，而不是从终态倒推。
 
 RunRecord 的 estimated_cost_usd/provider_cost_usd 是本条件尝试的消费记录，保持 JSON number 或 null，不直接放 Decimal 字符串。请求报价另外保存为 quoted_cost_usd（十进制字符串），不能拿报价当实际支出。只要消费未知，总费用为 null，原回执和已知小计保留；没有请求的0费用必须有零尝试记录支持。
 
@@ -410,3 +412,58 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
 preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
 
 当前回归用真实pipeline保存源JSON，明确的P2/P3替身生成软件源，P4替身仅验入口协议；所有真实网络连接禁止。旧animatic回归保留。P2/P3/P4真实实现与视频/资格装配未完成，不把替身通过写成端到端已可运行。
+
+### 6.9 本地生成回执与费用记录装配
+
+P1提供以下离线接口，不创建文本/视频客户端，不调用generate/resume、目录查询、网络或模型，也不拼接/替换视频：
+
+```python
+def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config, project_root=".") -> dict: ...
+```
+
+```bash
+python -m moodcut assemble-generated-records --preparation runs/generated-s2 --evidence runs/local-evidence.json --pricing-config configs/video.json --output runs/generated-records-s2
+```
+
+CLI路径相对project-root；程序接口路径相对当前目录。输入为6.8准备目录、同一份本地报价配置、下列本地证据JSON。仍需保留原脚本目录及参考素材，入口重读并核对源block/脚本/审查/素材、保存快照、初稿/完整/共享身份、原shot_index/seed、请求指纹和报价配置身份。源或准备身份错误在写输出前拒绝；不重新调用P4编译器。P4真实编译器尚未实现，测试使用显式软件替身，不将此入口当成真实生成链路已就绪。
+
+```json
+{
+  "schema_version": "1.1",
+  "block_id": "从source_block.json复制原block_id",
+  "provenance": "说明证据来源；软件夹具须明确标注",
+  "conditions": [
+    {"condition": "baseline", "jobs": [{"shot_id": "s2", "receipt_path": "baseline/s2/receipt.json"}]},
+    {"condition": "generic_review", "jobs": []},
+    {"condition": "moodcut", "jobs": []}
+  ]
+}
+```
+
+三条件按固定顺序出现。jobs可以为空或只提供部分选中镜头，省略镜头表示明确未提交；已经尝试过的镜头必须提供回执（包括失败回执），不能通过省略来声明免费。每条job仅允许shot_id、receipt_path或reused_from；后两项不能并用。未知/重复镜头和未知字段拒绝。receipt_path及media_check_path相对证据JSON目录，回执video_path相对回执目录；只接受本地文件路径。由调用者提供已脱敏回执，禁止将key或签名URL写入证据。保留原回执JSON快照、来源路径和json_hash，不覆写输入。
+
+新video_client回执schema_version为1.1，仍保留旧字段，增加download_attempts（内容端点GET）、download_redirect_attempts（实际跟随的内容重定向GET）、video_get_calls及real_http_calls、http_counts_complete。每次尝试前保存计数，包括失败尝试；POST不自动重试。GET=轮询+下载端点+内容重定向，HTTP=POST+GET。只有新回执完整计数才给完整总数。1.0回执仍可读；缺失历史计数保留null，记录missing_counters，不能从downloaded推测1次下载或从failed推测0次。旧回执恢复时仅追加observed_*下界，缺历史部分始终未知，不会通过一次恢复变成完整。这里的HTTP次数不是平台计费次数。
+
+逐镜头保留远端原状态、job_id/provider_error及回执身份。未提供回执为prepared_offline；submitted/pending/in_progress及提供商completed但尚未下载为in_progress；超时、轮询/下载中断为interrupted；远端失败、无可用job ID、身份不匹配、无文件/缺音轨/时长错误为failed，保留已知消费和失败原因，不补图、不自动重试。run保持prepared，出错为failed；原准备对象不能直接改名为成片。
+
+下载片段通过已有video_generation._probe重新检查本地文件的真实视频/音轨及请求时长（容差0.5秒），保存实际文件SHA-256。单镜头直接使用该片段作为完整所选范围的成片。多镜头在未提供拼接检查时保持in_progress；提供condition.media_check_path后，读取P4已有assemble_generated_clips结果并要求补齐如下绑定字段（不修改P4编译器/拼接器）：
+
+```text
+{
+  video_path: 本地拼接视频路径，相对检查JSON目录,
+  sha256: 拼接文件实际字节SHA-256,
+  source_clips: 按选中镜头顺序排列的
+    [{shot_id, request_sha256, sha256: 对应源片段实际字节SHA-256}],
+  ...原有媒体检查信息
+}
+```
+
+装配器核对绑定并重新探测成片音视频和所选镜头总时长，不仅信任JSON中has_audio/duration_s。文件检查通过且源脚本有效才为run_status=completed、render_status=rendered、generation_status=assembled_requires_manual_inspection。多镜头来源绑定是本地检查材料的声明与哈希核对，不证明拼接内容的语义正确。是否说对台词、说话人、口型、动作及情绪仍需人工听看；软件测试用动态图案与正弦音，不能证明模型表现。单镜头结果保留完整计划身份及selected_shot_ids，不能当完整多镜头片。
+
+复用形式为`{"shot_id":"s2","reused_from":{"run_id":"本block源run_id","shot_id":"s2"}}`。来源必须是同block内非复用、完整请求指纹一致且文件检查通过的已下载片段。拒绝跨block、不同请求/镜头、未下载、循环或链式复用；显式复用新增POST/GET和消费均0，原来源未知扣费仍保留未知。重复提交同一job_id回执不作为新任务消费；重复条目标失败，费用只在原条目计一次，冲突快照的总量置未知。
+
+block.accounting含规划一次加各run的审查/视频增量；run.call_records和review_calls保留原审查来源，calls=review_calls+generation_posts，real_http_calls另外累计视频HTTP。报价仅在job.quoted_cost_usd及原回执，video_client的旧estimated_cost_usd本质也是报价，不能当消费。本传输回执只有provider_cost_usd可作为已记录视频消费，视频estimated_cost_usd和不可获得的token保持null；无尝试或合法复用才记明确0。任何未知消费/计数使对应总数为null；accounting.known_subtotals/incomplete_fields、video_accounting、missing_counters保留已知部分及缺失原因。准备阶段的零新增消费不能清空原规划/审查账目。
+
+输出新目录包含block.json、各condition/run.json，以及源block/完整输入/bundle/preparation/evidence/receipts快照。assembly_activity始终为本次装配零请求，与历史回执累计次数分开。已有输出即拒绝，不覆盖；部分失败仍写完整条件记录及账目，CLI返回1。结构/来源预检错误不写成功输出。没有失败但尚未完成可返回0，必须查看status，不能把命令成功等同视频完成。
+
+comparison_status通过本地边界时仍为not_checked，有失败则ineligible；本接口永不设置eligible。P5须按6.3从实际输入做资格复核。当前CLI evaluate的生成式盲评导出/ratings路径在#9接线前明确拒绝；普通离线账目查看仍可用。旧evaluation低层函数只支持已有animatic流程，不能绕过CLI拿生成记录导出有效比较。本增量不改评分口径、数据集、实验条件或真实运行授权。

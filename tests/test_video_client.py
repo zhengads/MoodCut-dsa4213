@@ -56,6 +56,9 @@ def test_success_persists_id_and_cost_then_downloads(tmp_path):
     c = client(opener)
     receipt = c.generate(request(), out_dir=str(tmp_path / "job"))
     assert receipt["status"] == "downloaded"
+    assert receipt["download_attempts"] == 1 and receipt["download_redirect_attempts"] == 0
+    assert receipt["video_get_calls"] == 2 and receipt["real_http_calls"] == 3
+    assert receipt["http_counts_complete"] is True
     assert receipt["estimated_cost_usd"] == "0.60"
     assert receipt["provider_cost_usd"] == "0.6"
     assert c.spent_usd == "0.6"
@@ -167,6 +170,61 @@ def test_redirect_strips_authorization_on_foreign_origin():
                        headers={"Authorization": "Bearer never-log-this-key"})
     redirected = _ContentRedirect().redirect_request(original, None, 302, "Found", {}, "https://cdn.example.com/video.mp4")
     assert redirected.get_header("Authorization") is None
+
+
+def test_download_failure_counts_actual_attempt_and_resumes_get_only(tmp_path):
+    opener = Mock(side_effect=[response({"id": "job-a", "status": "completed", "usage": {"cost": .6}}),
+                              URLError("offline simulated failure")])
+    with pytest.raises(OpenRouterError, match="download interrupted"):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["download_attempts"] == saved["video_get_calls"] == 1
+    assert saved["real_http_calls"] == 2
+    resumed = Mock(side_effect=[response({"id": "job-a", "status": "completed", "usage": {"cost": .6}}), io.BytesIO(b"video")])
+    saved = client(resumed).resume(str(tmp_path / "job"))
+    assert saved["post_attempts"] == 1 and saved["poll_attempts"] == 1
+    assert saved["download_attempts"] == 2 and saved["video_get_calls"] == 3 and saved["real_http_calls"] == 4
+    assert all(c.args[0].get_method() == "GET" for c in resumed.call_args_list)
+
+
+def test_resume_legacy_counters_stay_unknown(tmp_path):
+    directory = tmp_path / "legacy"
+    directory.mkdir()
+    (directory / "receipt.json").write_text(json.dumps({"schema_version": "1.0", "model": config()["model"],
+        "status": "polling_interrupted", "job_id": "job-old", "post_attempts": 1, "poll_attempts": 2}), encoding="utf-8")
+    opener = Mock(side_effect=[response({"id": "job-old", "status": "completed", "usage": {"cost": .6}}), io.BytesIO(b"video")])
+    saved = client(opener).resume(str(directory))
+    assert saved["status"] == "downloaded" and saved["poll_attempts"] == 3
+    assert saved["download_attempts"] is None and saved["observed_download_attempts"] == 1
+    assert saved["video_get_calls"] is saved["real_http_calls"] is None
+    assert saved["http_counts_complete"] is False
+    assert all(c.args[0].get_method() == "GET" for c in opener.call_args_list)
+
+
+def test_resume_missing_post_preserves_independently_known_gets(tmp_path):
+    from moodcut.pipeline import _generated_receipt_counts
+    directory = tmp_path / "partial-counts"
+    directory.mkdir()
+    (directory / "receipt.json").write_text(json.dumps({"schema_version": "1.0", "model": config()["model"],
+        "status": "download_interrupted", "job_id": "job-old", "poll_attempts": 2,
+        "download_attempts": 1, "download_redirect_attempts": 0}), encoding="utf-8")
+    opener = Mock(side_effect=[response({"id": "job-old", "status": "completed", "usage": {"cost": .6}}), io.BytesIO(b"video")])
+    saved = client(opener).resume(str(directory))
+    assert saved["video_get_calls"] == 5 and saved["real_http_calls"] is None
+    counts = _generated_receipt_counts(saved)
+    assert counts["generation_posts"] is None and counts["video_get_calls"] == 5
+    assert counts["missing_counters"] == ["post_attempts"]
+
+
+def test_redirect_attempt_callback_only_for_followed_redirects():
+    callback = Mock()
+    handler = _ContentRedirect(callback)
+    req = Request("https://openrouter.ai/content", headers={"Authorization": "Bearer hidden"})
+    assert handler.redirect_request(req, None, 302, "Found", {}, "https://cdn.example.com/video") is not None
+    callback.assert_called_once_with()
+    with pytest.raises(OpenRouterError):
+        handler.redirect_request(req, None, 302, "Found", {}, "http://unsafe.example.com/video")
+    callback.assert_called_once_with()
 
 
 def test_catalogue_preflight_rejects_higher_price_or_missing_audio():

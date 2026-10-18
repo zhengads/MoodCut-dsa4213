@@ -115,6 +115,10 @@ def check_video_model(config: dict, models: list[dict]) -> None:
 
 class _ContentRedirect(HTTPRedirectHandler):
     """CDN redirects may download bytes but must not receive the API key."""
+    def __init__(self, on_redirect=None):
+        super().__init__()
+        self.on_redirect = on_redirect
+
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         parts = urlsplit(newurl)
         if parts.scheme != "https" or not parts.hostname or parts.username or parts.password:
@@ -122,6 +126,8 @@ class _ContentRedirect(HTTPRedirectHandler):
         result = super().redirect_request(req, fp, code, msg, headers, newurl)
         if result is not None and (parts.hostname != "openrouter.ai" or parts.port not in (None, 443)):
             result.remove_header("Authorization")
+        if result is not None and self.on_redirect is not None:
+            self.on_redirect()
         return result
 
 
@@ -137,7 +143,7 @@ class OpenRouterVideoClient:
         self._resume_only = False
         self.post_attempts = 0
         self._api = opener or build_opener(_NoRedirect()).open
-        self._content = opener or build_opener(_ContentRedirect()).open
+        self._content = opener
         if not 0 <= poll_interval_s <= 30 or not 0 < job_timeout_s <= 3600:
             raise ValueError("Invalid bounded polling settings")
         self._poll_interval = poll_interval_s
@@ -196,9 +202,11 @@ class OpenRouterVideoClient:
             raise BudgetError("Video estimate exceeds remaining local budget")
         directory = Path(out_dir).resolve()
         directory.mkdir(parents=True, exist_ok=False)
-        receipt = {"schema_version": "1.0", "model": request["model"], "status": "submitting",
+        receipt = {"schema_version": "1.1", "model": request["model"], "status": "submitting",
                    "job_id": None, "estimated_cost_usd": str(estimate), "provider_cost_usd": None,
-                   "post_attempts": 1, "poll_attempts": 0, "video_path": None,
+                   "post_attempts": 1, "poll_attempts": 0, "download_attempts": 0,
+                   "download_redirect_attempts": 0, "video_get_calls": 0, "real_http_calls": 1,
+                   "http_counts_complete": True, "video_path": None,
                    "request_sha256": json_hash(request)}
         self._save(directory, receipt)
         # After any POST attempt, only a validated terminal usage record can
@@ -236,6 +244,20 @@ class OpenRouterVideoClient:
         return self._finish(directory, receipt)
 
     def _finish(self, directory, receipt, first=None):
+        def count(field):
+            # Missing legacy counters remain unknown across GET-only recovery.
+            value = receipt.get(field)
+            receipt[field] = value + 1 if type(value) is int and value >= 0 else None
+            observed = "observed_" + field
+            receipt[observed] = receipt.get(observed, 0) + 1
+            get_fields = ("poll_attempts", "download_attempts", "download_redirect_attempts")
+            get_complete = all(type(receipt.get(k)) is int and receipt[k] >= 0 for k in get_fields)
+            complete = get_complete and type(receipt.get("post_attempts")) is int and receipt["post_attempts"] >= 0
+            receipt["http_counts_complete"] = complete
+            receipt["video_get_calls"] = sum(receipt[k] for k in get_fields) if get_complete else None
+            receipt["real_http_calls"] = receipt["post_attempts"] + receipt["video_get_calls"] if complete else None
+            self._save(directory, receipt)
+
         deadline = monotonic() + self._job_timeout
         data = first
         while True:
@@ -244,8 +266,7 @@ class OpenRouterVideoClient:
                     receipt["status"] = "polling_timeout"
                     self._save(directory, receipt)
                     raise OpenRouterError("Video polling timed out; the job may still charge. Resume this job, do not resubmit")
-                receipt["poll_attempts"] += 1
-                self._save(directory, receipt)
+                count("poll_attempts")
                 try:
                     data = _json_request(self._api, self._request("/" + receipt["job_id"]))
                 except OpenRouterError:
@@ -289,7 +310,9 @@ class OpenRouterVideoClient:
             raise FileExistsError("Generated output already exists; preserve it")
         try:
             # Ignore returned signed URLs; construct the authenticated endpoint.
-            with self._content(self._request("/" + receipt["job_id"] + "/content?index=0"), timeout=60) as response:
+            content = self._content or build_opener(_ContentRedirect(lambda: count("download_redirect_attempts"))).open
+            count("download_attempts")
+            with content(self._request("/" + receipt["job_id"] + "/content?index=0"), timeout=60) as response:
                 total = 0
                 with partial.open("wb") as output:
                     while chunk := response.read(1024 * 1024):
@@ -300,7 +323,7 @@ class OpenRouterVideoClient:
             if total == 0:
                 raise OpenRouterError("Empty video download")
             partial.replace(target)
-        except (HTTPError, URLError, OSError):
+        except (HTTPError, URLError, OSError, OpenRouterError):
             receipt["status"] = "download_interrupted"
             self._save(directory, receipt)
             raise OpenRouterError("Video download interrupted; resume the saved job without POST") from None
