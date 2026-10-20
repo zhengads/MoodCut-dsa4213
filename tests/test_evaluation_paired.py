@@ -267,5 +267,54 @@ class GeneratedComparisonTests(unittest.TestCase):
         self.assertTrue(self.check(records, args))
 
 
+
+class GeneratedMediaFileTests(unittest.TestCase):
+    def setUp(self):
+        import hashlib
+        self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.video = self.root / "film.mp4"
+        # Deliberately not decodable: this test certifies bytes only, not video.
+        self.video.write_bytes(b"synthetic file identity fixture")
+        self.record = dict(schema_version="1.1", output_mode="generated",
+            run_status="completed", generation_status="assembled_requires_manual_inspection",
+            comparison_status="not_checked", provider_cost_usd=None, video_path="film.mp4",
+            media_check=dict(video_path=str(self.video),
+                             sha256=hashlib.sha256(self.video.read_bytes()).hexdigest()))
+
+    def check(self):
+        from moodcut.evaluation import validate_generated_media_file
+        return validate_generated_media_file(self.record, project_root=self.root)
+
+    def test_matching_bytes_preserve_record_and_unknown_cost(self):
+        before = copy.deepcopy(self.record)
+        self.assertEqual(self.check(), [])
+        self.assertEqual(self.record, before)
+
+    def test_replaced_deleted_and_directory_paths_rejected(self):
+        self.video.write_bytes(b"replacement")
+        self.assertTrue(any("bytes differ" in e for e in self.check()))
+        self.video.unlink()
+        self.assertTrue(self.check())
+        self.video.mkdir()
+        self.assertTrue(self.check())
+
+    def test_wrong_path_hash_and_incomplete_status_rejected(self):
+        for field, value in (("sha256", "f" * 64), ("sha256", None),
+                             ("video_path", "another.mp4")):
+            before = copy.deepcopy(self.record)
+            self.record["media_check"][field] = value
+            with self.subTest(field=field, value=value): self.assertTrue(self.check())
+            self.record = before
+        self.record["generation_status"] = "prepared_offline"
+        self.assertTrue(self.check())
+
+    def test_missing_or_malformed_evidence_rejected(self):
+        from moodcut.evaluation import validate_generated_media_file
+        for record in (None, {}, {**self.record, "media_check": []},
+                       {**self.record, "video_path": None}):
+            with self.subTest(record=record):
+                self.assertTrue(validate_generated_media_file(record, project_root=self.root))
+
+
 if __name__ == "__main__":
     unittest.main()

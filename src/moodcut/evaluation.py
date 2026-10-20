@@ -662,6 +662,46 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
     return list(dict.fromkeys(errors))
 
 
+
+def validate_generated_media_file(record, *, project_root):
+    """Check final-file bytes against a P1 record; not full media qualification.
+
+    Relative paths resolve against project_root. No decoding, receipts, subjective
+    checks or status mutation are performed. Call again at the export boundary.
+    """
+    if not isinstance(record, dict):
+        return ["record must be an object"]
+    errors = []
+    for field, expected in (("schema_version", "1.1"), ("output_mode", "generated"),
+                            ("run_status", "completed"),
+                            ("generation_status", "assembled_requires_manual_inspection")):
+        if record.get(field) != expected:
+            errors.append(f"{field} must be {expected}")
+    check = record.get("media_check")
+    if not isinstance(check, dict):
+        return errors + ["missing media_check object"]
+    digest = check.get("sha256")
+    if (not isinstance(digest, str) or len(digest) != 64
+            or any(c not in "0123456789abcdef" for c in digest)):
+        errors.append("invalid media_check sha256")
+    paths = [record.get("video_path"), check.get("video_path")]
+    if any(not _text(path) for path in paths):
+        return errors + ["video_path is required in record and media_check"]
+    try:
+        root = Path(project_root).resolve()
+        resolved = [(Path(path) if Path(path).is_absolute() else root / path).resolve()
+                    for path in paths]
+        if resolved[0] != resolved[1]:
+            errors.append("record and media_check video_path mismatch")
+        if not resolved[0].is_file():
+            errors.append("video file is missing or not a regular file")
+        elif _file_hash(resolved[0]) != digest:
+            errors.append("video bytes differ from media_check sha256")
+    except (OSError, ValueError) as exc:
+        errors.append(f"cannot read video file: {exc}")
+    return errors
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 

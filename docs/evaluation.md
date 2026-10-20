@@ -385,3 +385,19 @@ upstream files; these tests use repository contracts and local fixtures only.
 
 Validation command: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py tests/test_contracts.py tests/test_validation.py -q`.
 Result: 169 passed and 61 subtests passed. `git diff --check` also passed.
+
+
+### Final-file identity check
+
+`validate_generated_media_file(record, project_root=...)` is a separate, small
+read-only prerequisite for a P1 final record. It requires completed generated
+assembly, matching record/check paths, and a SHA-256 matching the current file
+bytes. Relative paths resolve against the explicit project root. Replaced,
+missing or malformed evidence returns diagnostics; inputs and unknown costs stay
+unchanged. Reuse the existing file-hash implementation; no decoding is added.
+
+This only detects stale final-file evidence at the time of checking. It does not
+verify source clips, receipts, decoding, human judgments or experiment eligibility,
+and is not yet wired into export. The export integration must check again at its
+copy boundary to avoid relying on an earlier check. Synthetic byte fixtures in
+these tests are deliberately not playable videos and do not certify quality.
