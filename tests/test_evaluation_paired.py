@@ -316,5 +316,62 @@ class GeneratedMediaFileTests(unittest.TestCase):
                 self.assertTrue(validate_generated_media_file(record, project_root=self.root))
 
 
+class GeneratedSourceBindingsTests(unittest.TestCase):
+    def setUp(self):
+        GeneratedMediaFileTests.setUp(self)
+        from moodcut.contracts import json_hash
+        request = {"prompt": "synthetic request", "seed": 1}
+        self.compiled = {"condition": "baseline", "jobs": [
+            {"shot_id": "s1", "request": request, "request_sha256": json_hash(request)}]}
+        self.record.update(condition="baseline", selected_shot_ids=["s1"], generation_jobs=[
+            dict(shot_id="s1", request_sha256=json_hash(request), status="downloaded",
+                 video_path="film.mp4", media_check=copy.deepcopy(self.record["media_check"]))])
+
+    def bindings(self):
+        from moodcut.evaluation import validate_generated_source_bindings
+        return validate_generated_source_bindings(self.record, self.compiled, project_root=self.root)
+
+    def test_single_clip_binding_and_no_mutation(self):
+        before = copy.deepcopy((self.record, self.compiled))
+        self.assertEqual(self.bindings(), [])
+        self.assertEqual((self.record, self.compiled), before)
+
+    def test_changed_request_and_source_status(self):
+        self.compiled["jobs"][0]["request"]["seed"] = 2
+        self.assertTrue(any("request identity" in e for e in self.bindings()))
+        self.record["generation_jobs"][0]["status"] = "in_progress"
+        self.assertTrue(any("not downloaded" in e for e in self.bindings()))
+
+    def test_assembly_sidecar_binds_order_bytes_and_snapshot(self):
+        import json
+        from moodcut.contracts import json_hash
+        second = copy.deepcopy(self.compiled["jobs"][0]); second["shot_id"] = "s2"
+        self.compiled["jobs"].append(second)
+        job = copy.deepcopy(self.record["generation_jobs"][0]); job["shot_id"] = "s2"
+        self.record["generation_jobs"].append(job)
+        self.record["selected_shot_ids"].append("s2")
+        self.assertTrue(self.bindings())  # Multi-shot assembly requires evidence.
+        saved = {"sha256": self.record["media_check"]["sha256"], "source_clips": [
+            {"shot_id": j["shot_id"], "request_sha256": j["request_sha256"],
+             "sha256": j["media_check"]["sha256"]} for j in self.record["generation_jobs"]]}
+        sidecar = self.root / "media_check.json"
+        sidecar.write_text(json.dumps(saved), encoding="utf-8")
+        self.record["media_check"].update(source_media_check_path="media_check.json",
+                                         source_media_check_sha256=json_hash(saved))
+        self.assertEqual(self.bindings(), [])
+        saved["source_clips"].reverse()
+        sidecar.write_text(json.dumps(saved), encoding="utf-8")
+        errors = self.bindings()
+        self.assertTrue(any("sidecar identity" in e for e in errors))
+        self.assertTrue(any("clip/request order" in e for e in errors))
+
+    def test_missing_duplicate_or_malformed_jobs(self):
+        for jobs in ([], [None], [self.record["generation_jobs"][0]] * 2):
+            before = copy.deepcopy(self.record)
+            self.record["generation_jobs"] = jobs
+            with self.subTest(jobs=jobs): self.assertTrue(self.bindings())
+            self.record = before
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -401,3 +401,21 @@ verify source clips, receipts, decoding, human judgments or experiment eligibili
 and is not yet wired into export. The export integration must check again at its
 copy boundary to avoid relying on an earlier check. Synthetic byte fixtures in
 these tests are deliberately not playable videos and do not certify quality.
+
+
+### Ordered source bindings
+
+`validate_generated_source_bindings(record, compiled_condition, project_root=...)`
+adds a read-only source check. Supply one condition from an independently
+validated P4 bundle and its final P1 record. It recomputes each complete request
+hash, checks downloaded source-file bytes, and compares the ordered shot/request/
+clip identities with the saved assembly sidecar. The sidecar's canonical JSON
+hash and final-file fingerprint must match the P1 record. A single-clip record
+without an assembly sidecar is accepted only when its final fingerprint equals
+that clip's fingerprint, matching P1's single-shot path.
+
+This check cannot authenticate an arbitrarily supplied bundle, validate provider
+receipts or reuse accounting, or infer that pixels depict the intended request.
+Those remain separate prerequisites; no status promotion or export wiring is
+included. Tests use synthetic byte files and hand-written sidecars, not playable
+media or model-quality evidence. All records and unknown costs stay unchanged.

@@ -702,6 +702,78 @@ def validate_generated_media_file(record, *, project_root):
     return errors
 
 
+def validate_generated_source_bindings(record, compiled_condition, *, project_root):
+    """Recheck ordered request/clip bindings; no receipt or quality approval.
+
+    compiled_condition must come from the independently validated P4 bundle.
+    P1's final media_check identifies the saved assembly sidecar when present.
+    """
+    from .contracts import json_hash, _json_copy
+    errors = validate_generated_media_file(record, project_root=project_root)
+    try:
+        _json_copy([record, compiled_condition])
+        if not isinstance(record, dict) or not isinstance(compiled_condition, dict):
+            raise ValueError("record and compiled_condition must be objects")
+        if (not _text(record.get("condition"))
+                or record.get("condition") != compiled_condition.get("condition")):
+            raise ValueError("compiled condition mismatch")
+        jobs, compiled = record.get("generation_jobs"), compiled_condition.get("jobs")
+        if (not isinstance(jobs, list) or not jobs or not isinstance(compiled, list)
+                or len(jobs) != len(compiled)):
+            raise ValueError("missing or inconsistent generation jobs")
+        bindings, seen = [], set()
+        for index, (job, source) in enumerate(zip(jobs, compiled)):
+            if not isinstance(job, dict) or not isinstance(source, dict):
+                raise ValueError("jobs must be objects")
+            shot = source.get("shot_id")
+            if not _text(shot) or shot in seen or job.get("shot_id") != shot:
+                raise ValueError("duplicate or out-of-order source shot")
+            seen.add(shot)
+            request = source.get("request")
+            if not isinstance(request, dict) or not request:
+                raise ValueError("missing compiled request")
+            digest = json_hash(request)
+            if source.get("request_sha256") != digest or job.get("request_sha256") != digest:
+                errors.append(f"shot {index + 1}: request identity mismatch")
+            if job.get("status") != "downloaded":
+                errors.append(f"shot {index + 1}: source clip is not downloaded")
+            # Reuse byte/path checking without mutating the original job or ledger.
+            clip_record = {**record, "video_path": job.get("video_path"),
+                           "media_check": job.get("media_check")}
+            errors.extend(f"shot {index + 1}: {e}" for e in
+                          validate_generated_media_file(clip_record, project_root=project_root))
+            check = job.get("media_check")
+            bindings.append({"shot_id": shot, "request_sha256": digest,
+                             "sha256": check.get("sha256") if isinstance(check, dict) else None})
+        if record.get("selected_shot_ids") != [b["shot_id"] for b in bindings]:
+            errors.append("selected shot order differs from source jobs")
+        check = record.get("media_check")
+        if not isinstance(check, dict):
+            raise ValueError("missing final media_check")
+        sidecar = check.get("source_media_check_path")
+        if sidecar is None:
+            if len(bindings) != 1 or check.get("sha256") != bindings[0]["sha256"]:
+                errors.append("assembly sidecar required unless final file equals the single source clip")
+        else:
+            if not _text(sidecar):
+                raise ValueError("invalid assembly sidecar path")
+            path = Path(sidecar)
+            if not path.is_absolute():
+                path = Path(project_root) / path
+            saved = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(saved, dict):
+                raise ValueError("assembly sidecar must be an object")
+            if json_hash(saved) != check.get("source_media_check_sha256"):
+                errors.append("assembly sidecar identity mismatch")
+            if saved.get("source_clips") != bindings:
+                errors.append("assembly source clip/request order mismatch")
+            if saved.get("sha256") != check.get("sha256"):
+                errors.append("assembly final-file identity mismatch")
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"source bindings: {exc}")
+    return list(dict.fromkeys(errors))
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 
