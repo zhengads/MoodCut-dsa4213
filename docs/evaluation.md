@@ -249,9 +249,8 @@ virtual environment are excluded from the commit.
 
 ## 中文速览
 
-已完成 VBench 单指标接入、批量评估、逐条失败记录、断点续跑及 CSV 汇总。
-续跑会核对视频内容与配置，避免复用过期分数；测试数据仅验证流程，不代表 MoodCut 正式效果。
-其他指标、正式实验和 GPU 验证仍待完成，具体测试证据见下文。
+已完成 VBench 单指标批量评估、失败记录及断点续跑；本次新增三条件输入身份和仅台词修改校验。
+通过输入校验不等于视频合格或正式实验完成；媒体证据接入、盲评放行和正式实验仍待完成。
 
 
 ## Batch evaluation and resume
@@ -327,3 +326,62 @@ experimental comparability; formal pairing and analysis remain separate work.
 GPU performance, representative long videos, formal method comparisons and other
 metrics have not been validated. This increment proves batch orchestration and
 failure accounting, not MoodCut generation quality.
+
+
+## Generated comparison input prerequisites (2026-10-20)
+
+`validate_generated_comparison` checks one three-condition block against its
+actual source objects. Run from the project root so the public plan validator can
+resolve the reference assets in the manifest.
+
+```python
+from moodcut.evaluation import validate_generated_comparison
+
+errors = validate_generated_comparison(
+    records, scene=scene, initial=initial, plans=plans,
+    manifest=manifest, settings=settings, template_sha256=template_sha256,
+)
+```
+
+`plans` maps `baseline`, `generic_review`, and `moodcut` to complete plans.
+The function returns diagnostic strings, or an empty list when these input
+prerequisites pass. It performs no network calls and does not mutate inputs.
+It recomputes initial, final and shared generation hashes using the public
+contract helpers, validates local reference assets, and checks that changes are
+restricted to dialogue. Baseline must equal the complete initial plan; an
+`unchanged` review must also equal it. The three records must share their block,
+replicate, source kind, text model and ordered shot selection. Missing or duplicate
+conditions, invalid review outcomes and explicit failed/interrupted runs fail.
+
+This is the first increment of issue #9, not complete generated-run eligibility.
+An empty error list does not certify receipts, reused jobs, media bytes, human
+quality checks, costs or formal inclusion. Offline prepared fixtures may pass
+these input checks. The function never sets `comparison_status=eligible` and
+does not release the CLI guard on generated blind exports or ratings. Final
+`records` remain the accounting source; `preflight_records` must not be added as
+another set of runs. Unknown costs remain unknown. Receipt and media evidence
+must be connected through the existing P1/P4 interfaces in the next increment.
+
+Before a formal run, the team still needs to freeze the following decisions:
+
+| Decision | Current status |
+| --- | --- |
+| Development versus formal stories and repeat count | Not approved by this increment |
+| Rater assignment and exclusion rules | Not approved by this increment |
+| Inclusion of unchanged reviews and failed runs | Input validity only; analysis policy pending |
+| Generation models, settings and budget stop | No paid run authorized by these tests |
+| Emotion outcomes versus VBench quality dimensions | Separate outcomes; no formal claim from fixtures |
+
+The comparison concerns dialogue-specific review versus generic review and the
+baseline within the existing pipeline. These checks do not establish improved
+actions, facial expressions, visual consistency or an effect of agent count.
+
+Offline regression coverage includes spoofed identities, non-dialogue extensions,
+changed shared settings, false unchanged labels, incomplete blocks, shot scopes,
+malformed input and preservation of unknown cost fields. Fixtures are software
+test inputs, not generated-video research results. No API, GPU, model download or
+VBench inference is required. The reference-cache check currently reports missing
+upstream files; these tests use repository contracts and local fixtures only.
+
+Validation command: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py tests/test_contracts.py tests/test_validation.py -q`.
+Result: 169 passed and 61 subtests passed. `git diff --check` also passed.

@@ -170,5 +170,102 @@ class PairedEvaluationTests(unittest.TestCase):
             self.assertFalse(out.exists())
 
 
+
+class GeneratedComparisonTests(unittest.TestCase):
+    def setUp(self):
+        from contextlib import chdir
+        self.enterContext(chdir(Path(__file__).resolve().parents[1]))
+
+    def fixture(self):
+        import json
+        root = Path(__file__).resolve().parents[1]
+        f = json.loads((root / "tests/fixtures/generated_contract.json").read_text(encoding="utf-8"))
+        assets = json.loads((root / f["manifest_file"]).read_text(encoding="utf-8"))
+        # Local reference assets only; no model calls or generated media.
+        return f["run_records"], dict(scene=f["scene"], initial=f["initial_plan"],
+            plans=f["condition_plans"], manifest=assets, settings=f["settings"], template_sha256=f["template_sha256"])
+
+    def check(self, records, args):
+        from moodcut.evaluation import validate_generated_comparison
+        return validate_generated_comparison(records, **args)
+
+    def test_valid_fixture_preserves_every_input_and_status(self):
+        records, args = self.fixture()
+        before = copy.deepcopy((records, args))
+        self.assertEqual(self.check(records, args), [])
+        self.assertEqual((records, args), before)
+        self.assertEqual(records[0]["comparison_status"], "not_checked")
+
+    def test_declared_hashes_are_not_trusted(self):
+        for field in ("initial_plan_sha256", "final_plan_sha256", "shared_generation_sha256", "video_model_id"):
+            records, args = self.fixture()
+            for record in records:
+                record[field] = "a" * 64
+            with self.subTest(field=field):
+                self.assertTrue(any(field in e for e in self.check(records, args)))
+
+    def test_non_dialogue_change_even_with_recomputed_claims(self):
+        from moodcut.contracts import json_hash, shared_generation_sha256
+        records, args = self.fixture()
+        plan = args["plans"]["moodcut"]
+        plan["shots"][0]["unexpected_extension"] = "changed action"
+        records[2]["final_plan_sha256"] = json_hash(plan)
+        records[2]["shared_generation_sha256"] = shared_generation_sha256(
+            args["scene"], plan, args["manifest"], args["settings"], template_sha256=args["template_sha256"])
+        self.assertTrue(any("non-dialogue" in e for e in self.check(records, args)))
+
+    def test_shared_input_changes_require_new_identity(self):
+        for change in ("seed", "voice", "template", "asset_url"):
+            records, args = self.fixture()
+            if change == "seed": args["settings"]["seed"] += 1
+            elif change == "voice": args["settings"]["characters"][0]["voice"] += " changed"
+            elif change == "template": args["template_sha256"] = "b" * 64
+            else: args["manifest"]["assets"][0]["source_url"] = "https://example.org/changed.png"
+            with self.subTest(change=change):
+                self.assertTrue(self.check(records, args))
+
+    def test_unchanged_requires_exact_initial_and_failures_rejected(self):
+        from moodcut.contracts import json_hash
+        records, args = self.fixture()
+        records[1]["review_status"] = "unchanged"
+        self.assertTrue(self.check(records, args))
+        args["plans"]["generic_review"] = copy.deepcopy(args["initial"])
+        records[1]["final_plan_sha256"] = json_hash(args["initial"])
+        self.assertEqual(self.check(records, args), [])
+        for status in ("rejected", "review_failed", "no_changes"):
+            records[1]["review_status"] = status
+            with self.subTest(status=status): self.assertTrue(self.check(records, args))
+
+    def test_conditions_block_and_scope(self):
+        for change in ("missing", "duplicate", "block", "source", "scope", "legacy", "failed"):
+            records, args = self.fixture()
+            if change == "missing": records.pop()
+            elif change == "duplicate": records[2] = copy.deepcopy(records[1])
+            elif change == "block": records[1]["block_id"] = "another"
+            elif change == "source": records[1]["source_kind"] = "formal"
+            elif change == "scope": records[1]["selected_shot_ids"] = [args["initial"]["shots"][0]["shot_id"]]
+            elif change == "legacy": records[1]["schema_version"] = "1.0"
+            else: records[1]["generation_status"] = "failed"
+            with self.subTest(change=change): self.assertTrue(self.check(records, args))
+
+    def test_unknown_costs_and_reuse_are_preserved_not_recounted(self):
+        records, args = self.fixture()
+        records[0]["provider_cost_usd"] = None
+        records[1]["generation_jobs"] = [{"reused_from": {"run_id": records[0]["run_id"], "shot_id": "s1"}}]
+        before = copy.deepcopy(records)
+        self.assertEqual(self.check(records, args), [])
+        self.assertEqual(records, before)
+        report = summarize(records, [])
+        self.assertIsNone(report["overall"]["usage"]["provider_cost_usd"]["total"])
+        self.assertEqual(report["overall"]["coverage"]["planned_runs"], 3)
+
+    def test_malformed_inputs_return_errors(self):
+        records, args = self.fixture()
+        for malformed in (None, {}, [None], [{"condition": []}]):
+            with self.subTest(records=malformed): self.assertTrue(self.check(malformed, args))
+        args["initial"]["shots"] = None
+        self.assertTrue(self.check(records, args))
+
+
 if __name__ == "__main__":
     unittest.main()

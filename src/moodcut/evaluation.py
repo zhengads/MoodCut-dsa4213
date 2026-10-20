@@ -535,6 +535,133 @@ def _paired_records(records):
     return records
 
 
+
+def validate_generated_comparison(records, *, scene, initial, plans, manifest,
+                                  settings, template_sha256):
+    """Recompute one block's generated input/review identities (CONTRACTS 6.5).
+
+    Returns diagnostic strings without mutating records or approving media,
+    ratings, accounting, or formal inclusion. Local reference assets are checked
+    by the public validator relative to the current project root. No network.
+    """
+    from .contracts import (CONDITIONS, _json_copy, json_hash,
+                            assert_dialogue_only_revision, shared_generation_sha256)
+    from .validation import validate_plan
+    errors = []
+    try:
+        records, scene, initial, plans, manifest, settings = _json_copy(
+            [records, scene, initial, plans, manifest, settings])
+    except ValueError as exc:
+        return [str(exc)]
+    if not all(isinstance(x, dict) for x in (scene, initial, plans, manifest, settings)):
+        return ["scene, initial, plans, manifest and settings must be objects"]
+    if set(plans) != set(CONDITIONS):
+        errors.append("plans must contain exactly baseline/generic_review/moodcut")
+    if not isinstance(records, list):
+        return errors + ["records must be a list"]
+    if len(records) != 3:
+        errors.append("records must contain exactly three conditions")
+    initial_hash = json_hash(initial)
+    expected_shared = None
+    try:
+        errors.extend("initial: " + e for e in validate_plan(
+            scene, initial, manifest, output_mode="generated"))
+        expected_shared = shared_generation_sha256(
+            scene, initial, manifest, settings, template_sha256=template_sha256)
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"initial inputs: {exc}")
+    final_hashes = {}
+    for condition in CONDITIONS:
+        plan = plans.get(condition)
+        if not isinstance(plan, dict):
+            errors.append(f"{condition}: missing plan object")
+            continue
+        final_hashes[condition] = json_hash(plan)
+        try:
+            errors.extend(f"{condition}: {e}" for e in validate_plan(
+                scene, plan, manifest, output_mode="generated"))
+            assert_dialogue_only_revision(initial, plan)
+            shared = shared_generation_sha256(scene, plan, manifest, settings,
+                                              template_sha256=template_sha256)
+            if expected_shared is not None and shared != expected_shared:
+                errors.append(f"{condition}: recomputed shared identity differs")
+        except (ValueError, TypeError, KeyError, OSError) as exc:
+            errors.append(f"{condition}: {exc}")
+    if final_hashes.get("baseline") != initial_hash:
+        errors.append("baseline must equal the complete initial plan")
+
+    run_ids, conditions, block_ids, replicates, kinds, models = set(), set(), set(), set(), set(), set()
+    selected_scopes = []
+    for index, row in enumerate(records):
+        prefix = f"record {index + 1}"
+        if not isinstance(row, dict):
+            errors.append(f"{prefix}: must be an object")
+            continue
+        condition = row.get("condition")
+        if not isinstance(condition, str) or condition not in CONDITIONS:
+            errors.append(f"{prefix}: unknown condition")
+            continue
+        prefix = condition
+        if condition in conditions:
+            errors.append(f"{prefix}: duplicate condition")
+        conditions.add(condition)
+        for field, seen in (("run_id", run_ids), ("block_id", block_ids),
+                            ("source_kind", kinds), ("model_id", models)):
+            value = row.get(field)
+            if not _text(value):
+                errors.append(f"{prefix}: {field} must be nonempty")
+            else:
+                if field == "run_id" and value in seen:
+                    errors.append(f"{prefix}: duplicate run_id")
+                seen.add(value)
+        replicate = row.get("replicate")
+        if type(replicate) is not int or replicate < 1:
+            errors.append(f"{prefix}: invalid replicate")
+        else:
+            replicates.add(replicate)
+        for field, expected in (("schema_version", "1.1"), ("output_mode", "generated"),
+                                ("scene_id", scene.get("scene_id")), ("tone", scene.get("tone")),
+                                ("initial_plan_sha256", initial_hash),
+                                ("final_plan_sha256", final_hashes.get(condition)),
+                                ("shared_generation_sha256", expected_shared),
+                                ("video_model_id", settings.get("model"))):
+            if expected is None or row.get(field) != expected:
+                errors.append(f"{prefix}: {field} mismatch")
+        hashes = row.get("prompt_hashes")
+        if not isinstance(hashes, dict) or hashes.get("video_template") != template_sha256:
+            errors.append(f"{prefix}: video template identity mismatch")
+        status = row.get("review_status")
+        allowed = ("not_applicable",) if condition == "baseline" else ("applied", "unchanged")
+        if status not in allowed:
+            errors.append(f"{prefix}: invalid review source {status!r}")
+        if status == "unchanged" and final_hashes.get(condition) != initial_hash:
+            errors.append(f"{prefix}: unchanged requires the complete initial plan")
+        if row.get("run_status") == "failed" or row.get("generation_status") in ("failed", "interrupted"):
+            errors.append(f"{prefix}: failed/interrupted run is not a valid comparison source")
+        selected = row.get("selected_shot_ids")
+        # Omitted selection denotes the complete plan; explicit subsets retain order.
+        shots = initial.get("shots")
+        full_ids = [shot.get("shot_id") for shot in shots if isinstance(shot, dict)] if isinstance(shots, list) else []
+        if selected is None:
+            selected = full_ids
+        if (not isinstance(selected, list) or not selected
+                or any(not isinstance(x, str) for x in selected)
+                or len(set(selected)) != len(selected)
+                or selected != [x for x in full_ids if x in selected]):
+            errors.append(f"{prefix}: invalid selected_shot_ids")
+        else:
+            selected_scopes.append(tuple(selected))
+    if conditions != set(CONDITIONS):
+        errors.append("missing required comparison conditions")
+    for name, values in (("block_id", block_ids), ("replicate", replicates),
+                         ("source_kind", kinds), ("model_id", models)):
+        if len(values) != 1:
+            errors.append(f"records must share one {name}")
+    if len(set(selected_scopes)) > 1:
+        errors.append("records must share the same selected shot scope")
+    return list(dict.fromkeys(errors))
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 
