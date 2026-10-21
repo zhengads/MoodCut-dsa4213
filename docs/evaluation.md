@@ -483,3 +483,18 @@ known subtotal is retained, all three final runs remain in coverage, and records
 are not mutated. Media identity passing does not approve unknown costs or promote
 comparison eligibility. The test supplies no ratings and uses synthetic media
 and bills only. Focused evaluation regression: 50 tests and 88 subtests passed.
+
+
+### Failed-generation integration regression
+
+The actual-interface failure fixture produces one failed baseline and two
+completed conditions. P5 rejects the failed record; all three final records stay
+in coverage and unknown spending remains unknown. No ratings are supplied and
+validation does not mutate the ledger. The test uses a synthetic failed receipt.
+
+Current summary limitation: generation failures before rendering appear under
+`render_pending_or_skipped_runs`, not `render_failed_runs`. Their explicit
+`generation_status=failed` and `failure_kind=generation` remain in the raw record.
+This test documents that existing behavior; it does not claim the summary already
+has a separate generation-failure count. Adding such a count is a later reporting
+increment. No business code or export gate changes are included here.

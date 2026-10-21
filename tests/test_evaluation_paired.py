@@ -566,5 +566,46 @@ def test_p5_actual_unknown_cost_records_remain_unknown(inspection_inputs):
     assert records == before
 
 
+def test_p5_actual_failed_run_is_rejected_but_kept_in_summary(inspection_inputs):
+    """Failed generation remains in the final ledger, with unknown spending."""
+    import json
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.evaluation import validate_generated_media_evidence
+
+    case = inspection_inputs
+    receipt_path = case["evidence"].parent / "receipt-0-0.json"
+    receipt = read_json(receipt_path)
+    receipt.update(status="failed", video_path=None, provider_cost_usd=None)
+    receipt.pop("download_attempts")
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    assert inspect_local(case)["status"] == "failed"
+    records = read_json(case["output"] / "records/block.json")
+    before = copy.deepcopy(records)
+    compiled = {c["condition"]: c for c in case["bundle"]["conditions"]}
+    baseline = next(r for r in records["runs"] if r["condition"] == "baseline")
+    assert baseline["run_status"] == "failed"
+    assert baseline["comparison_status"] == "ineligible"
+    assert validate_generated_media_evidence(baseline, compiled["baseline"], project_root=ROOT)
+    assert not (case["output"] / "baseline/film.mp4").exists()
+    for record in records["runs"]:
+        if record["condition"] != "baseline":
+            assert validate_generated_media_evidence(
+                record, compiled[record["condition"]], project_root=ROOT) == []
+    report = summarize(records["runs"], [])
+    coverage = report["overall"]["coverage"]
+    assert coverage["planned_runs"] == 3
+    assert coverage["rendered_runs"] == 2
+    # Generation failed before rendering; legacy coverage groups it as unrendered.
+    assert baseline["generation_status"] == "failed"
+    assert baseline["failure_kind"] == "generation"
+    assert coverage["render_failed_runs"] == 0
+    assert coverage["render_pending_or_skipped_runs"] == 1
+    assert coverage["rated_clips"] == 0
+    assert report["overall"]["usage"]["provider_cost_usd"]["total"] is None
+    assert records["accounting"]["provider_cost_usd"] is None
+    assert records == before
+
+
 if __name__ == "__main__":
     unittest.main()
