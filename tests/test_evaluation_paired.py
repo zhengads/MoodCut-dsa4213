@@ -434,5 +434,57 @@ class GeneratedReceiptBindingTests(unittest.TestCase):
                     expected_model="synthetic-model", project_root=self.root))
 
 
+class GeneratedMediaEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        import json
+        from moodcut.contracts import json_hash
+        GeneratedSourceBindingsTests.setUp(self)
+        self.record["video_model_id"] = "synthetic-model"
+        source = self.compiled["jobs"][0]
+        source["request"]["model"] = "synthetic-model"
+        source["request_sha256"] = json_hash(source["request"])
+        receipt = dict(schema_version="1.1", model="synthetic-model", job_id="test-job",
+            status="downloaded", request_sha256=source["request_sha256"], video_path="film.mp4")
+        self.receipt_path = self.root / "receipt.json"
+        self.receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+        self.record["generation_jobs"][0].update(request_sha256=source["request_sha256"],
+            job_id="test-job", receipt_path="receipt.json", receipt_sha256=json_hash(receipt))
+
+    def check(self):
+        from moodcut.evaluation import validate_generated_media_evidence
+        return validate_generated_media_evidence(self.record, self.compiled, project_root=self.root)
+
+    def test_combined_valid_evidence_preserves_inputs(self):
+        before = copy.deepcopy((self.record, self.compiled))
+        self.assertEqual(self.check(), [])
+        self.assertEqual((self.record, self.compiled), before)
+        self.assertEqual(self.record["comparison_status"], "not_checked")
+
+    def test_collects_file_and_receipt_failures_together(self):
+        self.video.write_bytes(b"replacement")
+        self.receipt_path.unlink()
+        errors = self.check()
+        self.assertTrue(any("bytes differ" in e for e in errors))
+        self.assertTrue(any("receipt binding" in e for e in errors))
+
+    def test_receipt_model_is_checked_against_compiled_request(self):
+        import json
+        from moodcut.contracts import json_hash
+        receipt = json.loads(self.receipt_path.read_text(encoding="utf-8"))
+        receipt["model"] = "wrong-model"
+        self.receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+        self.record["generation_jobs"][0]["receipt_sha256"] = json_hash(receipt)
+        self.assertTrue(any("receipt model mismatch" in e for e in self.check()))
+        self.record["video_model_id"] = "wrong-model"
+        self.assertTrue(any("compiled model differs" in e for e in self.check()))
+
+    def test_malformed_condition_still_returns_diagnostics(self):
+        from moodcut.evaluation import validate_generated_media_evidence
+        for condition in (None, {}, {"jobs": [None]}, {"jobs": []}):
+            with self.subTest(condition=condition):
+                self.assertTrue(validate_generated_media_evidence(
+                    self.record, condition, project_root=self.root))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -436,3 +436,19 @@ prove video quality or certify reuse ownership, HTTP totals or charges. This
 helper does not require video bytes to exist; that is the preceding file check's
 responsibility. No automatic eligibility or blind-export wiring is added.
 Tests use hand-written synthetic receipts and no provider calls.
+
+
+### Combined per-condition media diagnostics
+
+`validate_generated_media_evidence(record, compiled_condition, project_root=...)`
+composes the existing source/file and saved-receipt checks for one condition.
+It reports receipt failures even when a file check fails, labels diagnostics by
+shot, and takes the expected receipt model from the compiled request while also
+checking the record's video_model_id. It does not modify or discard records.
+
+The supplied P4 condition must still be independently validated against the
+source plans/settings. Block input checks, same-block reuse ownership, accounting,
+media decoding and human acceptance remain separate requirements. An empty list
+is not comparison eligibility. No CLI/export gate is changed. Combined tests use
+synthetic bytes and receipts, preserve not_checked and unknown costs, and include
+simultaneous missing-receipt/replaced-file failures.

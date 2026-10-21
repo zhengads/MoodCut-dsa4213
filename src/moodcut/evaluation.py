@@ -826,6 +826,32 @@ def validate_generated_receipt_binding(job, *, expected_model, project_root):
     return errors
 
 
+def validate_generated_media_evidence(record, compiled_condition, *, project_root):
+    """Combine file, source and receipt checks for one validated P4 condition.
+
+    Returns all available diagnostics without filtering records or approving
+    comparison eligibility. This is not the block input or reuse/accounting check.
+    """
+    errors = validate_generated_source_bindings(
+        record, compiled_condition, project_root=project_root)
+    if not isinstance(record, dict) or not isinstance(compiled_condition, dict):
+        return errors
+    jobs, compiled = record.get("generation_jobs"), compiled_condition.get("jobs")
+    if not isinstance(jobs, list) or not isinstance(compiled, list):
+        return errors
+    # Source validation checks ordering and count; continue matching pairs to
+    # collect receipt errors even when a file or request check already failed.
+    for index, (job, source) in enumerate(zip(jobs, compiled)):
+        request = source.get("request") if isinstance(source, dict) else None
+        model = request.get("model") if isinstance(request, dict) else None
+        if not _text(model) or record.get("video_model_id") != model:
+            errors.append(f"shot {index + 1}: compiled model differs from video_model_id")
+        errors.extend(f"shot {index + 1}: {error}" for error in
+                      validate_generated_receipt_binding(
+                          job, expected_model=model, project_root=project_root))
+    return list(dict.fromkeys(errors))
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 
