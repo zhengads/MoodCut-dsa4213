@@ -373,5 +373,66 @@ class GeneratedSourceBindingsTests(unittest.TestCase):
             self.record = before
 
 
+class GeneratedReceiptBindingTests(unittest.TestCase):
+    def setUp(self):
+        import json
+        from moodcut.contracts import json_hash
+        self.root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        (self.root / "receipts").mkdir()
+        self.path = self.root / "receipts" / "job.json"
+        self.receipt = dict(schema_version="1.1", model="synthetic-model",
+            request_sha256="a" * 64, job_id="synthetic-job", status="downloaded",
+            video_path="../clip.mp4", provider_cost_usd=None)
+        self.path.write_text(json.dumps(self.receipt), encoding="utf-8")
+        self.job = dict(receipt_path="receipts/job.json", receipt_sha256=json_hash(self.receipt),
+            request_sha256="a" * 64, job_id="synthetic-job", status="downloaded",
+            video_path="clip.mp4", provider_cost_usd=None)
+
+    def check(self):
+        from moodcut.evaluation import validate_generated_receipt_binding
+        return validate_generated_receipt_binding(self.job, expected_model="synthetic-model",
+                                                  project_root=self.root)
+
+    def test_matching_relative_paths_and_unknown_cost_are_preserved(self):
+        before = copy.deepcopy(self.job)
+        saved = self.path.read_bytes()
+        self.assertEqual(self.check(), [])
+        self.assertEqual(self.job, before)
+        self.assertEqual(self.path.read_bytes(), saved)
+
+    def test_receipt_edits_rejected_even_if_snapshot_hash_updated(self):
+        import json
+        from moodcut.contracts import json_hash
+        for field, value, diagnostic in (
+                ("request_sha256", "b" * 64, "request identity"),
+                ("model", "other-model", "model mismatch"),
+                ("job_id", "other-job", "job_id mismatch"),
+                ("status", "completed", "both be downloaded"),
+                ("video_path", "other.mp4", "video_path mismatch"),
+                ("schema_version", "2.0", "schema_version")):
+            changed = {**self.receipt, field: value}
+            self.path.write_text(json.dumps(changed), encoding="utf-8")
+            self.job["receipt_sha256"] = json_hash(changed)
+            with self.subTest(field=field):
+                self.assertTrue(any(diagnostic in e for e in self.check()))
+
+    def test_stale_snapshot_missing_and_malformed_receipts(self):
+        import json
+        self.path.write_text(json.dumps({**self.receipt, "provider_cost_usd": 1}), encoding="utf-8")
+        self.assertTrue(any("saved receipt identity" in e for e in self.check()))
+        for content in ("[]", "null", "not-json"):
+            self.path.write_text(content, encoding="utf-8")
+            with self.subTest(content=content): self.assertTrue(self.check())
+        self.path.unlink()
+        self.assertTrue(self.check())
+
+    def test_malformed_job_and_missing_id_do_not_pass(self):
+        from moodcut.evaluation import validate_generated_receipt_binding
+        for job in (None, {}, {**self.job, "job_id": None}, {**self.job, "request_sha256": None}):
+            with self.subTest(job=job):
+                self.assertTrue(validate_generated_receipt_binding(job,
+                    expected_model="synthetic-model", project_root=self.root))
+
+
 if __name__ == "__main__":
     unittest.main()

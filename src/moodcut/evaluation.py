@@ -774,6 +774,58 @@ def validate_generated_source_bindings(record, compiled_condition, *, project_ro
     return list(dict.fromkeys(errors))
 
 
+def validate_generated_receipt_binding(job, *, expected_model, project_root):
+    """Recheck a saved P1 job's receipt identity, without polling or accounting.
+
+    Request identity must already be checked against the validated P4 bundle.
+    Reused jobs retain the owner's receipt; this does not validate reuse ownership.
+    """
+    from .contracts import json_hash, _json_copy
+    import re
+    errors = []
+    try:
+        _json_copy(job)
+        if not isinstance(job, dict):
+            raise ValueError("job must be an object")
+        if not _text(expected_model):
+            raise ValueError("expected_model is required")
+        if not _text(job.get("receipt_path")):
+            raise ValueError("receipt_path is required")
+        root = Path(project_root).resolve()
+        path = Path(job["receipt_path"])
+        path = (path if path.is_absolute() else root / path).resolve()
+        receipt = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(receipt, dict):
+            raise ValueError("receipt must be an object")
+        if json_hash(receipt) != job.get("receipt_sha256"):
+            errors.append("saved receipt identity mismatch")
+        if receipt.get("schema_version") not in ("1.0", "1.1"):
+            errors.append("unsupported receipt schema_version")
+        request_hash = job.get("request_sha256")
+        if (not isinstance(request_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", request_hash)
+                or receipt.get("request_sha256") != request_hash):
+            errors.append("receipt request identity mismatch")
+        if receipt.get("model") != expected_model:
+            errors.append("receipt model mismatch")
+        job_id = job.get("job_id")
+        if (not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,160}", job_id)
+                or receipt.get("job_id") != job_id):
+            errors.append("receipt job_id mismatch")
+        if job.get("status") != "downloaded" or receipt.get("status") != "downloaded":
+            errors.append("job and receipt must both be downloaded")
+        if not _text(receipt.get("video_path")) or not _text(job.get("video_path")):
+            errors.append("receipt and job video_path are required")
+        else:
+            saved_video, job_video = Path(receipt["video_path"]), Path(job["video_path"])
+            saved_video = (saved_video if saved_video.is_absolute() else path.parent / saved_video).resolve()
+            job_video = (job_video if job_video.is_absolute() else root / job_video).resolve()
+            if saved_video != job_video:
+                errors.append("receipt video_path mismatch")
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"receipt binding: {exc}")
+    return errors
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 

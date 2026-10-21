@@ -419,3 +419,20 @@ receipts or reuse accounting, or infer that pixels depict the intended request.
 Those remain separate prerequisites; no status promotion or export wiring is
 included. Tests use synthetic byte files and hand-written sidecars, not playable
 media or model-quality evidence. All records and unknown costs stay unchanged.
+
+
+### Saved receipt identity (2026-10-21)
+
+`validate_generated_receipt_binding(job, expected_model=..., project_root=...)`
+checks a P1 job against its saved receipt: canonical JSON snapshot hash, request
+fingerprint, expected video model, task ID, downloaded status and video path.
+Receipt-relative video paths resolve beside the receipt; record-relative paths
+resolve against the supplied project root. Missing or changed receipts return
+errors without polling, changing records or treating unknown costs as zero.
+
+Use this together with independently validated bundle/request identities and
+source-file checks. Matching local evidence does not authenticate a provider,
+prove video quality or certify reuse ownership, HTTP totals or charges. This
+helper does not require video bytes to exist; that is the preceding file check's
+responsibility. No automatic eligibility or blind-export wiring is added.
+Tests use hand-written synthetic receipts and no provider calls.
