@@ -452,3 +452,23 @@ media decoding and human acceptance remain separate requirements. An empty list
 is not comparison eligibility. No CLI/export gate is changed. Combined tests use
 synthetic bytes and receipts, preserve not_checked and unknown costs, and include
 simultaneous missing-receipt/replaced-file failures.
+
+
+### Integration with actual P1/P4 outputs (2026-10-21)
+
+`test_p5_reads_actual_inspection_records` reuses P4's existing inspection fixture
+and calls its actual inspection interface. Actual P1/P2/P3/P4 code prepares and
+assembles the three conditions with FakeClient, synthetic moving/audio files and
+hand-written receipts. P5 accepts all three final records, including the records
+containing reused shots, without changing their accounting or not_checked status.
+Blank human judgments remain blank. Modifying a saved receipt after inspection
+produces both snapshot and task-ID mismatch diagnostics.
+
+This verifies interface compatibility, not independent reuse/accounting approval,
+provider authenticity or video quality. Only final records are read as the ledger;
+preflight snapshots are not added. The fixture's numeric bills are not actual
+spending. FFmpeg and ffprobe must be on PATH; this run used version 9.0.1.
+
+Validation: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q`
+passed 49 tests and 88 subtests. No business code, CLI/export gate or paid execution
+was changed for this increment.

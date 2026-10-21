@@ -486,5 +486,50 @@ class GeneratedMediaEvidenceTests(unittest.TestCase):
                     self.record, condition, project_root=self.root))
 
 
+# Reuse P4's existing fixture without copying its orchestration or changing its files.
+from test_video_generation import inspection_inputs
+
+
+def test_p5_reads_actual_inspection_records(inspection_inputs):
+    """Actual P1-P4 + P5, FakeClient, synthetic moving/audio media; no provider."""
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.evaluation import validate_generated_media_evidence
+
+    case = inspection_inputs
+    inspection = inspect_local(case)
+    assert inspection["status"] == "ready_requires_manual_inspection"
+    records = read_json(case["output"] / "records/block.json")
+    before = copy.deepcopy(records)
+    compiled = {c["condition"]: c for c in case["bundle"]["conditions"]}
+    assert len(records["runs"]) == 3
+    for record in records["runs"]:
+        assert validate_generated_media_evidence(
+            record, compiled[record["condition"]], project_root=ROOT) == []
+        assert record["comparison_status"] == "not_checked"
+    assert records == before
+    assert records["accounting"]["planning_counted_once"] is True
+    # Hand-written fixture bills are not actual spending. P5 must not recount them.
+    assert records["accounting"]["provider_cost_usd"] == .28
+    assert [r["generation_posts"] for r in records["runs"]] == [2, 1, 1]
+    assert any(j.get("reused_from") for r in records["runs"] for j in r["generation_jobs"])
+    checks = read_json(case["output"] / "manual_checks.json")
+    assert checks["status"] == "not_reviewed"
+    assert all(item["audio_lipsync"] is None for item in checks["items"])
+
+    # A receipt changed after P4 inspection must no longer pass P5's read check.
+    job = records["runs"][0]["generation_jobs"][0]
+    receipt_path = Path(job["receipt_path"])
+    import json
+    receipt = read_json(receipt_path)
+    receipt["job_id"] = "changed-after-inspection"
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    errors = validate_generated_media_evidence(
+        records["runs"][0], compiled["baseline"], project_root=ROOT)
+    assert any("saved receipt identity mismatch" in e for e in errors)
+    assert any("receipt job_id mismatch" in e for e in errors)
+    assert records == before
+
+
 if __name__ == "__main__":
     unittest.main()
