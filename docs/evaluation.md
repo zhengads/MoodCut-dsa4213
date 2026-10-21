@@ -472,3 +472,14 @@ spending. FFmpeg and ffprobe must be on PATH; this run used version 9.0.1.
 Validation: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q`
 passed 49 tests and 88 subtests. No business code, CLI/export gate or paid execution
 was changed for this increment.
+
+
+### Unknown-cost integration regression
+
+`test_p5_actual_unknown_cost_records_remain_unknown` passes actual P1/P4 output
+with a legacy receipt through P5 media checks and the existing summary function.
+Missing download counters and unknown provider cost remain unknown; the original
+known subtotal is retained, all three final runs remain in coverage, and records
+are not mutated. Media identity passing does not approve unknown costs or promote
+comparison eligibility. The test supplies no ratings and uses synthetic media
+and bills only. Focused evaluation regression: 50 tests and 88 subtests passed.

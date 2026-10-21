@@ -531,5 +531,40 @@ def test_p5_reads_actual_inspection_records(inspection_inputs):
     assert records == before
 
 
+def test_p5_actual_unknown_cost_records_remain_unknown(inspection_inputs):
+    """Legacy missing counters are unknown, not failed media or zero spending."""
+    import json
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.evaluation import validate_generated_media_evidence
+
+    case = inspection_inputs
+    receipt_path = case["evidence"].parent / "receipt-0-0.json"
+    receipt = read_json(receipt_path)
+    receipt.update(schema_version="1.0", provider_cost_usd=None)
+    receipt.pop("download_attempts")
+    receipt.pop("download_redirect_attempts")
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    assert inspect_local(case)["status"] == "ready_requires_manual_inspection"
+    records = read_json(case["output"] / "records/block.json")
+    before = copy.deepcopy(records)
+    compiled = {c["condition"]: c for c in case["bundle"]["conditions"]}
+    for record in records["runs"]:
+        assert validate_generated_media_evidence(
+            record, compiled[record["condition"]], project_root=ROOT) == []
+        assert record["comparison_status"] == "not_checked"
+    assert records == before
+    assert records["accounting"]["provider_cost_usd"] is None
+    assert records["accounting"]["real_http_calls"] is None
+    assert records["accounting"]["known_subtotals"]["provider_cost_usd"] == .21
+    assert records["runs"][0]["generation_jobs"][0]["missing_counters"] == [
+        "download_attempts", "download_redirect_attempts"]
+    # Existing statistics consume final runs once, with no fabricated ratings.
+    report = summarize(records["runs"], [])
+    assert report["overall"]["usage"]["provider_cost_usd"]["total"] is None
+    assert report["overall"]["coverage"]["planned_runs"] == 3
+    assert records == before
+
+
 if __name__ == "__main__":
     unittest.main()
