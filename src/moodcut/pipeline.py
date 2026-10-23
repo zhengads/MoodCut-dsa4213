@@ -624,6 +624,218 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
     return prepared
 
 
+def execute_generated_run(preparation, *, out_dir, pricing_config, project_root=".",
+                          allow_paid=False, max_cost_usd=None, media_origin="provided_local",
+                          resume_execution=None, resume_condition=None, resume_shot_id=None,
+                          continue_execution=None):
+    """Execute frozen three-condition requests, or collect them offline by default.
+
+    Recovery selects one owned task, copies its receipt and uses GET only.
+    Explicit continuation visits only unattempted jobs after reconciliation.
+    All accounting and media work stay in the existing P1/P4 boundaries.
+    """
+    from .video_client import OpenRouterVideoClient, _money, check_video_model, fetch_video_models
+    from .video_generation import inspect_generated_video
+    from decimal import Decimal
+    output = Path(out_dir).resolve()
+    if output.exists() or output.is_symlink():
+        raise FileExistsError("Choose a new execution directory; existing attempts are never restarted")
+    if media_origin not in ("synthetic", "provided_local"):
+        raise ValueError("Declare media_origin as synthetic or provided_local")
+    directory, saved, block, source, bundle, pricing = _load_generated_preparation(
+        preparation, pricing_config, project_root, recompile=True)
+    parent = None
+    resume_entry = None
+    owned_cache, completed_jobs, prior_video_cost = {}, set(), Decimal(0)
+    if resume_execution is not None and continue_execution is not None:
+        raise ValueError("Choose GET recovery or explicit continuation, never both")
+    if resume_execution is not None or continue_execution is not None:
+        previous = Path(resume_execution or continue_execution).resolve(strict=True)
+        parent = read_json(previous / "execution.json")
+        if (parent.get("kind") != "generated_execution"
+                or parent.get("preparation_path") != str(directory)
+                or parent.get("preparation_sha256") != json_hash(saved)
+                or parent.get("media_origin") != media_origin):
+            raise ValueError("Execution/preparation/media-origin identity mismatch")
+        evidence = read_json(previous / "evidence.json")
+        if json_hash(evidence) != parent.get("evidence_sha256"):
+            raise ValueError("Execution evidence changed; preserve and reconcile it")
+        checked, _ = _compute_generated_records(directory, evidence=previous / "evidence.json",
+            pricing_config=pricing_config, project_root=project_root)
+        parent_records_sha256 = json_hash(checked)
+        if resume_execution is not None:
+            if resume_condition not in CONDITIONS or not isinstance(resume_shot_id, str):
+                raise ValueError("Recovery needs one condition and original shot ID")
+            row = next(c for c in evidence["conditions"] if c["condition"] == resume_condition)
+            resume_entry = next((j for j in row["jobs"] if j["shot_id"] == resume_shot_id), None)
+            if resume_entry is None or resume_entry.get("reused_from") is not None:
+                raise ValueError("Only an owned attempted task can resume; no new POST or reuse recovery")
+            run = next(r for r in checked["runs"] if r["condition"] == resume_condition)
+            job = next(j for j in run["generation_jobs"] if j["shot_id"] == resume_shot_id)
+            resumable = {"submitted", "pending", "in_progress", "completed", "polling_timeout",
+                         "polling_interrupted", "download_interrupted"}
+            if (job.get("remote_status") not in resumable or not job.get("job_id")
+                    or job.get("counter_errors") or job["status"] == "failed"):
+                raise ValueError("Task cannot safely resume; reconcile the original receipt without POST")
+            resume_receipt = Path(job["receipt_path"])
+            resume_receipt_sha256 = job["receipt_sha256"]
+        else:
+            if resume_condition is not None or resume_shot_id is not None:
+                raise ValueError("Continuation cannot select or resubmit a prior task")
+            for run in checked["runs"]:
+                for job in run["generation_jobs"]:
+                    if job["status"] == "prepared_offline":
+                        continue
+                    if job["status"] != "downloaded" or job["provider_cost_usd"] is None:
+                        raise BudgetError("Reconcile every attempted task and charge before continuing unsubmitted jobs")
+                    completed_jobs.add((run["condition"], job["shot_id"]))
+                    if job["reused_from"] is None:
+                        owned_cache[(job["shot_id"], job["request_sha256"])] = {
+                            "run_id": run["run_id"], "shot_id": job["shot_id"]}
+                if run.get("failure_kind") is not None:
+                    raise ValueError("Failed records require reconciliation before continuation")
+                prior_video_cost += _money(run["video_accounting"]["provider_cost_usd"])
+        # P4 assembly pointers describe an earlier snapshot. Rebuild locally.
+        for condition in evidence["conditions"]:
+            condition.pop("media_check_path", None)
+    else:
+        if resume_condition is not None or resume_shot_id is not None:
+            raise ValueError("Recovery selection requires --resume-execution")
+        evidence = {"schema_version": CONTRACT_VERSION, "block_id": block["block_id"],
+                    "provenance": {"kind": "generated_execution", "media_origin": media_origin,
+                                   "source_kind": block["source_kind"], "mock": block["mock"]},
+                    "conditions": [{"condition": c, "jobs": []} for c in CONDITIONS]}
+    if allow_paid is not True and max_cost_usd is not None:
+        raise BudgetError("A budget alone does not authorize video HTTP; offline is the default")
+    client = None
+    if allow_paid is True:
+        limit = _money(max_cost_usd, positive=True)
+        if resume_execution is None and any(r.get("provider_cost_usd") is None for r in [block["planning"], *block["runs"]]):
+            raise BudgetError("Historical planning/review charges are unknown; reconcile before new video submissions")
+        pending = [j for c in bundle["conditions"] for j in c["jobs"]
+                   if (c["condition"], j["shot_id"]) not in completed_jobs]
+        quote = sum((_money(j["quoted_cost_usd"]) for j in pending), Decimal(0))
+        if resume_execution is None and limit < prior_video_cost + quote:
+            raise BudgetError("Budget is smaller than the full selected three-condition quote before reuse")
+        for tool in ("ffmpeg", "ffprobe"):
+            if not shutil.which(tool):
+                raise ValueError(f"Missing {tool}; no video HTTP attempted")
+        if continue_execution is not None and not pending:
+            raise ValueError("No unsubmitted tasks remain; collect this execution offline")
+        client = OpenRouterVideoClient(pricing, allow_paid=resume_execution is None,
+            max_cost_usd=str(limit - prior_video_cost if resume_execution is None else limit))
+        if not client.credentials_available:
+            raise ValueError("Set OPENROUTER_API_KEY in the process environment")
+        if resume_execution is None:
+            # Validate actual selected durations rather than legacy recipe shots.
+            live_config = {**pricing, "shots": [{"duration_s": j["request"]["duration"]}
+                for c in bundle["conditions"] for j in c["jobs"]]}
+            check_video_model(live_config, fetch_video_models())
+        # Repeat saved-source checks after discovery and before the first call.
+        current = _load_generated_preparation(directory, pricing_config, project_root, recompile=True)
+        if any(json_hash(old) != json_hash(new) for old, new in zip(
+                (saved, block, source, bundle, pricing), current[1:])):
+            raise ValueError("Prepared inputs changed during execution preflight; no video HTTP attempted")
+        if parent is not None:
+            current_parent, _ = _compute_generated_records(directory, evidence=previous / "evidence.json",
+                pricing_config=pricing_config, project_root=project_root)
+            if (json_hash(read_json(previous / "execution.json")) != json_hash(parent)
+                    or json_hash(current_parent) != parent_records_sha256):
+                raise ValueError("Parent execution or receipts changed during preflight; no video HTTP attempted")
+            # One HTTP successor per immutable snapshot prevents concurrent
+            # continuations/recoveries from duplicating its pending work.
+            write_json(previous / "http_successor.json", {"output": str(output), "parent_sha256": json_hash(parent)})
+    output.mkdir(parents=True, exist_ok=False)
+    evidence_path = output / "evidence.json"
+    state = {"schema_version": CONTRACT_VERSION, "output_mode": "generated", "kind": "generated_execution",
+             "status": "prepared_offline", "preparation_path": str(directory),
+             "preparation_sha256": json_hash(saved), "block_id": block["block_id"],
+             "media_origin": media_origin, "source_kind": block["source_kind"], "mock": block["mock"],
+             "mode": "resume_get_only" if resume_execution is not None else "continue_unsubmitted" if parent else "new_tasks",
+             "video_http_enabled": client is not None, "max_cost_usd": str(max_cost_usd) if client else None,
+             "budget_scope": "cumulative video task charges in this execution chain; excludes historical text charges; GET recovery is not a hard spending cap",
+             "parent_execution_path": str(previous) if parent else None,
+             "errors": [], "generation_posts_this_invocation": 0}
+
+    def checkpoint():
+        # These two files belong to this exclusively created invocation. Each
+        # evidence update precedes its HTTP attempt; no receipt is fabricated.
+        for path, value in ((evidence_path, evidence), (output / "execution.json", state)):
+            if path == output / "execution.json":
+                state["evidence_sha256"] = json_hash(evidence)
+            temporary = path.with_suffix(".json.tmp")
+            temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False)+"\n", encoding="utf-8")
+            temporary.replace(path)
+
+    checkpoint()
+    try:
+        if client is not None and resume_execution is not None:
+            # Preserve earlier receipts, media and records. Resume a local copy
+            # with cumulative task counters; never add parent and child ledgers.
+            target = output / "resumed-job"
+            target.mkdir()
+            shutil.copyfile(resume_receipt, target / "receipt.json")
+            resume_entry["receipt_path"] = str(target / "receipt.json")
+            state["status"] = "resuming_get_only"
+            checkpoint()
+            if json_hash(read_json(target / "receipt.json")) != resume_receipt_sha256:
+                raise ValueError("Recovery receipt changed while copying; no GET attempted")
+            client.resume(str(target))
+        elif client is not None:
+            cache = owned_cache
+            for compiled, supplied, source_run in zip(bundle["conditions"], evidence["conditions"], block["runs"]):
+                for index, job in enumerate(compiled["jobs"]):
+                    if (compiled["condition"], job["shot_id"]) in completed_jobs:
+                        continue
+                    # Original IDs are data, never directory names.
+                    target = output / compiled["condition"] / f"shot-{index:03d}"
+                    origin = cache.get((job["shot_id"], job["request_sha256"]))
+                    entry = {"shot_id": job["shot_id"]}
+                    if origin is not None:
+                        entry["reused_from"] = deepcopy(origin)
+                    else:
+                        entry["receipt_path"] = str(target / "receipt.json")
+                    supplied["jobs"].append(entry)
+                    state["status"] = "executing"
+                    checkpoint()
+                    if origin is None:
+                        client.generate(deepcopy(job["request"]), out_dir=str(target))
+                    # Use original receipt/media/accounting checks before any
+                    # later POST or reuse. Unknown spending always stops here.
+                    checked, _ = _compute_generated_records(directory, evidence=evidence_path,
+                        pricing_config=pricing_config, project_root=project_root)
+                    run = next(r for r in checked["runs"] if r["condition"] == compiled["condition"])
+                    current = run["generation_jobs"][index]
+                    if current["status"] != "downloaded" or checked["status"] == "failed":
+                        raise ValueError("Task receipt or media failed validation; no later POST")
+                    if checked["accounting"]["provider_cost_usd"] is None or client.spent_usd is None:
+                        raise BudgetError("Video charge unknown; reconcile before any later submission")
+                    if origin is None:
+                        cache[(job["shot_id"], job["request_sha256"])] = {
+                            "run_id": source_run["run_id"], "shot_id": job["shot_id"]}
+    except (Exception, KeyboardInterrupt) as exc:
+        # Transport sanitizes provider errors. Do not persist arbitrary exception
+        # text from dependencies (which could contain credentials or URLs).
+        state["errors"].append(type(exc).__name__ + ": execution stopped; inspect saved task receipts")
+        state["status"] = "stopped"
+    finally:
+        state["generation_posts_this_invocation"] = client.post_attempts if client else 0
+        checkpoint()
+        try:
+            inspection = inspect_generated_video(directory, evidence=evidence_path, out_dir=output / "inspection",
+                pricing_config=pricing_config, project_root=project_root, media_origin=media_origin)
+            state["records_path"] = "inspection/" + inspection["records_path"]
+            state["inspection_status"] = inspection["status"]
+            if state["status"] != "stopped":
+                state["status"] = ("assembled_requires_manual_inspection" if inspection["status"] == "ready_requires_manual_inspection"
+                                   else "stopped" if inspection["status"] == "failed" else "prepared_offline" if client is None else "incomplete")
+        except (Exception, KeyboardInterrupt) as exc:
+            state["status"] = "stopped"
+            state["errors"].append(type(exc).__name__ + ": local inspection failed; evidence and receipts retained")
+        checkpoint()
+    return state
+
+
 def _generated_totals(rows, fields):
     """Conservative totals with separate known subtotals; quotes are never inputs."""
     from decimal import Decimal
@@ -677,19 +889,10 @@ def _generated_receipt_counts(receipt):
             "known_real_http_calls": known_gets + (posts or 0), "missing_counters": missing, "counter_errors": errors}
 
 
-def _compute_generated_records(preparation, *, evidence, pricing_config, project_root):
-    """Read local prepared requests/receipts/media only; never construct a client.
-
-    Evidence is a JSON manifest, not a transport command. Absent jobs remain
-    unsubmitted. Completed requires re-probing every downloaded clip and the
-    bound assembly on disk. P5 comparison qualification remains not_checked.
-    """
+def _load_generated_preparation(preparation, pricing_config, project_root, *, recompile=False):
+    """Shared saved-request identity checks; execution also replays P4 compilation."""
     from decimal import Decimal
-    import re
-    import subprocess
     from .video_client import _money
-    from .video_generation import _probe
-
     directory = Path(preparation).resolve(strict=True)
     saved = read_json(directory / "preparation.json")
     original = read_json(directory / "source_block.json")
@@ -708,12 +911,37 @@ def _compute_generated_records(preparation, *, evidence, pricing_config, project
     need(json_hash(pricing) == saved.get("pricing_config_sha256"), "local pricing config identity mismatch")
     selected = saved.get("selected_shot_ids")
     need(selected == bundle.get("selected_shot_ids") and selected is not None, "selected shot identity mismatch")
-    need(bundle.get("full_plan_shot_ids") == [s["shot_id"] for s in source["initial"]["shots"]], "full plan identity mismatch")
+    shot_ids = [s["shot_id"] for s in source["initial"]["shots"]]
+    need(bundle.get("full_plan_shot_ids") == shot_ids, "full plan identity mismatch")
     for field in ("initial_plan_sha256", "shared_generation_sha256"):
         need(saved.get(field) == block[field], "preparation identity mismatch: " + field)
     _validate_generated_bundle(bundle, source, block, pricing, selected_shot_ids=selected)
     quoted = sum((_money(j["quoted_cost_usd"]) for c in bundle["conditions"] for j in c["jobs"]), Decimal(0))
     need(_money(saved.get("quoted_cost_usd")) == quoted, "preparation quote mismatch")
+    if recompile:
+        actual = _select_generated_bundle(_compile_generated_bundle(source, block, pricing, Path(project_root).resolve()),
+                                          shot_ids, selected)
+        need(json_hash(actual) == json_hash(bundle), "saved requests differ from actual P4 compilation")
+    return directory, saved, block, source, bundle, pricing
+
+
+def _compute_generated_records(preparation, *, evidence, pricing_config, project_root):
+    """Read local prepared requests/receipts/media only; never construct a client.
+
+    Evidence is a JSON manifest, not a transport command. Absent jobs remain
+    unsubmitted. Completed requires re-probing every downloaded clip and the
+    bound assembly on disk. P5 comparison qualification remains not_checked.
+    """
+    from decimal import Decimal
+    import re
+    import subprocess
+    from .video_client import _money
+    from .video_generation import _probe
+
+    directory, saved, block, source, bundle, pricing = _load_generated_preparation(
+        preparation, pricing_config, project_root)
+    need = _require_generated
+    selected = saved.get("selected_shot_ids")
     evidence_path = Path(evidence).resolve(strict=True)
     evidence_data = read_json(evidence_path)
     need(isinstance(evidence_data, dict) and evidence_data.get("schema_version") == CONTRACT_VERSION

@@ -367,17 +367,27 @@ these input checks. The function never sets `comparison_status=eligible` and
 does not release generated exports/ratings without the independent rechecks. Final
 `records` remain the accounting source; `preflight_records` must not be added as
 another set of runs. Unknown costs remain unknown. Receipt and media evidence
-must be connected through the existing P1/P4 interfaces in the next increment.
+are connected through the existing P1/P4 interfaces in CONTRACTS 6.14–6.17.
 
-Before a formal run, the team still needs to freeze the following decisions:
+### 三条件试跑协议提议（2026-10-23，尚未批准运行）
 
-| Decision | Current status |
-| --- | --- |
-| Development versus formal stories and repeat count | Not approved by this increment |
-| Rater assignment and exclusion rules | Not approved by this increment |
-| Inclusion of unchanged reviews and failed runs | Input validity only; analysis policy pending |
-| Generation models, settings and budget stop | No paid run authorized by these tests |
-| Emotion outcomes versus VBench quality dimensions | Separate outcomes; no formal claim from fixtures |
+本表扩充原待确认协议，不另建数据集或修改 `configs/experiment.json` / `pilot.json`。#8的任务执行入口见CONTRACTS 6.17；本轮只使用模拟传输/回执和现有软件视频。命令具备HTTP能力不等于获得费用授权。
+
+| 决策 | 当前提议与验收目标 | 运行前待确认/冻结 |
+| --- | --- | --- |
+| 开发与正式输入 | 先从已有开发来源选一个story/tone/replicate，准备同一原镜头的完整三条件；单镜头只检验生成接口、原生声音和台词可读性 | 明确源block、来源/素材使用范围、选中shot及初稿/共享身份；尚未选定真实试跑故事，不新增正式故事 |
+| 第一阶段规模 | 建议1个既有开发block×1个原镜头×三条件；最多3次新POST，合法同请求复用可减少次数；不自动补跑、重复或扩大到全片 | 此规模只是待批准提议；成功后仍需另批全片范围、正式故事/重复数，不能把单镜头当完整实验 |
+| 模型与共同参数 | 三条件共用冻结模型、参考图/音色/原生声音、分辨率/画幅/时长、原索引seed与实际P4模板；只改台词 | `configs/video.json` 的历史默认与候选适配均不是本次选择或实时保证；须确认模型ID/设置及准备目录身份，运行时目录预检按实际选中时长拒绝不支持项或涨价 |
+| 预算与历史费用 | 先列所选三条件全部镜头的本地报价，未扣复用；真实执行上限至少覆盖该报价。继续执行先扣链路已知视频消费，再预留全部未提交镜头报价；规划/审查账目另列且只计一次 | 明确本次USD阈值、团队共享剩余额度/历史未知费用及负责人；15美元是共享历史额度，不是当前可花余额。文本历史消费未知时不启动新POST；本地阈值/GET恢复不是平台硬额度 |
+| 失败与停止 | 任一任务失败、提交响应丢失、中断、媒体错误或消费未知立即停止后续POST，保留所有三条件和未提交镜头。只有可绑定任务ID才GET恢复；恢复不自动执行后续镜头 | GET也可能涉及费用，须单独批准；全部已尝试任务下载且消费核清后，才可显式继续未提交任务。无ID不补交、不换模型重试，不自动删除HTTP后继占用记录 |
+| 文件与听看验收 | 使用既有检查包查看实际视频、音轨和时长；由人填写说话人/中文台词、口型、动作、人物与连续性检查。软件资格和空表仅证明材料链路 | 团队指定检查人及可接受标准；软件媒体不能回答这些质量问题。先作技术/质量诊断，未批准前不声称独立情绪效果 |
+| 匿名材料与观看者 | 整块三条件软件资格通过才可走现有导出；只分发public，PRIVATE单独保管，协调者检查字幕/元数据/顺序泄露 | 观看者人数、每clip评分数、同故事版本分配/随机化、利益冲突与无效评分排除须先冻结；本工具不自动保证盲法，不填写人工评分 |
+| unchanged与失败纳入 | unchanged保留原标签；失败/中断/未提交、无视频、未评分及unknown费用保留全部覆盖和账目。复用条目不当独立提供商任务或独立随机样本 | 正式分析是否纳入unchanged、失败及同视频复用，缺失处理与排除规则尚未批准；不能通过只导出成功块掩盖完整尝试分母 |
+| 统计与研究边界 | 沿用clip等权、uncertain为未命中、M/G共同可评block差值与覆盖分开，完整block规划/费用只计一次；情绪结果与VBench视觉质量分列 | 正式样本与统计计划另行冻结；此开发试跑不提供显著性或方法优越性结论，不证明更多Agent或更好动作/表情机制 |
+
+批准记录应明确上述源输入/镜头、模型/设置、POST上限、USD阈值、是否允许GET恢复及检查负责人，再运行最小范围。第一阶段结束后先汇报真实状态、已知/未知费用、可播放性和人工质量问题，决定停止或是否批准全片；不得以工程验收通过自动扩大实验。当前没有任何真实试跑授权或人工评分结果。
+
+执行链中 `inspection/records` 是该快照唯一最终账目；不累加父执行、preflight或恢复前后的同一任务。子快照保留累计回执计数，新增活动另由execution记录说明。若硬中断仅留下execution/evidence/回执，先离线收集和核对；`http_successor.json` 已占用表示可能已有HTTP后继，不能删占用后自动重启。它是本地防重复门禁，不是共享账户预算或提供商幂等保证。
 
 The comparison concerns dialogue-specific review versus generic review and the
 baseline within the existing pipeline. These checks do not establish improved
@@ -387,8 +397,8 @@ Offline regression coverage includes spoofed identities, non-dialogue extensions
 changed shared settings, false unchanged labels, incomplete blocks, shot scopes,
 malformed input and preservation of unknown cost fields. Fixtures are software
 test inputs, not generated-video research results. No API, GPU, model download or
-VBench inference is required. The reference-cache check currently reports missing
-upstream files; these tests use repository contracts and local fixtures only.
+VBench inference is required. The reference cache is checked separately with
+`scripts/prepare_references.py --check`; tests use contracts and local fixtures only.
 
 Validation command: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py tests/test_contracts.py tests/test_validation.py -q`.
 Result: 169 passed and 61 subtests passed. `git diff --check` also passed.

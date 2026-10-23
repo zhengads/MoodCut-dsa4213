@@ -71,6 +71,19 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--shot-id", help="Prepare only this original shot in all three generated conditions.")
     run.add_argument("--pricing-config", help="Local video pricing JSON; no live price lookup.")
 
+    execution = common("execute-generated", "Execute saved three-condition requests; default collects offline without HTTP.")
+    execution.add_argument("--preparation", required=True)
+    execution.add_argument("--pricing-config", required=True)
+    execution.add_argument("--output", required=True, help="New execution directory; no automatic restart.")
+    execution.add_argument("--media-origin", required=True, choices=("synthetic", "provided_local"))
+    execution.add_argument("--allow-paid", action="store_true", help="Enable video HTTP only after separate approval, including GET recovery.")
+    execution.add_argument("--max-cost-usd", help="Video budget including prior task charges on continuation; text fees excluded; GET has no hard cap.")
+    prior = execution.add_mutually_exclusive_group()
+    prior.add_argument("--resume-execution", help="Earlier execution directory; recovery never creates new tasks.")
+    prior.add_argument("--continue-execution", help="Explicitly continue only unsubmitted jobs after all attempted tasks and charges reconcile.")
+    execution.add_argument("--resume-condition", choices=("baseline", "generic_review", "moodcut"))
+    execution.add_argument("--resume-shot-id", help="Original shot ID of one owned task to recover by GET only.")
+
     records = common("assemble-generated-records", "Assemble local video receipts and accounting; no network.")
     records.add_argument("--preparation", required=True, help="Existing generated request-preparation directory.")
     records.add_argument("--evidence", required=True, help="Local three-condition receipt/media manifest JSON.")
@@ -403,6 +416,17 @@ def main(argv=None) -> int:
             return _review(args, root)
         if args.command in ("smoke", "run"):
             return _run(args, root)
+        if args.command == "execute-generated":
+            from .pipeline import execute_generated_run
+            result = execute_generated_run(_path(root, args.preparation),
+                out_dir=_path(root, args.output), pricing_config=_path(root, args.pricing_config), project_root=root,
+                allow_paid=args.allow_paid, max_cost_usd=args.max_cost_usd, media_origin=args.media_origin,
+                resume_execution=_path(root, args.resume_execution) if args.resume_execution else None,
+                resume_condition=args.resume_condition, resume_shot_id=args.resume_shot_id,
+                continue_execution=_path(root, args.continue_execution) if args.continue_execution else None)
+            activity = "video HTTP enabled" if result["video_http_enabled"] else "no video HTTP attempted"
+            print(f"Generated execution {result['status']}: {_path(root, args.output)}; {activity}.")
+            return 1 if result["status"] in ("stopped", "incomplete") else 0
         if args.command == "assemble-generated-records":
             from .pipeline import assemble_generated_records
             result = assemble_generated_records(_path(root, args.preparation), evidence=_path(root, args.evidence),
