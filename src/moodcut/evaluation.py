@@ -537,12 +537,12 @@ def _paired_records(records):
 
 
 def validate_generated_comparison(records, *, scene, initial, plans, manifest,
-                                  settings, template_sha256):
+                                  settings, template_sha256, project_root=None):
     """Recompute one block's generated input/review identities (CONTRACTS 6.5).
 
     Returns diagnostic strings without mutating records or approving media,
     ratings, accounting, or formal inclusion. Local reference assets are checked
-    by the public validator relative to the current project root. No network.
+    by the public validator relative to project_root (or cwd when omitted). No network.
     """
     from .contracts import (CONDITIONS, _json_copy, json_hash,
                             assert_dialogue_only_revision, shared_generation_sha256)
@@ -565,7 +565,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
     expected_shared = None
     try:
         errors.extend("initial: " + e for e in validate_plan(
-            scene, initial, manifest, output_mode="generated"))
+            scene, initial, manifest, project_root=project_root, output_mode="generated"))
         expected_shared = shared_generation_sha256(
             scene, initial, manifest, settings, template_sha256=template_sha256)
     except (ValueError, TypeError, KeyError, OSError) as exc:
@@ -579,7 +579,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
         final_hashes[condition] = json_hash(plan)
         try:
             errors.extend(f"{condition}: {e}" for e in validate_plan(
-                scene, plan, manifest, output_mode="generated"))
+                scene, plan, manifest, project_root=project_root, output_mode="generated"))
             assert_dialogue_only_revision(initial, plan)
             shared = shared_generation_sha256(scene, plan, manifest, settings,
                                               template_sha256=template_sha256)
@@ -850,6 +850,57 @@ def validate_generated_media_evidence(record, compiled_condition, *, project_roo
                       validate_generated_receipt_binding(
                           job, expected_model=model, project_root=project_root))
     return list(dict.fromkeys(errors))
+
+
+def qualify_generated_records(records, *, pricing_config, project_root="."):
+    """Report offline evidence eligibility; never mutate records or release export.
+
+    P1 replays its own source/reuse/accounting computation and P4 recompiles saved
+    requests. Unknown spending is retained, not a quality score or automatic veto.
+    An eligible report is point-in-time software evidence, not formal inclusion.
+    """
+    import subprocess
+    from .contracts import CONDITIONS, json_hash, _json_copy
+    from .pipeline import read_json, recheck_generated_records
+    path = Path(records).resolve()
+    path = path / "block.json" if path.is_dir() else path
+    block, context = None, None
+    errors, per_condition = [], {c: [] for c in CONDITIONS}
+    try:
+        block = _json_copy(read_json(path))
+        context = recheck_generated_records(path, pricing_config=pricing_config, project_root=project_root)
+        block = context["block"]  # Report the exact snapshot that P1 verified.
+        errors.extend(context["errors"])
+        for condition in CONDITIONS:
+            per_condition[condition].extend(context["condition_errors"][condition])
+        source = context["source"]
+        input_errors = validate_generated_comparison(block["runs"], **source, project_root=project_root)
+        for error in input_errors:
+            condition, separator, detail = error.partition(": ")
+            if separator and condition in per_condition:
+                per_condition[condition].append(detail)
+            else:
+                errors.append(error)
+        compiled = {c["condition"]: c for c in context["bundle"]["conditions"]}
+        for row in block["runs"]:
+            per_condition[row["condition"]].extend(validate_generated_media_evidence(
+                row, compiled[row["condition"]], project_root=project_root))
+    except (ValueError, TypeError, KeyError, OSError, RuntimeError, subprocess.SubprocessError) as exc:
+        errors.append(f"source/evidence recheck: {type(exc).__name__}: {exc}")
+    conditions = []
+    for condition in CONDITIONS:
+        diagnostics = list(dict.fromkeys([*errors, *per_condition[condition]]))
+        conditions.append(dict(condition=condition,
+            comparison_status="ineligible" if diagnostics else "eligible", errors=diagnostics))
+    return dict(schema_version="1.1", output_mode="generated", kind="generated_qualification_report",
+                comparison_status="eligible" if all(not c["errors"] for c in conditions) else "ineligible",
+                records_sha256=json_hash(block) if block is not None else None,
+                record_block=block, conditions=conditions, errors=list(dict.fromkeys(errors)),
+                accounting_verified=context is not None and not context["errors"]
+                    and all(not e for e in context["condition_errors"].values()),
+                formal_inclusion_approved=False, speech_and_visual_quality="not_reviewed",
+                export_enabled=False,
+                activity=dict(real_http_calls=0, generation_posts=0, video_get_calls=0, provider_cost_usd=0.0))
 
 
 def export_blind_items(records, *, out_dir, seed):

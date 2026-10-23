@@ -4,6 +4,7 @@ import csv
 import tempfile
 import unittest
 from pathlib import Path
+import pytest
 
 from moodcut.evaluation import build_assignments, export_blind_items, summarize
 
@@ -605,6 +606,171 @@ def test_p5_actual_failed_run_is_rejected_but_kept_in_summary(inspection_inputs)
     assert report["overall"]["usage"]["provider_cost_usd"]["total"] is None
     assert records["accounting"]["provider_cost_usd"] is None
     assert records == before
+
+
+def _rewrite_fixture_json(path, value):
+    """Fault injection is limited to the test-owned temporary artifacts."""
+    import json
+    Path(path).write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _qualify_inspection(case):
+    from moodcut.evaluation import qualify_generated_records
+    from test_video_generation import ROOT
+    return qualify_generated_records(case["output"] / "records", project_root=ROOT,
+                                     pricing_config=ROOT / "configs/video.json")
+
+
+def test_offline_qualification_and_cli_preserve_originals(inspection_inputs, monkeypatch, tmp_path):
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.__main__ import main
+    case = inspection_inputs
+    inspect_local(case)
+    before = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    block = read_json(case["output"] / "records/block.json")
+    # Root binding works outside the checkout, without process-wide chdir inside P5.
+    monkeypatch.chdir(tmp_path)
+    report = _qualify_inspection(case)
+    assert report["comparison_status"] == "eligible"
+    assert report["accounting_verified"] is True
+    assert report["record_block"] == block
+    assert all(c["comparison_status"] == "eligible" for c in report["conditions"])
+    assert report["formal_inclusion_approved"] is False and report["export_enabled"] is False
+    assert report["speech_and_visual_quality"] == "not_reviewed"
+    assert all(v == 0 for v in report["activity"].values())
+    assert {p: p.read_bytes() for p in before} == before
+    output = tmp_path / "qualification"
+    args = ["qualify-generated-records", "--project-root", str(ROOT), "--records",
+            str(case["output"] / "records"), "--pricing-config", "configs/video.json", "--output", str(output)]
+    assert main(args) == 0
+    assert read_json(output / "qualification.json") == report
+    assert main(args) == 1  # Never overwrite.
+    assert main(["evaluate", "--project-root", str(ROOT), "--records",
+                 str(case["output"] / "records/block.json"), "--blind-output", str(tmp_path / "blind")]) == 1
+    assert not (tmp_path / "blind").exists()
+    assert {p: p.read_bytes() for p in before} == before
+
+
+@pytest.mark.parametrize("mutation", ["request", "reuse", "ledger", "receipt", "source", "file", "run", "snapshot"])
+def test_offline_qualification_rejects_changed_evidence(inspection_inputs, mutation):
+    from test_video_generation import inspect_local
+    from moodcut.pipeline import read_json
+    from moodcut.contracts import json_hash
+    case = inspection_inputs
+    inspect_local(case)
+    records = case["output"] / "records"
+    block = read_json(records / "block.json")
+    if mutation == "request":
+        bundle = read_json(case["prep"] / "bundle.json")
+        job = bundle["conditions"][0]["jobs"][0]
+        job["request"]["prompt"] += " Alter the action for this condition."
+        job["request_sha256"] = json_hash(job["request"])
+        _rewrite_fixture_json(case["prep"] / "bundle.json", bundle)
+        _rewrite_fixture_json(records / "bundle.json", bundle)
+    elif mutation == "reuse":
+        evidence = read_json(case["output"] / "evidence.json")
+        evidence["conditions"][1]["jobs"][1]["reused_from"]["run_id"] = "outside-this-block"
+        _rewrite_fixture_json(case["output"] / "evidence.json", evidence)
+    elif mutation == "ledger":
+        block["accounting"]["provider_cost_usd"] = 0
+        _rewrite_fixture_json(records / "block.json", block)
+    elif mutation == "receipt":
+        path = Path(block["runs"][0]["generation_jobs"][0]["receipt_path"])
+        receipt = read_json(path)
+        receipt["job_id"] = "edited-after-inspection"
+        _rewrite_fixture_json(path, receipt)
+    elif mutation == "source":
+        path = case["source"] / "moodcut/final.json"
+        plan = read_json(path)
+        plan["shots"][0]["direction"] += " Extra action."
+        _rewrite_fixture_json(path, plan)
+    elif mutation == "file":
+        Path(block["runs"][0]["video_path"]).write_bytes(b"changed media")
+    elif mutation == "run":
+        row = read_json(records / "baseline/run.json")
+        row["provider_cost_usd"] = 0
+        _rewrite_fixture_json(records / "baseline/run.json", row)
+    else:
+        _rewrite_fixture_json(records / "receipts.json", {})
+    before = {p: p.read_bytes() for p in case["evidence"].parent.rglob("*") if p.is_file()}
+    report = _qualify_inspection(case)
+    assert report["comparison_status"] == "ineligible"
+    assert any(c["errors"] for c in report["conditions"])
+    assert len(report["record_block"]["runs"]) == 3
+    assert report["record_block"] == read_json(records / "block.json")
+    if mutation == "request":
+        assert any("actual P4 compiler" in e for e in report["errors"])
+    if mutation == "ledger":
+        assert report["accounting_verified"] is False
+    assert {p: p.read_bytes() for p in before} == before
+
+
+@pytest.mark.parametrize("variant", ["unknown", "failed", "unsubmitted"])
+def test_offline_qualification_keeps_failures_unknowns_and_coverage(inspection_inputs, variant, tmp_path):
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.__main__ import main
+    case = inspection_inputs
+    if variant == "unsubmitted":
+        evidence = read_json(case["evidence"])
+        for condition in evidence["conditions"]:
+            condition["jobs"] = []
+        _rewrite_fixture_json(case["evidence"], evidence)
+    else:
+        path = case["evidence"].parent / "receipt-0-0.json"
+        receipt = read_json(path)
+        receipt.update(schema_version="1.0", provider_cost_usd=None)
+        receipt.pop("download_attempts")
+        receipt.pop("download_redirect_attempts")
+        if variant == "failed":
+            receipt.update(status="failed", video_path=None)
+        _rewrite_fixture_json(path, receipt)
+    inspect_local(case)
+    original = read_json(case["output"] / "records/block.json")
+    report = _qualify_inspection(case)
+    assert report["record_block"] == original and len(original["runs"]) == 3
+    assert report["accounting_verified"] is True
+    assert report["comparison_status"] == ("eligible" if variant == "unknown" else "ineligible")
+    assert all(r["comparison_status"] in ("not_checked", "ineligible") for r in original["runs"])
+    if variant != "unsubmitted":
+        assert report["record_block"]["accounting"]["provider_cost_usd"] is None
+        assert report["record_block"]["accounting"]["known_subtotals"]["provider_cost_usd"] == .21
+    if variant == "failed":
+        assert [r["comparison_status"] for r in report["conditions"]] == ["ineligible", "eligible", "eligible"]
+        output = tmp_path / "failed-qualification"
+        assert main(["qualify-generated-records", "--project-root", str(ROOT), "--records",
+                     str(case["output"] / "records"), "--pricing-config", "configs/video.json",
+                     "--output", str(output)]) == 1
+        assert read_json(output / "qualification.json")["record_block"] == original
+
+
+def test_offline_qualification_preserves_single_shot_original_seed(inspection_inputs):
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import prepare_generated_run, read_json
+    case = inspection_inputs
+    selected = case["bundle"]["conditions"][0]["jobs"][1]["shot_id"]
+    case["prep"] = case["prep"].parent / "single-prepared"
+    prepare_generated_run(case["source"], out_dir=case["prep"], shot_id=selected,
+                          pricing_config=ROOT / "configs/video.json", project_root=ROOT)
+    evidence = read_json(case["evidence"])
+    for condition in evidence["conditions"]:
+        condition["jobs"] = [j for j in condition["jobs"] if j["shot_id"] == selected]
+    _rewrite_fixture_json(case["evidence"], evidence)
+    inspect_local(case)
+    report = _qualify_inspection(case)
+    assert report["comparison_status"] == "eligible"
+    assert report["record_block"]["selected_shot_ids"] == [selected]
+    bundle = read_json(case["prep"] / "bundle.json")
+    assert all(c["jobs"][0]["request"]["seed"] == bundle["settings"]["seed"] + 1 for c in bundle["conditions"])
+    assert report["record_block"]["accounting"]["generation_posts"] == 1
+
+
+def test_offline_qualification_missing_source_returns_diagnostics(tmp_path):
+    from moodcut.evaluation import qualify_generated_records
+    report = qualify_generated_records(tmp_path / "missing", pricing_config=tmp_path / "missing-price")
+    assert report["comparison_status"] == "ineligible" and report["errors"]
+    assert report["record_block"] is None and report["accounting_verified"] is False
 
 
 if __name__ == "__main__":

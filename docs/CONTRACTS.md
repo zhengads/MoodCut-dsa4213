@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。实际任务接线和比较资格仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
+本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；实际任务和盲评接线仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
 
 ## 1. 公共数据
 
@@ -329,9 +329,9 @@ run_status 新增 prepared，表示只完成离线准备；generated 下仅当�
 
 Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段，不表示现有 evaluate 已实现新的共享身份验证。P5 必须先接入新资格核对，再导出生成式比较。
 
-### 6.5 各模块接入签名（验证器、规划、审查与编译已实现，资格仍待接线）
+### 6.5 各模块接入签名（含已实现的输入检查，离线资格见6.14）
 
-公共validate_scene/validate_plan、P2 make_plan/make_plan_with_trace、P3 review_and_revise/apply_patch及P4 build_generated_video_bundle的下列参数已实现；P5函数仍是后续目标签名。默认animatic兼容旧调用；生成调用必须显式传output_mode="generated"，与Scene/Plan版本一致。P4独立函数只接1.1/generated，不接受旧开发对。不要忽略未知参数或静默退回旧模式。
+公共validate_scene/validate_plan、P2 make_plan/make_plan_with_trace、P3 review_and_revise/apply_patch及P4 build_generated_video_bundle的下列参数已实现；P5输入前置检查与离线资格报告已实现（6.14），盲评接线仍待完成。默认animatic兼容旧调用；生成调用必须显式传output_mode="generated"，与Scene/Plan版本一致。P4独立函数只接1.1/generated，不接受旧开发对。不要忽略未知参数或静默退回旧模式。
 
 ```python
 # P1 validation.py：已实现，返回 list[str]。
@@ -350,14 +350,14 @@ def get_video_template_sha256() -> str: ...
 
 def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
                                  project_root, template_sha256, pricing_config) -> dict: ...
-# P5 evaluation.py：仍待新增前置资格核对，原统计公式不变。
+# P5 evaluation.py：已实现输入前置检查，原统计公式不变。
 def validate_generated_comparison(records, *, scene, initial, plans, manifest,
-                                  settings, template_sha256) -> list[str]: ...
+                                  settings, template_sha256, project_root=None) -> list[str]: ...
 ```
 
 P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
 
-P5目标签名返回所有输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1后续集成实际任务/资格；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法见6.8，不代表P5接口或付费入口已完成。
+P5输入检查返回输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1/P5离线资格报告见6.14，后续仍需真实任务与盲评接线；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法见6.8，不代表付费执行或盲评接线已完成。
 
 ### 6.6 后续接线必须满足的约束
 
@@ -385,7 +385,7 @@ P5目标签名返回所有输入/来源不一致原因，成功为空列表；�
 
 此入口只准备脚本，**不编译视频请求、不创建视频任务、不调用animatic renderer**，包括render=True时。通过时block.status和run_status为prepared，generation_status与render_status均为not_started，generation_jobs为空，POST/视频GET为0，video_path为null。失败保留run和账目；共同输入/来源无效时comparison_status为ineligible，通过时仍为not_checked，须等P4/P5后续核对；不宣称eligible或情绪合格。
 
-规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，真实P4编译与视频/资格装配仍待后续增量。
+规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，实际P4编译及本地媒体检查见6.12/6.13，离线资格见6.14；真实任务和盲评接线仍待后续增量。
 
 ### 6.8 离线生成入口与单镜头选择
 
@@ -413,7 +413,7 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
 
 preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
 
-原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；真实任务/资格尚未完成，不把离线准备写成成片端到端可运行。
+原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；离线资格见6.14；真实任务与盲评接线尚未完成，不把离线准备写成成片端到端可运行。
 
 ### 6.9 本地生成回执与费用记录装配
 
@@ -494,7 +494,7 @@ scene、manifest、来源provenance和原始响应均深拷贝；完整源Scene�
 
 规划提示哈希按模式读取。pipeline的缓存身份与planning.prompt_hashes使用同一模式的实际提示，原有planner代码哈希继续参与缓存身份；不能把animatic提示身份记在generated规划上。复用现有一次规划/条件深拷贝，不增加第二套编排。tests/test_planner.py以实际planner和pipeline加FakeClient覆盖既有读信与临时非读信软件输入、短片时长、阶段失败留档、三条件初稿/共享哈希及缓存；临时夹具不是新数据集或模型效果证据。
 
-P2/P3/P4实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本并离线编译请求（见6.11/6.12），不能解释为成片或eligible比较；本地媒体材料见6.13，实际任务及P5资格仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
+P2/P3/P4实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本并离线编译请求（见6.11/6.12），不能解释为成片或eligible比较；本地媒体材料见6.13，离线资格见6.14，真实任务和盲评接线仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
 
 ### 6.11 台词限定审查与实际最终脚本复查
 
@@ -533,7 +533,7 @@ scene.asset_ids全部图像按原顺序成为input_references，公共URL检查�
 
 P1既有prepare_generated_run重读/核对来源后调用真实编译器，完整编译后再选镜头，保留完整计划和原索引seed。实际planner/reviewer/validator/compiler/pipeline加FakeClient已覆盖读信与公交站还伞10秒软件输入、全镜头/单镜头CLI、源文件不变、哈希/模板/设置/引用篡改拒绝。协议替身测试仍明确标注；新联调不替换业务函数。完全相同请求交给现有assemble_generated_records，以动态图案/正弦音和手写回执验证同块复用及费用一次记账，软件账目不是实际扣费。
 
-编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。三条件真实任务接线、#9资格及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
+编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。离线资格见6.14；三条件真实任务、盲评接线及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
 
 ### 6.13 本地成片来源绑定与观看检查材料
 
@@ -561,3 +561,27 @@ preparation及evidence完全沿用6.8/6.9。media_origin必须声明synthetic或
 manual_checks.json/CSV按条件/镜头保存请求/片段/成片身份，以及character_action、dialogue_speaker、audio_lipsync、continuity、notes。判断为null/空白，状态not_reviewed；CSV防公式前缀转义不改JSON原ID。页面展示条件、目标、共同方向及“预期台词”，不是ASR或盲评，不含自动质量分数。由实际观看者另存填写，不因A/V存在或抽帧成功填通过。
 
 顶层status为ready_requires_manual_inspection/incomplete/failed；仅全部所选条件材料就绪时CLI返回0，其余返回1。单镜头保留完整计划身份和selected范围，不冒充全片。所有comparison_status仍not_checked或ineligible，永不设eligible；#9资格/正式评分口径不变。以实际P1/P2/P3/P4+FakeClient、动态图案/正弦音及手写回执覆盖绑定、费用去重/未知、缺音轨/时长、字节变化、单镜头/原成片、失败/未提交和安全路径/页面。软件媒体并非模型或效果证据；真实人物、中文台词、口型、连续性、情绪及实际任务仍需另行授权/验收。
+
+
+### 6.14 离线资格核对报告
+
+```python
+# P1：只读输入，复用原装配计算及实际P4编译器；不写中间记录。
+def recheck_generated_records(records, *, pricing_config, project_root=".") -> dict: ...
+# P5：组合P1重检、输入/媒体检查，保留完整原始block并输出逐条件结果。
+def qualify_generated_records(records, *, pricing_config, project_root=".") -> dict: ...
+```
+
+```bash
+python -m moodcut qualify-generated-records --records runs/video-inspection/records --pricing-config configs/video.json --output runs/qualification
+```
+
+records为最终P1记录目录或block.json；pricing与原preparation一致，源脚本/请求/回执/媒体需仍在记录位置。CLI的相对路径由project-root解析，程序接口输入路径沿用调用者路径语义；素材验证使用显式project_root，不修改进程cwd。旧validate_generated_comparison新增可选project_root=None，省略时保持原当前目录语义。
+
+P1将既有assemble_generated_records计算与写出分离，二者使用同一账目、复用归属、回执及A/V核验实现。重检重新读取源脚本/快照，用实际P4编译器与模板重算完整请求并按原索引选镜头，核对已保存bundle；逐项比较最终block、磁盘run文件、来源/准备/回执快照和重算结果。不会创建客户端、POST/GET、恢复/下载或拼接视频，也不写新的账本；ffprobe只读现有本地文件。
+
+P5复用#37的输入与媒体检查。qualification.json包含kind=generated_qualification_report、schema_version=1.1、output_mode=generated、原始record_block及其canonical records_sha256、三条件comparison_status/errors、块级comparison_status/errors及accounting_verified。结构/来源无法读取时保留可读的原block并给出诊断；条件失败保留全部三条记录及费用，不过滤失败。全部条件通过才为eligible；unknown费用或旧GET缺失保持null和已知小计，核对一致时不单独否决资格。accounting_verified只表示本地保存账目与P1重算一致，不认证提供商账单。
+
+报告不修改原始comparison_status、source_kind、费用或人工检查表。正式纳入formal_inclusion_approved=false、export_enabled=false、speech_and_visual_quality=not_reviewed；eligible仅指当前所选镜头的软件证据，不说明真实人物/台词/情绪、提供商真实性或正式实验通过。activity的0只指本次新HTTP/POST/GET/消费，不抹去历史未知费用。只使用最终records账目，不把preflight_records的同一历史累计第二次。
+
+输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。现有evaluate的generated盲评/ratings门禁不变；后续导出必须在复制边界重新校验并绑定实际导出字节。真实任务执行、生成失败汇总分类、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
