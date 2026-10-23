@@ -558,6 +558,30 @@ def _validate_generated_bundle(bundle, source, block, pricing, *, selected_shot_
     return bundle
 
 
+def _compile_generated_bundle(source, block, pricing, root):
+    """Use the actual P4 compiler without writing files or constructing clients."""
+    from . import video_generation
+    compiler = getattr(video_generation, "build_generated_video_bundle", None)
+    if not callable(compiler):
+        raise RuntimeError("Missing generated request compiler (#24): build_generated_video_bundle is not implemented; no fallback or submission")
+    inputs = deepcopy(source)
+    before = json_hash(inputs)
+    bundle = compiler(inputs["scene"], inputs["initial"], inputs["plans"],
+                      inputs["manifest"], inputs["settings"], project_root=root,
+                      template_sha256=inputs["template_sha256"], pricing_config=deepcopy(pricing))
+    _require_generated(json_hash(inputs) == before, "compiler mutated its shared inputs")
+    return _validate_generated_bundle(bundle, source, block, pricing)
+
+
+def _select_generated_bundle(bundle, shot_ids, selected):
+    bundle = deepcopy(bundle)
+    for condition in bundle["conditions"]:
+        condition["jobs"] = [dict(job, shot_index=index) for index, job in enumerate(condition["jobs"])
+                             if job["shot_id"] in selected]
+    bundle.update(selected_shot_ids=selected, full_plan_shot_ids=shot_ids)
+    return bundle
+
+
 def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=None, pricing_config):
     """Prepare requests from saved scripts only; no client, key, lookup or POST.
 
@@ -565,7 +589,6 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
     compiler. Compile full plans first, then select jobs without reindexing seeds.
     """
     from decimal import Decimal
-    from . import video_generation
     output = Path(out_dir).resolve()
     if output.exists() or output.is_symlink():
         raise FileExistsError("Output already exists; choose a new path: " + str(output))
@@ -574,28 +597,15 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
     shot_ids = [shot["shot_id"] for shot in source["initial"]["shots"]]
     _require_generated(shot_id is None or isinstance(shot_id, str) and shot_id in shot_ids, "unknown shot_id")
     selected = shot_ids if shot_id is None else [shot_id]
-    compiler = getattr(video_generation, "build_generated_video_bundle", None)
-    if not callable(compiler):
-        raise RuntimeError("Missing generated request compiler (#24): build_generated_video_bundle is not implemented; no fallback or submission")
     pricing = read_json(pricing_config)
     _require_generated(isinstance(pricing, dict), "pricing config must be an object")
-    compiler_inputs = deepcopy(source)
-    before = json_hash(compiler_inputs)
-    bundle = compiler(compiler_inputs["scene"], compiler_inputs["initial"], compiler_inputs["plans"],
-                      compiler_inputs["manifest"], compiler_inputs["settings"], project_root=root,
-                      template_sha256=compiler_inputs["template_sha256"], pricing_config=deepcopy(pricing))
-    _require_generated(json_hash(compiler_inputs) == before, "compiler mutated its shared inputs")
-    bundle = _validate_generated_bundle(bundle, source, block, pricing)
+    bundle = _compile_generated_bundle(source, block, pricing, root)
     # A local editor/compiler must not silently replace inputs during preparation.
     _, current_block, current_source = _load_generated_block(path, root)
     _require_generated(json_hash(current_block) == json_hash(block) and json_hash(current_source) == json_hash(source),
                        "saved source changed while compiling requests")
-    total = Decimal(0)
-    for condition in bundle["conditions"]:
-        condition["jobs"] = [dict(job, shot_index=index) for index, job in enumerate(condition["jobs"])
-                             if job["shot_id"] in selected]
-        total += sum((Decimal(job["quoted_cost_usd"]) for job in condition["jobs"]), Decimal(0))
-    bundle.update(selected_shot_ids=selected, full_plan_shot_ids=shot_ids)
+    bundle = _select_generated_bundle(bundle, shot_ids, selected)
+    total = sum((Decimal(job["quoted_cost_usd"]) for c in bundle["conditions"] for job in c["jobs"]), Decimal(0))
     prepared = {"schema_version": CONTRACT_VERSION, "output_mode": "generated",
                 "kind": "generated_request_preparation", "preparation_stage": "requests", "status": "prepared_offline",
                 "source_block_path": str(path), "source_block_sha256": json_hash(block),
@@ -667,7 +677,7 @@ def _generated_receipt_counts(receipt):
             "known_real_http_calls": known_gets + (posts or 0), "missing_counters": missing, "counter_errors": errors}
 
 
-def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config, project_root="."):
+def _compute_generated_records(preparation, *, evidence, pricing_config, project_root):
     """Read local prepared requests/receipts/media only; never construct a client.
 
     Evidence is a JSON manifest, not a transport command. Absent jobs remain
@@ -680,9 +690,6 @@ def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config
     from .video_client import _money
     from .video_generation import _probe
 
-    output = Path(out_dir).resolve()
-    if output.exists() or output.is_symlink():
-        raise FileExistsError("Output already exists; choose a new path: " + str(output))
     directory = Path(preparation).resolve(strict=True)
     saved = read_json(directory / "preparation.json")
     original = read_json(directory / "source_block.json")
@@ -929,11 +936,78 @@ def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config
                   source_preparation_sha256=json_hash(saved), source_block_sha256=json_hash(block),
                   evidence_path=str(evidence_path), evidence_sha256=json_hash(evidence_data),
                   assembly_activity={"calls": 0, "real_http_calls": 0, "generation_posts": 0, "video_get_calls": 0})
+    material = dict(zip(("source_block.json", "source_inputs.json", "bundle.json",
+                         "preparation.json", "evidence.json", "receipts.json"),
+                        (block, source, bundle, saved, evidence_data, snapshots)))
+    return result, material
+
+
+def assemble_generated_records(preparation, *, evidence, out_dir, pricing_config, project_root="."):
+    """Write new P1 records using the same local computation as offline rechecks."""
+    output = Path(out_dir).resolve()
+    if output.exists() or output.is_symlink():
+        raise FileExistsError("Output already exists; choose a new path: " + str(output))
+    result, material = _compute_generated_records(
+        preparation, evidence=evidence, pricing_config=pricing_config, project_root=project_root)
     output.mkdir(parents=True, exist_ok=False)
-    for name, value in (("source_block.json", block), ("source_inputs.json", source), ("bundle.json", bundle),
-                        ("preparation.json", saved), ("evidence.json", evidence_data), ("receipts.json", snapshots)):
+    for name, value in material.items():
         write_json(output / name, value)
-    for run in runs:
+    for run in result["runs"]:
         write_json(output / run["condition"] / "run.json", run)
     write_json(output / "block.json", result)
     return result
+
+
+def recheck_generated_records(records, *, pricing_config, project_root="."):
+    """Read-only replay of final P1 evidence, reuse and accounting for P5.
+
+    Recompile with P4, re-probe existing A/V and compare saved snapshots/ledger.
+    No output directories, clients, submission, download or repairs are created.
+    Structural source failures raise; record-specific changes remain diagnostics.
+    """
+    from .contracts import _json_copy
+    path = Path(records).resolve(strict=True)
+    path = path / "block.json" if path.is_dir() else path
+    saved = _json_copy(read_json(path))
+    need = _require_generated
+    need(isinstance(saved, dict) and saved.get("kind") == "generated_record_block"
+         and saved.get("schema_version") == CONTRACT_VERSION and saved.get("output_mode") == "generated",
+         "expected a final 1.1/generated record block")
+    rows = saved.get("runs")
+    need(isinstance(rows, list) and len(rows) == 3 and all(isinstance(r, dict) for r in rows)
+         and [r.get("condition") for r in rows] == list(CONDITIONS), "expected three ordered final records")
+    result, material = _compute_generated_records(
+        saved["source_preparation_path"], evidence=saved["evidence_path"],
+        pricing_config=pricing_config, project_root=project_root)
+    source, block = material["source_inputs.json"], material["source_block.json"]
+    root = Path(project_root).resolve()
+    expected = _compile_generated_bundle(source, block, read_json(pricing_config), root)
+    expected = _select_generated_bundle(expected, [s["shot_id"] for s in source["initial"]["shots"]],
+                                        result["selected_shot_ids"])
+    errors, condition_errors = [], {c: [] for c in CONDITIONS}
+    if json_hash(expected) != json_hash(material["bundle.json"]):
+        errors.append("saved requests differ from the actual P4 compiler output")
+    for name, value in material.items():
+        current = read_json(path.parent / name)
+        if name == "receipts.json" and isinstance(current, dict):
+            for key in set(current) | set(value):
+                if json_hash(current.get(key)) != json_hash(value.get(key)):
+                    condition = key.split("/", 1)[0]
+                    target = condition_errors.get(condition, errors)
+                    target.append("saved receipt snapshot differs from current evidence: " + key)
+        elif json_hash(current) != json_hash(value):
+            errors.append("saved evidence snapshot differs from current source: " + name)
+    # Preserve the complete block envelope and ledger, including unknown totals.
+    # Per-run diagnostics are collected separately below.
+    excluded = {"runs"}
+    if json_hash({k: v for k, v in saved.items() if k not in excluded}) != json_hash(
+            {k: v for k, v in result.items() if k not in excluded}):
+        errors.append("saved block identity or accounting differs from P1 recomputation")
+    for row, recomputed in zip(rows, result["runs"]):
+        condition = row["condition"]
+        if json_hash(row) != json_hash(read_json(path.parent / condition / "run.json")):
+            condition_errors[condition].append("embedded and on-disk run records differ")
+        if json_hash(row) != json_hash(recomputed):
+            condition_errors[condition].append("saved run differs from P1 evidence/reuse/accounting recomputation")
+    return dict(block=saved, source=source, bundle=material["bundle.json"],
+                errors=errors, condition_errors=condition_errors)

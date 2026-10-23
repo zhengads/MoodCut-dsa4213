@@ -77,6 +77,11 @@ def build_parser() -> argparse.ArgumentParser:
     records.add_argument("--pricing-config", required=True, help="Same local pricing JSON used in preparation.")
     records.add_argument("--output", required=True, help="New record output directory; never overwrite.")
 
+    qualification = common("qualify-generated-records", "Recheck saved generated evidence offline; keep export disabled.")
+    qualification.add_argument("--records", required=True, help="Final P1 record directory or block.json.")
+    qualification.add_argument("--pricing-config", required=True, help="Same local pricing JSON used in preparation.")
+    qualification.add_argument("--output", required=True, help="New qualification report directory; never overwrite.")
+
     imported = common("import-synopsis", "Normalize a local MovieAgent synopsis without selecting scenes.")
     imported.add_argument("--input", required=True)
     imported.add_argument("--output", required=True)
@@ -390,6 +395,17 @@ def main(argv=None) -> int:
                 out_dir=_path(root, args.output), pricing_config=_path(root, args.pricing_config), project_root=root)
             print(f"Generated records {result['status']}: {_path(root, args.output)}; no network request sent.")
             return 1 if result["status"] == "failed" else 0
+        if args.command == "qualify-generated-records":
+            from .evaluation import qualify_generated_records
+            from .pipeline import write_json
+            output = _path(root, args.output)
+            _new_outputs(output)
+            result = qualify_generated_records(_path(root, args.records),
+                pricing_config=_path(root, args.pricing_config), project_root=root)
+            output.mkdir(parents=True, exist_ok=False)
+            write_json(output / "qualification.json", result)
+            print(f"Offline qualification {result['comparison_status']}: {output / 'qualification.json'}; export remains disabled.")
+            return 0 if result["comparison_status"] == "eligible" else 1
         if args.command == "render":
             from .pipeline import read_json, resolve_render_dependencies, write_json
             from .renderer import render_plan

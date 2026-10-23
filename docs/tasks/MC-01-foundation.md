@@ -2,17 +2,21 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-本次本地回执/费用装配增量分支：`feat/issue-8-generated-records`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+本次离线资格核对配合 #9，增量分支：`feat/issue-9-offline-qualification`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 下一增量：生成式公共契约与三条件入口（待实现）
+## 生成式三条件入口（离线链路已实现，真实任务与盲评待完成）
 
 **目标**：发布供 P2/P3/P4/P5 共用的生成式数据约定，再串通三条件；不重写现有客户端。
+
+### 当前离线资格增量（2026-10-23）
+
+P1 `recheck_generated_records` 复用已有装配计算和P4编译器；P5 `qualify_generated_records` 输出独立的逐条件资格报告，CLI为 `qualify-generated-records`。源记录/账目/人工表不改，未知费用和失败全部保留，generated盲评/ratings门禁继续保留。验收使用现有软件产物，不调用API；整体待办不因本增量自动完成，#8/#9仍保持开放。详见CONTRACTS 6.14。
 
 ### 已核实的缺口
 
 - 已修复 `unchanged` 来源兼容：旧开发对入口接受合法无修改记录，仍拒绝失败回退及“标记无修改但计划改变”的来源。
-- 旧scripts/generate_video.py保留开发对；新run --output-mode generated已支持已有三条件脚本的离线入口与单镜头选择。P4正式编译器尚未实现，真实运行明确报缺#24，不回退旧开发对。
-- 公共验证器/pipeline编排及离线CLI边界已支持1.1/generated；P2/P3真实接线、P4请求编译、视频与P5资格装配仍待完成。边界软件测试不当成全链路完成。
+- 旧scripts/generate_video.py保留开发对；新run --output-mode generated已支持已有三条件脚本的离线入口与单镜头选择。P4正式编译器已在PR #34合入，本地检查材料已在PR #35合入；真实三条件任务执行仍待完成。
+- 公共验证器/pipeline编排及离线CLI边界已支持1.1/generated；P2/P3/P4实际模块的离线联调和P5离线资格报告已实现；真实任务与盲评接线仍待完成。软件测试不当成模型效果验收。
 
 ### 本次待办与验收
 
@@ -23,7 +27,7 @@
 - [x] 脚本编排保存 `shared_generation_sha256`、initial/final完整哈希及可重算输入，包括共同计划、参考图内容身份、声音/模型/参数/seed和模板身份；台词与输出位置不进入共享哈希。精确参数和记录见CONTRACTS 6.7。
 - [x] P1离线入口与单镜头边界：读取并核对6.7来源，调用6.5编译接口，验证请求/报价并按原索引选择jobs，保存request_sha256和requests/prepared_offline产物。用明确P4软件替身验收，缺真实接口时明确失败；不调用付费API。
 - [x] P1本地回执/费用装配边界：assemble-generated-records读取6.8目录与本地脱敏回执/媒体证据，分开准备/进行/失败/中断/文件完成，重新探测A/V与时长；保留未知费用/旧回执计数缺失，规划计一次、合法同请求复用不重复计费。契约/用法见6.9，tests/test_cli.py与test_video_client.py使用明确软件夹具；不代表真实模型或P5资格已验收。
-- [ ] 接通真实P2/P3/P4后的baseline/generic_review/moodcut请求准备联调与实际任务记录。入口边界已实现，不等于真实编译器就绪；脚本/请求prepared不当成视频完成。付费仍需显式授权/范围/预算，未知费用停止，不自动重试POST。
+- [ ] 接通真实P2/P3/P4后的baseline/generic_review/moodcut请求准备联调与实际任务记录。实际编译器及离线联调已实现，真实任务仍待接通；脚本/请求prepared不当成视频完成。付费仍需显式授权/范围/预算，未知费用停止，不自动重试POST。
 - [ ] 配对资格与失败状态分开记录：保留失败条件/账目，但不将其作为有效修订对比。P5 导出前再次检查共享输入；规划费用只计一次。
 
 ### 写入范围与依赖
@@ -34,7 +38,7 @@
 
 离线CLI与单镜头选择见CONTRACTS 6.8、tests/test_cli.py；复用prepare_generated_run。来源/编译失败不写成功产物，所有已有结果保留，P4模块不在本任务代写。
 
-本地记录装配见CONTRACTS 6.9，复用pipeline.assemble_generated_records；只读本地回执、明确复用声明及已有媒体检查，绝不调用generate/resume。新回执记录下载与重定向GET；旧回执不完整计数为null。生成记录的not_checked/ineligible不能当有效比较，CLI在#9资格接线前禁止生成式盲评导出/ratings。下一步仍为真实P2/P3/P4依赖接入、实际任务记录和P5资格复核，不重复写这些模块。
+本地记录装配见CONTRACTS 6.9，复用pipeline.assemble_generated_records；只读本地回执、明确复用声明及已有媒体检查，绝不调用generate/resume。新回执记录下载与重定向GET；旧回执不完整计数为null。生成记录的not_checked/ineligible不能当有效比较，CLI在#9资格接线前禁止生成式盲评导出/ratings。下一步仍为真实任务执行、盲评接线和人工质量验收，不重复写这些模块。
 
 主改 `src/moodcut/__main__.py`、`pipeline.py`、`validation.py`、`video_client.py`、`scripts/generate_video.py` 及对应现有测试、`docs/CONTRACTS.md`。P1 维护共享夹具；不要改 P2/P3 提示词或 P4 编译器。`configs/video.json` 由 P4 维护，传输/价格字段变更先协调。入口选项及新字段在接口 PR 中给出准确用法后，队友再接入。
 

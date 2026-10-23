@@ -330,9 +330,14 @@ failure accounting, not MoodCut generation quality.
 
 ## Generated comparison input prerequisites (2026-10-20)
 
+Current integration: the individual checks below are composed by the offline
+qualification entry point described at the end of this document. Earlier test
+counts are historical increment records. Generated blind export and ratings
+remain blocked; the qualification report does not authorize a formal experiment.
+
 `validate_generated_comparison` checks one three-condition block against its
-actual source objects. Run from the project root so the public plan validator can
-resolve the reference assets in the manifest.
+actual source objects. Supply `project_root` for root-relative reference assets;
+omitting it preserves the original current-directory behavior.
 
 ```python
 from moodcut.evaluation import validate_generated_comparison
@@ -340,6 +345,7 @@ from moodcut.evaluation import validate_generated_comparison
 errors = validate_generated_comparison(
     records, scene=scene, initial=initial, plans=plans,
     manifest=manifest, settings=settings, template_sha256=template_sha256,
+    project_root=project_root,
 )
 ```
 
@@ -498,3 +504,64 @@ Current summary limitation: generation failures before rendering appear under
 This test documents that existing behavior; it does not claim the summary already
 has a separate generation-failure count. Adding such a count is a later reporting
 increment. No business code or export gate changes are included here.
+
+
+## Offline qualification of final generated records (2026-10-23)
+
+```bash
+python -m moodcut qualify-generated-records --records runs/video-inspection/records --pricing-config configs/video.json --output runs/qualification
+```
+
+Use one final P1 `records` directory (or its `block.json`), the same local pricing
+configuration and an explicit `--project-root` if invoked outside the checkout.
+Source/preparation/receipt/media files must still exist at their recorded local
+locations. Do not supply the earlier `preflight_records` snapshot as another run.
+The output directory must be new. `qualification.json` is written on both eligible
+and ineligible checks; exit status is 0 only when all three conditions pass.
+Malformed/unavailable source evidence produces diagnostics, not a repaired record.
+
+P1 `recheck_generated_records` reuses the computation behind
+`assemble_generated_records` without creating intermediate directories. It rereads
+source scripts and preparation snapshots, recompiles requests with the actual P4
+compiler/template and original shot indices, and replays the existing P1 receipt,
+same-block reuse, A/V probe and accounting logic. The saved source/request/receipt
+snapshots, on-disk run files and full block ledger must agree with that replay.
+Quotes stay separate from spending. Unknown costs/counters and known subtotals
+must remain identical; unknown spending alone does not veto input eligibility.
+An invalid reuse declaration or a changed ledger is not accepted as free usage.
+
+P5 `qualify_generated_records(records, pricing_config=..., project_root=...)`
+then combines the input and per-condition media checks from PR #37. The report
+contains the original complete `record_block`, its canonical `records_sha256`,
+three condition results and diagnostic strings, and a block-level result.
+`accounting_verified` means the saved evidence and ledger agree with the P1
+recomputation; it does not authenticate provider billing. An original failed
+condition remains in the report and ledger. Its ineligible result does not delete
+otherwise valid condition records. Global source/accounting failures reject the
+block. Missing source data cannot establish eligibility.
+
+The report is a separate point-in-time artifact. It never changes original
+`comparison_status`, source kind, fees, raw media or blank human checklists.
+`eligible` describes the selected shot scope's software evidence only; it is not
+approval of speech, emotion, provider authenticity, formal inclusion or spending.
+`formal_inclusion_approved` and `export_enabled` remain false, and human quality is
+`not_reviewed`. Activity counters describe this offline check only (zero new HTTP,
+POST, GET and provider cost), not historical generation costs.
+
+The existing generated blind-export/ratings guard is intentionally retained.
+A later export increment must recheck evidence at its copy boundary and bind the
+private mapping to exported bytes. Generation-failure summary categories, real
+three-condition execution, formal protocol choices and actual human evaluation
+remain separate follow-up work. No new sample, experiment condition, model call,
+model download, GPU evaluation or subjective score is introduced here.
+
+
+Qualification validation for this increment: the full offline suite passed 801
+tests and 116 subtests (408.97 seconds); the 14 new qualification cases passed.
+The CLI/original-file preservation case was rerun after the final verified-snapshot
+binding adjustment and passed. The existing saved software inspection artifacts
+also passed all three conditions with 98 source file hashes unchanged, under a
+network-denying audit hook. Only new qualification/acceptance reports were saved.
+FFmpeg/ffprobe 9.0.2 were used. All 33 cached references, 41 local document links,
+Python syntax and diff whitespace checks passed. No provider request, real charge,
+new experiment sample or human rating was produced.
