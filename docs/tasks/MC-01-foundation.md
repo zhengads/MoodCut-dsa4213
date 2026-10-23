@@ -2,7 +2,11 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-本次三条件任务执行接线，#9配合试跑协议，分支：`feat/issue-8-generated-execution`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+本次配合#9核对具体试跑输入/费用，分支：`docs/issue-9-concrete-pilot`。三条件任务执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
+### 当前试跑输入/费用核对（2026-10-23）
+
+复用原编译器、视频成本函数和公开免费目录，核对[还伞单镜头提议](../pilots/umbrella-single-shot.md)：首镜头原索引0、4秒、相同共同设置且三版只改台词。新Seedance设置仅为提议，不改历史Wan记录/哈希或默认config；占位图/URL不能当真实人物输入。三段报价$0.9072，首选额度提议$1.10，历史unknown及当前余额不补零；真实P2/P3文本扩展另批。只做软件验证，不调用付费API，#8/#9保持开放。
 
 ### 当前三条件任务执行接线（2026-10-23）
 
