@@ -584,7 +584,7 @@ P5复用#37的输入与媒体检查。qualification.json包含kind=generated_qua
 
 报告不修改原始comparison_status、source_kind、费用或人工检查表。正式纳入formal_inclusion_approved=false、export_enabled=false、speech_and_visual_quality=not_reviewed；eligible仅指当前所选镜头的软件证据，不说明真实人物/台词/情绪、提供商真实性或正式实验通过。activity的0只指本次新HTTP/POST/GET/消费，不抹去历史未知费用。只使用最终records账目，不把preflight_records的同一历史累计第二次。
 
-输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。资格报告自身不授权导出；当前evaluate的独立重检入口见6.15。真实任务执行、生成失败汇总分类、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
+输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。资格报告自身不授权导出；当前evaluate的独立重检入口见6.15。生成状态汇总见6.16；真实任务执行、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
 
 ### 6.15 生成式匿名导出和评分接线
 
@@ -605,4 +605,28 @@ PRIVATE/generated_export.json绑定每个完整block的canonical哈希、原本�
 
 评分仍复用原summarize算术：clip等权、uncertain记未命中、M/G仅共同已评分块做差并另报覆盖，空分母为null。condition usage仍不含共同规划；block_ledger_accounting.blocks逐块保留完整原始accounting（含unknown/known_subtotals/incomplete_fields），每块一次，绝不累加preflight。accounting_verified/complete如实标明当前重检状态；不把不一致账目当已核实支出。未生成的新任务和原始空人工表不改。
 
-导出/评分始终formal_inclusion_approved=false、speech_and_visual_quality=not_reviewed。6.14报告export_enabled仍false，须走本节独立重检入口；软件产物和合成CSV算术不是模型或独立人工效果证据。真实任务、生成失败细分类汇总、正式协议与真实观看者验收仍待后续；本接口不创建client，不调用API/GPU或自动评分。
+导出/评分始终formal_inclusion_approved=false、speech_and_visual_quality=not_reviewed。6.14报告export_enabled仍false，须走本节独立重检入口；软件产物和合成CSV算术不是模型或独立人工效果证据。生成状态细分类汇总见6.16；真实任务、正式协议与真实观看者验收仍待后续；本接口不创建client，不调用API/GPU或自动评分。
+
+### 6.16 生成状态细分汇总
+
+`summarize`及现有evaluate、generated匿名导出私有summary、评分结果复用同一汇总器。含generated记录时，overall和每个by_condition都新增generation对象；纯旧animatic/空输入保持原结构，不臆测生成状态。没有新CLI参数，不重建P1状态机或账目，不修改评分/资格/正式纳入规则。
+
+generation.generated_runs为当前汇总范围内output_mode=generated的记录数，not_applicable_runs为其他记录数；二者相加等于原coverage.planned_runs。by_status七类互斥计数之和等于generated_runs，各条件使用自己的分母：
+
+| by_status键 | 保存记录的含义，不推断真实提供商活动 |
+|---|---|
+| not_started | 生成阶段尚未开始；规划/审查/验证失败也可能停在此处 |
+| prepared_offline | 请求离线准备、未提交；不从零调用/空回执倒推此状态 |
+| in_progress | 尚未完成本地成片；提供商completed、部分下载或待拼接均可能在此类 |
+| assembled_requires_manual_inspection | 文件已装配检查，仍待人工质量判断 |
+| failed | P1保存的失败，包括请求/回执/本地媒体错误，不能全称为提供商失败 |
+| interrupted | P1保存的中断，例如轮询超时/中断或下载中断；不当成零费用 |
+| unknown | 缺失、null、未知或非法状态，保留在总分母，不猜成未开始/未提交 |
+
+其他generation字段是独立诊断轴，不能相加当成额外运行数：pre_generation_failed_runs为run_status=failed且generation_status=not_started；failed_run_causes按所有run_status=failed的原failure_kind计数（缺失为unspecified），可包含generation/media/review等，与状态轴重叠。awaiting_assembly_runs仅指in_progress、尚未rendered且非空镜头记录全部downloaded；远端completed不等于已下载或拼接。runs_with_unsubmitted_jobs数有prepared_offline镜头的运行，可揭示混合运行里的未提交部分。
+
+generation.jobs.recorded_jobs和by_status统计保存的镜头记录条目，状态为prepared_offline/submitting/in_progress/downloaded/failed/interrupted/unknown，七类合计等于recorded_jobs。完整运行即使因一个failed镜头覆盖了其interrupted状态，镜头轴仍保留两者。declared_reused_jobs统计声明了reused_from的条目，不认证复用合法性，不计为新POST/独立提供商任务；费用继续由原P1账目负责。remote_status_counts只按已保存的非空远端字符串计数，保留polling_timeout/download_interrupted/expired等原值，不另行映射；jobs_without_remote_status不等于未提交（复用也可能无该字段）。
+
+runs_with_empty_job_records只数显式空列表；runs_with_invalid_job_records数缺失/非列表或含非对象条目的运行。非对象条目计入镜头unknown；整个镜头字段不可读时不捏造镜头条目或尝试数。这些是记录诊断，不替代6.14/6.15的来源/资格重检。
+
+旧render_failed_runs/render_pending_or_skipped_runs等保留原口径，与生成状态并列查看，不相加。旧timeout_runs仍只按failure_kind=timeout计数，不自动包括failure_kind=generation的轮询超时；后者见interrupted及remote_status_counts.polling_timeout。全部原始失败/未知费用/缺失评分及M/G配对分母、clip等权和uncertain口径不变。输出只增加诊断，不修补原记录、回执、人工表或原block账目。

@@ -551,7 +551,8 @@ POST, GET and provider cost), not historical generation costs.
 
 The qualification report alone still cannot release an export. The generated
 entrypoints below perform fresh source and copy-boundary checks and bind the
-private mapping to exported bytes. Generation-failure summary categories, real
+private mapping to exported bytes. Generation status summaries are available
+below; real
 three-condition execution, formal protocol choices and actual human evaluation
 remain separate follow-up work. No new sample, experiment condition, model call,
 model download, GPU evaluation or subjective score is introduced here.
@@ -618,7 +619,7 @@ importer set `formal_inclusion_approved=false`; human quality remains
 `not_reviewed`. Existing software media cannot establish speech, emotion, acting
 or model effectiveness. Coordinators must inspect clips for content/metadata
 that reveals conditions before distribution; the tool does not infer semantic
-anonymity. Real task execution, failure-category reporting, approved formal
+anonymity. Generation status reporting is described below. Real task execution, approved formal
 protocol and independent viewers remain follow-up work.
 
 Validation: the local full suite passed 815 tests and 116 subtests (578.18s).
@@ -631,3 +632,68 @@ source file hashes and the original ledger unchanged under a network-denying
 audit hook (zero network attempts). Templates stayed blank; no real human scores
 or new model media were produced. All 33 cached references, 43 local Markdown
 targets, syntax, added-text privacy and whitespace checks passed.
+
+## Generation status summaries (2026-10-23)
+
+Generated evaluation reports now add `overall.generation` and
+`by_condition.<condition>.generation`. The same fields are returned by raw
+`evaluate --records ...`, source-qualified summaries and rating imports, and
+the private blind-export summary. No new command/parameter is needed. This
+counts saved states without changing P1 receipt mapping, costs, eligibility or
+human scores. Pure legacy/empty reports keep their original shape.
+
+`generation.by_status` has seven mutually exclusive run counts:
+`not_started`, `prepared_offline` (offline requests not submitted), `in_progress`,
+`assembled_requires_manual_inspection`, `failed`, `interrupted`, `unknown`.
+Missing/null/unrecognized states remain unknown. The counts sum to
+`generated_runs`; adding `not_applicable_runs` gives the original
+`coverage.planned_runs`. Each condition uses its own supplied-record denominator.
+Input records omitted by a caller cannot be discovered automatically.
+
+Use the other fields as overlapping diagnostic axes, not extra runs:
+
+- `failed_run_causes`: original `failure_kind` among failed runs; includes
+  generation, local media and pre-generation review/validation failures.
+  Missing causes are `unspecified`; do not call every failed run a provider failure.
+- `pre_generation_failed_runs`: failed runs still at `not_started`.
+- `awaiting_assembly_runs`: in progress, not rendered, with a nonempty list of
+  downloaded clips; provider `completed` alone does not qualify.
+- `runs_with_unsubmitted_jobs`: at least one prepared-offline job, including
+  mixed runs that already have failed/interrupted/other clips.
+- `jobs.by_status`: saved clip entries, including separate failed/interrupted
+  counts even when P1's run state gives failure precedence. Counts sum to
+  `jobs.recorded_jobs`. `declared_reused_jobs` is an observation, not a new
+  provider task or certified reuse; never add these counts to POSTs or costs.
+- `jobs.remote_status_counts` preserves recorded remote strings such as
+  `polling_timeout`, `download_interrupted`, `expired`. Missing remote status
+  (`jobs_without_remote_status`) does not establish no submission; reused clips
+  can also lack this field.
+- Empty job lists and invalid/missing job records have separate run counters.
+  Non-object entries count as unknown jobs; an unreadable whole job field does
+  not invent a clip or establish zero attempts.
+
+The existing render counters retain their meanings for compatibility. A failed
+generation can still be in `render_pending_or_skipped_runs`; the new generation
+axis exposes its actual saved failure/interruption instead of changing rendering
+history. Neither axis establishes speech, emotion or final human acceptance.
+The legacy `timeout_runs` counts only `failure_kind=timeout`; video polling
+timeouts saved as generation failures appear in `interrupted` and the raw
+`remote_status_counts.polling_timeout`, without rewriting the old counter.
+All records remain in costs, missing-rating counts and common-pair denominators;
+unknown expenses and original once-per-block ledgers are retained. Clip weighting,
+uncertain misses and M/G score formulas are unchanged. See CONTRACTS 6.16 for the
+complete field meanings. Tests reuse synthetic software fixtures, never provider
+histories, formal experiments or independent subjective judgments.
+
+Validation for this increment: 832 tests and 116 subtests passed in the full
+offline suite (735.78s); 23 targeted cases passed. Twelve new pure summary cases
+cover canonical/unknown states, mixed jobs, denominators and legacy behavior;
+existing P1/CLI and export/import cases were extended. AST comparison excludes
+only the additive generation diagnostics and confirms the old scoring, coverage
+and usage calculations are unchanged. Existing synthetic outputs and explicitly
+labeled temporary software-state projections passed CLI/ledger rechecks, with
+106 source file hashes unchanged under a network-denying audit hook. An existing
+blind-export mapping remained compatible and its eight files stayed unchanged.
+No provider history, human scores or real expense was created. All 33 cached
+references, 44 local document targets, syntax, added-text privacy and diff checks
+passed; final PR CI is recorded in the PR.

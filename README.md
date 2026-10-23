@@ -67,6 +67,8 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 这是离线软件证据接线，formal_inclusion_approved仍false；不批准正式样本/失败纳入规则，不代表语音、画面或方法效果通过。零导出也可生成空诊断包，应检查exported_clips。既有不带价格参数的原始账目查看仍兼容，但不做资格认证。详见[评估说明](docs/evaluation.md#generated-blind-export-and-rating-import-2026-10-23)与[CONTRACTS 6.15](docs/CONTRACTS.md#615-生成式匿名导出和评分接线)。
 
+汇总含generated记录时，总体和各条件新增generation状态细分：未开始、离线未提交、进行中、已装配待人工检查、失败、中断、未知；另报待拼接、混合镜头和保存的远端状态。旧渲染计数及评分/费用分母不变，复用镜头计数不当成新任务，缺失状态不当零调用。字段与计数边界见[CONTRACTS 6.16](docs/CONTRACTS.md#616-生成状态细分汇总)。
+
 ## 接入 OpenRouter
 
 `configs/model.json` 已选择第一轮开发 demo 使用的 `openai/gpt-4.1-mini`：输入 $0.40/百万 token、输出 $1.60/百万 token，temperature=0，单次网络超时 120 秒。三个条件共用这份配置，不自动换模型或重试。2026-10-15 核验了 [OpenRouter 模型页](https://openrouter.ai/openai/gpt-4.1-mini) 和 [公开端点参数/价格](https://openrouter.ai/api/v1/models/openai/gpt-4.1-mini/endpoints)：当前 OpenAI 端点支持 max_tokens、temperature、response_format。该选择用于先查看真实输出，不代表已经证明它最适合正式实验。价格变化时同步更新配置；未知价格继续拒绝发送。

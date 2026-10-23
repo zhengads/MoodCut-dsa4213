@@ -1177,6 +1177,58 @@ def summarize(records, ratings):
     return _summarize(records, ratings)
 
 
+def _generation_coverage(rows):
+    """Count saved run/job states without inferring submission, calls or quality.
+
+    These are overlapping diagnostic axes, not extra runs or provider tasks.
+    Unknown/missing states stay unknown; receipt availability is not submission.
+    """
+    generated = [r for r in rows if r.get("output_mode") == "generated"]
+    run_states = ("not_started", "prepared_offline", "in_progress",
+                  "assembled_requires_manual_inspection", "failed", "interrupted", "unknown")
+    job_states = ("prepared_offline", "submitting", "in_progress", "downloaded", "failed", "interrupted", "unknown")
+    runs, jobs = dict.fromkeys(run_states, 0), dict.fromkeys(job_states, 0)
+    causes, remote = defaultdict(int), defaultdict(int)
+    awaiting, unsubmitted, empty, invalid, reused, missing_remote, before_generation = (0,) * 7
+    for row in generated:
+        state = row.get("generation_status")
+        runs[state if isinstance(state, str) and state in runs else "unknown"] += 1
+        if row.get("run_status") == "failed":
+            cause = row.get("failure_kind")
+            causes[cause if _text(cause) else "unspecified"] += 1
+            before_generation += state == "not_started"
+        entries = row.get("generation_jobs")
+        if not isinstance(entries, list):
+            invalid += 1
+            continue
+        empty += not entries
+        invalid += any(not isinstance(j, dict) for j in entries)
+        statuses = []
+        for job in entries:
+            job = job if isinstance(job, dict) else {}
+            value = job.get("status")
+            status = value if isinstance(value, str) and value in jobs else "unknown"
+            statuses.append(status)
+            jobs[status] += 1
+            value = job.get("remote_status")
+            if _text(value):
+                remote[value] += 1
+            else:
+                missing_remote += 1
+            reused += job.get("reused_from") is not None
+        unsubmitted += "prepared_offline" in statuses
+        awaiting += (state == "in_progress" and row.get("render_status") != "rendered"
+                     and bool(statuses) and all(s == "downloaded" for s in statuses))
+    return dict(generated_runs=len(generated), not_applicable_runs=len(rows) - len(generated),
+                by_status=runs, pre_generation_failed_runs=before_generation,
+                failed_run_causes=dict(sorted(causes.items())), awaiting_assembly_runs=awaiting,
+                runs_with_unsubmitted_jobs=unsubmitted, runs_with_empty_job_records=empty,
+                runs_with_invalid_job_records=invalid,
+                jobs=dict(recorded_jobs=sum(jobs.values()), by_status=jobs,
+                          remote_status_counts=dict(sorted(remote.items())),
+                          jobs_without_remote_status=missing_remote, declared_reused_jobs=reused))
+
+
 def _summarize(records, ratings):
     """Summarize supplied human ratings with equal clip weight and full coverage.
 
@@ -1187,6 +1239,7 @@ def _summarize(records, ratings):
     human scores. Common-block differences describe the jointly rated subset.
     """
     records = _paired_records(records)
+    has_generated = any(row.get("output_mode") == "generated" for row in records)
     if not isinstance(ratings, list):
         raise ValueError("Ratings must be a list")
     by_item = {}
@@ -1247,6 +1300,7 @@ def _summarize(records, ratings):
             call_counts.append(len(calls) if isinstance(calls, list) else calls)
         known_calls = [n for n in call_counts if n is not None]
         return dict(
+            **({"generation": _generation_coverage(rows)} if has_generated else {}),
             coverage=dict(planned_runs=len(rows), rendered_runs=rendered,
                           render_failed_runs=sum(row.get("render_status") == "render_failed" for row in rows),
                           render_pending_or_skipped_runs=sum(row.get("render_status") not in
