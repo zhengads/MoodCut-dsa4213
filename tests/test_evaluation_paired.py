@@ -764,6 +764,11 @@ def test_offline_qualification_preserves_single_shot_original_seed(inspection_in
     bundle = read_json(case["prep"] / "bundle.json")
     assert all(c["jobs"][0]["request"]["seed"] == bundle["settings"]["seed"] + 1 for c in bundle["conditions"])
     assert report["record_block"]["accounting"]["generation_posts"] == 1
+    exported = _generated_export(case, case["output"].parent / "single-blind")
+    summary = _generated_scores(case, [], exported["private_key_path"])
+    assert exported["exported_clips"] == 3
+    assert summary["generated_qualification"][0]["record_block"]["selected_shot_ids"] == [selected]
+    assert summary["block_ledger_accounting"]["blocks"][0]["accounting"]["generation_posts"] == 1
 
 
 def test_offline_qualification_missing_source_returns_diagnostics(tmp_path):
@@ -771,6 +776,258 @@ def test_offline_qualification_missing_source_returns_diagnostics(tmp_path):
     report = qualify_generated_records(tmp_path / "missing", pricing_config=tmp_path / "missing-price")
     assert report["comparison_status"] == "ineligible" and report["errors"]
     assert report["record_block"] is None and report["accounting_verified"] is False
+
+
+def _generated_export(case, output, seed=17):
+    from moodcut.evaluation import export_generated_blind_items
+    from test_video_generation import ROOT
+    return export_generated_blind_items([case["output"] / "records"], out_dir=output, seed=seed,
+        pricing_config="configs/video.json", project_root=ROOT)
+
+
+def _generated_scores(case, ratings, private_key=None):
+    from moodcut.evaluation import summarize_generated_records
+    from test_video_generation import ROOT
+    return summarize_generated_records([case["output"] / "records"], ratings, private_key=private_key,
+        pricing_config="configs/video.json", project_root=ROOT)
+
+
+def test_generated_blind_export_and_rating_cli_preserve_sources(inspection_inputs, tmp_path, monkeypatch):
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.pipeline import read_json
+    from moodcut.__main__ import main
+    from moodcut.evaluation import _read_evaluation_csv, RATING_FIELDS
+    case = inspection_inputs
+    inspect_local(case)
+    original = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+    monkeypatch.chdir(tmp_path)
+    exported = _generated_export(case, tmp_path / "blind")
+    key = _read_evaluation_csv(exported["private_key_path"])
+    index = _read_evaluation_csv(exported["blind_items_path"])
+    assert exported["exported_clips"] == 3 and exported["excluded_runs"] == 0
+    assert exported["formal_inclusion_approved"] is False
+    assert all(set(row) == {"item_id", "video_file"} for row in index)
+    assert {p.relative_to(tmp_path / "blind/public").as_posix() for p in (tmp_path / "blind/public").rglob("*") if p.is_file()} == {
+        "blind_items.csv", "ratings.csv", *[r["video_file"] for r in index]}
+    template = _read_evaluation_csv(exported["ratings_path"])
+    assert all(row[f] == "" for row in template for f in RATING_FIELDS if f != "item_id")
+    records = read_json(case["output"] / "records/block.json")
+    # Explicit synthetic arithmetic fixture; not independent human judgments.
+    by_condition = {r["condition"]: r for r in key}
+    tone = records["runs"][0]["tone"]
+    votes = [rating(by_condition["generic_review"]["item_id"], tone),
+             rating(by_condition["generic_review"]["item_id"], "uncertain", "fixture_b"),
+             rating(by_condition["moodcut"]["item_id"], tone, value=5)]
+    summary = _generated_scores(case, votes, exported["private_key_path"])
+    assert summary["overall"]["coverage"]["planned_runs"] == 3
+    assert summary["overall"]["coverage"]["missing_ratings"] == 1
+    assert summary["overall"]["equal_clip_means"]["tone_accuracy"] == .75
+    assert summary["common_moodcut_generic"]["mean_moodcut_minus_generic"]["tone_accuracy"] == .5
+    assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == records["accounting"]
+    assert records["accounting"]["generation_posts"] == 4  # Reused shots not billed twice.
+    assert read_json(exported["summary_path"])["overall"]["coverage"]["rated_clips"] == 0
+    assert {p: p.read_bytes() for p in original} == original
+    with pytest.raises(ValueError, match="export_generated"):
+        export_blind_items(records["runs"], out_dir=tmp_path / "bypass", seed=0)
+    with pytest.raises(ValueError, match="summarize_generated"):
+        summarize(records["runs"], votes)
+    with pytest.raises(ValueError, match="not exported"):
+        _generated_scores(case, [rating(records["runs"][0]["run_id"])], exported["private_key_path"])
+    with pytest.raises(ValueError):
+        _generated_scores(case, template, exported["private_key_path"])
+    with pytest.raises(FileExistsError):
+        _generated_export(case, tmp_path / "blind")
+    with Path(tmp_path / "synthetic-ratings.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=RATING_FIELDS)
+        writer.writeheader()
+        writer.writerows(votes)
+    args = ["evaluate", "--project-root", str(ROOT), "--records", str(case["output"] / "records"),
+            "--pricing-config", "configs/video.json"]
+    assert main([*args, "--ratings", str(tmp_path / "synthetic-ratings.csv"), "--private-key",
+                 exported["private_key_path"], "--output", str(tmp_path / "scores.json")]) == 0
+    assert read_json(tmp_path / "scores.json") == summary
+    assert main([*args, "--blind-output", str(tmp_path / "cli-blind"), "--seed", "17"]) == 0
+    assert Path(exported["private_key_path"]).read_bytes() == (tmp_path / "cli-blind/PRIVATE/private_key.csv").read_bytes()
+    assert {p: p.read_bytes() for p in original} == original
+
+
+@pytest.mark.parametrize("mutation", ["copy", "key", "index", "block", "receipt", "source_video", "missing_manifest",
+                                     "malformed_manifest", "key_rehashed", "subset_key_rehashed"])
+def test_generated_rating_rechecks_all_exported_items(inspection_inputs, tmp_path, mutation):
+    from test_video_generation import inspect_local
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    inspect_local(case)
+    exported = _generated_export(case, tmp_path / "blind")
+    # Empty scores still validate every exported clip and every mapping.
+    if mutation == "copy":
+        (tmp_path / "blind/public/videos/item_00003.mp4").write_bytes(b"replaced after export")
+    elif mutation in ("key", "index", "key_rehashed", "subset_key_rehashed"):
+        path = Path(exported["private_key_path"] if mutation == "key" else exported["blind_items_path"])
+        if mutation.endswith("rehashed"):
+            import hashlib
+            path = Path(exported["private_key_path"])
+            content = path.read_text(encoding="utf-8").splitlines(keepends=True)
+            if mutation == "subset_key_rehashed":
+                path.write_text("".join(content[:-1]), encoding="utf-8")
+            else:
+                path.write_text("".join(content).replace("item_00001", "item_99999"), encoding="utf-8")
+            manifest = read_json(exported["manifest_path"])
+            manifest["private_key_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
+            _rewrite_fixture_json(exported["manifest_path"], manifest)
+        else:
+            path.write_bytes(path.read_bytes().replace(b"item_00001", b"item_99999"))
+    elif mutation == "missing_manifest":
+        Path(exported["manifest_path"]).unlink()
+    elif mutation == "malformed_manifest":
+        _rewrite_fixture_json(exported["manifest_path"], [])
+    else:
+        block = read_json(case["output"] / "records/block.json")
+        if mutation == "block":
+            block["runs"][0]["shared_generation_sha256"] = "a" * 64
+            _rewrite_fixture_json(case["output"] / "records/block.json", block)
+        elif mutation == "receipt":
+            path = Path(block["runs"][0]["generation_jobs"][0]["receipt_path"])
+            receipt = read_json(path)
+            receipt["job_id"] += "-changed"
+            _rewrite_fixture_json(path, receipt)
+        else:
+            Path(block["runs"][0]["video_path"]).write_bytes(b"changed source")
+    with pytest.raises((ValueError, OSError)):
+        _generated_scores(case, [], exported["private_key_path"])
+
+
+@pytest.mark.parametrize("variant", ["unknown", "failed", "unsubmitted"])
+def test_generated_export_keeps_full_failure_and_unknown_ledgers(inspection_inputs, tmp_path, variant):
+    from test_video_generation import inspect_local
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    if variant == "unsubmitted":
+        evidence = read_json(case["evidence"])
+        for condition in evidence["conditions"]:
+            condition["jobs"] = []
+        _rewrite_fixture_json(case["evidence"], evidence)
+    else:
+        path = case["evidence"].parent / "receipt-0-0.json"
+        receipt = read_json(path)
+        receipt.update(schema_version="1.0", provider_cost_usd=None)
+        receipt.pop("download_attempts")
+        receipt.pop("download_redirect_attempts")
+        if variant == "failed":
+            receipt.update(status="failed", video_path=None)
+        _rewrite_fixture_json(path, receipt)
+    inspect_local(case)
+    block = read_json(case["output"] / "records/block.json")
+    exported = _generated_export(case, tmp_path / "blind")
+    assert exported["exported_clips"] == (3 if variant == "unknown" else 0)
+    summary = _generated_scores(case, [], exported["private_key_path"])
+    assert summary["overall"]["coverage"]["planned_runs"] == 3
+    assert summary["overall"]["coverage"]["missing_ratings"] == 3
+    assert summary["overall"]["equal_clip_means"]["tone_accuracy"] is None
+    assert summary["common_moodcut_generic"]["common_evaluable_blocks"] == 0
+    assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == block["accounting"]
+    assert summary["block_ledger_accounting"]["complete"] is True
+    if variant != "unsubmitted":
+        assert block["accounting"]["provider_cost_usd"] is None
+        assert block["accounting"]["known_subtotals"]["provider_cost_usd"] == .21
+
+
+@pytest.mark.parametrize("mutation", ["destination_bytes", "source_receipt", "output_race"])
+def test_generated_copy_boundary_does_not_publish_partial_package(inspection_inputs, tmp_path, monkeypatch, mutation):
+    import shutil
+    from test_video_generation import inspect_local
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    inspect_local(case)
+    original = shutil.copyfileobj
+    def changed(incoming, outgoing, *args, **kwargs):
+        original(incoming, outgoing, *args, **kwargs)
+        if mutation == "destination_bytes":
+            outgoing.write(b"changed during copy")
+        elif mutation == "output_race":
+            (tmp_path / "blind").mkdir(exist_ok=True)
+        else:
+            path = case["evidence"].parent / "receipt-0-0.json"
+            receipt = read_json(path)
+            receipt["job_id"] += "-changed"
+            _rewrite_fixture_json(path, receipt)
+    monkeypatch.setattr(shutil, "copyfileobj", changed)
+    with pytest.raises((ValueError, FileExistsError), match="changed|already exists"):
+        _generated_export(case, tmp_path / "blind")
+    if mutation == "output_race":
+        assert (tmp_path / "blind").is_dir() and not list((tmp_path / "blind").iterdir())
+    else:
+        assert not (tmp_path / "blind").exists()
+    assert not list(tmp_path.glob(".blind-export-*"))
+
+
+def test_generated_evaluation_rejects_partial_and_duplicate_block_inputs(inspection_inputs, tmp_path):
+    import shutil
+    from test_video_generation import inspect_local, ROOT
+    from moodcut.evaluation import export_generated_blind_items
+    from moodcut.pipeline import read_json
+    case = inspection_inputs
+    inspect_local(case)
+    directory = case["output"] / "records"
+    options = dict(out_dir=tmp_path / "blind", seed=0, pricing_config="configs/video.json", project_root=ROOT)
+    with pytest.raises(ValueError, match="complete final"):
+        export_generated_blind_items([directory / "baseline/run.json"], **options)
+    with pytest.raises(ValueError, match="Duplicate"):
+        export_generated_blind_items([directory, directory / "block.json"], **options)
+    other = tmp_path / "duplicate-ledger"
+    shutil.copytree(directory, other)
+    with pytest.raises(ValueError, match="duplicate"):
+        export_generated_blind_items([directory, other], **options)
+    assert not options["out_dir"].exists()
+    # Matching hashes alone do not make a saved qualification report an input.
+    _rewrite_fixture_json(tmp_path / "qualification.json", _qualify_inspection(case))
+    with pytest.raises(ValueError, match="complete final"):
+        export_generated_blind_items([tmp_path / "qualification.json"], **options)
+
+
+def test_generated_multiple_blocks_keep_failed_block_in_denominators(inspection_inputs, tmp_path):
+    """Two temporary software identities over the same patterns; not new study data."""
+    from test_video_generation import inspect_local, script_source, ROOT
+    from moodcut.pipeline import prepare_generated_run, read_json
+    from moodcut.evaluation import export_generated_blind_items, summarize_generated_records
+    first = inspection_inputs
+    inspect_local(first)
+    second_case = copy.deepcopy(first["case"])
+    second_case[0]["scene_id"] = "software_second_block"
+    for plan in [second_case[1], *second_case[2].values()]:
+        plan["scene_id"] = "software_second_block"
+    directory = tmp_path / "second"
+    source, prepared = directory / "scripts", directory / "prepared"
+    block = script_source(second_case, source)
+    prepare_generated_run(source, out_dir=prepared, project_root=ROOT, pricing_config=ROOT / "configs/video.json")
+    bundle = read_json(prepared / "bundle.json")
+    evidence = copy.deepcopy(first["supplied"])
+    evidence["block_id"] = block["block_id"]
+    for ci, (condition, compiled) in enumerate(zip(evidence["conditions"], bundle["conditions"])):
+        for si, (job, request) in enumerate(zip(condition["jobs"], compiled["jobs"])):
+            if "reused_from" in job:
+                job["reused_from"]["run_id"] = block["runs"][0]["run_id"]
+            else:
+                receipt = read_json(first["evidence"].parent / job["receipt_path"])
+                receipt.update(request_sha256=request["request_sha256"], job_id=f"software-second-{ci}-{si}",
+                               video_path=str(first["media"][si]))
+                if ci == si == 0:
+                    receipt.update(status="failed", video_path=None, provider_cost_usd=None)
+                _rewrite_fixture_json(directory / job["receipt_path"], receipt)
+    _rewrite_fixture_json(directory / "evidence.json", evidence)
+    second = dict(prep=prepared, evidence=directory / "evidence.json", output=directory / "inspection")
+    inspect_local(second)
+    paths = [first["output"] / "records", second["output"] / "records"]
+    options = dict(pricing_config="configs/video.json", project_root=ROOT)
+    exported = export_generated_blind_items(paths, out_dir=tmp_path / "blind-multiple", seed=0, **options)
+    assert exported["exported_clips"] == 3 and exported["excluded_runs"] == 3
+    scores = summarize_generated_records(list(reversed(paths)), [], private_key=exported["private_key_path"], **options)
+    assert scores["overall"]["coverage"]["planned_runs"] == 6
+    assert scores["overall"]["coverage"]["missing_ratings"] == 6
+    assert len(scores["block_ledger_accounting"]["blocks"]) == 2
+    assert scores["block_ledger_accounting"]["complete"] is True
+    assert scores["overall"]["usage"]["provider_cost_usd"]["total"] is None
+    assert {r["record_block"]["block_id"] for r in scores["generated_qualification"]} == {read_json(p / "block.json")["block_id"] for p in paths}
 
 
 if __name__ == "__main__":

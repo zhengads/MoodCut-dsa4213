@@ -53,7 +53,19 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 输入为上述请求准备目录及[本地回执证据](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)，无需key，不提交/恢复任务。软件媒体必须声明`--media-origin synthetic`；provided_local仅说明提供了本地文件，不认证为模型产物。输出观看页、来源/请求/字节哈希绑定、实际抽帧接触表、ffprobe信息和空CSV/JSON人工检查表；复用原拼接器和P1预检/最终记录装配，保留失败与未知费用。详细状态和命令见[CONTRACTS 6.13](docs/CONTRACTS.md#613-本地成片来源绑定与观看检查材料)。
 
-打开输出index.html检查选中范围；页面含条件、目标和预期台词，不用于盲评，也不自动判断说话/口型/情绪是否正确。所有材料就绪只表示ready_requires_manual_inspection；判断项仍留空，comparison仍not_checked/ineligible。只使用records中的最终账目，不把preflight_records的同一历史再累加一次。现有输出不覆盖，失败/不完整返回非零。离线资格见CONTRACTS 6.14；真实任务、盲评接线和模型质量仍待完成。
+打开输出index.html检查选中范围；页面含条件、目标和预期台词，不用于盲评，也不自动判断说话/口型/情绪是否正确。所有材料就绪只表示ready_requires_manual_inspection；判断项仍留空，comparison仍not_checked/ineligible。只使用records中的最终账目，不把preflight_records的同一历史再累加一次。现有输出不覆盖，失败/不完整返回非零。离线资格见CONTRACTS 6.14；盲评导出/评分接线见CONTRACTS 6.15；真实任务和模型质量仍待完成。
+
+### 生成式匿名导出与评分
+
+```powershell
+.venv/Scripts/python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --blind-output runs/generated-blind --seed 17
+.venv/Scripts/python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --output runs/generated-coverage.json
+.venv/Scripts/python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --ratings runs/completed-ratings.csv --private-key runs/generated-blind/PRIVATE/private_key.csv --output runs/generated-scores.json
+```
+
+只传完整最终records，每块一次，保留来源及整个导出目录；不可使用旧资格报告替代当前重检。整块三条件资格通过才导出，失败/未知费用仍在私有诊断及全量分母。公开仅发public，PRIVATE含答案/来源/账目，必须保密；评分表初始为空，不自动填判断。导入评分再次核对来源、映射及全部匿名副本字节，避免源文件没变但观看副本被换。复制中变化会拒绝发布，已有输出不覆盖。
+
+这是离线软件证据接线，formal_inclusion_approved仍false；不批准正式样本/失败纳入规则，不代表语音、画面或方法效果通过。零导出也可生成空诊断包，应检查exported_clips。既有不带价格参数的原始账目查看仍兼容，但不做资格认证。详见[评估说明](docs/evaluation.md#generated-blind-export-and-rating-import-2026-10-23)与[CONTRACTS 6.15](docs/CONTRACTS.md#615-生成式匿名导出和评分接线)。
 
 ## 接入 OpenRouter
 
@@ -205,15 +217,15 @@ python -m moodcut qualify-generated-records --records runs/video-inspection/reco
 
 ## 当前任务入口
 
-1.1 公共协议与各模块接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。`moodcut.contracts` 提供白名单、非台词检查和共享身份；公共 `validate_scene/validate_plan` 已支持显式 `output_mode="generated"`。软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py tests/test_validation.py -q`。旧 CLI 默认1.0；离线资格报告已实现（CONTRACTS 6.14），真实任务与盲评接线尚待完成。
+1.1 公共协议与各模块接入签名见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。`moodcut.contracts` 提供白名单、非台词检查和共享身份；公共 `validate_scene/validate_plan` 已支持显式 `output_mode="generated"`。软件示例在 `tests/fixtures/generated_contract.json`，离线检查为 `python -m pytest tests/test_contracts.py tests/test_validation.py -q`。旧 CLI 默认1.0；离线资格报告已实现（CONTRACTS 6.14），盲评导出/评分接线见CONTRACTS 6.15；真实任务尚待完成。
 
 五模块任务索引：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。以Issue实时状态为准；已交付模块直接复用，只认领未完成项，先提交 PR，不自动合并。
 
-生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，真实任务与盲评接线仍待完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，盲评导出/评分接线已实现（6.15）；真实任务仍待完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
 生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3/P4代码加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic，离线媒体检查/资格报告已实现，真实任务与盲评仍待接线，不能视为真实三条件实验已可运行。
 
-本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后可用qualify-generated-records核对离线资格（6.14），人工听看及盲评接线仍待完成；当前CLI禁止生成式盲评导出/ratings，不以旧导出绕过资格检查。
+本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后可用qualify-generated-records核对离线资格（6.14），人工听看仍待完成；盲评导出/评分须走6.15重检入口，不以旧导出绕过来源及副本核对。
 
 ## 用 AI 开发一个任务
 

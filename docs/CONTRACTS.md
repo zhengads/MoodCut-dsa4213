@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；实际任务和盲评接线仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
+本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；盲评导出/评分接线已实现（6.15）；实际任务仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
 
 ## 1. 公共数据
 
@@ -327,11 +327,11 @@ run_status 新增 prepared，表示只完成离线准备；generated 下仅当�
 
 既有 `scripts/generate_video.py` 开发对入口现已接受 completed 且 review_status 为 applied/unchanged 的来源，并兼容旧 no_changes 只读别名；unchanged/no_changes 的最终完整计划哈希必须等于初稿。仍核对来源哈希，failed/rejected/review_failed 不接受。无意见与空补丁可以合法 unchanged，不表示所有复查意见已经解决。本修复不把该旧入口升级为1.1三条件生成。
 
-Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段，不表示现有 evaluate 已实现新的共享身份验证。P5 必须先接入新资格核对，再导出生成式比较。
+Fixture 中的三条记录是零调用、未渲染的 synthetic 软件记录；validation_status/generation_status 为 not_started，comparison_status 为 not_checked，不伪造真实验证或生成。现有 summarize 可读取其基础字段做空评分诊断；生成式导出和评分必须使用6.15的完整最终block及独立重检入口。
 
 ### 6.5 各模块接入签名（含已实现的输入检查，离线资格见6.14）
 
-公共validate_scene/validate_plan、P2 make_plan/make_plan_with_trace、P3 review_and_revise/apply_patch及P4 build_generated_video_bundle的下列参数已实现；P5输入前置检查与离线资格报告已实现（6.14），盲评接线仍待完成。默认animatic兼容旧调用；生成调用必须显式传output_mode="generated"，与Scene/Plan版本一致。P4独立函数只接1.1/generated，不接受旧开发对。不要忽略未知参数或静默退回旧模式。
+公共validate_scene/validate_plan、P2 make_plan/make_plan_with_trace、P3 review_and_revise/apply_patch及P4 build_generated_video_bundle的下列参数已实现；P5输入前置检查与离线资格报告（6.14）及盲评导出/评分接线（6.15）已实现。默认animatic兼容旧调用；生成调用必须显式传output_mode="generated"，与Scene/Plan版本一致。P4独立函数只接1.1/generated，不接受旧开发对。不要忽略未知参数或静默退回旧模式。
 
 ```python
 # P1 validation.py：已实现，返回 list[str]。
@@ -357,7 +357,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
 P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
 
-P5输入检查返回输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1/P5离线资格报告见6.14，后续仍需真实任务与盲评接线；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法见6.8，不代表付费执行或盲评接线已完成。
+P5输入检查返回输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1/P5离线资格报告见6.14，盲评导出/评分接线见6.15，后续仍需真实任务；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法见6.8，不代表付费执行或盲评接线已完成。
 
 ### 6.6 后续接线必须满足的约束
 
@@ -385,7 +385,7 @@ P5输入检查返回输入/来源不一致原因，成功为空列表；缺条�
 
 此入口只准备脚本，**不编译视频请求、不创建视频任务、不调用animatic renderer**，包括render=True时。通过时block.status和run_status为prepared，generation_status与render_status均为not_started，generation_jobs为空，POST/视频GET为0，video_path为null。失败保留run和账目；共同输入/来源无效时comparison_status为ineligible，通过时仍为not_checked，须等P4/P5后续核对；不宣称eligible或情绪合格。
 
-规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，实际P4编译及本地媒体检查见6.12/6.13，离线资格见6.14；真实任务和盲评接线仍待后续增量。
+规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，实际P4编译及本地媒体检查见6.12/6.13，离线资格见6.14；盲评导出/评分接线见6.15；真实任务仍待后续增量。
 
 ### 6.8 离线生成入口与单镜头选择
 
@@ -413,7 +413,7 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
 
 preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
 
-原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；离线资格见6.14；真实任务与盲评接线尚未完成，不把离线准备写成成片端到端可运行。
+原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；离线资格见6.14；盲评导出/评分接线见6.15；真实任务尚未完成，不把离线准备写成成片端到端可运行。
 
 ### 6.9 本地生成回执与费用记录装配
 
@@ -468,7 +468,7 @@ block.accounting含规划一次加各run的审查/视频增量；run.call_record
 
 输出新目录包含block.json、各condition/run.json，以及源block/完整输入/bundle/preparation/evidence/receipts快照。assembly_activity始终为本次装配零请求，与历史回执累计次数分开。已有输出即拒绝，不覆盖；部分失败仍写完整条件记录及账目，CLI返回1。结构/来源预检错误不写成功输出。没有失败但尚未完成可返回0，必须查看status，不能把命令成功等同视频完成。
 
-comparison_status通过本地边界时仍为not_checked，有失败则ineligible；本接口永不设置eligible。P5须按6.3从实际输入做资格复核。当前CLI evaluate的生成式盲评导出/ratings路径在#9接线前明确拒绝；普通离线账目查看仍可用。旧evaluation低层函数只支持已有animatic流程，不能绕过CLI拿生成记录导出有效比较。本增量不改评分口径、数据集、实验条件或真实运行授权。
+comparison_status通过本地边界时仍为not_checked，有失败则ineligible；本接口永不设置eligible。P5须按6.3从实际输入做资格复核。CLI evaluate的生成式盲评导出/ratings必须通过6.15的重新核对；普通离线账目查看仍可用。旧evaluation低层导出/评分入口拒绝生成式比较，不能绕过独立重检。本增量不改评分口径、数据集、实验条件或真实运行授权。
 
 ### 6.10 生成式共同规划适配
 
@@ -533,7 +533,7 @@ scene.asset_ids全部图像按原顺序成为input_references，公共URL检查�
 
 P1既有prepare_generated_run重读/核对来源后调用真实编译器，完整编译后再选镜头，保留完整计划和原索引seed。实际planner/reviewer/validator/compiler/pipeline加FakeClient已覆盖读信与公交站还伞10秒软件输入、全镜头/单镜头CLI、源文件不变、哈希/模板/设置/引用篡改拒绝。协议替身测试仍明确标注；新联调不替换业务函数。完全相同请求交给现有assemble_generated_records，以动态图案/正弦音和手写回执验证同块复用及费用一次记账，软件账目不是实际扣费。
 
-编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。离线资格见6.14；三条件真实任务、盲评接线及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
+编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。离线资格见6.14；盲评导出/评分接线见6.15；三条件真实任务及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
 
 ### 6.13 本地成片来源绑定与观看检查材料
 
@@ -584,4 +584,25 @@ P5复用#37的输入与媒体检查。qualification.json包含kind=generated_qua
 
 报告不修改原始comparison_status、source_kind、费用或人工检查表。正式纳入formal_inclusion_approved=false、export_enabled=false、speech_and_visual_quality=not_reviewed；eligible仅指当前所选镜头的软件证据，不说明真实人物/台词/情绪、提供商真实性或正式实验通过。activity的0只指本次新HTTP/POST/GET/消费，不抹去历史未知费用。只使用最终records账目，不把preflight_records的同一历史累计第二次。
 
-输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。现有evaluate的generated盲评/ratings门禁不变；后续导出必须在复制边界重新校验并绑定实际导出字节。真实任务执行、生成失败汇总分类、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
+输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。资格报告自身不授权导出；当前evaluate的独立重检入口见6.15。真实任务执行、生成失败汇总分类、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
+
+### 6.15 生成式匿名导出和评分接线
+
+```python
+export_generated_blind_items(record_paths, *, out_dir, seed, pricing_config, project_root=".") -> dict
+summarize_generated_records(record_paths, ratings, *, private_key=None, pricing_config, project_root=".") -> dict
+```
+
+仅接受完整最终1.1/generated_record_block文件或其目录，不接受单条件run、任意行列表、旧开发对或资格报告。每个最终block只传一次；重复路径/块/条件和混合source_kind拒绝。价格配置必须显式给出并与保存准备一致，路径相对project_root解析。每次重新调用6.14，不信任旧报告或记录的声明资格，不改变原comparison_status。
+
+CLI复用evaluate，生成式路径必须给出`--pricing-config`。`--blind-output`与`--ratings`分开使用；评分必须搭配同次导出的`--private-key PRIVATE/private_key.csv`。无评分可只传records和价格配置查看完整诊断。旧animatic入口兼容；公开低层export_blind_items拒绝生成记录，summarize拒绝直接输入生成式评分（空评分的原始记录诊断仍兼容）。
+
+只复制整块三条件均eligible的记录；单条件失败时该块不作为可比较材料导出，其他块可独立导出。此为软件证据完整性门禁，不批准正式失败/unchanged纳入规则。所有输入行、逐条件原因和原始费用留在PRIVATE/summary.json及评分汇总，未导出行仍在覆盖、缺失评分和费用分母。零可导出时仍生成空索引/表和完整私有诊断，命令成功表示诊断包写出，不表示有可分发视频。
+
+复用原匿名复制器及随机种子，复制前/后源文件和目标字节必须等于已核对media_check.sha256；复制后再核对完整来源/回执/账目并检查副本。先在临时目录完成，失败不发布目标目录，不覆盖已有输出。公开目录仅有匿名MP4、blind_items.csv(item_id/video_file)及空ratings.csv。电影内容/声音仍需协调人检查是否泄露条件，软件不会自动判断语义匿名性。
+
+PRIVATE/generated_export.json绑定每个完整block的canonical哈希、原本地路径、镜头范围（由完整block哈希覆盖）、匿名item/run映射、实际导出视频字节、私有key及公开索引哈希。私有文件不能发给观看者；哈希用于本地一致性检查，不是签名或提供商真实性认证。评分必须保留整套导出目录；来源也必须仍在保存位置。逐项校验全部映射和副本（包括未评分项），只接受实际导出的匿名item_id，不允许run_id回退。更换源/片段/回执、删减映射或替换副本后拒绝旧评分接线。
+
+评分仍复用原summarize算术：clip等权、uncertain记未命中、M/G仅共同已评分块做差并另报覆盖，空分母为null。condition usage仍不含共同规划；block_ledger_accounting.blocks逐块保留完整原始accounting（含unknown/known_subtotals/incomplete_fields），每块一次，绝不累加preflight。accounting_verified/complete如实标明当前重检状态；不把不一致账目当已核实支出。未生成的新任务和原始空人工表不改。
+
+导出/评分始终formal_inclusion_approved=false、speech_and_visual_quality=not_reviewed。6.14报告export_enabled仍false，须走本节独立重检入口；软件产物和合成CSV算术不是模型或独立人工效果证据。真实任务、生成失败细分类汇总、正式协议与真实观看者验收仍待后续；本接口不创建client，不调用API/GPU或自动评分。

@@ -904,6 +904,13 @@ def qualify_generated_records(records, *, pricing_config, project_root="."):
 
 
 def export_blind_items(records, *, out_dir, seed):
+    """Export legacy animatics; generated media require the rechecking entrypoint."""
+    if any(row.get("output_mode") == "generated" for row in records):
+        raise ValueError("Generated export requires export_generated_blind_items with final block paths")
+    return _export_blind_items(records, out_dir=out_dir, seed=seed)
+
+
+def _export_blind_items(records, *, out_dir, seed, expected_video_hashes=None):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 
     Only ``public/`` is for raters. ``PRIVATE/`` contains the answer key and must
@@ -945,15 +952,21 @@ def export_blind_items(records, *, out_dir, seed):
         item_id = f"item_{number:05d}"
         video_file = f"videos/{item_id}.mp4"
         destination = public / video_file
+        expected = expected_video_hashes[row["run_id"]] if expected_video_hashes is not None else None
+        if expected is not None and _file_hash(source) != expected:
+            raise ValueError("Generated source video changed before copying")
         # Exclusive creation avoids silent replacement even if another process interferes.
         with source.open("rb") as incoming, destination.open("xb") as outgoing:
             shutil.copyfileobj(incoming, outgoing)
+        copied_hash = _file_hash(destination)
+        if expected is not None and (copied_hash != expected or _file_hash(source) != expected):
+            raise ValueError("Generated source/export video changed during copying")
         blind.append(dict(item_id=item_id, video_file=video_file))
         keys.append(dict(item_id=item_id, run_id=row["run_id"], block_id=row["block_id"],
                          scene_id=row["scene_id"], replicate=row["replicate"],
                          condition=row["condition"], target_tone=row["tone"],
                          initial_plan_sha256=row["initial_plan_sha256"],
-                         video_sha256=hashlib.sha256(destination.read_bytes()).hexdigest(),
+                         video_sha256=copied_hash,
                          source_kind=row.get("source_kind", "unspecified"),
                          provenance=json.dumps(row.get("provenance"), ensure_ascii=False)))
         record_items.append(dict(run_id=row["run_id"], item_id=item_id))
@@ -981,6 +994,175 @@ def export_blind_items(records, *, out_dir, seed):
                 scheduling_note="Assign raters separately; avoid adjacent variants of one story.")
 
 
+def _generated_evaluation_inputs(record_paths, *, pricing_config, project_root):
+    """Load final ledgers once and qualify that exact snapshot, including failures."""
+    from .contracts import CONDITIONS, json_hash
+    from .pipeline import read_json
+    if not record_paths or not pricing_config:
+        raise ValueError("Generated evaluation requires final block paths and explicit pricing_config")
+    root, paths, reports, records = Path(project_root).resolve(), [], [], []
+    pricing_config = (root / pricing_config).resolve()
+    for value in record_paths:
+        path = (root / value).resolve()
+        path = path / "block.json" if path.is_dir() else path
+        if path in paths:
+            raise ValueError("Duplicate final block path")
+        block = read_json(path)
+        if (not isinstance(block, dict) or block.get("kind") != "generated_record_block"
+                or block.get("schema_version") != "1.1" or block.get("output_mode") != "generated"
+                or not isinstance(block.get("runs"), list)
+                or not all(isinstance(r, dict) for r in block["runs"])
+                or [r.get("condition") for r in block.get("runs", [])] != list(CONDITIONS)):
+            raise ValueError("Generated evaluation accepts complete final generated_record_block files only")
+        report = qualify_generated_records(path, pricing_config=pricing_config, project_root=root)
+        if report["records_sha256"] != json_hash(block):
+            raise ValueError("Final block changed during qualification")
+        paths.append(path)
+        reports.append(report)
+        records.extend(block["runs"])
+    _paired_records(records)
+    return paths, reports, records
+
+
+def _generated_evaluation_summary(reports, records, ratings):
+    """Reuse score arithmetic and retain original once-per-block ledgers verbatim."""
+    result = _summarize(records, ratings)
+    ledgers = [dict(block_id=r["record_block"]["block_id"],
+                    accounting_verified=r["accounting_verified"],
+                    accounting=r["record_block"]["accounting"]) for r in reports]
+    result.update(generated_qualification=reports,
+                  formal_inclusion_approved=False, speech_and_visual_quality="not_reviewed",
+                  block_ledger_accounting=dict(blocks=ledgers,
+                      complete=all(r["accounting_verified"] for r in reports),
+                      note="Original final ledgers, each block once including shared planning and reuse; preflight excluded."))
+    result["interpretation"]["validity"] = (
+        "Offline qualification checks saved software evidence, not provider authenticity, speech/visual quality or formal inclusion.")
+    result["interpretation"]["confounds"] = (
+        "Human allocation, missing ratings, software eligibility and development/synthetic source limitations require disclosure.")
+    return result
+
+
+def _read_evaluation_csv(path):
+    with Path(path).open(encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def export_generated_blind_items(record_paths, *, out_dir, seed, pricing_config, project_root="."):
+    """Requalify, copy anonymously, bind actual bytes and publish only a complete package.
+
+    Only whole software-eligible blocks are copied. Every input remains in the
+    private diagnostic summary; this is not approval of a formal inclusion rule.
+    """
+    import tempfile
+    from .pipeline import write_json
+    paths, reports, records = _generated_evaluation_inputs(
+        record_paths, pricing_config=pricing_config, project_root=project_root)
+    eligible_blocks = {r["record_block"]["block_id"] for r in reports if r["comparison_status"] == "eligible"}
+    selected = [r for r in records if r["block_id"] in eligible_blocks]
+    # Resolve only a copy; never retag original records or overwrite source paths.
+    selected = [dict(r, video_path=str((Path(project_root) / r["video_path"]).resolve())) for r in selected]
+    expected = {r["run_id"]: r["media_check"]["sha256"] for r in selected}
+    out = Path(out_dir).resolve()
+    if out.exists() or out.is_symlink():
+        raise FileExistsError(f"Blind export output already exists: {out}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # A failed copy/recheck never exposes a public directory at the requested path.
+    with tempfile.TemporaryDirectory(prefix=".blind-export-", dir=out.parent) as temporary:
+        staged = Path(temporary) / "package"
+        exported = _export_blind_items(selected, out_dir=staged, seed=seed, expected_video_hashes=expected)
+        _, after, _ = _generated_evaluation_inputs(paths, pricing_config=pricing_config, project_root=project_root)
+        if after != reports:
+            raise ValueError("Generated evidence changed during blind export")
+        summary = _generated_evaluation_summary(reports, records, [])
+        write_json(staged / "PRIVATE/summary.json", summary)
+        manifest = dict(kind="generated_blind_export", schema_version="1.1", seed=seed,
+            records=[dict(path=str(p), sha256=r["records_sha256"]) for p, r in zip(paths, reports)],
+            items=[dict(row, video_sha256=expected[row["run_id"]]) for row in exported["record_items"]],
+            private_key_sha256=_file_hash(staged / "PRIVATE/private_key.csv"),
+            blind_items_sha256=_file_hash(staged / "public/blind_items.csv"),
+            formal_inclusion_approved=False, eligibility_scope="whole offline-qualified blocks only")
+        write_json(staged / "PRIVATE/generated_export.json", manifest)
+        for item in manifest["items"]:
+            if _file_hash(staged / "public/videos" / f"{item['item_id']}.mp4") != item["video_sha256"]:
+                raise ValueError("Exported video changed before publication")
+        if out.exists() or out.is_symlink():
+            raise FileExistsError(f"Blind export output already exists: {out}")
+        staged.rename(out)
+    # Return final paths rather than temporary staging paths.
+    for field in ("public_dir", "blind_items_path", "ratings_path", "private_key_path"):
+        exported[field] = str(out / Path(exported[field]).relative_to(staged))
+    exported.update(excluded_runs=len(records) - len(selected),
+        summary_path=str(out / "PRIVATE/summary.json"), manifest_path=str(out / "PRIVATE/generated_export.json"),
+        formal_inclusion_approved=False, video_check="offline_qualified_source_and_export_byte_hashes",
+        speech_and_visual_quality="not_reviewed",
+        source_kind=records[0]["source_kind"],
+        eligibility_scope="whole offline-qualified blocks only; all input records retained privately")
+    return exported
+
+
+def summarize_generated_records(record_paths, ratings, *, private_key=None, pricing_config, project_root="."):
+    """Recheck current sources AND exported bytes before joining supplied ratings."""
+    from .pipeline import read_json
+    paths, reports, records = _generated_evaluation_inputs(
+        record_paths, pricing_config=pricing_config, project_root=project_root)
+    if private_key is None:
+        if ratings:
+            raise ValueError("Generated ratings require the matching private key")
+        return _generated_evaluation_summary(reports, records, [])
+    key_path = Path(private_key).resolve()
+    package = key_path.parent.parent
+    manifest = read_json(key_path.parent / "generated_export.json")
+    if not isinstance(manifest, dict):
+        raise ValueError("Invalid generated export manifest")
+    current = {str(p): r["records_sha256"] for p, r in zip(paths, reports)}
+    saved = manifest.get("records", [])
+    if (not isinstance(saved, list) or not all(isinstance(r, dict) and
+            isinstance(r.get("path"), str) and isinstance(r.get("sha256"), str) for r in saved)):
+        raise ValueError("Invalid generated export record identities")
+    if (manifest.get("kind") != "generated_blind_export" or manifest.get("schema_version") != "1.1"
+            or len(saved) != len(current) or {r["path"]: r["sha256"] for r in saved} != current):
+        raise ValueError("Generated export does not match all supplied final blocks")
+    index_path = package / "public/blind_items.csv"
+    if (_file_hash(key_path) != manifest.get("private_key_sha256")
+            or _file_hash(index_path) != manifest.get("blind_items_sha256")):
+        raise ValueError("Generated private key or public index changed after export")
+    keys, index = _read_evaluation_csv(key_path), _read_evaluation_csv(index_path)
+    eligible = {r["record_block"]["block_id"] for r in reports if r["comparison_status"] == "eligible"}
+    expected_runs = {r["run_id"] for r in records if r["block_id"] in eligible}
+    # Exact bijection, including currently unrated exports; no silent subset key.
+    items = manifest.get("items", [])
+    if (not isinstance(items, list) or not all(isinstance(i, dict) and all(
+            isinstance(i.get(f), str) for f in ("run_id", "item_id", "video_sha256")) for i in items)):
+        raise ValueError("Invalid generated export item identities")
+    if (len(items) != len(expected_runs) or {i["run_id"] for i in items} != expected_runs
+            or len({i["item_id"] for i in items}) != len(items)
+            or len(keys) != len(items) or len(index) != len(items)):
+        raise ValueError("Generated export mapping is incomplete or software eligibility changed")
+    by_run = {r["run_id"]: r for r in records}
+    mapping = {}
+    for key, public, item in zip(keys, index, items):
+        record = by_run[item["run_id"]]
+        item_id = item["item_id"]
+        # Anonymous IDs are generated locally, never interpreted as arbitrary paths.
+        if (item_id != f"item_{len(mapping) + 1:05d}"
+                or public != dict(item_id=item_id, video_file=f"videos/{item_id}.mp4")):
+            raise ValueError("Generated public mapping has invalid anonymous IDs/paths")
+        expected_key = {field: str(record[field]) for field in
+                        ("run_id", "block_id", "scene_id", "replicate", "condition", "initial_plan_sha256", "source_kind")}
+        expected_key.update(item_id=item_id, target_tone=record["tone"],
+            video_sha256=record["media_check"]["sha256"],
+            provenance=json.dumps(record.get("provenance"), ensure_ascii=False))
+        if (key != expected_key or item["video_sha256"] != record["media_check"]["sha256"]
+                or _file_hash(package / "public" / public["video_file"]) != item["video_sha256"]):
+            raise ValueError("Generated private mapping/exported video does not match current source evidence")
+        mapping[item["run_id"]] = item_id
+    # Reject run_id fallback votes: generated scores must reference actual exports.
+    if any(r.get("item_id") not in set(mapping.values()) for r in ratings):
+        raise ValueError("Generated rating item_id was not exported")
+    mapped = [dict(r, item_id=mapping[r["run_id"]]) if r["run_id"] in mapping else dict(r) for r in records]
+    return _generated_evaluation_summary(reports, mapped, ratings)
+
+
 def _paired_total(rows, field):
     values = [row.get(field) for row in rows]
     known = [value for value in values if value is not None]
@@ -989,6 +1171,13 @@ def _paired_total(rows, field):
 
 
 def summarize(records, ratings):
+    """Keep generated ratings behind source/export validation; diagnostics stay readable."""
+    if ratings and any(row.get("output_mode") == "generated" for row in records):
+        raise ValueError("Generated ratings require summarize_generated_records and the exported private key")
+    return _summarize(records, ratings)
+
+
+def _summarize(records, ratings):
     """Summarize supplied human ratings with equal clip weight and full coverage.
 
     Ratings join via records.item_id (from PRIVATE/private_key.csv); unexported
