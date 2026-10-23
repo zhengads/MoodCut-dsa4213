@@ -535,6 +535,323 @@ def _paired_records(records):
     return records
 
 
+
+def validate_generated_comparison(records, *, scene, initial, plans, manifest,
+                                  settings, template_sha256):
+    """Recompute one block's generated input/review identities (CONTRACTS 6.5).
+
+    Returns diagnostic strings without mutating records or approving media,
+    ratings, accounting, or formal inclusion. Local reference assets are checked
+    by the public validator relative to the current project root. No network.
+    """
+    from .contracts import (CONDITIONS, _json_copy, json_hash,
+                            assert_dialogue_only_revision, shared_generation_sha256)
+    from .validation import validate_plan
+    errors = []
+    try:
+        records, scene, initial, plans, manifest, settings = _json_copy(
+            [records, scene, initial, plans, manifest, settings])
+    except ValueError as exc:
+        return [str(exc)]
+    if not all(isinstance(x, dict) for x in (scene, initial, plans, manifest, settings)):
+        return ["scene, initial, plans, manifest and settings must be objects"]
+    if set(plans) != set(CONDITIONS):
+        errors.append("plans must contain exactly baseline/generic_review/moodcut")
+    if not isinstance(records, list):
+        return errors + ["records must be a list"]
+    if len(records) != 3:
+        errors.append("records must contain exactly three conditions")
+    initial_hash = json_hash(initial)
+    expected_shared = None
+    try:
+        errors.extend("initial: " + e for e in validate_plan(
+            scene, initial, manifest, output_mode="generated"))
+        expected_shared = shared_generation_sha256(
+            scene, initial, manifest, settings, template_sha256=template_sha256)
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"initial inputs: {exc}")
+    final_hashes = {}
+    for condition in CONDITIONS:
+        plan = plans.get(condition)
+        if not isinstance(plan, dict):
+            errors.append(f"{condition}: missing plan object")
+            continue
+        final_hashes[condition] = json_hash(plan)
+        try:
+            errors.extend(f"{condition}: {e}" for e in validate_plan(
+                scene, plan, manifest, output_mode="generated"))
+            assert_dialogue_only_revision(initial, plan)
+            shared = shared_generation_sha256(scene, plan, manifest, settings,
+                                              template_sha256=template_sha256)
+            if expected_shared is not None and shared != expected_shared:
+                errors.append(f"{condition}: recomputed shared identity differs")
+        except (ValueError, TypeError, KeyError, OSError) as exc:
+            errors.append(f"{condition}: {exc}")
+    if final_hashes.get("baseline") != initial_hash:
+        errors.append("baseline must equal the complete initial plan")
+
+    run_ids, conditions, block_ids, replicates, kinds, models = set(), set(), set(), set(), set(), set()
+    selected_scopes = []
+    for index, row in enumerate(records):
+        prefix = f"record {index + 1}"
+        if not isinstance(row, dict):
+            errors.append(f"{prefix}: must be an object")
+            continue
+        condition = row.get("condition")
+        if not isinstance(condition, str) or condition not in CONDITIONS:
+            errors.append(f"{prefix}: unknown condition")
+            continue
+        prefix = condition
+        if condition in conditions:
+            errors.append(f"{prefix}: duplicate condition")
+        conditions.add(condition)
+        for field, seen in (("run_id", run_ids), ("block_id", block_ids),
+                            ("source_kind", kinds), ("model_id", models)):
+            value = row.get(field)
+            if not _text(value):
+                errors.append(f"{prefix}: {field} must be nonempty")
+            else:
+                if field == "run_id" and value in seen:
+                    errors.append(f"{prefix}: duplicate run_id")
+                seen.add(value)
+        replicate = row.get("replicate")
+        if type(replicate) is not int or replicate < 1:
+            errors.append(f"{prefix}: invalid replicate")
+        else:
+            replicates.add(replicate)
+        for field, expected in (("schema_version", "1.1"), ("output_mode", "generated"),
+                                ("scene_id", scene.get("scene_id")), ("tone", scene.get("tone")),
+                                ("initial_plan_sha256", initial_hash),
+                                ("final_plan_sha256", final_hashes.get(condition)),
+                                ("shared_generation_sha256", expected_shared),
+                                ("video_model_id", settings.get("model"))):
+            if expected is None or row.get(field) != expected:
+                errors.append(f"{prefix}: {field} mismatch")
+        hashes = row.get("prompt_hashes")
+        if not isinstance(hashes, dict) or hashes.get("video_template") != template_sha256:
+            errors.append(f"{prefix}: video template identity mismatch")
+        status = row.get("review_status")
+        allowed = ("not_applicable",) if condition == "baseline" else ("applied", "unchanged")
+        if status not in allowed:
+            errors.append(f"{prefix}: invalid review source {status!r}")
+        if status == "unchanged" and final_hashes.get(condition) != initial_hash:
+            errors.append(f"{prefix}: unchanged requires the complete initial plan")
+        if row.get("run_status") == "failed" or row.get("generation_status") in ("failed", "interrupted"):
+            errors.append(f"{prefix}: failed/interrupted run is not a valid comparison source")
+        selected = row.get("selected_shot_ids")
+        # Omitted selection denotes the complete plan; explicit subsets retain order.
+        shots = initial.get("shots")
+        full_ids = [shot.get("shot_id") for shot in shots if isinstance(shot, dict)] if isinstance(shots, list) else []
+        if selected is None:
+            selected = full_ids
+        if (not isinstance(selected, list) or not selected
+                or any(not isinstance(x, str) for x in selected)
+                or len(set(selected)) != len(selected)
+                or selected != [x for x in full_ids if x in selected]):
+            errors.append(f"{prefix}: invalid selected_shot_ids")
+        else:
+            selected_scopes.append(tuple(selected))
+    if conditions != set(CONDITIONS):
+        errors.append("missing required comparison conditions")
+    for name, values in (("block_id", block_ids), ("replicate", replicates),
+                         ("source_kind", kinds), ("model_id", models)):
+        if len(values) != 1:
+            errors.append(f"records must share one {name}")
+    if len(set(selected_scopes)) > 1:
+        errors.append("records must share the same selected shot scope")
+    return list(dict.fromkeys(errors))
+
+
+
+def validate_generated_media_file(record, *, project_root):
+    """Check final-file bytes against a P1 record; not full media qualification.
+
+    Relative paths resolve against project_root. No decoding, receipts, subjective
+    checks or status mutation are performed. Call again at the export boundary.
+    """
+    if not isinstance(record, dict):
+        return ["record must be an object"]
+    errors = []
+    for field, expected in (("schema_version", "1.1"), ("output_mode", "generated"),
+                            ("run_status", "completed"),
+                            ("generation_status", "assembled_requires_manual_inspection")):
+        if record.get(field) != expected:
+            errors.append(f"{field} must be {expected}")
+    check = record.get("media_check")
+    if not isinstance(check, dict):
+        return errors + ["missing media_check object"]
+    digest = check.get("sha256")
+    if (not isinstance(digest, str) or len(digest) != 64
+            or any(c not in "0123456789abcdef" for c in digest)):
+        errors.append("invalid media_check sha256")
+    paths = [record.get("video_path"), check.get("video_path")]
+    if any(not _text(path) for path in paths):
+        return errors + ["video_path is required in record and media_check"]
+    try:
+        root = Path(project_root).resolve()
+        resolved = [(Path(path) if Path(path).is_absolute() else root / path).resolve()
+                    for path in paths]
+        if resolved[0] != resolved[1]:
+            errors.append("record and media_check video_path mismatch")
+        if not resolved[0].is_file():
+            errors.append("video file is missing or not a regular file")
+        elif _file_hash(resolved[0]) != digest:
+            errors.append("video bytes differ from media_check sha256")
+    except (OSError, ValueError) as exc:
+        errors.append(f"cannot read video file: {exc}")
+    return errors
+
+
+def validate_generated_source_bindings(record, compiled_condition, *, project_root):
+    """Recheck ordered request/clip bindings; no receipt or quality approval.
+
+    compiled_condition must come from the independently validated P4 bundle.
+    P1's final media_check identifies the saved assembly sidecar when present.
+    """
+    from .contracts import json_hash, _json_copy
+    errors = validate_generated_media_file(record, project_root=project_root)
+    try:
+        _json_copy([record, compiled_condition])
+        if not isinstance(record, dict) or not isinstance(compiled_condition, dict):
+            raise ValueError("record and compiled_condition must be objects")
+        if (not _text(record.get("condition"))
+                or record.get("condition") != compiled_condition.get("condition")):
+            raise ValueError("compiled condition mismatch")
+        jobs, compiled = record.get("generation_jobs"), compiled_condition.get("jobs")
+        if (not isinstance(jobs, list) or not jobs or not isinstance(compiled, list)
+                or len(jobs) != len(compiled)):
+            raise ValueError("missing or inconsistent generation jobs")
+        bindings, seen = [], set()
+        for index, (job, source) in enumerate(zip(jobs, compiled)):
+            if not isinstance(job, dict) or not isinstance(source, dict):
+                raise ValueError("jobs must be objects")
+            shot = source.get("shot_id")
+            if not _text(shot) or shot in seen or job.get("shot_id") != shot:
+                raise ValueError("duplicate or out-of-order source shot")
+            seen.add(shot)
+            request = source.get("request")
+            if not isinstance(request, dict) or not request:
+                raise ValueError("missing compiled request")
+            digest = json_hash(request)
+            if source.get("request_sha256") != digest or job.get("request_sha256") != digest:
+                errors.append(f"shot {index + 1}: request identity mismatch")
+            if job.get("status") != "downloaded":
+                errors.append(f"shot {index + 1}: source clip is not downloaded")
+            # Reuse byte/path checking without mutating the original job or ledger.
+            clip_record = {**record, "video_path": job.get("video_path"),
+                           "media_check": job.get("media_check")}
+            errors.extend(f"shot {index + 1}: {e}" for e in
+                          validate_generated_media_file(clip_record, project_root=project_root))
+            check = job.get("media_check")
+            bindings.append({"shot_id": shot, "request_sha256": digest,
+                             "sha256": check.get("sha256") if isinstance(check, dict) else None})
+        if record.get("selected_shot_ids") != [b["shot_id"] for b in bindings]:
+            errors.append("selected shot order differs from source jobs")
+        check = record.get("media_check")
+        if not isinstance(check, dict):
+            raise ValueError("missing final media_check")
+        sidecar = check.get("source_media_check_path")
+        if sidecar is None:
+            if len(bindings) != 1 or check.get("sha256") != bindings[0]["sha256"]:
+                errors.append("assembly sidecar required unless final file equals the single source clip")
+        else:
+            if not _text(sidecar):
+                raise ValueError("invalid assembly sidecar path")
+            path = Path(sidecar)
+            if not path.is_absolute():
+                path = Path(project_root) / path
+            saved = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(saved, dict):
+                raise ValueError("assembly sidecar must be an object")
+            if json_hash(saved) != check.get("source_media_check_sha256"):
+                errors.append("assembly sidecar identity mismatch")
+            if saved.get("source_clips") != bindings:
+                errors.append("assembly source clip/request order mismatch")
+            if saved.get("sha256") != check.get("sha256"):
+                errors.append("assembly final-file identity mismatch")
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"source bindings: {exc}")
+    return list(dict.fromkeys(errors))
+
+
+def validate_generated_receipt_binding(job, *, expected_model, project_root):
+    """Recheck a saved P1 job's receipt identity, without polling or accounting.
+
+    Request identity must already be checked against the validated P4 bundle.
+    Reused jobs retain the owner's receipt; this does not validate reuse ownership.
+    """
+    from .contracts import json_hash, _json_copy
+    import re
+    errors = []
+    try:
+        _json_copy(job)
+        if not isinstance(job, dict):
+            raise ValueError("job must be an object")
+        if not _text(expected_model):
+            raise ValueError("expected_model is required")
+        if not _text(job.get("receipt_path")):
+            raise ValueError("receipt_path is required")
+        root = Path(project_root).resolve()
+        path = Path(job["receipt_path"])
+        path = (path if path.is_absolute() else root / path).resolve()
+        receipt = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(receipt, dict):
+            raise ValueError("receipt must be an object")
+        if json_hash(receipt) != job.get("receipt_sha256"):
+            errors.append("saved receipt identity mismatch")
+        if receipt.get("schema_version") not in ("1.0", "1.1"):
+            errors.append("unsupported receipt schema_version")
+        request_hash = job.get("request_sha256")
+        if (not isinstance(request_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", request_hash)
+                or receipt.get("request_sha256") != request_hash):
+            errors.append("receipt request identity mismatch")
+        if receipt.get("model") != expected_model:
+            errors.append("receipt model mismatch")
+        job_id = job.get("job_id")
+        if (not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,160}", job_id)
+                or receipt.get("job_id") != job_id):
+            errors.append("receipt job_id mismatch")
+        if job.get("status") != "downloaded" or receipt.get("status") != "downloaded":
+            errors.append("job and receipt must both be downloaded")
+        if not _text(receipt.get("video_path")) or not _text(job.get("video_path")):
+            errors.append("receipt and job video_path are required")
+        else:
+            saved_video, job_video = Path(receipt["video_path"]), Path(job["video_path"])
+            saved_video = (saved_video if saved_video.is_absolute() else path.parent / saved_video).resolve()
+            job_video = (job_video if job_video.is_absolute() else root / job_video).resolve()
+            if saved_video != job_video:
+                errors.append("receipt video_path mismatch")
+    except (ValueError, TypeError, KeyError, OSError) as exc:
+        errors.append(f"receipt binding: {exc}")
+    return errors
+
+
+def validate_generated_media_evidence(record, compiled_condition, *, project_root):
+    """Combine file, source and receipt checks for one validated P4 condition.
+
+    Returns all available diagnostics without filtering records or approving
+    comparison eligibility. This is not the block input or reuse/accounting check.
+    """
+    errors = validate_generated_source_bindings(
+        record, compiled_condition, project_root=project_root)
+    if not isinstance(record, dict) or not isinstance(compiled_condition, dict):
+        return errors
+    jobs, compiled = record.get("generation_jobs"), compiled_condition.get("jobs")
+    if not isinstance(jobs, list) or not isinstance(compiled, list):
+        return errors
+    # Source validation checks ordering and count; continue matching pairs to
+    # collect receipt errors even when a file or request check already failed.
+    for index, (job, source) in enumerate(zip(jobs, compiled)):
+        request = source.get("request") if isinstance(source, dict) else None
+        model = request.get("model") if isinstance(request, dict) else None
+        if not _text(model) or record.get("video_model_id") != model:
+            errors.append(f"shot {index + 1}: compiled model differs from video_model_id")
+        errors.extend(f"shot {index + 1}: {error}" for error in
+                      validate_generated_receipt_binding(
+                          job, expected_model=model, project_root=project_root))
+    return list(dict.fromkeys(errors))
+
+
 def export_blind_items(records, *, out_dir, seed):
     """Copy existing rendered MP4s under anonymous names and create empty ratings.
 

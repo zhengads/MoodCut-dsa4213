@@ -249,9 +249,8 @@ virtual environment are excluded from the commit.
 
 ## 中文速览
 
-已完成 VBench 单指标接入、批量评估、逐条失败记录、断点续跑及 CSV 汇总。
-续跑会核对视频内容与配置，避免复用过期分数；测试数据仅验证流程，不代表 MoodCut 正式效果。
-其他指标、正式实验和 GPU 验证仍待完成，具体测试证据见下文。
+已完成 VBench 单指标批量评估、失败记录及断点续跑；本次新增三条件输入身份和仅台词修改校验。
+通过输入校验不等于视频合格或正式实验完成；媒体证据接入、盲评放行和正式实验仍待完成。
 
 
 ## Batch evaluation and resume
@@ -327,3 +326,175 @@ experimental comparability; formal pairing and analysis remain separate work.
 GPU performance, representative long videos, formal method comparisons and other
 metrics have not been validated. This increment proves batch orchestration and
 failure accounting, not MoodCut generation quality.
+
+
+## Generated comparison input prerequisites (2026-10-20)
+
+`validate_generated_comparison` checks one three-condition block against its
+actual source objects. Run from the project root so the public plan validator can
+resolve the reference assets in the manifest.
+
+```python
+from moodcut.evaluation import validate_generated_comparison
+
+errors = validate_generated_comparison(
+    records, scene=scene, initial=initial, plans=plans,
+    manifest=manifest, settings=settings, template_sha256=template_sha256,
+)
+```
+
+`plans` maps `baseline`, `generic_review`, and `moodcut` to complete plans.
+The function returns diagnostic strings, or an empty list when these input
+prerequisites pass. It performs no network calls and does not mutate inputs.
+It recomputes initial, final and shared generation hashes using the public
+contract helpers, validates local reference assets, and checks that changes are
+restricted to dialogue. Baseline must equal the complete initial plan; an
+`unchanged` review must also equal it. The three records must share their block,
+replicate, source kind, text model and ordered shot selection. Missing or duplicate
+conditions, invalid review outcomes and explicit failed/interrupted runs fail.
+
+This is the first increment of issue #9, not complete generated-run eligibility.
+An empty error list does not certify receipts, reused jobs, media bytes, human
+quality checks, costs or formal inclusion. Offline prepared fixtures may pass
+these input checks. The function never sets `comparison_status=eligible` and
+does not release the CLI guard on generated blind exports or ratings. Final
+`records` remain the accounting source; `preflight_records` must not be added as
+another set of runs. Unknown costs remain unknown. Receipt and media evidence
+must be connected through the existing P1/P4 interfaces in the next increment.
+
+Before a formal run, the team still needs to freeze the following decisions:
+
+| Decision | Current status |
+| --- | --- |
+| Development versus formal stories and repeat count | Not approved by this increment |
+| Rater assignment and exclusion rules | Not approved by this increment |
+| Inclusion of unchanged reviews and failed runs | Input validity only; analysis policy pending |
+| Generation models, settings and budget stop | No paid run authorized by these tests |
+| Emotion outcomes versus VBench quality dimensions | Separate outcomes; no formal claim from fixtures |
+
+The comparison concerns dialogue-specific review versus generic review and the
+baseline within the existing pipeline. These checks do not establish improved
+actions, facial expressions, visual consistency or an effect of agent count.
+
+Offline regression coverage includes spoofed identities, non-dialogue extensions,
+changed shared settings, false unchanged labels, incomplete blocks, shot scopes,
+malformed input and preservation of unknown cost fields. Fixtures are software
+test inputs, not generated-video research results. No API, GPU, model download or
+VBench inference is required. The reference-cache check currently reports missing
+upstream files; these tests use repository contracts and local fixtures only.
+
+Validation command: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py tests/test_contracts.py tests/test_validation.py -q`.
+Result: 169 passed and 61 subtests passed. `git diff --check` also passed.
+
+
+### Final-file identity check
+
+`validate_generated_media_file(record, project_root=...)` is a separate, small
+read-only prerequisite for a P1 final record. It requires completed generated
+assembly, matching record/check paths, and a SHA-256 matching the current file
+bytes. Relative paths resolve against the explicit project root. Replaced,
+missing or malformed evidence returns diagnostics; inputs and unknown costs stay
+unchanged. Reuse the existing file-hash implementation; no decoding is added.
+
+This only detects stale final-file evidence at the time of checking. It does not
+verify source clips, receipts, decoding, human judgments or experiment eligibility,
+and is not yet wired into export. The export integration must check again at its
+copy boundary to avoid relying on an earlier check. Synthetic byte fixtures in
+these tests are deliberately not playable videos and do not certify quality.
+
+
+### Ordered source bindings
+
+`validate_generated_source_bindings(record, compiled_condition, project_root=...)`
+adds a read-only source check. Supply one condition from an independently
+validated P4 bundle and its final P1 record. It recomputes each complete request
+hash, checks downloaded source-file bytes, and compares the ordered shot/request/
+clip identities with the saved assembly sidecar. The sidecar's canonical JSON
+hash and final-file fingerprint must match the P1 record. A single-clip record
+without an assembly sidecar is accepted only when its final fingerprint equals
+that clip's fingerprint, matching P1's single-shot path.
+
+This check cannot authenticate an arbitrarily supplied bundle, validate provider
+receipts or reuse accounting, or infer that pixels depict the intended request.
+Those remain separate prerequisites; no status promotion or export wiring is
+included. Tests use synthetic byte files and hand-written sidecars, not playable
+media or model-quality evidence. All records and unknown costs stay unchanged.
+
+
+### Saved receipt identity (2026-10-21)
+
+`validate_generated_receipt_binding(job, expected_model=..., project_root=...)`
+checks a P1 job against its saved receipt: canonical JSON snapshot hash, request
+fingerprint, expected video model, task ID, downloaded status and video path.
+Receipt-relative video paths resolve beside the receipt; record-relative paths
+resolve against the supplied project root. Missing or changed receipts return
+errors without polling, changing records or treating unknown costs as zero.
+
+Use this together with independently validated bundle/request identities and
+source-file checks. Matching local evidence does not authenticate a provider,
+prove video quality or certify reuse ownership, HTTP totals or charges. This
+helper does not require video bytes to exist; that is the preceding file check's
+responsibility. No automatic eligibility or blind-export wiring is added.
+Tests use hand-written synthetic receipts and no provider calls.
+
+
+### Combined per-condition media diagnostics
+
+`validate_generated_media_evidence(record, compiled_condition, project_root=...)`
+composes the existing source/file and saved-receipt checks for one condition.
+It reports receipt failures even when a file check fails, labels diagnostics by
+shot, and takes the expected receipt model from the compiled request while also
+checking the record's video_model_id. It does not modify or discard records.
+
+The supplied P4 condition must still be independently validated against the
+source plans/settings. Block input checks, same-block reuse ownership, accounting,
+media decoding and human acceptance remain separate requirements. An empty list
+is not comparison eligibility. No CLI/export gate is changed. Combined tests use
+synthetic bytes and receipts, preserve not_checked and unknown costs, and include
+simultaneous missing-receipt/replaced-file failures.
+
+
+### Integration with actual P1/P4 outputs (2026-10-21)
+
+`test_p5_reads_actual_inspection_records` reuses P4's existing inspection fixture
+and calls its actual inspection interface. Actual P1/P2/P3/P4 code prepares and
+assembles the three conditions with FakeClient, synthetic moving/audio files and
+hand-written receipts. P5 accepts all three final records, including the records
+containing reused shots, without changing their accounting or not_checked status.
+Blank human judgments remain blank. Modifying a saved receipt after inspection
+produces both snapshot and task-ID mismatch diagnostics.
+
+This verifies interface compatibility, not independent reuse/accounting approval,
+provider authenticity or video quality. Only final records are read as the ledger;
+preflight snapshots are not added. The fixture's numeric bills are not actual
+spending. FFmpeg and ffprobe must be on PATH; this run used version 9.0.1.
+
+Validation: `python -B -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q`
+passed 49 tests and 88 subtests. No business code, CLI/export gate or paid execution
+was changed for this increment.
+
+
+### Unknown-cost integration regression
+
+`test_p5_actual_unknown_cost_records_remain_unknown` passes actual P1/P4 output
+with a legacy receipt through P5 media checks and the existing summary function.
+Missing download counters and unknown provider cost remain unknown; the original
+known subtotal is retained, all three final runs remain in coverage, and records
+are not mutated. Media identity passing does not approve unknown costs or promote
+comparison eligibility. The test supplies no ratings and uses synthetic media
+and bills only. Focused evaluation regression: 50 tests and 88 subtests passed.
+
+
+### Failed-generation integration regression
+
+The actual-interface failure fixture produces one failed baseline and two
+completed conditions. P5 rejects the failed record; all three final records stay
+in coverage and unknown spending remains unknown. No ratings are supplied and
+validation does not mutate the ledger. The test uses a synthetic failed receipt.
+
+Current summary limitation: generation failures before rendering appear under
+`render_pending_or_skipped_runs`, not `render_failed_runs`. Their explicit
+`generation_status=failed` and `failure_kind=generation` remain in the raw record.
+This test documents that existing behavior; it does not claim the summary already
+has a separate generation-failure count. Adding such a count is a later reporting
+increment. No business code or export gate changes are included here.
