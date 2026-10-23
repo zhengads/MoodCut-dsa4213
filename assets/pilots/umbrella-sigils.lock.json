@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "kind": "offline_pilot_asset_lock_not_execution_config",
+  "repository": "https://github.com/ambravo/sigils-people",
+  "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+  "license_url": "https://github.com/ambravo/sigils-people/blob/0a411d71ccf1f8b599c5e48f03039f29b5f63490/LICENSE-PORTRAITS",
+  "license": "CC BY 4.0 plus source-stated acceptable-use terms; preserve full source document",
+  "credit": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/",
+  "use_scope": "Explicitly fictional umbrella technical probe only; no impersonation, real-person claims or formal research-effect evidence.",
+  "conversion": {
+    "pillow_version": "12.3.0",
+    "avif_decoder": "1.4.2",
+    "operation": "AVIF decoded RGB to PNG; no crop, resize or retouch; XMP and ICC retained when supplied",
+    "png_compress_level": 9,
+    "png_optimize": false
+  },
+  "sources": [
+    {
+      "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/README.md",
+      "url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/README.md",
+      "size_bytes": 6339,
+      "sha256": "f458af7afd0fb17ef45850835f8297b1c22f1ee3c5a5d4285f76e24a6d5f4e84"
+    },
+    {
+      "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/LICENSE-PORTRAITS",
+      "url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/LICENSE-PORTRAITS",
+      "size_bytes": 5260,
+      "sha256": "9d163a3ba6b6ba0d96c733b02f402ff82628e7ec27dae84925a254b95e1bf627"
+    },
+    {
+      "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/people/cn.jsonl",
+      "url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/people/cn.jsonl",
+      "size_bytes": 14223,
+      "sha256": "e7b7e3300c531ef7e155c7294a50e2832b83851d3a120eedb5e12334c8e4c205"
+    },
+    {
+      "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-02.avif",
+      "url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-02.avif",
+      "size_bytes": 110204,
+      "sha256": "f336e635cfd8a6bf706d25ca249a5ae1cd610254dd3dcd6224881b68fff265a6"
+    },
+    {
+      "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-04.avif",
+      "url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-04.avif",
+      "size_bytes": 95874,
+      "sha256": "c0aa989763acb80ed61d5ad286baf57ec943ea9756119cea12085782a4bb0730"
+    }
+  ],
+  "portraits": [
+    {
+      "portrait_id": "cn-02",
+      "character_id": "lin",
+      "asset_id": "lin_portrait",
+      "original_path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-02.avif",
+      "origin_url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-02.avif",
+      "original_sha256": "f336e635cfd8a6bf706d25ca249a5ae1cd610254dd3dcd6224881b68fff265a6",
+      "converted": {
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-02.png",
+        "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+        "size_bytes": 1146163,
+        "decoded_rgb_sha256": "31e251e7b5edd2e2a1da1fdb640fceb80649481c6a35e9407552225b7046ca23",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      }
+    },
+    {
+      "portrait_id": "cn-04",
+      "character_id": "bo",
+      "asset_id": "bo_portrait",
+      "original_path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-04.avif",
+      "origin_url": "https://raw.githubusercontent.com/ambravo/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/portraits/l/cn-04.avif",
+      "original_sha256": "c0aa989763acb80ed61d5ad286baf57ec943ea9756119cea12085782a4bb0730",
+      "converted": {
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-04.png",
+        "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+        "size_bytes": 996054,
+        "decoded_rgb_sha256": "ddb03b180092b59cb322936f691052260198e6b23f9689a3f4e985fe7aad10a4",
+        "dimensions": [
+          1024,
+          1024
+        ]
+      }
+    }
+  ],
+  "selection": {
+    "schema_version": "1.0",
+    "assets": [
+      {
+        "asset_id": "lin_portrait",
+        "character_id": "lin",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-02.png",
+        "source_url": "https://example.invalid/moodcut-pilot/cn-02.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ]
+      },
+      {
+        "asset_id": "bo_portrait",
+        "character_id": "bo",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-04.png",
+        "source_url": "https://example.invalid/moodcut-pilot/cn-04.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ]
+      }
+    ]
+  },
+  "offline_manifest": {
+    "schema_version": "1.0",
+    "assets": [
+      {
+        "asset_id": "lin_portrait",
+        "character_id": "lin",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-02.png",
+        "source_url": "https://example.invalid/moodcut-pilot/cn-02.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ],
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "asset_id": "bo_portrait",
+        "character_id": "bo",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-04.png",
+        "source_url": "https://example.invalid/moodcut-pilot/cn-04.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ],
+        "width": 1024,
+        "height": 1024
+      }
+    ]
+  },
+  "delivery_urls_verified": false,
+  "execution_enabled": false
+}

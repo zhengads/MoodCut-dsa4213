@@ -2,7 +2,11 @@
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-当前具体试跑单增量分支：`docs/issue-9-concrete-pilot`。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+当前素材适配增量分支：`feat/issue-8-sigils-offline-assets`；具体试跑单已随PR #42合入。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
+### 当前素材离线适配（2026-10-23）
+
+按明确选择将sigils-people固定版本cn-02/cn-04绑定林/博；原AVIF、完整肖像许可和PNG留在忽略目录。保留来源/署名/XMP，核对原始/转换/解码RGB哈希；新增脚本复用原下载校验、素材构建器与P4编译器，默认本地、--check只读、--fetch仅固定公开来源。三条件共同输入/原首镜头索引及仅台词差异已离线核对，手写来源/mock声明保留。详见[试跑单v2](../pilots/umbrella-single-shot.md)和[credits](../pilots/umbrella-sigils-credits.md)。PNG交付URL仍为占位，历史账目/余额及全部真实运行批准未完成，不调用付费API；#8/#9继续开放。下节v1占位图核对保留为历史交付。
 
 ### 当前具体候选试跑单（2026-10-23）
 
