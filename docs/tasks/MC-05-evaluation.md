@@ -2,19 +2,21 @@
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-当前离线资格增量分支：`feat/issue-9-offline-qualification`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+当前盲评接线增量分支：`feat/issue-9-generated-blind-evaluation`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
-## 生成式记录评估（离线资格已实现，盲评接线待完成）
+## 生成式记录评估（离线资格及盲评导出/评分接线已实现）
 
 **目标**：复用现有盲评/统计工具，为真实生成视频补齐输入适配与比较资格校验；VBench 继续仅作视觉质量辅助。
 
-### 当前离线资格增量（2026-10-23）
+### 当前盲评导出和评分接线增量（2026-10-23）
 
-P1 `recheck_generated_records` 复用已有装配计算和P4编译器；P5 `qualify_generated_records` 输出独立的逐条件资格报告，CLI为 `qualify-generated-records`。源记录/账目/人工表不改，未知费用和失败全部保留，generated盲评/ratings门禁继续保留。验收使用现有软件产物，不调用API；整体待办不因本增量自动完成，#8/#9仍保持开放。详见CONTRACTS 6.14。
+`export_generated_blind_items` / `summarize_generated_records`复用资格、匿名复制和原评分器，CLI为evaluate加显式`--pricing-config`。复制边界和评分时重检来源/回执/账目，私有清单绑定实际导出字节、匿名映射和完整block（含镜头范围）。公开仅匿名视频/索引/空表，失败块保留全部覆盖与账目；不批准正式纳入。准确接口见CONTRACTS 6.15。以下整体待办含真实任务与后续细分统计，不因软件接线整体勾选。
+
+P1 `recheck_generated_records` 复用已有装配计算和P4编译器；P5 `qualify_generated_records` 输出独立的逐条件资格报告，CLI为 `qualify-generated-records`。源记录/账目/人工表不改，未知费用和失败全部保留，generated盲评/ratings须走6.15的独立重检入口。验收使用现有软件产物，不调用API；整体待办不因本增量自动完成，#8/#9仍保持开放。详见CONTRACTS 6.14。
 
 ### 已核实的缺口
 
-旧开发对脚本仍输出 baseline / dialogue_revision；1.1三条件脚本、请求与本地最终记录已有P1/P2/P3/P4实现，PR #37提供前置检查。本增量新增离线资格报告，后续仍需盲评/评分接线。正式故事/样本数/评价者分配未冻结，也没有真实人工评分；`configs/experiment.json` 仍是软件开发示例。
+旧开发对脚本仍输出 baseline / dialogue_revision；1.1三条件脚本、请求与本地最终记录已有P1/P2/P3/P4实现，PR #37提供前置检查。离线资格报告及盲评/评分接线已实现，当前入口见CONTRACTS 6.15。正式故事/样本数/评价者分配未冻结，也没有真实人工评分；`configs/experiment.json` 仍是软件开发示例。
 
 ### 本次待办与验收
 
@@ -28,7 +30,7 @@ P1 `recheck_generated_records` 复用已有装配计算和P4编译器；P5 `qual
 
 ### 写入范围与依赖
 
-接入协议固定为 CONTRACTS 6.3–6.5/6.14：复用已实现的 validate_generated_comparison 前置核对，重算共享身份而非只比较声明值。GeneratedRunRecord 使用1.1、数字/null消费和独立 generation_status；软件例子见 `tests/fixtures/generated_contract.json`。旧 summarize 可读基础字段，不代表旧 evaluate 已有1.1资格验证；保留全部失败/费用与原统计口径。
+接入协议固定为 CONTRACTS 6.3–6.5/6.14/6.15：复用已实现的 validate_generated_comparison 前置核对，重算共享身份而非只比较声明值。GeneratedRunRecord 使用1.1、数字/null消费和独立 generation_status；软件例子见 `tests/fixtures/generated_contract.json`。summarize可读基础字段做空评分诊断，生成式导出/评分必须走6.15独立重检；保留全部失败/费用与原统计口径。
 
 可用公共验证器显式 generated 检查源场景/计划；unchanged 是合法无修改状态，不代表所有意见解决，也不是情绪评分。失败回退与无视频仍保留，正式纳入规则不随软件兼容修复自动改变。
 

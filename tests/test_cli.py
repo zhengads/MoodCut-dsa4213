@@ -821,14 +821,17 @@ def test_records_success_and_identical_reuse_charge_once(prepared_records, tmp_p
         assert r["generation_status"] == "assembled_requires_manual_inspection"
         assert r["media_check"]["has_audio"] is True and r["selected_shot_ids"] == ["s2"]
         assert r["speech_and_visual_quality"] == "requires_manual_inspection"
-    # P1's CLI gate must not let the old animatic exporter treat file completion
-    # as the not-yet-implemented P5 generated comparison qualification.
+    # File completion without explicit pricing/fresh qualification cannot export.
+    # Raw ledger viewing remains compatible and makes no eligibility claim.
     exported = tmp_path / "blind"
     assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output / "block.json"),
                  "--blind-output", str(exported)]) == 1
     assert not exported.exists()
     assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output / "block.json"),
                  "--output", str(tmp_path / "ledger-summary.json")]) == 0
+    assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output),
+                 "--output", str(tmp_path / "directory-ledger-summary.json")]) == 0
+    assert read_json(tmp_path / "ledger-summary.json") == read_json(tmp_path / "directory-ledger-summary.json")
 
 
 @pytest.mark.parametrize("kind", ["cross_block", "cycle", "undownloaded", "hash", "receipt_and_reuse"])

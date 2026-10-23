@@ -250,7 +250,7 @@ virtual environment are excluded from the commit.
 ## 中文速览
 
 已完成 VBench 单指标批量评估、失败记录及断点续跑；本次新增三条件输入身份和仅台词修改校验。
-通过输入校验不等于视频合格或正式实验完成；媒体证据接入、盲评放行和正式实验仍待完成。
+通过输入校验不等于视频合格或正式实验完成；当前媒体/资格和匿名导出接线见文末，正式实验仍待完成。
 
 
 ## Batch evaluation and resume
@@ -332,8 +332,9 @@ failure accounting, not MoodCut generation quality.
 
 Current integration: the individual checks below are composed by the offline
 qualification entry point described at the end of this document. Earlier test
-counts are historical increment records. Generated blind export and ratings
-remain blocked; the qualification report does not authorize a formal experiment.
+counts are historical increment records. Generated blind export and ratings now
+require the independent source/export rechecks described below; a qualification
+report does not authorize a formal experiment.
 
 `validate_generated_comparison` checks one three-condition block against its
 actual source objects. Supply `project_root` for root-relative reference assets;
@@ -363,7 +364,7 @@ This is the first increment of issue #9, not complete generated-run eligibility.
 An empty error list does not certify receipts, reused jobs, media bytes, human
 quality checks, costs or formal inclusion. Offline prepared fixtures may pass
 these input checks. The function never sets `comparison_status=eligible` and
-does not release the CLI guard on generated blind exports or ratings. Final
+does not release generated exports/ratings without the independent rechecks. Final
 `records` remain the accounting source; `preflight_records` must not be added as
 another set of runs. Unknown costs remain unknown. Receipt and media evidence
 must be connected through the existing P1/P4 interfaces in the next increment.
@@ -548,8 +549,8 @@ approval of speech, emotion, provider authenticity, formal inclusion or spending
 `not_reviewed`. Activity counters describe this offline check only (zero new HTTP,
 POST, GET and provider cost), not historical generation costs.
 
-The existing generated blind-export/ratings guard is intentionally retained.
-A later export increment must recheck evidence at its copy boundary and bind the
+The qualification report alone still cannot release an export. The generated
+entrypoints below perform fresh source and copy-boundary checks and bind the
 private mapping to exported bytes. Generation-failure summary categories, real
 three-condition execution, formal protocol choices and actual human evaluation
 remain separate follow-up work. No new sample, experiment condition, model call,
@@ -565,3 +566,68 @@ network-denying audit hook. Only new qualification/acceptance reports were saved
 FFmpeg/ffprobe 9.0.2 were used. All 33 cached references, 41 local document links,
 Python syntax and diff whitespace checks passed. No provider request, real charge,
 new experiment sample or human rating was produced.
+
+## Generated blind export and rating import (2026-10-23)
+
+```bash
+python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --blind-output runs/generated-blind --seed 17
+python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --output runs/generated-coverage.json
+python -m moodcut evaluate --records runs/video-inspection/records --pricing-config configs/video.json --ratings runs/completed-ratings.csv --private-key runs/generated-blind/PRIVATE/private_key.csv --output runs/generated-scores.json
+```
+
+Supply each complete final block once, not individual run files, preflight
+snapshots, or an old qualification report. Multiple final blocks can follow
+`--records`; do not mix source kinds. The same local pricing config and saved
+source locations are required. Outside the checkout, give `--project-root`.
+All output paths must be new. These commands perform only local checks/copies;
+they do not submit, resume, download, or score anything using a model.
+
+The export reuses the anonymous copier and seeded shuffle. Only whole blocks
+whose three conditions pass current offline qualification are copied. Failed or
+inconsistent blocks retain all original records in `PRIVATE/summary.json`, with
+per-condition errors, coverage, missing scores and original ledgers. This
+conservative software gate does not settle formal failure/unchanged inclusion.
+A successful command with zero exported clips creates an empty diagnostic
+package; it does not establish a distributable comparison.
+
+Only `public/` is for viewers: anonymous MP4s, `blind_items.csv` and an empty
+`ratings.csv`. Do not distribute `PRIVATE/`, CLI metadata or inspection pages.
+`PRIVATE/generated_export.json` binds complete block identities (including
+selected-shot scope), item/run mapping, actual copied video hashes, private key
+and public index. Hashes establish local consistency, not signed authenticity.
+The copier checks source and destination bytes before/after copying, requalifies
+sources afterwards and publishes only the finished package. Keep the original
+sources and entire package for rating import. Moving/editing them requires a new
+export; a matching old qualification report alone is insufficient.
+
+Before joining supplied scores, the importer requalifies sources and checks all
+exported files and mappings, including unrated items. Source-only video checks
+are insufficient. Missing/duplicate/subset keys, swapped files or arbitrary
+run-ID ratings fail. Blank template rows are invalid scores; the export never
+fills them. The no-ratings command above reports coverage directly. Test CSVs
+use explicitly synthetic arithmetic fixtures, not human observations.
+
+The original score formulas remain: average votes within each clip, give clips
+equal weight, count uncertain as a miss, compare M/G only on jointly rated blocks
+and report coverage separately. All original rows stay in denominators and
+condition usage. `block_ledger_accounting.blocks` preserves each original final
+ledger once, including shared planning, request reuse, null totals and known
+subtotals; do not add preflight or condition usage to those ledgers again.
+Current accounting verification flags are reported separately. The exporter and
+importer set `formal_inclusion_approved=false`; human quality remains
+`not_reviewed`. Existing software media cannot establish speech, emotion, acting
+or model effectiveness. Coordinators must inspect clips for content/metadata
+that reveals conditions before distribution; the tool does not infer semantic
+anonymity. Real task execution, failure-category reporting, approved formal
+protocol and independent viewers remain follow-up work.
+
+Validation: the local full suite passed 815 tests and 116 subtests (578.18s).
+After final boundary hardening, all 19 export/import regressions passed (331.72s);
+the selected-shot export/import and raw-ledger directory compatibility cases
+also passed separately. The PR CI reruns the final complete suite. An AST check
+confirmed the scorer body is unchanged. Existing saved synthetic artifacts
+exported three anonymous clips and validated an empty score import, with 106
+source file hashes and the original ledger unchanged under a network-denying
+audit hook (zero network attempts). Templates stayed blank; no real human scores
+or new model media were produced. All 33 cached references, 43 local Markdown
+targets, syntax, added-text privacy and whitespace checks passed.

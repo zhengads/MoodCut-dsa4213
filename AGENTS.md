@@ -16,21 +16,21 @@
 
 ## 当前生成式增量
 
-遵守docs/CONTRACTS.md第6节的1.1协议：共同规划一次，三条件仅台词可变；公共纯函数从moodcut.contracts导入。公共验证器、脚本编排、离线CLI及P2/P3/P4规划/审查/请求编译/本地检查材料已实现，默认仍兼容1.0 animatic；P5前置检查和离线资格报告已实现（6.14），真实任务与盲评接线仍待完成。不得混入单组动作/镜头增强；开发投影不是完整三条件实验，固定seed不保证视觉一致。任务未勾选项不当成已实现功能。
+遵守docs/CONTRACTS.md第6节的1.1协议：共同规划一次，三条件仅台词可变；公共纯函数从moodcut.contracts导入。公共验证器、脚本编排、离线CLI及P2/P3/P4规划/审查/请求编译/本地检查材料已实现，默认仍兼容1.0 animatic；P5前置检查和离线资格报告已实现（6.14），盲评导出/评分接线已实现（6.15）；真实任务仍待完成。不得混入单组动作/镜头增强；开发投影不是完整三条件实验，固定seed不保证视觉一致。任务未勾选项不当成已实现功能。
 
 `pipeline.run_experiment/run_condition` 的generated脚本编排及共享哈希记录已实现，参数/依赖见CONTRACTS 6.7。它只保存prepared脚本，不编译请求、生成视频或调用animatic renderer；P2/P3缺接口时明确失败。边界测试的依赖替身不当成真实模块联调，后续接入沿用公共身份检查和记录，不另写编排框架。
 
 `run --output-mode generated --source-block ... [--shot-id ...]`及pipeline.prepare_generated_run的离线入口边界已实现，见CONTRACTS 6.8。它依赖P4正式编译器，缺接口明确失败；测试替身不作为生产实现。保留完整计划/原索引seed，requests/prepared_offline与脚本prepared及视频completed分开，报价不当支出，不允许由此入口发起付费调用。
 
-P4正式build_generated_video_bundle已实现并接通上述入口，见CONTRACTS 6.12。规划前冻结get_video_template_sha256()，使用共同Plan与显式GenerationSettings，不从旧读信配方取动作/时长。原软件模板哈希不能冒充实际模板，不改写历史block。实际P2/P3/P4加FakeClient可准备完整/单镜头请求；请求入口仍不生成视频或设置eligible，真实任务及导出接线待完成，本地检查材料见6.13，离线资格见6.14。video_generated.txt归P4，其他模块提示不变。
+P4正式build_generated_video_bundle已实现并接通上述入口，见CONTRACTS 6.12。规划前冻结get_video_template_sha256()，使用共同Plan与显式GenerationSettings，不从旧读信配方取动作/时长。原软件模板哈希不能冒充实际模板，不改写历史block。实际P2/P3/P4加FakeClient可准备完整/单镜头请求；请求入口仍不生成视频或设置eligible，导出/评分接线见6.15，真实任务待完成，本地检查材料见6.13，离线资格见6.14。video_generated.txt归P4，其他模块提示不变。
 
-离线资格核对使用 `qualify-generated-records` / P5 `qualify_generated_records`，P1只读重检复用原记录装配。报告另存，输入记录和人工表不改，eligible仅指所选范围的软件证据；不可用该报告绕过generated盲评/ratings门禁。契约见6.14，真实调用仍需独立授权。
+离线资格核对使用 `qualify-generated-records` / P5 `qualify_generated_records`，P1只读重检复用原记录装配。报告另存，输入记录和人工表不改，eligible仅指所选范围的软件证据；不可只凭该报告导出/评分，须走6.15重新核对来源及导出字节。契约见6.14，真实调用仍需独立授权。
 
 ## 目录与参考资料
 
-本地成片来源绑定与观看材料使用video_generation.inspect_generated_video及scripts/inspect_generated_video.py，见CONTRACTS 6.13。复用P1回执预检/最终重检、原A/V拼接和接触表布局，真实素材文件哈希/请求/镜头顺序一起绑定。必须声明synthetic/provided_local；判断项留空，不进行ASR/情绪评分。records是最终账目，preflight_records为同一历史的较早快照，不重复累加；不调用API或设eligible。离线资格报告见6.14；下一步仍为真实任务、盲评接线与人工质量验收。
+本地成片来源绑定与观看材料使用video_generation.inspect_generated_video及scripts/inspect_generated_video.py，见CONTRACTS 6.13。复用P1回执预检/最终重检、原A/V拼接和接触表布局，真实素材文件哈希/请求/镜头顺序一起绑定。必须声明synthetic/provided_local；判断项留空，不进行ASR/情绪评分。records是最终账目，preflight_records为同一历史的较早快照，不重复累加；不调用API或设eligible。离线资格报告见6.14；盲评导出/评分接线见6.15；下一步仍为真实任务与人工质量验收。
 
-本地生成回执/费用装配使用pipeline.assemble_generated_records或assemble-generated-records，准确本地证据格式见CONTRACTS 6.9。报价与消费分开，旧回执缺HTTP历史时保留null/已知小计；准备不当成完成，媒体完成不当成比较eligible。入口不创建客户端、提交/恢复任务或拼接视频；#9资格接线前CLI禁止生成式盲评导出/ratings。
+本地生成回执/费用装配使用pipeline.assemble_generated_records或assemble-generated-records，准确本地证据格式见CONTRACTS 6.9。报价与消费分开，旧回执缺HTTP历史时保留null/已知小计；准备不当成完成，媒体完成不当成比较eligible。入口不创建客户端、提交/恢复任务或拼接视频；生成式盲评/ratings须走6.15的独立重检入口。
 
 - 项目代码：`src/moodcut/` 下按功能平铺 `.py` 文件；提示词集中在 `src/moodcut/prompts/`，模型/实验配置在根目录 `configs/`。
 - 测试：`tests/`，共享夹具：`tests/fixtures/`；测试发现限定 tests，排除参考缓存。
