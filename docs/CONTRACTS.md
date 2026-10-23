@@ -655,6 +655,8 @@ CLI路径相对project-root，程序接口路径相对当前目录。media-origi
 
 每个已下载片段在下一POST/复用前通过原P1回执、实际音视频/时长/账目检查。仅同block、同shot_id、完整request_sha256相同且拥有非复用下载来源时复用，记录reused_from；不复用失败/未下载来源，不形成链式复用。费用未知、任务/媒体失败、异常及人工键盘中断立即停止后续POST，所有三条件和未执行镜头继续留在evidence及最终记录。异常记录只留类型与通用诊断，提供商详情沿用脱敏回执，不保存任意依赖异常文本。
 
+视频客户端在原receipt.json追加可选`last_error`，记录`phase=submit/poll/download`、`kind=http/transport/invalid_response`及已知HTTP状态码、异常类型或受控原因；HTTP响应有x-request-id时保存脱敏后的请求标识。HTTP错误正文最多读取8193字节，仅对不超过8192字节的JSON提取白名单错误字段写入原`provider_error`；HTML、损坏或超长正文不落盘，仍保留状态码。字符串限长、嵌套限深，移除key、Bearer、URL及data URI；不保存请求头、完整响应或请求副本。最终generation_jobs同时保留last_error/provider_error，原始回执快照继续保存。诊断不改变任务状态、ID、费用与计数，缺ID/未知费用仍阻止后续POST，不增加重试或恢复权限；旧回执缺这些字段仍按原规则读取，不能补造历史错误。
+
 恢复与继续是两个互斥、显式动作：
 
 - `--resume-execution runs/earlier --resume-condition baseline --resume-shot-id <原ID>`：只恢复一个已有、非复用、可绑定job ID的任务；限submitted/pending/in_progress/completed/轮询超时或中断/下载中断。不恢复未提交、无ID提交未知、终态失败或已下载任务，不自动继续剩余镜头。先复制该回执到新输出的resumed-job，核对副本哈希后才调用原client.resume，只有GET；旧回执/媒体/记录不变。新回执的POST和GET是同一任务的累计历史，不是新提交。

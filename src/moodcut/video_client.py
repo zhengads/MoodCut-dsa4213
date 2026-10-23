@@ -34,6 +34,32 @@ def _money(value, *, positive=False):
     return amount
 
 
+class _VideoAPIError(OpenRouterError):
+    """Carry bounded response evidence to the existing receipt, never to str(exc)."""
+
+    def __init__(self, message, **diagnostic):
+        super().__init__(message)
+        self.diagnostic = diagnostic
+
+
+def _http_error(exc):
+    diagnostic = {"kind": "http", "http_status": exc.code}
+    try:
+        request_id = exc.headers.get("x-request-id") if exc.headers else None
+        if isinstance(request_id, str):
+            diagnostic["request_id"] = request_id[:200]
+        raw = exc.read(8193)
+        if len(raw) <= 8192:
+            data = _strict_json(raw.decode("utf-8"))
+            if isinstance(data, dict):
+                diagnostic["provider_error"] = data.get("error", data)
+    except (OSError, ValueError, UnicodeError, RecursionError):
+        pass  # A malformed/HTML error body must not hide the HTTP status.
+    finally:
+        exc.close()
+    return _VideoAPIError(f"Video API HTTP {exc.code}; no automatic resubmission", **diagnostic)
+
+
 def _json_request(opener, request):
     try:
         with opener(request, timeout=60) as response:
@@ -45,9 +71,13 @@ def _json_request(opener, request):
             raise ValueError("Expected an object")
         return data
     except HTTPError as exc:
-        raise OpenRouterError(f"Video API HTTP {exc.code}; no automatic resubmission") from None
-    except (URLError, OSError, ValueError, UnicodeError):
-        raise OpenRouterError("Video API transport or JSON error; no automatic resubmission") from None
+        raise _http_error(exc) from None
+    except (URLError, OSError) as exc:
+        raise _VideoAPIError("Video API transport error; no automatic resubmission",
+                             kind="transport", error_type=type(exc).__name__) from None
+    except (ValueError, UnicodeError, RecursionError) as exc:
+        raise _VideoAPIError("Video API JSON error; no automatic resubmission",
+                             kind="invalid_response", error_type=type(exc).__name__) from None
 
 
 def fetch_video_models() -> list[dict]:
@@ -170,20 +200,55 @@ class OpenRouterVideoClient:
         temporary.write_text(json.dumps(receipt, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
         temporary.replace(directory / "receipt.json")
 
-    def _safe_provider_error(self, value):
+    def _safe_provider_error(self, value, _depth=0):
         """Keep actionable error fields, excluding credentials and signed URLs."""
+        if _depth >= 6:
+            return "[truncated]"
         if value is None or type(value) in (bool, int):
             return value
         if isinstance(value, dict):
-            return {key: self._safe_provider_error(value[key])
-                    for key in ("code", "message", "type", "error", "details") if key in value}
+            result = {}
+            for key in ("code", "message", "type", "error", "details", "metadata", "provider_name", "raw"):
+                if key not in value:
+                    continue
+                item = value[key]
+                if key == "raw" and isinstance(item, str):
+                    try:
+                        parsed = _strict_json(item)
+                        if isinstance(parsed, (dict, list)):
+                            item = parsed
+                    except (ValueError, RecursionError):
+                        pass
+                result[key] = self._safe_provider_error(item, _depth + 1)
+            return result
         if isinstance(value, list):
-            return [self._safe_provider_error(item) for item in value[:5]]
-        text = str(value).replace(self._key, "[redacted-key]")
-        text = re.sub(r"https?://[^\s\"<>]+", "[redacted-url]", text)
+            return [self._safe_provider_error(item, _depth + 1) for item in value[:5]]
+        text = str(value)
+        if self._key:
+            text = text.replace(self._key, "[redacted-key]")
+        text = re.sub(r"https?://[^\s\"<>]+", "[redacted-url]", text, flags=re.IGNORECASE)
+        text = re.sub(r"data:[^\s\"<>]+", "[redacted-data]", text, flags=re.IGNORECASE)
         text = re.sub(r"sk-[A-Za-z0-9_-]+", "[redacted-key]", text)
         text = re.sub(r"(?i)bearer\s+[A-Za-z0-9._~+/-]+=*", "Bearer [redacted-key]", text)
         return text[:2000]
+
+    def _record_error(self, directory, receipt, phase, diagnostic):
+        details = {key: diagnostic[key] for key in ("kind", "http_status", "error_type", "reason")
+                   if key in diagnostic}
+        details["phase"] = phase
+        if "request_id" in diagnostic:
+            details["request_id"] = self._safe_provider_error(diagnostic["request_id"])
+        receipt["last_error"] = details
+        if "provider_error" in diagnostic:
+            receipt["provider_error"] = self._safe_provider_error(diagnostic["provider_error"])
+        self._save(directory, receipt)
+
+    def _api_json(self, directory, receipt, request, phase):
+        try:
+            return _json_request(self._api, request)
+        except _VideoAPIError as exc:
+            self._record_error(directory, receipt, phase, exc.diagnostic)
+            raise
 
     def generate(self, request: dict, *, out_dir: str) -> dict:
         if not self._allow_paid:
@@ -214,9 +279,12 @@ class OpenRouterVideoClient:
         self._unknown = True
         try:
             self.post_attempts += 1
-            data = _json_request(self._api, self._request(payload=request))
+            data = self._api_json(directory, receipt, self._request(payload=request), "submit")
             job_id = data.get("id")
             if not isinstance(job_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,160}", job_id):
+                self._record_error(directory, receipt, "submit", {
+                    "kind": "invalid_response", "reason": "missing_or_invalid_job_id",
+                    **({"provider_error": data["error"]} if "error" in data else {})})
                 raise OpenRouterError("Video submission returned no usable job ID; reconcile remotely")
             receipt["job_id"] = job_id
             receipt["status"] = "submitted"
@@ -268,14 +336,16 @@ class OpenRouterVideoClient:
                     raise OpenRouterError("Video polling timed out; the job may still charge. Resume this job, do not resubmit")
                 count("poll_attempts")
                 try:
-                    data = _json_request(self._api, self._request("/" + receipt["job_id"]))
+                    data = self._api_json(directory, receipt, self._request("/" + receipt["job_id"]), "poll")
                 except OpenRouterError:
                     receipt["status"] = "polling_interrupted"
                     self._save(directory, receipt)
                     raise
             if data.get("status") not in STATUSES or data.get("id", receipt["job_id"]) != receipt["job_id"]:
                 receipt["status"] = "invalid_poll_response"
-                self._save(directory, receipt)
+                self._record_error(directory, receipt, "poll", {
+                    "kind": "invalid_response", "reason": "invalid_status_or_job_id",
+                    **({"provider_error": data["error"]} if "error" in data else {})})
                 raise OpenRouterError("Invalid video job status; retain job ID for reconciliation")
             receipt["status"] = data["status"]
             self._save(directory, receipt)
@@ -323,9 +393,12 @@ class OpenRouterVideoClient:
             if total == 0:
                 raise OpenRouterError("Empty video download")
             partial.replace(target)
-        except (HTTPError, URLError, OSError, OpenRouterError):
+        except (HTTPError, URLError, OSError, OpenRouterError) as exc:
             receipt["status"] = "download_interrupted"
-            self._save(directory, receipt)
+            diagnostic = (_http_error(exc).diagnostic if isinstance(exc, HTTPError) else
+                          {"kind": "transport" if isinstance(exc, OSError) else "invalid_response",
+                           "error_type": type(exc).__name__})
+            self._record_error(directory, receipt, "download", diagnostic)
             raise OpenRouterError("Video download interrupted; resume the saved job without POST") from None
         receipt["status"] = "downloaded"
         receipt["video_path"] = str(target)

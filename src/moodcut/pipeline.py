@@ -1019,8 +1019,9 @@ def _compute_generated_records(preparation, *, evidence, pricing_config, project
                 snapshots[f"{row['condition']}/{job['shot_id']}"] = deepcopy(receipt)
                 entry["remote_status"] = receipt.get("status")
                 entry["job_id"] = receipt.get("job_id")
-                if "provider_error" in receipt:
-                    entry["provider_error"] = deepcopy(receipt["provider_error"])
+                for field in ("provider_error", "last_error"):
+                    if field in receipt:
+                        entry[field] = deepcopy(receipt[field])
                 counts = _generated_receipt_counts(receipt)
                 entry.update(counts)
                 entry["errors"].extend(counts["counter_errors"])

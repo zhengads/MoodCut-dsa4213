@@ -4,7 +4,7 @@ import json
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import Mock
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request
 
 import pytest
@@ -412,6 +412,102 @@ def test_unknown_submit_not_retried_and_blocks_later_jobs(tmp_path):
     stored = (tmp_path / "first/receipt.json").read_text()
     assert "never-log" not in stored
     assert json.loads(stored)["provider_cost_usd"] is None
+    assert json.loads(stored)["last_error"] == {
+        "phase": "submit", "kind": "transport", "error_type": "URLError"}
+
+
+@pytest.mark.parametrize("code", [400, 429, 502])
+def test_submit_http_error_retains_diagnostic_without_retry(tmp_path, code):
+    body = response({"error": {"code": "SYNTHETIC_REJECTION", "message":
+        "Cannot fetch HTTPS://example.com/a?token=private; key=never-log-this-key DATA:image/png;base64,private-image",
+        "metadata": {"provider_name": "synthetic", "raw": json.dumps({
+            "error": {"message": "Synthetic reference error"}, "headers": {"secret": "do-not-store"}})},
+        "request": {"prompt": "do-not-store"}}})
+    error = HTTPError("https://openrouter.ai/api/v1/videos", code, "unsafe reason", {
+        "x-request-id": "req-synthetic-123", "Authorization": "never-log-this-key"}, body)
+    opener = Mock(side_effect=error)
+    c = client(opener)
+    with pytest.raises(OpenRouterError, match=f"HTTP {code}"):
+        c.generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": "submit", "kind": "http", "http_status": code,
+                                   "request_id": "req-synthetic-123"}
+    assert saved["provider_error"]["code"] == "SYNTHETIC_REJECTION"
+    assert saved["provider_error"]["metadata"]["raw"] == {"error": {"message": "Synthetic reference error"}}
+    assert saved["status"] == "submission_unknown" and saved["job_id"] is None
+    assert saved["provider_cost_usd"] is None and c.spent_usd is None
+    assert body.closed
+    for secret in ("never-log-this-key", "token=private", "private-image", "do-not-store", "unsafe reason"):
+        assert secret not in json.dumps(saved)
+    with pytest.raises(BudgetError):
+        c.generate(request(), out_dir=str(tmp_path / "second"))
+    assert opener.call_count == c.post_attempts == 1
+
+
+@pytest.mark.parametrize("raw", [b'<html>secret</html>', b'{invalid', b'x' * 8193,
+                                b'[' * 2000 + b'0' + b']' * 2000],
+                         ids=["html", "malformed_json", "oversize", "too_deep"])
+def test_http_error_invalid_or_large_body_keeps_status_only(tmp_path, raw):
+    body = io.BytesIO(raw)
+    opener = Mock(side_effect=HTTPError("https://example.com", 502, "unsafe", {}, body))
+    with pytest.raises(OpenRouterError, match="HTTP 502"):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": "submit", "kind": "http", "http_status": 502}
+    assert "provider_error" not in saved and "secret" not in str(saved)
+    assert body.closed and opener.call_count == 1
+
+
+def test_invalid_json_response_has_distinct_saved_diagnostic(tmp_path):
+    opener = Mock(return_value=io.BytesIO(b'{not-json never-log-this-key'))
+    with pytest.raises(OpenRouterError, match="JSON error"):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"]["phase"] == "submit"
+    assert saved["last_error"]["kind"] == "invalid_response"
+    assert "never-log-this-key" not in str(saved) and opener.call_count == 1
+
+
+@pytest.mark.parametrize("phase", ["poll", "download"])
+def test_http_error_after_submit_retains_phase_id_and_known_cost(tmp_path, phase):
+    initial = {"id": "job-http", "status": "pending" if phase == "poll" else "completed"}
+    if phase == "download":
+        initial["usage"] = {"cost": .6}
+    opener = Mock(side_effect=[response(initial), HTTPError("https://example.com", 503, "unsafe", {},
+        response({"error": {"code": "SYNTHETIC_UNAVAILABLE", "message": "Bearer never-log-this-key"}}))])
+    with pytest.raises(OpenRouterError):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": phase, "kind": "http", "http_status": 503}
+    assert saved["job_id"] == "job-http"
+    assert saved["status"] == ("polling_interrupted" if phase == "poll" else "download_interrupted")
+    assert saved["provider_cost_usd"] == (None if phase == "poll" else "0.6")
+    assert saved["provider_error"]["code"] == "SYNTHETIC_UNAVAILABLE"
+    assert "never-log-this-key" not in str(saved)
+    assert opener.call_count == 2
+    assert [c.args[0].get_method() for c in opener.call_args_list] == ["POST", "GET"]
+
+
+def test_http_submit_diagnostic_survives_executor_final_records(execution_case, tmp_path, monkeypatch):
+    from moodcut import video_client
+    from moodcut.pipeline import read_json
+    case = execution_case
+    original = {p: p.read_bytes() for p in case["prep"].rglob("*.json")}
+    transport = Mock(side_effect=HTTPError("https://example.com", 400, "unsafe", {}, response({
+        "error": {"code": "SYNTHETIC_BAD_INPUT", "message": "Synthetic invalid parameter"}})))
+    monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k:
+        OpenRouterVideoClient(*a, **k, api_key="synthetic-secret-do-not-log", opener=transport))
+    output = tmp_path / "http-stopped"
+    state = execute_case(case, output)
+    assert state["status"] == "stopped" and state["generation_posts_this_invocation"] == 1
+    block = read_json(output / state["records_path"])
+    job = block["runs"][0]["generation_jobs"][0]
+    assert job["last_error"] == {"phase": "submit", "kind": "http", "http_status": 400}
+    assert job["provider_error"]["code"] == "SYNTHETIC_BAD_INPUT"
+    assert job["remote_status"] == "submission_unknown" and job["provider_cost_usd"] is None
+    assert all(j["status"] == "prepared_offline" for r in block["runs"][1:] for j in r["generation_jobs"])
+    assert transport.call_count == 1
+    assert all(p.read_bytes() == b for p, b in original.items())
 
 
 def test_poll_timeout_preserves_job_id_without_resubmission(tmp_path, monkeypatch):
@@ -435,6 +531,7 @@ def test_malformed_submit_job_id_stays_unknown(tmp_path):
     saved = json.loads((tmp_path / "job/receipt.json").read_text())
     assert saved["status"] == "submission_unknown"
     assert saved["job_id"] is None
+    assert saved["last_error"]["reason"] == "missing_or_invalid_job_id"
     assert opener.call_count == 1
 
 

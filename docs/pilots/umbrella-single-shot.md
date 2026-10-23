@@ -1,6 +1,16 @@
 # 试跑单：公交站还伞，首镜头三版本
 
-关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3。**状态：PNG公开交付及字节核对已完成，新目录请求prepared_offline；真实试跑未批准。** 本次仅素材交付、公开GET核对和离线编译，新增付费消费为0。
+关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3，补充首次真实提交诊断。**状态：PNG交付已随PR #44合入；后续单独批准的固定台词试跑已尝试首个POST，未取得任务ID并停止，无成片。** 素材交付阶段新增付费消费为0；这次真实提交的单笔费用未知，不能写成免费。
+
+### 首次真实提交与本次诊断（2026-10-23）
+
+后续明确授权本单的三段固定手写台词技术试跑，视频本地阈值$1.00，另$0.10备用金不动用；不调用文本模型、不换模型、不自动重试。授权人另明确接受历史Wan单笔费用及账户总余额仍未知，使用已核对key额度继续。这不是将未知费用改记为零，也没有批准方法比较或正式实验。候选JSON中的false/null继续保留冻结提议身份，实际授权与尝试另记于本节，不反写旧请求或软件来源。
+
+北京时间21:46，公开报价仍为三段$0.9072，四份交付附件字节及实际P4重编译/冻结请求核对通过。原execute-generated入口仅尝试baseline的1次POST，随后OpenRouterError；回执status=submission_unknown、job_id=null、provider_cost_usd=null、video_path=null，轮询/下载均0。generic_review和moodcut未提交。21:47的只读GET/key显示usage=$0.0080172、limit_remaining=$14.9919828，与提交前一致；这只是当时未观察新增用量，不能认定该任务免费。本地原始证据保留在忽略目录`runs/umbrella-live-20261023-approved/`，最终账目为其`execution/inspection/records/block.json`。
+
+已查实的诊断缺陷：原_json_request在HTTP错误时丢弃响应正文，只将状态码放入异常字符串；执行器为避免泄密仅保存异常类型，未将该字符串持久化。传输/JSON错误也被合并成同一通用异常；缺ID响应未保存其error字段。现有原始回执、快照和progress均没有本次状态码、服务端原因或request ID，不能追溯补造，也无法仅凭submission_unknown判断是HTTP拒绝、网络中断、JSON损坏或无效ID。官方[请求格式](https://openrouter.ai/docs/guides/overview/multimodal/video-generation#using-images)与本次input_references格式相符；目录/公开GET检查通过不证明提供商接受素材，不能据此断言IP、图片MIME或模型权限导致失败。官方[日志说明](https://openrouter.ai/docs/guides/features/logs#api-access)中的API诊断依赖generation ID；本次未留有可用ID。
+
+本次只修原客户端和记录投影：脱敏HTTP状态/服务端错误、失败阶段及受控传输/响应错误进入原回执，最终记录保留；使用离线传输替身验证，不新建日志服务或工具。旧失败回执/请求/费用不改写，不重发POST、不GET恢复/下载、不调用文本模型。没有恢复出的真实视频，也不能宣称原服务端故障已修复；后续付费请求仍暂停。
 
 首选范围是**冻结已有软件台词的真实音视频技术预检**：一个原镜头、三个版本，检查服务是否接受参考图，以及动作、中文声音和台词能否落到成片。不进行新的LLM规划/审查，不检验审查方法效果；真实P2/P3全流程属于下文单独列价的后续扩展，不能用手写候选冒充其产物。
 
