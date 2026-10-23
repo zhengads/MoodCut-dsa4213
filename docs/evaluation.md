@@ -726,3 +726,41 @@ independently rechecked source records. Anonymous IDs, video files and input
 records remain intact, isolating semantic label integrity from file checksums.
 The check applies even with no ratings supplied. Tests reuse synthetic inspection
 media and do not require teammate pilot artifacts, provider calls or real votes.
+
+
+## P5 contribution and evidence record (2026-10-24)
+
+The table attributes deliveries to their public PR authors. It distinguishes the
+P5 work submitted by `chessloverr` from subsequent team integration; it is not a
+claim of sole authorship of the complete evaluation pipeline.
+
+| Delivery | Authored contribution | Evidence and status |
+| --- | --- | --- |
+| [PR #14](https://github.com/zhengads/MoodCut-dsa4213/pull/14) | `chessloverr`: original VBench imaging_quality adapter, normalization, batch reporting, failure accounting and resumable execution | Merged; CPU synthetic-media smoke/batch evidence is recorded above. Other VBench dimensions and formal model performance are not established. |
+| [PR #37](https://github.com/zhengads/MoodCut-dsa4213/pull/37) | `chessloverr`: generated input, file, source/request and receipt identity checks; combined media diagnostics; integration coverage for valid, unknown-cost and failed records | Merged; final scoped local regression reported 51 tests and 88 subtests passed. FakeClient and synthetic media verify software behavior only. |
+| [PR #46](https://github.com/zhengads/MoodCut-dsa4213/pull/46) | `chessloverr`: regression tests rejecting wrong private condition/tone labels even after recalculating the CSV checksum | Open at this snapshot; 3 targeted cases passed locally, including the normal export/rating path. Use the PR Checks tab for current CI, not this dated record. |
+| [PR #38](https://github.com/zhengads/MoodCut-dsa4213/pull/38), [#39](https://github.com/zhengads/MoodCut-dsa4213/pull/39), [#40](https://github.com/zhengads/MoodCut-dsa4213/pull/40) | `zhengads`: offline qualification integration, generated blind export/rating integration and generation-status reporting | Merged team integration building on existing modules. Do not attribute these complete deliveries solely to the P5 prerequisite work. |
+
+### Report-ready contribution statement
+
+I implemented the VBench imaging_quality evaluation adapter and resumable batch
+reporting, then added checks tying generated comparison inputs, media and saved
+receipts to their recorded identities. I tested these checks against actual team
+interfaces using synthetic media, including failed runs and unknown costs. I
+also added regressions protecting blind-evaluation condition and target-tone
+labels. Teammates subsequently integrated qualification, export, scoring and
+status reporting. These contributions establish evaluation tooling and evidence
+integrity; they do not demonstrate an improvement in generated-video quality.
+
+### Remaining evidence handoff
+
+For real-run verification, provide a sanitized copy of the final records together
+with the referenced preparation/source inputs, configuration and receipts,
+preserving relative directory relationships and checksums. Include media and
+inspection artifacts when they exist; a failed run without media remains a
+failure record. Exclude credentials and personal rater identities. Original
+snapshots must remain intact, and missing costs must remain unknown.
+
+Actual receipt/media rechecks, VBench runs on accepted real clips and independent
+human ratings remain outstanding in this checkout. No formal sample size,
+participant assignment or new paid execution is approved by this document.
