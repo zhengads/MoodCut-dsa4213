@@ -2,13 +2,17 @@
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-本次盲评导出/评分接线配合 #9，增量分支：`feat/issue-9-generated-blind-evaluation`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+本次生成状态细分汇总配合 #9，增量分支：`feat/issue-9-generation-status-summary`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
 
 ## 生成式三条件入口（离线链路及盲评接线已实现，真实任务待完成）
 
 **目标**：发布供 P2/P3/P4/P5 共用的生成式数据约定，再串通三条件；不重写现有客户端。
 
-### 当前盲评接线增量（2026-10-23）
+### 当前生成状态汇总配合（2026-10-23）
+
+P1现有failed/interrupted/prepared_offline/in_progress等记录及镜头/远端状态已足够；本增量不改状态机、回执映射或账目。#8以实际装配器+现有evaluate的回归确认新generation汇总自动透传，并区分媒体失败、待拼接与提供商completed。完整接口见CONTRACTS 6.16，真实任务仍待完成。
+
+### 已有盲评接线（6.15）
 
 P1必要改动为evaluate的`--pricing-config`与生成式独立入口路由；P5实现导出/评分边界重检，复用已有P1账目和P4材料，不新增客户端或账本。仅完整最终block可进入此路径，原始账目查看保持兼容。接口见CONTRACTS 6.15；真实任务及整体待办仍未完成。
 

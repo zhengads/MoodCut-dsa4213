@@ -658,6 +658,11 @@ def test_records_unsubmitted_is_prepared_and_preserves_source(prepared_records, 
         assert row["generation_status"] == "prepared_offline" and row["video_path"] is None
         assert row["generation_jobs"][0]["quoted_cost_usd"] == "0.60"
         assert row["provider_cost_usd"] == 0
+    from moodcut.evaluation import summarize
+    generation = summarize(block["runs"], [])["overall"]["generation"]
+    assert generation["by_status"]["prepared_offline"] == 3
+    assert generation["runs_with_unsubmitted_jobs"] == 3
+    assert generation["jobs"]["by_status"]["prepared_offline"] == 3
     assert {p: p.read_bytes() for p in preparation.glob("*.json")} == before
     assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 1
     assert read_json(output / "block.json") == block
@@ -682,6 +687,16 @@ def test_records_states_keep_known_failure_costs(prepared_records, tmp_path, sta
     assert row["generation_jobs"][0]["provider_error"]["code"] == "SYNTHETIC_FAILURE"
     assert row["video_path"] is None and row["run_status"] != "completed"
     assert code == (1 if expected in ("failed", "interrupted") else 0)
+    # P1's actual receipt mapping flows through the existing evaluate CLI unchanged.
+    summary_path = tmp_path / "state-summary.json"
+    assert main(["evaluate", "--project-root", str(ROOT), "--records", str(output),
+                 "--output", str(summary_path)]) == 0
+    summary = read_json(summary_path)
+    assert summary["overall"]["generation"]["by_status"][expected] == 1
+    assert summary["overall"]["generation"]["by_status"]["prepared_offline"] == 2
+    assert summary["overall"]["generation"]["jobs"]["remote_status_counts"] == {status: 1}
+    assert summary["by_condition"]["baseline"]["generation"]["by_status"][expected] == 1
+    assert summary["block_ledger_accounting"]["all_phases"]["provider_cost_usd"] == .23
 
 
 @pytest.mark.parametrize("mutation", ["missing_id", "request_hash", "model", "missing_file", "silent", "duration", "corrupt"])
@@ -939,6 +954,8 @@ def test_records_multishot_requires_bound_assembly_and_reprobes(generated_source
     output = tmp_path / "waiting"
     assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), output)) == 0
     assert read_json(output / "block.json")["runs"][0]["generation_status"] == "in_progress"
+    from moodcut.evaluation import summarize
+    assert summarize(read_json(output / "block.json")["runs"], [])["overall"]["generation"]["awaiting_assembly_runs"] == 1
     media = assemble_generated_clips([str(clip)] * 3, durations=[6] * 3, out_path=str(tmp_path / "assembled.mp4"))
     digest = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
     media.update(sha256=digest(media["video_path"]), source_clips=[
@@ -960,3 +977,9 @@ def test_records_multishot_requires_bound_assembly_and_reprobes(generated_source
         assert main(records_args(preparation, save_record_evidence(tmp_path, evidence), target)) == (0 if variant == "valid" else 1)
         row = read_json(target / "block.json")["runs"][0]
         assert row["run_status"] == ("completed" if variant == "valid" else "failed")
+        generation = summarize([row], [])["overall"]["generation"]
+        if variant == "valid":
+            assert generation["by_status"]["assembled_requires_manual_inspection"] == 1
+        else:
+            assert generation["by_status"]["failed"] == 1
+            assert generation["failed_run_causes"] == {"media": 1}

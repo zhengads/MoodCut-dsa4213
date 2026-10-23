@@ -28,6 +28,8 @@ P4正式build_generated_video_bundle已实现并接通上述入口，见CONTRACT
 
 ## 目录与参考资料
 
+生成状态细分汇总见CONTRACTS 6.16：总体/各条件并列报告运行和镜头状态，不从未渲染、零调用或缺回执推断未提交；混合镜头、中断和未知仍保留。现有CLI/导出/评分复用同一汇总器，不改P1状态机或账目，旧渲染计数及评分分母保持原口径。
+
 本地成片来源绑定与观看材料使用video_generation.inspect_generated_video及scripts/inspect_generated_video.py，见CONTRACTS 6.13。复用P1回执预检/最终重检、原A/V拼接和接触表布局，真实素材文件哈希/请求/镜头顺序一起绑定。必须声明synthetic/provided_local；判断项留空，不进行ASR/情绪评分。records是最终账目，preflight_records为同一历史的较早快照，不重复累加；不调用API或设eligible。离线资格报告见6.14；盲评导出/评分接线见6.15；下一步仍为真实任务与人工质量验收。
 
 本地生成回执/费用装配使用pipeline.assemble_generated_records或assemble-generated-records，准确本地证据格式见CONTRACTS 6.9。报价与消费分开，旧回执缺HTTP历史时保留null/已知小计；准备不当成完成，媒体完成不当成比较eligible。入口不创建客户端、提交/恢复任务或拼接视频；生成式盲评/ratings须走6.15的独立重检入口。

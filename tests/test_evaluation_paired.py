@@ -597,11 +597,13 @@ def test_p5_actual_failed_run_is_rejected_but_kept_in_summary(inspection_inputs)
     coverage = report["overall"]["coverage"]
     assert coverage["planned_runs"] == 3
     assert coverage["rendered_runs"] == 2
-    # Generation failed before rendering; legacy coverage groups it as unrendered.
+    # Legacy rendering coverage stays compatible; generation has its own axis.
     assert baseline["generation_status"] == "failed"
     assert baseline["failure_kind"] == "generation"
     assert coverage["render_failed_runs"] == 0
     assert coverage["render_pending_or_skipped_runs"] == 1
+    assert report["overall"]["generation"]["by_status"]["failed"] == 1
+    assert report["overall"]["generation"]["failed_run_causes"] == {"generation": 1}
     assert coverage["rated_clips"] == 0
     assert report["overall"]["usage"]["provider_cost_usd"]["total"] is None
     assert records["accounting"]["provider_cost_usd"] is None
@@ -826,6 +828,11 @@ def test_generated_blind_export_and_rating_cli_preserve_sources(inspection_input
     assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == records["accounting"]
     assert records["accounting"]["generation_posts"] == 4  # Reused shots not billed twice.
     assert read_json(exported["summary_path"])["overall"]["coverage"]["rated_clips"] == 0
+    diagnostic = read_json(exported["summary_path"])["overall"]["generation"]
+    assert diagnostic["by_status"]["assembled_requires_manual_inspection"] == 3
+    assert diagnostic["jobs"]["recorded_jobs"] == 6
+    assert diagnostic["jobs"]["declared_reused_jobs"] == 2
+    assert summary["overall"]["generation"] == diagnostic
     assert {p: p.read_bytes() for p in original} == original
     with pytest.raises(ValueError, match="export_generated"):
         export_blind_items(records["runs"], out_dir=tmp_path / "bypass", seed=0)
@@ -927,6 +934,13 @@ def test_generated_export_keeps_full_failure_and_unknown_ledgers(inspection_inpu
     assert summary["common_moodcut_generic"]["common_evaluable_blocks"] == 0
     assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == block["accounting"]
     assert summary["block_ledger_accounting"]["complete"] is True
+    states = summary["overall"]["generation"]["by_status"]
+    if variant == "unknown":
+        assert states["assembled_requires_manual_inspection"] == 3
+    elif variant == "failed":
+        assert states["failed"] == 1 and states["assembled_requires_manual_inspection"] == 2
+    else:
+        assert states["prepared_offline"] == 3
     if variant != "unsubmitted":
         assert block["accounting"]["provider_cost_usd"] is None
         assert block["accounting"]["known_subtotals"]["provider_cost_usd"] == .21
@@ -1028,6 +1042,106 @@ def test_generated_multiple_blocks_keep_failed_block_in_denominators(inspection_
     assert scores["block_ledger_accounting"]["complete"] is True
     assert scores["overall"]["usage"]["provider_cost_usd"]["total"] is None
     assert {r["record_block"]["block_id"] for r in scores["generated_qualification"]} == {read_json(p / "block.json")["block_id"] for p in paths}
+
+
+def _generation_rows():
+    """Existing protocol fixture only; synthetic states are not provider evidence."""
+    import json
+    root = Path(__file__).resolve().parents[1]
+    return json.loads((root / "tests/fixtures/generated_contract.json").read_text(encoding="utf-8"))["run_records"]
+
+
+@pytest.mark.parametrize("state", ["not_started", "prepared_offline", "in_progress",
+    "assembled_requires_manual_inspection", "failed", "interrupted", None, "future_state", []])
+def test_generation_status_summary_has_explicit_run_denominators(state):
+    rows = _generation_rows()
+    rows[0]["generation_status"] = state
+    if state in ("failed", "interrupted"):
+        rows[0].update(run_status="failed", failure_kind="generation", provider_cost_usd=None)
+    before = copy.deepcopy(rows)
+    result = summarize(rows, [])
+    overall = result["overall"]
+    generation = overall["generation"]
+    key = state if isinstance(state, str) and state not in ("future_state",) else "unknown"
+    assert generation["generated_runs"] == sum(generation["by_status"].values()) == 3
+    assert generation["by_status"][key] == (3 if state == "not_started" else 1)
+    assert generation["not_applicable_runs"] == 0
+    assert generation["jobs"]["recorded_jobs"] == 0
+    assert generation["runs_with_empty_job_records"] == 3
+    assert overall["coverage"]["planned_runs"] == overall["coverage"]["missing_ratings"] == 3
+    assert overall["equal_clip_means"]["tone_accuracy"] is None
+    assert result["common_moodcut_generic"]["common_evaluable_blocks"] == 0
+    for condition in ("baseline", "generic_review", "moodcut"):
+        assert result["by_condition"][condition]["generation"]["generated_runs"] == 1
+    if state in ("failed", "interrupted"):
+        assert generation["failed_run_causes"] == {"generation": 1}
+        assert overall["usage"]["provider_cost_usd"]["total"] is None
+    assert rows == before
+
+
+def test_generation_summary_keeps_mixed_job_states_reuse_and_raw_receipt_statuses():
+    rows = _generation_rows()
+    rows[0].update(generation_status="failed", run_status="failed", failure_kind="generation",
+        provider_cost_usd=None, generation_jobs=[
+            dict(status="failed", remote_status="expired"),
+            dict(status="interrupted", remote_status="polling_timeout"),
+            dict(status="prepared_offline"), dict(status="future_job_state")])
+    rows[1].update(generation_status="in_progress", generation_jobs=[
+        dict(status="downloaded", remote_status="downloaded"),
+        dict(status="downloaded", reused_from=dict(run_id=rows[0]["run_id"], shot_id="s1"))])
+    rows[2].update(generation_status="prepared_offline", generation_jobs=[dict(status="prepared_offline")])
+    before = copy.deepcopy(rows)
+    report = summarize(rows, [])
+    g = report["overall"]["generation"]
+    assert g["by_status"]["failed"] == g["by_status"]["in_progress"] == g["by_status"]["prepared_offline"] == 1
+    assert g["awaiting_assembly_runs"] == 1
+    assert g["runs_with_unsubmitted_jobs"] == 2
+    assert g["failed_run_causes"] == {"generation": 1}
+    assert g["jobs"]["by_status"] == dict(prepared_offline=2, submitting=0, in_progress=0,
+        downloaded=2, failed=1, interrupted=1, unknown=1)
+    assert g["jobs"]["recorded_jobs"] == 7
+    assert g["jobs"]["remote_status_counts"] == dict(expired=1, polling_timeout=1, downloaded=1)
+    assert g["jobs"]["jobs_without_remote_status"] == 4
+    assert g["jobs"]["declared_reused_jobs"] == 1  # Recorded clips, not additional provider tasks.
+    assert report["overall"]["coverage"]["render_pending_or_skipped_runs"] == 3
+    assert report["overall"]["usage"]["provider_cost_usd"]["total"] is None
+    assert rows == before
+
+
+def test_generation_summary_separates_media_failure_from_pre_generation_failure():
+    rows = _generation_rows()
+    rows[0].update(generation_status="failed", run_status="failed", failure_kind="media", render_status="render_failed")
+    rows[1].update(generation_status="not_started", run_status="failed", failure_kind="review", review_status="review_failed")
+    rows[2].update(generation_status="in_progress", generation_jobs=[dict(status="in_progress", remote_status="completed")])
+    result = summarize(rows, [])
+    assert result["overall"]["generation"]["pre_generation_failed_runs"] == 1
+    assert result["overall"]["generation"]["failed_run_causes"] == dict(media=1, review=1)
+    assert result["overall"]["generation"]["awaiting_assembly_runs"] == 0  # Remote completed is not downloaded.
+    assert result["overall"]["coverage"]["render_failed_runs"] == 1
+    assert result["overall"]["coverage"]["review_failed_runs"] == 1
+
+
+def test_generation_summary_does_not_infer_missing_jobs_or_legacy_states():
+    rows = _generation_rows()
+    rows[0].pop("generation_status")
+    rows[0].pop("generation_jobs")
+    rows[1]["generation_jobs"] = [None, {}]
+    rows[2]["generation_jobs"] = []
+    result = summarize(rows, [])["overall"]["generation"]
+    assert result["by_status"]["unknown"] == 1
+    assert result["runs_with_invalid_job_records"] == 2
+    assert result["runs_with_empty_job_records"] == 1
+    assert result["jobs"]["by_status"]["unknown"] == 2
+    assert result["runs_with_unsubmitted_jobs"] == 0
+    legacy = records_fixture()
+    assert "generation" not in summarize(legacy, [])["overall"]
+    legacy[0].update(output_mode="generated", generation_status="not_started", generation_jobs=[])
+    report = summarize(legacy, [])
+    assert report["overall"]["generation"]["generated_runs"] == 1
+    assert report["overall"]["generation"]["not_applicable_runs"] == 5
+    assert report["by_condition"]["moodcut"]["generation"]["generated_runs"] == 0
+    assert sum(report["by_condition"]["moodcut"]["generation"]["by_status"].values()) == 0
+    assert "generation" not in summarize([], [])["overall"]  # Empty legacy input carries no mode assertion.
 
 
 if __name__ == "__main__":
