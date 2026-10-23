@@ -1,6 +1,6 @@
 # 还伞试跑：合成人物素材来源与署名
 
-关联：[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。本次仅授权离线适配；素材、故事和手写台词不是独立模型效果证据。实际视频执行仍未批准。
+关联：[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。已授权离线适配及PNG公开交付/字节核对；素材、故事和手写台词不是独立模型效果证据。实际视频执行仍未批准。
 
 ## 来源与允许范围
 
@@ -20,7 +20,7 @@ Portraits by [Ariel Bravo Ayala — sigils-people](https://github.com/ambravo/si
 
 ## 文件身份与适配
 
-完整路径、尺寸、文件大小、来源/转换哈希和解码 RGB 像素哈希见[锁定清单](../../assets/pilots/umbrella-sigils.lock.json)。本地素材在忽略目录 `assets/raw/sigils-people/`；原图、转换图及完整上游许可不提交 Git。
+完整路径、尺寸、文件大小、来源/转换哈希和解码 RGB 像素哈希见[锁定清单](../../assets/pilots/umbrella-sigils.lock.json)。本地素材在忽略目录 `assets/raw/sigils-people/`；原图、转换图及完整上游许可不提交 Git。按后续明确授权，两张PNG与署名/完整许可已作为[本项目素材预发布附件](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-umbrella-assets-v1)公开交付；新manifest和下载核对记录见[交付清单](../../assets/pilots/umbrella-png-delivery.json)。
 
 | 文件 | 角色绑定 | 原 AVIF SHA-256 | 转换 PNG SHA-256 |
 | --- | --- | --- | --- |
@@ -44,6 +44,12 @@ python scripts/prepare_umbrella_assets.py
 python scripts/prepare_umbrella_assets.py --check
 ```
 
-脚本复用既有参考下载校验、素材 manifest 构建器及 P4 编译器，不导入或执行上游生成程序。清单中的 `source_url` 是**转换 PNG 的离线交付占位地址** `example.invalid`；原 AVIF URL 单独记录为 `origin_url`，不能把两种字节混绑。当前没有上传/托管图片，也没有证明提供商可取得 PNG。
+此脚本仍核对原转换锁及v2离线输入，默认不访问远端；其占位source_url记录作为历史保留。当前真实交付地址及新请求改用独立的[PNG交付清单](../../assets/pilots/umbrella-png-delivery.json)，避免改写旧身份或把原AVIF地址与PNG哈希混绑。新文件使用永久下载URL，公开GET无须凭据，2026-10-23核对四份附件字节完全相同。CDN实际响应application/octet-stream，上传元数据image/png，文件已按PNG解码核对；提供商取图/接受仍未付费验证。
 
-部署可读 PNG 后，须核对远端与本地转换字节一致，在新目录重算共享/请求身份；当前离线身份不能沿用为真实运行冻结值。历史未知费用、当前余额、运行/听看负责人、模型/范围/预算及真实任务仍待确认，执行批准保持 false/null。无付费 API、真实任务或人工评分。
+已在 `runs/umbrella-delivery-20261023/verification/` 新建软件源与请求。复核已有新源时可继续使用原入口，输出须选尚不存在的目录：
+
+```bash
+python -m moodcut run --output-mode generated --source-block runs/umbrella-delivery-20261023/verification/scripts --shot-id return-umbrella --pricing-config runs/umbrella-delivery-20261023/verification/pricing.json --output runs/umbrella-delivery-recheck
+```
+
+该命令只读本地已有新源并准备请求，不是公开远端重检或视频执行；该源目录和实际产物不提交Git。运行前按交付清单重新下载PNG核对字节，该预发布不是不可变存储。历史未知费用、当前余额、运行/听看负责人、模型/范围/预算仍待确认，执行批准false/null；本轮无付费API、真实视频或人工评分。

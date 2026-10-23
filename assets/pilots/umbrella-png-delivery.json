@@ -1,0 +1,150 @@
+{
+  "kind": "public_png_delivery_byte_check_not_model_acceptance",
+  "checked_at_utc": "2026-10-23T12:57:41.835256+00:00",
+  "release_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-umbrella-assets-v1",
+  "release_id": 421844018,
+  "tag_name": "pilot-umbrella-assets-v1",
+  "target_commitish": "98e855e6436185671f0ccc9263aaf9e8ccac27af",
+  "draft": false,
+  "prerelease": true,
+  "immutable": false,
+  "request_authentication": "none",
+  "paid_api_calls": 0,
+  "model_input_acceptance_verified": false,
+  "assets": [
+    {
+      "filename": "cn-02.png",
+      "asset_id": 669131635,
+      "url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-02.png",
+      "size_bytes": 1146163,
+      "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+      "unauthenticated_http_status": 200,
+      "content_type": "application/octet-stream",
+      "redirect_final_host": "release-assets.githubusercontent.com",
+      "remote_equals_local": true,
+      "format": "PNG",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "decoded_rgb_sha256": "31e251e7b5edd2e2a1da1fdb640fceb80649481c6a35e9407552225b7046ca23",
+      "uploaded_content_type": "image/png"
+    },
+    {
+      "filename": "cn-04.png",
+      "asset_id": 669131670,
+      "url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-04.png",
+      "size_bytes": 996054,
+      "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+      "unauthenticated_http_status": 200,
+      "content_type": "application/octet-stream",
+      "redirect_final_host": "release-assets.githubusercontent.com",
+      "remote_equals_local": true,
+      "format": "PNG",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "decoded_rgb_sha256": "ddb03b180092b59cb322936f691052260198e6b23f9689a3f4e985fe7aad10a4",
+      "uploaded_content_type": "image/png"
+    },
+    {
+      "filename": "CREDITS.md",
+      "asset_id": 669131652,
+      "url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/CREDITS.md",
+      "size_bytes": 1346,
+      "sha256": "bdadb66080168959ee8fb8421f94e1f7486b60f5be30d0dfad22f753ecce7218",
+      "unauthenticated_http_status": 200,
+      "content_type": "application/octet-stream",
+      "redirect_final_host": "release-assets.githubusercontent.com",
+      "remote_equals_local": true,
+      "uploaded_content_type": "application/octet-stream"
+    },
+    {
+      "filename": "LICENSE-PORTRAITS.txt",
+      "asset_id": 669131645,
+      "url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/LICENSE-PORTRAITS.txt",
+      "size_bytes": 5260,
+      "sha256": "9d163a3ba6b6ba0d96c733b02f402ff82628e7ec27dae84925a254b95e1bf627",
+      "unauthenticated_http_status": 200,
+      "content_type": "application/octet-stream",
+      "redirect_final_host": "release-assets.githubusercontent.com",
+      "remote_equals_local": true,
+      "uploaded_content_type": "text/plain; charset=utf-8"
+    }
+  ],
+  "source_asset_lock": "assets/pilots/umbrella-sigils.lock.json",
+  "manifest": {
+    "schema_version": "1.0",
+    "assets": [
+      {
+        "asset_id": "lin_portrait",
+        "character_id": "lin",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-02.png",
+        "source_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-02.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Public PNG delivery bytes verified without authentication; provider acceptance untested. Accompanying CREDITS.md and LICENSE-PORTRAITS.txt are release assets. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ],
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "asset_id": "bo_portrait",
+        "character_id": "bo",
+        "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-04.png",
+        "source_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-04.png",
+        "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+        "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+        "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Public PNG delivery bytes verified without authentication; provider acceptance untested. Accompanying CREDITS.md and LICENSE-PORTRAITS.txt are release assets. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+        "allowed_crops": [
+          "full"
+        ],
+        "width": 1024,
+        "height": 1024
+      }
+    ]
+  },
+  "png_remote_bytes_verified": true,
+  "reference_delivery_public_get_verified": true,
+  "runtime_shared_generation_sha256": null,
+  "execution_enabled": false,
+  "notes": [
+    "Use permanent browser_download_url, not the temporary signed redirect URL.",
+    "Release is not immutable; recheck remote hashes before paid execution.",
+    "CDN response Content-Type was application/octet-stream although upload metadata is image/png; PNG magic/decoding/pixels matched. Provider retrieval/acceptance has not been tested.",
+    "This is input delivery, not generated output or formal evaluation."
+  ],
+  "recompiled_shared_generation_sha256": "414effb27226a5026c7b352c8249ad739200a99035d606690023986a7b0504eb",
+  "selected_request_sha256": {
+    "baseline": "c9cddd8bbffd33d9b1699443d2f70d04f59d5750181ef43ef4c835602dde398f",
+    "generic_review": "414f6ff201524dd115df8a1119e3e2f1ea00bdeffbc9d694fc6ae8ef1c50ffc7",
+    "moodcut": "cd10d4b750305b6ac1af0aeaf4c2aa3a3fd76c441cbc1206f148643103dd129a"
+  },
+  "preparation": {
+    "path": "runs/umbrella-delivery-20261023/verification/requests/preparation.json",
+    "sha256": "ae4a6a880bccd2364ac2a6c32842bcc8c72db47940047233b90096ad1eeca1a8",
+    "status": "prepared_offline",
+    "source_kind": "synthetic",
+    "mock": true,
+    "selected_shot_id": "return-umbrella",
+    "original_shot_index": 0,
+    "source_block_path": "runs/umbrella-delivery-20261023/verification/scripts/block.json",
+    "source_block_sha256": "cdf08b5c5008c395136eb682089d2591834f390beeee3c114fb58fef39a37853"
+  },
+  "verification": {
+    "source_files_unchanged": 114,
+    "source_snapshot_hashes_checked": 8,
+    "pure_compiler_unique_selected_requests": 3,
+    "video_quote_usd": "0.9072",
+    "software_replay_text_slots": 9,
+    "text_extension_input_proxy_reservation_usd": "0.0513800",
+    "new_actual_provider_spending": "0",
+    "real_network_attempts": 0,
+    "human_quality_checked": false,
+    "proposal_rejected_as_runtime_preparation": true,
+    "only_dialogue_varies": true
+  }
+}

@@ -2,7 +2,11 @@
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-当前素材适配增量分支：`feat/issue-8-sigils-offline-assets`；具体试跑单已随PR #42合入。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+当前PNG交付增量分支：`feat/issue-8-png-delivery`；离线素材适配已随PR #43合入。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
+### 当前PNG交付与请求重编译（2026-10-23）
+
+分支 `feat/issue-8-png-delivery`。#8已用本项目素材预发布附件交付两张PNG及许可/署名，公开无认证GET远端字节/像素核对通过；原P1/P2/P3/P4在新目录重编译三条件原首镜头，保留软件来源及仅台词差异。#9同步[试跑单v3](../pilots/umbrella-single-shot.md)和[交付清单](../../assets/pilots/umbrella-png-delivery.json)。不新增生产代码/通用工具；账目/余额及运行批准后优先获取真实成片与人工证据。当前无付费API/评分，#8/#9保持开放。下节v2地址缺口为历史记录。
 
 ### 当前素材离线适配（2026-10-23）
 
