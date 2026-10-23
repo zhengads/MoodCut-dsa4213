@@ -1,6 +1,6 @@
 {
   "kind": "moodcut_pilot_proposal_not_execution_config",
-  "proposal_id": "umbrella-return-4s-three-conditions-v1",
+  "proposal_id": "umbrella-return-4s-three-conditions-v2-sigils-offline",
   "status": "proposal_not_approved",
   "execution_enabled": false,
   "scope": "frozen_software_dialogue_native_video_audio_quality_probe_only",
@@ -198,7 +198,7 @@
     "aspect_ratio": "16:9",
     "generate_audio": true,
     "seed": 4213,
-    "style": "A continuous cinematic live-action-style scene at a rainy bus stop at dawn. Two adult friends, coherent identity and clothing. Natural umbrella handoff, medium two-shot with hands and faces visible. Reference images specify character identity only. No title cards, slideshow, labels, subtitles or text overlays.",
+    "style": "A continuous cinematic live-action-style scene at a rainy bus stop at dawn. Two adult friends, coherent identity and clothing. Natural umbrella handoff, medium two-shot with hands and faces visible. Reference images specify character identity and clothing only; do not copy their backgrounds. No title cards, slideshow, labels, subtitles or text overlays.",
     "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied line with the assigned speaker. Keep Bo silent; quiet rain ambience, no narrator, extra dialogue or music. Finish the line without rushing.",
     "characters": [
       {
@@ -223,16 +223,17 @@
   "template_sha256_at_proposal": "fd02ec3b8b13f962bd5d9ce25cbd49f1b29eefe09cf39866900fabe0c12e4479",
   "frozen_runtime_shared_generation_sha256": null,
   "input_readiness": {
-    "real_portraits_approved": false,
+    "selected_portraits_ready_locally": true,
+    "offline_adaptation_authorized": true,
+    "actual_trial_inputs_approved": false,
     "public_reference_bytes_verified": false,
     "runtime_preparation": null,
     "source_kind_to_preserve": "synthetic",
     "mock_to_preserve": true,
     "blockers": [
-      "Current A/B test cards are not character portraits.",
-      "Current example.invalid image URLs are inert and unusable by the provider.",
-      "Approve two usable portrait inputs/URLs before recomputing all shared/request identities in a new directory.",
-      "Reconcile the historical unknown video charge and current team balance before any new paid run."
+      "Converted PNG delivery URLs remain example.invalid; no upload/hosting was performed. Verify reachable HTTPS PNG bytes and recompile identities before any paid use.",
+      "Reconcile the historical unknown video charge and current team balance.",
+      "Actual trial scope/model/budget/operator/quality checker remain unapproved; offline selection approval does not authorize HTTP execution."
     ]
   },
   "budget_usd": {
@@ -280,5 +281,69 @@
     "budget_and_balance_approved": false,
     "get_recovery_approved": false,
     "approved_utc": null
+  },
+  "current_reference_manifest_role": "Historical A/B software-source snapshot only; use offline_adaptation.manifest for the authorized local portrait adaptation.",
+  "offline_adaptation": {
+    "status": "local_inputs_verified_delivery_pending",
+    "selection_authorized_for_offline_adaptation": true,
+    "asset_lock": "assets/pilots/umbrella-sigils.lock.json",
+    "credits": "docs/pilots/umbrella-sigils-credits.md",
+    "manifest": {
+      "schema_version": "1.0",
+      "assets": [
+        {
+          "asset_id": "lin_portrait",
+          "character_id": "lin",
+          "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-02.png",
+          "source_url": "https://example.invalid/moodcut-pilot/cn-02.png",
+          "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+          "sha256": "f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b",
+          "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+          "allowed_crops": [
+            "full"
+          ],
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "asset_id": "bo_portrait",
+          "character_id": "bo",
+          "path": "assets/raw/sigils-people/0a411d71ccf1f8b599c5e48f03039f29b5f63490/converted/cn-04.png",
+          "source_url": "https://example.invalid/moodcut-pilot/cn-04.png",
+          "revision": "0a411d71ccf1f8b599c5e48f03039f29b5f63490",
+          "sha256": "4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5",
+          "rights_note": "Portraits by Ariel Bravo Ayala — sigils-people — CC BY 4.0. Synthetic people; not photographs of anyone. https://github.com/ambravo/sigils-people https://creativecommons.org/licenses/by/4.0/ Adapted from AVIF to RGB PNG without crop/resize/retouch; original XMP retained. Offline placeholder delivery URL; not verified for provider access. See docs/pilots/umbrella-sigils-credits.md and pinned LICENSE-PORTRAITS.",
+          "allowed_crops": [
+            "full"
+          ],
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    "offline_shared_generation_sha256": "66db0e5b95ef5a489e2672eb0cf5bedc2cb0deeec487106d9c8e4925f6282df7",
+    "selected_request_sha256": {
+      "baseline": "401509835422dde2f915eaaac0be3046e04924a351afc4962876ad963ed35ab7",
+      "generic_review": "cf9ffcc7932144b97e45c07041a042ba7723e425dfc1a392d316d6451f584d5f",
+      "moodcut": "c76ad775290af50651b183984c56ee44646e5df4add27a14b4f60e78687bfcc1"
+    },
+    "runtime_enabled": false,
+    "delivery_urls_verified": false,
+    "source_kind": "synthetic",
+    "mock": true,
+    "verification": {
+      "kind": "offline_sigils_adaptation_not_model_quality",
+      "source_files_unchanged": 114,
+      "source_snapshot_hashes_checked": 8,
+      "pure_compiler_unique_selected_requests": 3,
+      "video_quote_usd": "0.9072",
+      "software_replay_text_slots": 9,
+      "text_extension_input_proxy_reservation_usd": "0.0503720",
+      "new_actual_provider_spending": "0",
+      "real_network_attempts": 0,
+      "human_quality_checked": false,
+      "proposal_rejected_as_runtime_preparation": true,
+      "common_inputs_equal_except_dialogue": true
+    }
   }
 }

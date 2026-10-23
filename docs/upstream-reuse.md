@@ -28,3 +28,7 @@ FilmAgent 当前所在仓库的根 LICENSE 标注 MIT。原始声明随参考文
 importer.py 读取上游 MovieScript/Character 字段；planner.py 和 planning_*.txt 参考分阶段组织方式，独立定义本项目的 director/scene/shot JSON 协议，没有复制上游 Python 执行代码或原提示词全文。reviewer.py 参考 FilmAgent 的 CCV 方法，保留本项目受限补丁及一次循环。图像清单仅提交元数据，原始图片仍留在忽略目录。
 
 生成式规划沿用MovieAgent固定版本的ScenePlanning/ShotPlotCreate组织思路，在planner.py及planning_generated_director/scene/shot.txt独立实现MoodCut的1.1共同场景、动作与短片时长协议。未复制上游执行代码或原提示全文，不导入视频/GPU工具；不称为原论文完整复现。测试中的公交站还伞故事由本项目临时手写，仅验软件结构泛用性，不是上游素材、新数据集或模型效果证据。
+
+## 还伞试跑的合成人物参考（2026-10-23）
+
+按明确选择复用sigils-people固定提交cn-02/cn-04两张已有合成人像，仅做离线格式适配；不运行上游ComfyUI/生成脚本或训练模型。图片使用LICENSE-PORTRAITS的CC BY 4.0及其可接受使用条款，不能沿用代码MIT。原AVIF、完整许可与PNG均本地保留，公开仅提交哈希/来源/署名元数据；参见[credits](pilots/umbrella-sigils-credits.md)和[锁定清单](../assets/pilots/umbrella-sigils.lock.json)。PNG保留来源声明，未来材料须附相同公共署名。当前未托管图片或批准真实试跑；MovieAgent图仍为历史参考，不代替本次人物输入。
