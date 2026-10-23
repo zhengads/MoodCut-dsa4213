@@ -11,6 +11,7 @@ import pytest
 
 from moodcut.client import BudgetError, OpenRouterError
 from moodcut.video_client import OpenRouterVideoClient, check_video_model, estimate_video_cost, _ContentRedirect
+from test_video_generation import inspection_inputs
 
 
 def response(value):
@@ -31,6 +32,337 @@ def request():
 def client(opener, **kwargs):
     return OpenRouterVideoClient(config(), api_key="never-log-this-key", allow_paid=True,
                                  max_cost_usd="2", opener=opener, **kwargs)
+
+
+@pytest.fixture
+def execution_case(inspection_inputs, monkeypatch):
+    """Real executor/client/compiler/accounting with local transport and A/V only."""
+    from moodcut import video_client
+    from moodcut.pipeline import read_json
+    import socket
+    case = inspection_inputs
+    case.update(http=[], mode="success", cost="0.07", jobs={})
+    monkeypatch.setattr(socket, "create_connection", lambda *a, **k: pytest.fail("No real network"))
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("No real network"))
+    monkeypatch.setattr(socket, "getaddrinfo", lambda *a, **k: pytest.fail("No real network"))
+
+    def opener(req, **kwargs):
+        method = req.get_method()
+        case["http"].append((method, req.full_url))
+        if method == "POST":
+            if case["mode"] == "lost_submit":
+                raise URLError("Synthetic lost response")
+            payload = json.loads(req.data)
+            job_id = f"synthetic-{len(case['jobs'])}"
+            case["jobs"][job_id] = payload
+            if case["mode"] in ("poll_interrupt", "keyboard_interrupt"):
+                return response({"id": job_id, "status": "pending"})
+        else:
+            job_id = req.full_url.split("/videos/")[1].split("/")[0]
+            if "/content?" in req.full_url:
+                if case["mode"] == "download_interrupt":
+                    raise URLError("Synthetic content interruption")
+                return io.BytesIO(b"not media" if case["mode"] == "bad_media" else case["media"][0].read_bytes())
+            if case["mode"] == "poll_interrupt":
+                raise URLError("Synthetic polling interruption")
+            if case["mode"] == "keyboard_interrupt":
+                raise KeyboardInterrupt()
+        result = {"id": job_id, "status": "failed" if case["mode"] == "failed" else "completed"}
+        if case["cost"] is not None:
+            result["usage"] = {"cost": case["cost"]}
+        return response(result)
+
+    monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k:
+        OpenRouterVideoClient(*a, **k, api_key="synthetic-secret-do-not-log", opener=opener, poll_interval_s=0))
+    catalogue = [{"id": "alibaba/wan-2.7", "supported_resolutions": ["720p"],
+                  "supported_aspect_ratios": ["16:9"], "generate_audio": True, "seed": True,
+                  "supported_durations": [2], "pricing_skus": {"duration_seconds": "0.10"}}]
+    case["catalogue"] = catalogue
+    monkeypatch.setattr(video_client, "fetch_video_models", lambda: catalogue)
+    case["pricing"] = Path(__file__).resolve().parents[1] / "configs/video.json"
+    case["root"] = case["pricing"].parents[1]
+    return case
+
+
+def execute_case(case, output, **overrides):
+    from moodcut.pipeline import execute_generated_run
+    return execute_generated_run(case["prep"], out_dir=output, pricing_config=case["pricing"],
+        project_root=case["root"], media_origin="synthetic", **{"allow_paid": True, "max_cost_usd": "2", **overrides})
+
+
+def test_three_condition_execution_to_qualification_and_blind_export(execution_case, tmp_path):
+    from moodcut.pipeline import read_json
+    from moodcut.evaluation import qualify_generated_records, export_generated_blind_items, summarize_generated_records
+    case = execution_case
+    original = {str(p): p.read_bytes() for p in case["prep"].rglob("*.json")}
+    output = tmp_path / "execution"
+    state = execute_case(case, output)
+    assert state["status"] == "assembled_requires_manual_inspection"
+    assert state["generation_posts_this_invocation"] == 4
+    records = output / state["records_path"]
+    block = read_json(records)
+    assert [r["condition"] for r in block["runs"]] == ["baseline", "generic_review", "moodcut"]
+    assert block["accounting"]["generation_posts"] == 4
+    assert block["accounting"]["video_get_calls"] == 4
+    assert block["accounting"]["provider_cost_usd"] == pytest.approx(.28)
+    assert sum(j["reused_from"] is not None for r in block["runs"] for j in r["generation_jobs"]) == 2
+    assert qualify_generated_records(records, pricing_config=case["pricing"], project_root=case["root"])["accounting_verified"]
+    exported = tmp_path / "blind"
+    export_generated_blind_items([records], out_dir=exported, seed=0, pricing_config=case["pricing"], project_root=case["root"])
+    summary = summarize_generated_records([records], [], private_key=exported / "PRIVATE/private_key.csv",
+        pricing_config=case["pricing"], project_root=case["root"])
+    assert summary["overall"]["generation"]["generated_runs"] == 3
+    assert all(p.read_bytes() == value for path, value in original.items() for p in [Path(path)])
+    checks = read_json(output / "inspection/manual_checks.json")
+    assert checks["status"] == "not_reviewed"
+    assert all(i["audio_lipsync"] is None for i in checks["items"])
+
+
+@pytest.mark.parametrize("mode,cost,remote", [
+    ("failed", "0.03", "failed"), ("lost_submit", None, "submission_unknown"),
+    ("poll_interrupt", None, "polling_interrupted"),
+    ("download_interrupt", "0.07", "download_interrupted"),
+    ("keyboard_interrupt", None, "submitted"), ("success", None, "downloaded"),
+    ("bad_media", "0.07", "downloaded")])
+def test_execution_stops_and_retains_all_three_conditions(execution_case, tmp_path, mode, cost, remote):
+    from moodcut.pipeline import read_json
+    case = execution_case
+    case.update(mode=mode, cost=cost)
+    output = tmp_path / "stopped"
+    state = execute_case(case, output)
+    assert state["status"] == "stopped"
+    assert state["generation_posts_this_invocation"] == 1
+    assert sum(method == "POST" for method, url in case["http"]) == 1
+    block = read_json(output / state["records_path"])
+    assert len(block["runs"]) == 3
+    jobs = [j for r in block["runs"] for j in r["generation_jobs"]]
+    assert jobs[0]["remote_status"] == remote
+    assert sum(j["status"] == "prepared_offline" for j in jobs) == 5
+    assert block["accounting"]["generation_posts"] == 1
+    assert block["accounting"]["provider_cost_usd"] == (float(cost) if cost else None)
+    assert "synthetic-secret-do-not-log" not in (output / "execution.json").read_text()
+    with pytest.raises(FileExistsError):
+        execute_case(case, output)
+    assert sum(method == "POST" for method, url in case["http"]) == 1
+
+
+@pytest.mark.parametrize("mode", ["poll_interrupt", "download_interrupt"])
+def test_execution_resume_is_get_only_and_preserves_previous_snapshot(execution_case, tmp_path, mode):
+    from moodcut.pipeline import read_json
+    case = execution_case
+    case["mode"] = mode
+    original = tmp_path / "interrupted"
+    execute_case(case, original)
+    before = {p: p.read_bytes() for p in original.rglob("*") if p.is_file()}
+    case["mode"] = "success"
+    case["http"].clear()
+    recovered = tmp_path / "recovered"
+    state = execute_case(case, recovered, resume_execution=original, resume_condition="baseline",
+                         resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    assert state["mode"] == "resume_get_only"
+    assert state["generation_posts_this_invocation"] == 0
+    assert case["http"] and all(method == "GET" for method, url in case["http"])
+    block = read_json(recovered / state["records_path"])
+    assert block["accounting"]["generation_posts"] == 1
+    assert block["accounting"]["provider_cost_usd"] == pytest.approx(.07)
+    assert block["runs"][0]["generation_jobs"][0]["status"] == "downloaded"
+    assert sum(j["status"] == "prepared_offline" for r in block["runs"] for j in r["generation_jobs"]) == 5
+    assert all(p.read_bytes() == value for p, value in before.items())
+    case["http"].clear()
+    with pytest.raises(FileExistsError):
+        execute_case(case, tmp_path / "second-recovery", resume_execution=original, resume_condition="baseline",
+                     resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    assert not case["http"]
+
+
+@pytest.mark.parametrize("kind", ["unsubmitted", "no_id", "terminal", "changed_evidence"])
+def test_execution_cannot_resume_unsubmitted_lost_or_terminal_tasks(execution_case, tmp_path, kind):
+    from moodcut.pipeline import read_json
+    case = execution_case
+    case["mode"] = {"no_id": "lost_submit", "terminal": "failed"}.get(kind, "poll_interrupt")
+    original = tmp_path / "original"
+    execute_case(case, original)
+    shot_id = case["bundle"]["conditions"][0]["jobs"][0 if kind != "unsubmitted" else 1]["shot_id"]
+    if kind == "changed_evidence":
+        path = original / "evidence.json"
+        data = read_json(path)
+        data["provenance"] = "tampered"
+        path.write_text(json.dumps(data))
+    case["http"].clear()
+    with pytest.raises(ValueError):
+        execute_case(case, tmp_path / "rejected", resume_execution=original, resume_condition="baseline", resume_shot_id=shot_id)
+    assert not case["http"]
+    assert not (tmp_path / "rejected").exists()
+
+
+@pytest.mark.parametrize("kind", ["budget", "missing_budget", "catalogue", "request", "key", "tools", "discovery_change"])
+def test_execution_preflight_blocks_http_and_output(execution_case, tmp_path, monkeypatch, kind):
+    from moodcut import pipeline, video_client
+    case = execution_case
+    options = {}
+    if kind == "budget":
+        options["max_cost_usd"] = "0.01"
+    elif kind == "missing_budget":
+        options["max_cost_usd"] = None
+    elif kind == "catalogue":
+        case["catalogue"][0]["supported_durations"] = [6]
+    elif kind == "request":
+        path = case["prep"] / "bundle.json"
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["conditions"][0]["jobs"][0]["request"]["prompt"] += " altered"
+        data["conditions"][0]["jobs"][0]["request_sha256"] = pipeline.json_hash(data["conditions"][0]["jobs"][0]["request"])
+        path.write_text(json.dumps(data))
+    elif kind == "key":
+        monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k: OpenRouterVideoClient(*a, **k, api_key=""))
+    elif kind == "discovery_change":
+        def discovery():
+            path = case["prep"] / "preparation.json"
+            data = pipeline.read_json(path)
+            data["quote_scope"] = "changed during discovery"
+            path.write_text(json.dumps(data), encoding="utf-8")
+            return case["catalogue"]
+        monkeypatch.setattr(video_client, "fetch_video_models", discovery)
+    else:
+        monkeypatch.setattr(pipeline.shutil, "which", lambda *a: None)
+    with pytest.raises((ValueError, BudgetError)):
+        execute_case(case, tmp_path / "rejected", **options)
+    assert not case["http"]
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_execution_cli_default_is_offline_and_budget_alone_is_rejected(execution_case, tmp_path):
+    from moodcut.__main__ import main
+    from moodcut.pipeline import read_json
+    case = execution_case
+    args = ["execute-generated", "--project-root", str(case["root"]), "--preparation", str(case["prep"]),
+            "--pricing-config", str(case["pricing"]), "--media-origin", "synthetic", "--output", str(tmp_path / "offline")]
+    assert main(args + ["--max-cost-usd", "2"]) == 1
+    assert not (tmp_path / "offline").exists()
+    assert main(args) == 0
+    state = read_json(tmp_path / "offline/execution.json")
+    assert state["generation_posts_this_invocation"] == 0
+    assert state["status"] == "prepared_offline"
+    assert not case["http"]
+
+
+def test_execution_recovers_then_explicitly_continues_without_duplicate_post(execution_case, tmp_path):
+    from moodcut.__main__ import main
+    from moodcut.pipeline import read_json
+    case = execution_case
+    first = tmp_path / "interrupted"
+    case["mode"] = "poll_interrupt"
+    execute_case(case, first)
+    case["mode"] = "success"
+    recovered = tmp_path / "recovered"
+    execute_case(case, recovered, resume_execution=first, resume_condition="baseline",
+        resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    output = tmp_path / "continued"
+    assert main(["execute-generated", "--project-root", str(case["root"]), "--preparation", str(case["prep"]),
+        "--pricing-config", str(case["pricing"]), "--media-origin", "synthetic", "--output", str(output),
+        "--continue-execution", str(recovered), "--allow-paid", "--max-cost-usd", "2"]) == 0
+    state = read_json(output / "execution.json")
+    assert state["status"] == "assembled_requires_manual_inspection"
+    assert state["generation_posts_this_invocation"] == 3
+    assert sum(method == "POST" for method, url in case["http"]) == 4
+    block = read_json(output / state["records_path"])
+    assert block["accounting"]["generation_posts"] == 4
+    assert block["accounting"]["provider_cost_usd"] == pytest.approx(.28)
+    case["http"].clear()
+    with pytest.raises(FileExistsError):
+        execute_case(case, tmp_path / "duplicate-child", continue_execution=recovered)
+    assert not case["http"]
+    assert not (tmp_path / "duplicate-child").exists()
+
+
+@pytest.mark.parametrize("kind", ["unknown_cost", "interrupted", "prior_budget"])
+def test_execution_continuation_requires_reconciliation_and_counts_prior_charges(execution_case, tmp_path, kind):
+    case = execution_case
+    case["mode"] = "poll_interrupt" if kind != "unknown_cost" else "success"
+    case["cost"] = None if kind == "unknown_cost" else "0.07"
+    original = tmp_path / "original"
+    execute_case(case, original)
+    parent = original
+    if kind == "prior_budget":
+        case["mode"] = "success"
+        parent = tmp_path / "recovered"
+        execute_case(case, parent, resume_execution=original, resume_condition="baseline",
+            resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    case["http"].clear()
+    with pytest.raises(BudgetError):
+        execute_case(case, tmp_path / "rejected", continue_execution=parent,
+                     **({"max_cost_usd": "1.00"} if kind == "prior_budget" else {}))
+    assert not case["http"]
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_execution_cli_single_shot_preserves_original_seed_and_unchanged_reuse(execution_case, tmp_path):
+    from moodcut.__main__ import main
+    from moodcut.pipeline import prepare_generated_run, read_json
+    case = execution_case
+    preparation = tmp_path / "single"
+    shot = case["bundle"]["conditions"][0]["jobs"][1]
+    prepare_generated_run(case["source"], out_dir=preparation, project_root=case["root"],
+                          pricing_config=case["pricing"], shot_id=shot["shot_id"])
+    output = tmp_path / "executed-single"
+    assert main(["execute-generated", "--project-root", str(case["root"]), "--preparation", str(preparation),
+        "--pricing-config", str(case["pricing"]), "--media-origin", "synthetic", "--output", str(output),
+        "--allow-paid", "--max-cost-usd", "2"]) == 0
+    assert sum(method == "POST" for method, url in case["http"]) == 1
+    assert next(iter(case["jobs"].values()))["seed"] == shot["request"]["seed"]
+    state = read_json(output / "execution.json")
+    block = read_json(output / state["records_path"])
+    assert block["selected_shot_ids"] == [shot["shot_id"]]
+    assert block["accounting"]["generation_posts"] == 1
+    assert block["accounting"]["provider_cost_usd"] == pytest.approx(.07)
+
+
+def test_execution_rechecks_parent_receipts_after_discovery(execution_case, tmp_path, monkeypatch):
+    from moodcut import video_client
+    from moodcut.pipeline import read_json
+    case = execution_case
+    original = tmp_path / "first"
+    case["mode"] = "poll_interrupt"
+    execute_case(case, original)
+    case["mode"] = "success"
+    recovered = tmp_path / "recovered"
+    execute_case(case, recovered, resume_execution=original, resume_condition="baseline",
+        resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    def discovery():
+        path = recovered / "resumed-job/receipt.json"
+        data = read_json(path)
+        data["provider_cost_usd"] = None
+        path.write_text(json.dumps(data), encoding="utf-8")
+        return case["catalogue"]
+    monkeypatch.setattr(video_client, "fetch_video_models", discovery)
+    case["http"].clear()
+    with pytest.raises(ValueError, match="changed during preflight"):
+        execute_case(case, tmp_path / "rejected", continue_execution=recovered)
+    assert not case["http"]
+    assert not (tmp_path / "rejected").exists()
+
+
+def test_execution_checks_copied_recovery_receipt_before_get(execution_case, tmp_path, monkeypatch):
+    from moodcut import pipeline
+    from moodcut.pipeline import read_json
+    case = execution_case
+    original = tmp_path / "interrupted"
+    case["mode"] = "poll_interrupt"
+    execute_case(case, original)
+    case["mode"] = "success"
+    copy = pipeline.shutil.copyfile
+    def corrupt_copy(source, target, *args, **kwargs):
+        result = copy(source, target, *args, **kwargs)
+        if Path(target).name == "receipt.json":
+            data = read_json(target)
+            data["job_id"] = "another-task"
+            Path(target).write_text(json.dumps(data), encoding="utf-8")
+        return result
+    monkeypatch.setattr(pipeline.shutil, "copyfile", corrupt_copy)
+    case["http"].clear()
+    state = execute_case(case, tmp_path / "rejected", resume_execution=original, resume_condition="baseline",
+        resume_shot_id=case["bundle"]["conditions"][0]["jobs"][0]["shot_id"])
+    assert state["status"] == "stopped"
+    assert not case["http"]
 
 
 def test_no_authorization_no_http(tmp_path):

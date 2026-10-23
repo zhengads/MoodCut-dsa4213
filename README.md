@@ -45,6 +45,18 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 通过身份/请求检查后，输出 `bundle.json`、`preparation.json`、完整 `source_inputs.json` 和原账目 `source_block.json` 快照。preparation只记请求prepared_offline、零新调用/消费，报价另存且不等于支出；不产生视频，也不宣称比较eligible。报价可读取configs/video.json的模型/规格/费率，旧读信配方不用于新编译。来源或编译失败返回非零，已有结果不覆盖。完整接口与验收边界见 [CONTRACTS 6.8](docs/CONTRACTS.md#68-离线生成入口与单镜头选择)。
 
+### 三条件任务执行接线
+
+`execute-generated` 消费上面的请求准备目录，默认离线，只保存三条件未提交记录和空检查材料：
+
+```powershell
+.venv/Scripts/python -m moodcut execute-generated --preparation runs/generated-requests --pricing-config configs/video.json --media-origin synthetic --output runs/execution-offline
+```
+
+只有另获模型/范围/预算批准后才能启用 `--allow-paid --max-cost-usd`。执行复用现有视频客户端和本地检查包；同块相同请求复用，失败/中断/未知消费停止后续POST。`--resume-execution` 只GET恢复一个已有任务；费用核清后，`--continue-execution` 才能显式继续未提交镜头，跳过已完成任务并扣除历史视频消费。旧回执/记录保留，父快照仅允许一个HTTP后继。准确参数、预算边界和中断处理见[CONTRACTS 6.17](docs/CONTRACTS.md#617-三条件任务执行恢复与继续)。
+
+本增量只通过模拟回执/现有软件视频验收，不调用付费API。真实试跑的输入、模型、规模、费用与人工安排仍待批准，见[试跑协议提议](docs/evaluation.md#三条件试跑协议提议2026-10-23尚未批准运行)。最终只使用execution记录指向的账目，不累加父执行或preflight快照。
+
 ### 已有本地视频的观看检查包
 
 ```powershell
@@ -223,7 +235,7 @@ python -m moodcut qualify-generated-records --records runs/video-inspection/reco
 
 五模块任务索引：基础/契约 [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)、共同分镜 [#22（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/22)、台词审查 [#23（工程已关闭）](https://github.com/zhengads/MoodCut-dsa4213/issues/23)、生成与检查 [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24)、评估接入 [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。详见 [交付顺序](docs/TEAM.md)。以Issue实时状态为准；已交付模块直接复用，只认领未完成项，先提交 PR，不自动合并。
 
-生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，盲评导出/评分接线已实现（6.15）；真实任务仍待完成。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
+生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
 生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3/P4代码加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic，离线媒体检查/资格报告已实现，真实任务与盲评仍待接线，不能视为真实三条件实验已可运行。
 

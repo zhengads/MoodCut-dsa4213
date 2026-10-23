@@ -1,6 +1,6 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；盲评导出/评分接线已实现（6.15）；实际任务仍待完成。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
+本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
 
 ## 1. 公共数据
 
@@ -223,7 +223,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 ## 6. 下一阶段生成式比较约束（待实现）
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/真实任务接线仍由各任务完成，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
+本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/导出见6.14/6.15，任务执行接线见6.17，真实试跑仍待批准和验收，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
 
 ### 6.1 当前可导入的公共接口
 
@@ -630,3 +630,38 @@ generation.jobs.recorded_jobs和by_status统计保存的镜头记录条目，状
 runs_with_empty_job_records只数显式空列表；runs_with_invalid_job_records数缺失/非列表或含非对象条目的运行。非对象条目计入镜头unknown；整个镜头字段不可读时不捏造镜头条目或尝试数。这些是记录诊断，不替代6.14/6.15的来源/资格重检。
 
 旧render_failed_runs/render_pending_or_skipped_runs等保留原口径，与生成状态并列查看，不相加。旧timeout_runs仍只按failure_kind=timeout计数，不自动包括failure_kind=generation的轮询超时；后者见interrupted及remote_status_counts.polling_timeout。全部原始失败/未知费用/缺失评分及M/G配对分母、clip等权和uncertain口径不变。输出只增加诊断，不修补原记录、回执、人工表或原block账目。
+
+### 6.17 三条件任务执行、恢复与继续
+
+P1新增以下接线，复用原OpenRouterVideoClient、6.9记录计算及6.13检查包；不另建传输、编译器、状态机、账本或评分器。旧run/generated入口仍只准备请求；旧scripts/generate_video.py仍只处理历史开发对。真实试跑尚未授权，协议提议见 [evaluation.md](evaluation.md#三条件试跑协议提议2026-10-23尚未批准运行)。
+
+```python
+def execute_generated_run(preparation, *, out_dir, pricing_config, project_root=".",
+                          allow_paid=False, max_cost_usd=None, media_origin="provided_local",
+                          resume_execution=None, resume_condition=None, resume_shot_id=None,
+                          continue_execution=None) -> dict: ...
+```
+
+```bash
+# 默认离线，不构造客户端/查询目录/提交/恢复/下载；输出未提交诊断和空人工表。
+python -m moodcut execute-generated --preparation runs/generated-requests --pricing-config configs/video.json --media-origin synthetic --output runs/execution-offline
+```
+
+CLI路径相对project-root，程序接口路径相对当前目录。media-origin为显式synthetic或provided_local，与6.13同义；不改源source_kind/mock，不把软件视频当模型产物。默认allow_paid=False，预算单独出现即拒绝；未提供HTTP授权时此入口不会模拟生成视频，验收传输替身仅存在于测试/忽略的本地验收脚本。
+
+获得独立模型/范围/费用批准后，方可在相同命令添加`--allow-paid --max-cost-usd <已批准USD阈值>`启用视频HTTP；GET恢复也要求此门禁，不能因为是GET便默认允许。新提交前：重读实际脚本/参考图与保存的四份准备文件，复用P1身份检查，实际调用P4完整编译再按原索引选择，比对完整bundle；不接受篡改后自算哈希的提示。检查本地FFmpeg/ffprobe、凭据存在、全部选中镜头报价和最新模型目录，按实际请求时长核查参数/价格，不沿用旧三镜头配方的duration。目录预检后再次核对源输入及父执行/回执/账目未变；无效预检不创建执行目录，不发视频POST/GET。历史规划/审查消费未知时停止新提交。
+
+三条件按CONDITIONS、镜头按保存顺序执行。只把原request交给现有客户端，不注入方法标签，不改seed或非台词参数。路径使用固定条件和数字索引，不用shot_id作目录名。先保存evidence中的本地回执目标和execution检查点，再调用generate；回执由原客户端在POST前写入，执行器不伪造/补齐回执。若硬中断发生在预留路径与真实POST之间，缺回执仍按未知处理，不能自动重交。
+
+每个已下载片段在下一POST/复用前通过原P1回执、实际音视频/时长/账目检查。仅同block、同shot_id、完整request_sha256相同且拥有非复用下载来源时复用，记录reused_from；不复用失败/未下载来源，不形成链式复用。费用未知、任务/媒体失败、异常及人工键盘中断立即停止后续POST，所有三条件和未执行镜头继续留在evidence及最终记录。异常记录只留类型与通用诊断，提供商详情沿用脱敏回执，不保存任意依赖异常文本。
+
+恢复与继续是两个互斥、显式动作：
+
+- `--resume-execution runs/earlier --resume-condition baseline --resume-shot-id <原ID>`：只恢复一个已有、非复用、可绑定job ID的任务；限submitted/pending/in_progress/completed/轮询超时或中断/下载中断。不恢复未提交、无ID提交未知、终态失败或已下载任务，不自动继续剩余镜头。先复制该回执到新输出的resumed-job，核对副本哈希后才调用原client.resume，只有GET；旧回执/媒体/记录不变。新回执的POST和GET是同一任务的累计历史，不是新提交。
+- `--continue-execution runs/recovered`：只在全部既有尝试均已下载、费用明确且无失败后，才允许提交其余明确未提交镜头。重用原拥有者缓存，跳过已完成任务；USD阈值覆盖此执行链已知视频消费加全部剩余请求报价（复用前），客户端只得到扣除历史视频消费后的余额。未知消费/进行中/中断/失败不能通过新客户端绕过。没有剩余任务时仅允许离线收集。
+
+上述两种动作默认仍离线；启用HTTP仍须独立授权及allow-paid/正预算。每个父执行目录用独占创建的http_successor.json预留唯一HTTP后继，避免同一快照并发恢复/继续。保留此占用，即使后继中断也不自动删除/解锁；先定位对应后继并离线核查。此门禁不提供跨准备目录/独立新执行的全局去重，也不是平台幂等或共享账户硬预算；独立新执行代表另一次显式运行，不能当恢复旧任务使用。
+
+输出：evidence.json、execution.json以及原P4的inspection目录；HTTP任务回执/视频在该执行自己的目录，恢复时只复制目标回执。检查点用本目录临时文件原子替换，源准备/脚本/旧回执不改。父evidence/preparation身份必须匹配，哈希为本地一致性检查，不认证提供商。execution保存mode、源身份、media_origin、HTTP是否启用、本次POST尝试数、错误、检查状态和records_path；stopped/incomplete返回非零，默认prepared_offline与材料齐备assembled_requires_manual_inspection返回0。键盘中断尽力留证并做本地检查，强制杀进程不保证有最终记录；已有evidence可用6.13离线收集，不能重启POST循环。
+
+执行结束或可捕获异常后调用原inspect_generated_video，不在执行器内重写拼接/费用。最终账目只取execution.records_path（正常为inspection/records/block.json）；inspection/preflight_records、父/子执行都是同一历史的快照，不能累计。资格/匿名导出/评分仍分别走6.14/6.15独立重检，人工检查保持空，comparison仍not_checked/ineligible，不批准正式纳入。GET恢复仅补收已有任务，费用可能未知且不受本地新提交额度硬限制；真实声音/台词/人物/质量必须另行人工验收。
