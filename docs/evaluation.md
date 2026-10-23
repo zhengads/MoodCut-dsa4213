@@ -710,6 +710,8 @@ No provider history, human scores or real expense was created. All 33 cached
 references, 44 local document targets, syntax, added-text privacy and diff checks
 passed; final PR CI is recorded in the PR.
 
-### 还伞试跑素材离线适配（2026-10-23）
+### 还伞试跑素材交付与实验优先级（2026-10-23）
 
-[试跑单v2](pilots/umbrella-single-shot.md)已将明确选定的sigils-people cn-02/cn-04做本地PNG适配并核对三条件共同输入，原始/转换/像素哈希及来源许可见[锁定清单](../assets/pilots/umbrella-sigils.lock.json)。未来观看/盲评材料须附同一份[公共credits](pilots/umbrella-sigils-credits.md)，不暴露方法/目标或只留PRIVATE，不往视频内加字幕。当前未创建/发放实际评分包，PNG交付地址与账目/余额/真实运行批准仍待完成；手写软件台词不冒充真实P2/P3，单镜头不验收跨镜头连续性。
+[试跑单v3](pilots/umbrella-single-shot.md)已交付cn-02/cn-04 PNG公开地址并核对远端字节，在新目录重编译三条件原首镜头；来源/转换身份保留于[原锁](../assets/pilots/umbrella-sigils.lock.json)，当前URL/请求身份见[交付清单](../assets/pilots/umbrella-png-delivery.json)。未来观看/盲评材料须附同一份[公共credits](pilots/umbrella-sigils-credits.md)，不暴露方法/目标或只留PRIVATE，不往视频内加字幕。当前未创建/发放实际评分包，账目/余额/真实运行批准仍待完成，提供商取图接受未验证。
+
+当前优先取得真实成片和人工证据，暂停继续扩充通用离线工具。先做既定技术试跑；其固定手写台词不证明情绪审查有效。方法比较须另批真实P2/P3输出、冻结三条件共同输入、隐藏标签/目标的独立人工评分，并保留失败/未修改/复用与全部费用/覆盖。正式故事、重复数和观看者安排沿既有待确认表由团队批准，本轮不擅自扩大规模或改变评分口径。单镜头不验收跨镜头连续性。

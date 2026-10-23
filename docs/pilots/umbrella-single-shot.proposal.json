@@ -1,6 +1,6 @@
 {
   "kind": "moodcut_pilot_proposal_not_execution_config",
-  "proposal_id": "umbrella-return-4s-three-conditions-v2-sigils-offline",
+  "proposal_id": "umbrella-return-4s-three-conditions-v3-public-png",
   "status": "proposal_not_approved",
   "execution_enabled": false,
   "scope": "frozen_software_dialogue_native_video_audio_quality_probe_only",
@@ -226,15 +226,17 @@
     "selected_portraits_ready_locally": true,
     "offline_adaptation_authorized": true,
     "actual_trial_inputs_approved": false,
-    "public_reference_bytes_verified": false,
+    "public_reference_bytes_verified": true,
     "runtime_preparation": null,
     "source_kind_to_preserve": "synthetic",
     "mock_to_preserve": true,
     "blockers": [
-      "Converted PNG delivery URLs remain example.invalid; no upload/hosting was performed. Verify reachable HTTPS PNG bytes and recompile identities before any paid use.",
       "Reconcile the historical unknown video charge and current team balance.",
-      "Actual trial scope/model/budget/operator/quality checker remain unapproved; offline selection approval does not authorize HTTP execution."
-    ]
+      "Actual trial scope/model/budget/operator/quality checker remain unapproved.",
+      "Recheck public PNG byte hashes and current price immediately before an approved run; provider retrieval/acceptance remains untested."
+    ],
+    "public_get_verified_at_utc": "2026-10-23T12:57:41.835256+00:00",
+    "provider_input_acceptance_verified": false
   },
   "budget_usd": {
     "current_work_actual_new_spending": "0",
@@ -282,7 +284,7 @@
     "get_recovery_approved": false,
     "approved_utc": null
   },
-  "current_reference_manifest_role": "Historical A/B software-source snapshot only; use offline_adaptation.manifest for the authorized local portrait adaptation.",
+  "current_reference_manifest_role": "Historical A/B software-source snapshot only; offline_adaptation preserves v2. Use png_delivery metadata for current public PNG inputs and prepared requests.",
   "offline_adaptation": {
     "status": "local_inputs_verified_delivery_pending",
     "selection_authorized_for_offline_adaptation": true,
@@ -344,6 +346,30 @@
       "human_quality_checked": false,
       "proposal_rejected_as_runtime_preparation": true,
       "common_inputs_equal_except_dialogue": true
+    },
+    "record_role": "Preserved v2 placeholder-URL verification; current delivered inputs and requests are in png_delivery metadata."
+  },
+  "png_delivery": {
+    "metadata": "assets/pilots/umbrella-png-delivery.json",
+    "status": "public_get_bytes_verified_requests_prepared_not_executed",
+    "model_input_acceptance_verified": false,
+    "execution_enabled": false,
+    "recompiled_shared_generation_sha256": "414effb27226a5026c7b352c8249ad739200a99035d606690023986a7b0504eb",
+    "selected_request_sha256": {
+      "baseline": "c9cddd8bbffd33d9b1699443d2f70d04f59d5750181ef43ef4c835602dde398f",
+      "generic_review": "414f6ff201524dd115df8a1119e3e2f1ea00bdeffbc9d694fc6ae8ef1c50ffc7",
+      "moodcut": "cd10d4b750305b6ac1af0aeaf4c2aa3a3fd76c441cbc1206f148643103dd129a"
+    },
+    "preparation": {
+      "path": "runs/umbrella-delivery-20261023/verification/requests/preparation.json",
+      "sha256": "ae4a6a880bccd2364ac2a6c32842bcc8c72db47940047233b90096ad1eeca1a8",
+      "status": "prepared_offline",
+      "source_kind": "synthetic",
+      "mock": true,
+      "selected_shot_id": "return-umbrella",
+      "original_shot_index": 0,
+      "source_block_path": "runs/umbrella-delivery-20261023/verification/scripts/block.json",
+      "source_block_sha256": "cdf08b5c5008c395136eb682089d2591834f390beeee3c114fb58fef39a37853"
     }
   }
 }

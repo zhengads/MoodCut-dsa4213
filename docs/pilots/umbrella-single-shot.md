@@ -1,10 +1,10 @@
 # 试跑单：公交站还伞，首镜头三版本
 
-关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v2。**状态：人物素材离线适配已获授权；真实试跑未批准、不可启动。** 本次仅公开免费素材读取、本地转换与离线核对，新增付费消费为0。
+关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3。**状态：PNG公开交付及字节核对已完成，新目录请求prepared_offline；真实试跑未批准。** 本次仅素材交付、公开GET核对和离线编译，新增付费消费为0。
 
 首选范围是**冻结已有软件台词的真实音视频技术预检**：一个原镜头、三个版本，检查服务是否接受参考图，以及动作、中文声音和台词能否落到成片。不进行新的LLM规划/审查，不检验审查方法效果；真实P2/P3全流程属于下文单独列价的后续扩展，不能用手写候选冒充其产物。
 
-配套文件：[候选清单](umbrella-single-shot.proposal.json)、[素材锁定清单](../../assets/pilots/umbrella-sigils.lock.json)、[来源与署名](umbrella-sigils-credits.md)、[公开价格快照](public-prices-20261023.json)。清单是文档数据，`execution_enabled=false`，不是现有CLI的执行配置；全部真实运行批准字段保持false/null，离线素材选择授权另记。原 `configs/video.json`、`experiment.json`、`pilot.json` 及提示词不改。
+配套文件：[候选清单](umbrella-single-shot.proposal.json)、[PNG交付与新请求身份](../../assets/pilots/umbrella-png-delivery.json)、[原素材锁定清单](../../assets/pilots/umbrella-sigils.lock.json)、[来源与署名](umbrella-sigils-credits.md)、[公开价格快照](public-prices-20261023.json)。清单是文档数据，`execution_enabled=false`，不是现有CLI的执行配置；全部真实运行批准字段保持false/null。原 `configs/video.json`、`experiment.json`、`pilot.json` 及提示词不改。
 
 ## 1. 明确候选与原镜头
 
@@ -62,9 +62,20 @@
 
 已在新目录用现有P1/P2/P3的明确软件回放与P4编译器重建软件源/请求，保留完整原计划、原首镜头索引和三句手写台词，三条件共享相同图像顺序、角色绑定、服装、声音、动作/时长、seed与非台词要求。提议style仅澄清与原模板一致的“身份及服装参考、不复制背景”。旧Wan block及八份来源身份未改写；新源仍为 `source_kind=synthetic`、`mock=true`，不能因以后视频来自服务商就改成真实审查。
 
-**仍缺可交付PNG地址。** 当前manifest中的 `source_url` 继续使用 `https://example.invalid/moodcut-pilot/*.png`，显式表示离线占位；原AVIF真实来源另存 `origin_url`，不能把其URL与转换PNG哈希混绑。本轮不上传/托管图片。后续提供可读HTTPS PNG并核对远端字节后，须在新目录重算全部身份。
+**v3已交付PNG。** 复用本项目[素材预发布附件](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-umbrella-assets-v1)，不将图片提交Git、不新建托管服务：
 
-候选清单 `offline_adaptation` 保存本轮离线共同/请求哈希及核对结果；这不等于真实运行冻结值。`frozen_runtime_shared_generation_sha256` 和 `runtime_preparation` 仍为null，真实输入/模型/预算/执行批准仍未给出。结构编译通过不证明提供商取图、接受素材或人物质量。
+| 共同角色 | 公开PNG地址 | 已核对的PNG SHA-256 |
+| --- | --- | --- |
+| 林 / cn-02 | [cn-02.png](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-02.png) | `f2508d4736f673f89de15521e853981f3b7b1762cfa64773120bbd313b75229b` |
+| 博 / cn-04 | [cn-04.png](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/cn-04.png) | `4e3cf08c9cafafdbc5c13419cae0933948432a4b46702527779a0f58091a19a5` |
+
+2026-10-23 12:57 UTC（北京时间20:57）以无Authorization的公开GET核对两张图及随附[CREDITS](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/CREDITS.md)、[完整肖像许可](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-umbrella-assets-v1/LICENSE-PORTRAITS.txt)：均200，远端字节与本地完全一致；PNG解码格式/1024×1024/RGB像素哈希正确。使用永久下载地址，不保存重定向的临时签名URL。上传元数据为image/png，CDN实际响应为application/octet-stream；已验证文件可下载并解码，尚未验证模型提供商的取图/接受行为。该预发布并非不可变存储，真实运行前重新核对字节，不为此另建存储框架。
+
+新manifest在[交付清单](../../assets/pilots/umbrella-png-delivery.json)；原AVIF `origin_url`及v2占位核对历史保留，不能与转换PNG哈希混绑。已在 `runs/umbrella-delivery-20261023/verification/` 新建软件源和请求，未修改任何旧block：共同身份 `414effb27226a5026c7b352c8249ad739200a99035d606690023986a7b0504eb`，三个不同首镜头请求仅dialogue不同，仍为原索引0、4秒、seed4213。具体请求/源block/preparation哈希见交付清单，全部source_kind=synthetic、mock=true。
+
+公开GET核对与后续断网编译分阶段进行；断网阶段连接尝试0，114个旧文件及8份原来源身份未变。现有P1/P2/P3＋FakeClient和P4完成编译/原索引选择，默认execute-generated仍为prepared_offline、0视频HTTP、空人工表。没有新增生产脚本、客户端、评分或恢复框架。
+
+候选清单 `png_delivery` 指向本次交付与请求；`offline_adaptation` 仅保留v2占位地址的历史核对。`frozen_runtime_shared_generation_sha256` 和 `input_readiness.runtime_preparation` 仍为null，真实运行批准false/null；这区分已准备的本地文件与批准运行，不再把“PNG地址未交付”列为阻塞。
 
 ## 4. 完整预算与费用核对
 
@@ -125,8 +136,8 @@
 
 ## 6. 审批记录与本轮交付边界
 
-已授权并完成：cn-02/cn-04的本地选择、保留来源许可署名、格式转换及三条件离线共同输入核对。仍待批准/确认：PNG交付URL与远端内容身份、真实运行冻结后的新输入/请求目录和哈希、首选范围、模型/设置、$1.10额度与平台余额、运行负责人、听看检查人；额外恢复及$0.10文本扩展分别另批。所有真实运行批准字段仍为false/null，不因PR合并而获得调用授权。
+已授权并完成：cn-02/cn-04的选择/转换、来源许可署名、PNG公开地址与远端字节核对及新目录三条件请求重编译。仍待批准/确认：核清历史费用及当前余额，运行当天价格、首选范围/模型/设置、$1.10提议额度、运行负责人及听看检查人；批准前复核本次地址/哈希，额外恢复及$0.10文本扩展分别另批。所有真实运行批准字段仍为false/null，不因PR合并而获得调用授权。
 
-v1已完成候选、价格/输入核对、预算和验收标准；v2补齐选定合成人物的来源/许可、原图与PNG哈希、解码像素及共同输入核对。仅交付URL、账单/余额与真实运行审批等仍待完成，**不是付费run-ready报告**。本轮不运行付费模型API、不生成新人物、不上传素材或收集人类评分。#8/#9继续开放。
+v1完成具体提议，v2完成本地人物适配，v3完成公开交付及请求重编译；剩余主要是账目/预算批准和实际模型表现。**下一步应在这些必要确认后执行现有最小技术试跑**，不再为了未观察到的故障继续扩建框架。本轮不调用付费模型API、不生成新人物或收集人类评分，#8/#9继续开放。
 
 来源：[OpenRouter公开视频目录](https://openrouter.ai/api/v1/videos/models)、[Seedance模型页](https://openrouter.ai/bytedance/seedance-2.0-mini)、[文本模型页](https://openrouter.ai/openai/gpt-4.1-mini)、[既有客户端](../../src/moodcut/client.py)、[原视频成本/预检](../../src/moodcut/video_client.py)、[既有编译器](../../src/moodcut/video_generation.py)、[执行/账目](../../src/moodcut/pipeline.py)、[协议](../CONTRACTS.md#617-三条件任务执行恢复与继续)。价格仅为记录时点公开资料；再次运行必须重检。

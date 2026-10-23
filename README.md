@@ -55,7 +55,7 @@ Linux/macOS 使用 `.venv/bin/python`。smoke 只跑三条件的 JSON 链路，�
 
 只有另获模型/范围/预算批准后才能启用 `--allow-paid --max-cost-usd`。执行复用现有视频客户端和本地检查包；同块相同请求复用，失败/中断/未知消费停止后续POST。`--resume-execution` 只GET恢复一个已有任务；费用核清后，`--continue-execution` 才能显式继续未提交镜头，跳过已完成任务并扣除历史视频消费。旧回执/记录保留，父快照仅允许一个HTTP后继。准确参数、预算边界和中断处理见[CONTRACTS 6.17](docs/CONTRACTS.md#617-三条件任务执行恢复与继续)。
 
-本增量只通过模拟回执/现有软件视频验收，不调用付费API。真实试跑的输入、模型、规模、费用与人工安排仍待批准，见[试跑协议提议](docs/evaluation.md#三条件试跑协议提议2026-10-23尚未批准运行)。已有[还伞4秒三版本具体试跑单](docs/pilots/umbrella-single-shot.md)，明确固定软件台词的技术预检范围、共同设置、预算及验收标准；v2已按选定cn-02/cn-04完成[素材离线适配与署名](docs/pilots/umbrella-sigils-credits.md)，仍缺PNG交付地址核对和历史费用/余额及真实运行批准，当前不可启动，不代表真实审查效果。最终只使用execution记录指向的账目，不累加父执行或preflight快照。
+本增量只通过模拟回执/现有软件视频验收，不调用付费API。真实试跑的输入、模型、规模、费用与人工安排仍待批准，见[试跑协议提议](docs/evaluation.md#三条件试跑协议提议2026-10-23尚未批准运行)。已有[还伞4秒三版本具体试跑单](docs/pilots/umbrella-single-shot.md)，明确固定软件台词的技术预检范围、共同设置、预算及验收标准；v3已完成cn-02/cn-04的[PNG公开交付与字节核对](assets/pilots/umbrella-png-delivery.json)，在新目录重编译请求并保留[来源署名](docs/pilots/umbrella-sigils-credits.md)；剩余主要是历史费用/余额和真实试跑批准，当前未执行，不代表真实审查效果。最终只使用execution记录指向的账目，不累加父执行或preflight快照。
 
 ### 已有本地视频的观看检查包
 
