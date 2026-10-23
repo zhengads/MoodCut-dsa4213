@@ -715,3 +715,14 @@ passed; final PR CI is recorded in the PR.
 [试跑单v3](pilots/umbrella-single-shot.md)已交付cn-02/cn-04 PNG公开地址并核对远端字节，在新目录重编译三条件原首镜头；来源/转换身份保留于[原锁](../assets/pilots/umbrella-sigils.lock.json)，当前URL/请求身份见[交付清单](../assets/pilots/umbrella-png-delivery.json)。未来观看/盲评材料须附同一份[公共credits](pilots/umbrella-sigils-credits.md)，不暴露方法/目标或只留PRIVATE，不往视频内加字幕。当前未创建/发放实际评分包，账目/余额/真实运行批准仍待完成，提供商取图接受未验证。
 
 当前优先取得真实成片和人工证据，暂停继续扩充通用离线工具。先做既定技术试跑；其固定手写台词不证明情绪审查有效。方法比较须另批真实P2/P3输出、冻结三条件共同输入、隐藏标签/目标的独立人工评分，并保留失败/未修改/复用与全部费用/覆盖。正式故事、重复数和观看者安排沿既有待确认表由团队批准，本轮不擅自扩大规模或改变评分口径。单镜头不验收跨镜头连续性。
+
+
+### Anonymous mapping label regression (2026-10-24)
+
+The generated-rating regression additionally covers swapped condition labels and
+an altered target tone in the private answer key, with its manifest checksum
+recomputed to match the changed CSV. Both must still be rejected against the
+independently rechecked source records. Anonymous IDs, video files and input
+records remain intact, isolating semantic label integrity from file checksums.
+The check applies even with no ratings supplied. Tests reuse synthetic inspection
+media and do not require teammate pilot artifacts, provider calls or real votes.

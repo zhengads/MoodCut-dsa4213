@@ -708,6 +708,37 @@ def test_offline_qualification_rejects_changed_evidence(inspection_inputs, mutat
     assert {p: p.read_bytes() for p in before} == before
 
 
+@pytest.mark.parametrize("field", ["condition", "target_tone"])
+def test_generated_ratings_reject_rehashed_answer_labels(inspection_inputs, tmp_path, field):
+    """A matching CSV checksum cannot legitimize a wrong experimental label."""
+    import hashlib
+    from test_video_generation import inspect_local
+    from moodcut.pipeline import read_json
+    from moodcut.evaluation import _read_evaluation_csv
+    case = inspection_inputs
+    inspect_local(case)
+    exported = _generated_export(case, tmp_path / "blind")
+    key_path = Path(exported["private_key_path"])
+    rows = _read_evaluation_csv(key_path)
+    if field == "condition":
+        # Keep IDs and videos valid; only exchange two condition labels.
+        rows[0][field], rows[1][field] = rows[1][field], rows[0][field]
+        assert rows[0][field] != rows[1][field]
+    else:
+        rows[0][field] = next(t for t in ("affectionate", "suspicious", "awkward")
+                              if t != rows[0][field])
+    with key_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    manifest = read_json(exported["manifest_path"])
+    manifest["private_key_sha256"] = hashlib.sha256(key_path.read_bytes()).hexdigest()
+    _rewrite_fixture_json(exported["manifest_path"], manifest)
+    # Empty scores still check all labels against independently rechecked records.
+    with pytest.raises(ValueError, match="private mapping/exported video"):
+        _generated_scores(case, [], exported["private_key_path"])
+
+
 @pytest.mark.parametrize("variant", ["unknown", "failed", "unsubmitted"])
 def test_offline_qualification_keeps_failures_unknowns_and_coverage(inspection_inputs, variant, tmp_path):
     from test_video_generation import inspect_local, ROOT
