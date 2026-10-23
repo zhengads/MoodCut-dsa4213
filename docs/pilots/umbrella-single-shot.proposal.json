@@ -1,0 +1,284 @@
+{
+  "kind": "moodcut_pilot_proposal_not_execution_config",
+  "proposal_id": "umbrella-return-4s-three-conditions-v1",
+  "status": "proposal_not_approved",
+  "execution_enabled": false,
+  "scope": "frozen_software_dialogue_native_video_audio_quality_probe_only",
+  "primary_choice": true,
+  "formal_inclusion_approved": false,
+  "source": {
+    "repository_case": "tests/test_video_generation.py::_generated_case(umbrella)",
+    "saved_directory": "runs/video-compiler-20261018/software-evidence/scripts",
+    "provenance": "Existing team-authored software fixture, not real LLM planning/review or a new dataset.",
+    "source_file_sha256": {
+      "scene.json": "8b8ba7d49f6122291844e63c92adcc398106175b9c38a5d500e8cbb96c8e3f35",
+      "initial.json": "e6eda761735066fba25a95ac2ffe8fa0f9c47593aa3bdb969bda65f6d9147aae",
+      "assets.json": "d7173b370ca661ef6e0f2a81b4847c0ce0abe74355cdce384bd8585314c97d75",
+      "generation_settings.json": "197da6fe2faf3c07fd5c6f035176afe925b0b6d451c7ebfac9bd7565b93c4210",
+      "block.json": "8dc1852bd6ee349a3acb2c8cd7c3a34492b37f98a484c993bf66eac46c52e7f9",
+      "baseline/final.json": "e6eda761735066fba25a95ac2ffe8fa0f9c47593aa3bdb969bda65f6d9147aae",
+      "generic_review/final.json": "80aa09196babaf6a47db1b9059e4f0ffae24182449929f9d637f5d5ae56dbfed",
+      "moodcut/final.json": "2c1cb0fc1a7f47cdd4e4d1b824a12b105d25564b3f081c9fdfb2525b0ec06a28"
+    }
+  },
+  "selection": {
+    "scene_id": "software_bus_stop",
+    "tone": "affectionate",
+    "replicate": 1,
+    "shot_id": "return-umbrella",
+    "original_shot_index": 0,
+    "duration_s": 4,
+    "conditions": [
+      "baseline",
+      "generic_review",
+      "moodcut"
+    ],
+    "selected_shots_per_condition": 1,
+    "full_plan_shot_ids": [
+      "return-umbrella",
+      "walk-to-bus"
+    ],
+    "max_generation_posts": 3,
+    "expected_unique_requests": 3
+  },
+  "candidate_scene": {
+    "schema_version": "1.1",
+    "scene_id": "software_bus_stop",
+    "tone": "affectionate",
+    "story": "Lin returns Bo's umbrella; they walk to the bus.",
+    "characters": [
+      {
+        "id": "lin",
+        "name": "林"
+      },
+      {
+        "id": "bo",
+        "name": "博"
+      }
+    ],
+    "beats": [
+      {
+        "id": "handover",
+        "description": "Lin returns the umbrella."
+      },
+      {
+        "id": "depart",
+        "description": "Both walk to the bus."
+      }
+    ],
+    "asset_ids": [
+      "lin_portrait",
+      "bo_portrait"
+    ],
+    "min_duration_s": 10,
+    "max_duration_s": 10,
+    "max_shots": 2,
+    "provenance": {
+      "kind": "team_authored_software_fixture",
+      "adaptation": "Contract test only; not generated output, a dataset or formal experiment."
+    },
+    "output_mode": "generated",
+    "min_shot_duration_s": 4,
+    "max_shot_duration_s": 6
+  },
+  "candidate_initial_plan": {
+    "schema_version": "1.1",
+    "scene_id": "software_bus_stop",
+    "tone": "affectionate",
+    "shots": [
+      {
+        "shot_id": "return-umbrella",
+        "beat_ids": [
+          "handover"
+        ],
+        "duration_s": 4,
+        "direction": "Medium two-shot: Lin hands the closed umbrella to Bo, who takes it.",
+        "visuals": [
+          {
+            "asset_id": "lin_portrait",
+            "crop": "full"
+          },
+          {
+            "asset_id": "bo_portrait",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [
+          {
+            "character_id": "lin",
+            "text": "伞还给你。"
+          }
+        ],
+        "narration": "Lin returns the umbrella."
+      },
+      {
+        "shot_id": "walk-to-bus",
+        "beat_ids": [
+          "depart"
+        ],
+        "duration_s": 6,
+        "direction": "Wide tracking shot: Lin and Bo walk together toward the parked bus.",
+        "visuals": [
+          {
+            "asset_id": "lin_portrait",
+            "crop": "full"
+          },
+          {
+            "asset_id": "bo_portrait",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [],
+        "narration": "Both walk toward the bus."
+      }
+    ],
+    "output_mode": "generated",
+    "scene_direction": "A rainy bus stop at dawn. The parked bus is to the right."
+  },
+  "candidate_dialogues": {
+    "baseline": [
+      {
+        "character_id": "lin",
+        "text": "伞还给你。"
+      }
+    ],
+    "generic_review": [
+      {
+        "character_id": "lin",
+        "text": "请你收好。"
+      }
+    ],
+    "moodcut": [
+      {
+        "character_id": "lin",
+        "text": "下次下雨，我还陪你。"
+      }
+    ]
+  },
+  "current_reference_manifest": {
+    "schema_version": "1.0",
+    "assets": [
+      {
+        "asset_id": "lin_portrait",
+        "character_id": "lin",
+        "path": "tests/fixtures/images/dev_a.png",
+        "width": 640,
+        "height": 640,
+        "sha256": "70725e39e094163d63a91f3de254814906f94f677a4fe8007a6c309c519a2d82",
+        "source_url": "https://example.invalid/lin_portrait.png",
+        "revision": null,
+        "rights_note": "Team-created placeholder image for software testing.",
+        "allowed_crops": [
+          "full",
+          "center_close"
+        ]
+      },
+      {
+        "asset_id": "bo_portrait",
+        "character_id": "bo",
+        "path": "tests/fixtures/images/dev_b.png",
+        "width": 640,
+        "height": 640,
+        "sha256": "23ce3594453b32dfc05322758ce57c33ebb275dedab5b44b91491e9262a0953b",
+        "source_url": "https://example.invalid/bo_portrait.png",
+        "revision": null,
+        "rights_note": "Team-created placeholder image for software testing.",
+        "allowed_crops": [
+          "full",
+          "center_close"
+        ]
+      }
+    ]
+  },
+  "proposed_generation_settings": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "model": "bytedance/seedance-2.0-mini",
+    "resolution": "720p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "seed": 4213,
+    "style": "A continuous cinematic live-action-style scene at a rainy bus stop at dawn. Two adult friends, coherent identity and clothing. Natural umbrella handoff, medium two-shot with hands and faces visible. Reference images specify character identity only. No title cards, slideshow, labels, subtitles or text overlays.",
+    "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied line with the assigned speaker. Keep Bo silent; quiet rain ambience, no narrator, extra dialogue or music. Finish the line without rushing.",
+    "characters": [
+      {
+        "id": "lin",
+        "asset_id": "lin_portrait",
+        "voice": "Lin: adult Mandarin voice, clear middle register, measured conversational delivery."
+      },
+      {
+        "id": "bo",
+        "asset_id": "bo_portrait",
+        "voice": "Bo: distinct adult Mandarin voice, lower middle register; silent in the selected shot."
+      }
+    ]
+  },
+  "video_pricing": {
+    "model": "bytedance/seedance-2.0-mini",
+    "resolution": "720p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "price_per_million_video_tokens_usd": "3.50"
+  },
+  "template_sha256_at_proposal": "fd02ec3b8b13f962bd5d9ce25cbd49f1b29eefe09cf39866900fabe0c12e4479",
+  "frozen_runtime_shared_generation_sha256": null,
+  "input_readiness": {
+    "real_portraits_approved": false,
+    "public_reference_bytes_verified": false,
+    "runtime_preparation": null,
+    "source_kind_to_preserve": "synthetic",
+    "mock_to_preserve": true,
+    "blockers": [
+      "Current A/B test cards are not character portraits.",
+      "Current example.invalid image URLs are inert and unusable by the provider.",
+      "Approve two usable portrait inputs/URLs before recomputing all shared/request identities in a new directory.",
+      "Reconcile the historical unknown video charge and current team balance before any new paid run."
+    ]
+  },
+  "budget_usd": {
+    "current_work_actual_new_spending": "0",
+    "primary_new_text_calls": 0,
+    "primary_new_text_cost": "0",
+    "video_tokens_per_clip": 86400,
+    "video_quote_per_clip": "0.3024000",
+    "video_quote_three_clips": "0.9072000",
+    "video_client_limit_proposed": "1.00",
+    "video_quote_margin": "0.0928000",
+    "exception_recovery_reserve_proposed": "0.10",
+    "recovery_authorized": false,
+    "primary_total_envelope_proposed": "1.10",
+    "future_real_text_extension": {
+      "status": "separate_proposal_not_in_primary_scope",
+      "model": "openai/gpt-4.1-mini",
+      "max_planning_calls": 3,
+      "max_review_calls_per_condition": 3,
+      "max_total_text_calls": 9,
+      "max_total_output_tokens": 19456,
+      "local_budget_proposed": "0.10",
+      "total_envelope_if_separately_approved": "1.20",
+      "warning": "Real outputs/dialogue cannot be known in advance; a fresh source and updated dialogue/hash review are mandatory. No automatic extra text calls."
+    },
+    "historical_text_demo_known_cost": "0.0080172",
+    "historical_failed_video_cost": null,
+    "historical_balance_snapshot": {
+      "recorded_utc": "2026-10-15T16:08:13.647058+00:00",
+      "limit": "15",
+      "usage": "0.0080172",
+      "remaining": "14.9919828",
+      "is_current_balance": false
+    },
+    "current_project_total": null,
+    "current_available_balance": null,
+    "limits_are_platform_hard_caps": false
+  },
+  "approval": {
+    "run_approved": false,
+    "approver": null,
+    "operator": null,
+    "quality_checker": null,
+    "model_and_inputs_approved": false,
+    "budget_and_balance_approved": false,
+    "get_recovery_approved": false,
+    "approved_utc": null
+  }
+}

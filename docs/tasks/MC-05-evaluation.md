@@ -2,7 +2,11 @@
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
-当前执行接线/协议增量分支：`feat/issue-8-generated-execution`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+当前具体试跑单增量分支：`docs/issue-9-concrete-pilot`。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
+
+### 当前具体候选试跑单（2026-10-23）
+
+[还伞首镜头试跑单](../pilots/umbrella-single-shot.md)选原return-umbrella、4秒、三个手写软件台词版本，列出Seedance/720p共同设置、来源/占位素材缺口、逐字差异、文本/视频/恢复/历史费用与验收标准。首选音视频技术预检不新增文本调用，额度提议$1.10；真实P2/P3扩展另批，总额提议$1.20，不能用手写台词冒充真实审查。#8配合实际编译/报价核对；素材/历史费用/余额未齐，执行开关及批准字段保持false/null，不是付费run-ready材料。#8/#9继续开放。
 
 ### 当前试跑协议整理（2026-10-23）
 
