@@ -728,3 +728,160 @@ def test_redirects_are_refused_before_forwarding_auth():
 
     request = Request(OpenRouterClient.ENDPOINT, headers={"Authorization": "Bearer private"})
     assert _NoRedirect().redirect_request(request, None, 302, "redirect", {}, "https://other.example") is None
+
+
+@pytest.mark.parametrize("content,expected_kind", [
+    ("not JSON", "invalid_json_syntax"),
+    ("[]", "non_object_json"),
+    ("null", "non_object_json"),
+    ('{"x":NaN}', "non_finite_number"),
+    ('{"x":1e999}', "non_finite_number"),
+    ('{"x":1,"x":2}', "duplicate_json_key"),
+])
+def test_invalid_model_json_has_structured_failure_kind(
+    http, content, expected_kind
+):
+    respond(http, completion(content))
+    client = live_client()
+
+    with pytest.raises(OpenRouterError):
+        make_call(client)
+
+    assert http.call_count == 1
+    assert len(client.calls) == 1
+
+    record = client.calls[0]
+
+    assert record["status"] == "invalid_response"
+    assert record["failure_kind"] == expected_kind
+    assert record["provider_cost_usd"] == 0.001
+    assert client.spent_usd == pytest.approx(0.001)
+
+    assert "test-secret-not-real" not in json.dumps(client.calls)
+
+
+@pytest.mark.parametrize("stage", ["director", "scene", "shot"])
+def test_optional_planning_schema_request(http, stage):
+    from moodcut.client import _planning_json_schema
+
+    client = live_client()
+    client.json_schema_stages = ("director", "scene", "shot")
+
+    client.complete_json(
+        stage=stage,
+        system="Return JSON",
+        user="Synthetic software test",
+        max_output_tokens=500,
+    )
+
+    request = http.call_args.args[0]
+    body = json.loads(request.data)
+
+    expected = _planning_json_schema(stage)
+
+    assert body["response_format"] == expected
+    assert body["provider"]["allow_fallbacks"] is False
+    assert body["provider"]["require_parameters"] is True
+    assert http.call_count == 1
+
+
+def test_optional_schema_does_not_change_review_format(http):
+    client = live_client()
+    client.json_schema_stages = ("director", "scene", "shot")
+
+    client.complete_json(
+        stage="critique",
+        system="Return JSON",
+        user="Synthetic software test",
+        max_output_tokens=500,
+    )
+
+    body = json.loads(http.call_args.args[0].data)
+
+    assert body["response_format"] == {"type": "json_object"}
+    assert http.call_count == 1
+
+
+@pytest.mark.parametrize("stages", [
+    ["unknown"],
+    ["director", "director"],
+    ["critique"],
+    "director",
+])
+def test_invalid_schema_stage_configuration_rejected(stages):
+    from moodcut.client import OpenRouterClient
+
+    with pytest.raises((ValueError, TypeError)):
+        OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/test-model",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+            json_schema_stages=stages,
+        )
+
+
+def test_schema_configuration_changes_role_policy_identity():
+    from moodcut.client import OpenRouterClient, RoleRoutedClient
+
+    def build(stages):
+        planning = OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/planning",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+            json_schema_stages=stages,
+        )
+        review = OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/review",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+        )
+        return RoleRoutedClient(
+            planning, review, max_cost_usd=0.1
+        )
+
+    legacy = build([])
+    director = build(["director"])
+    all_stages = build(["director", "scene", "shot"])
+
+    assert legacy.model != director.model
+    assert director.model != all_stages.model
+    assert legacy.model_settings["roles"]["planning"].get(
+        "json_schema_stages"
+    ) is None
+
+    assert all_stages.model_settings["roles"]["planning"][
+        "json_schema_stages"
+    ] == ["director", "scene", "shot"]
+
+
+@pytest.mark.parametrize("routed", [False, True])
+def test_configured_planning_schema_is_reserved_before_any_transport(http, routed):
+    planning = live_client(json_schema_stages=["director"])
+    _, plain = planning._reservation("s", "u", 10)
+    if routed:
+        client = RoleRoutedClient(planning, live_client(), max_cost_usd=float(plain))
+    else:
+        client = live_client(json_schema_stages=["director"], max_cost_usd=float(plain))
+    with pytest.raises(BudgetError):
+        client.complete_json(stage="director", system="s", user="u", max_output_tokens=10)
+    assert client.calls == []
+    http.assert_not_called()
+
+
+def test_explicit_response_schema_preserves_planning_opt_in_and_raw_retention(http, tmp_path):
+    client = live_client(json_schema_stages=["director"], response_dir=tmp_path)
+    schema = {"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"], "additionalProperties": False}
+    assert client.complete_json(stage="director", system="s", user="u", max_output_tokens=10, json_schema=schema) == {"ok": True}
+    assert json.loads(http.call_args.args[0].data)["response_format"]["json_schema"]["schema"] == schema
+    call = client.calls[0]
+    assert call["parse_error"] is None
+    assert (tmp_path / call["response_artifact"]["body_path"]).is_file()

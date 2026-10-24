@@ -422,7 +422,7 @@ def run_imaging_quality_batch(manifest, *, video_root, upstream_dir, cache_dir,
                          config=config, evaluate_one=evaluate_one, resume=resume)
 
 
-PAIRED_TONES = ("affectionate", "suspicious", "hostile")
+PAIRED_TONES = ("affectionate", "suspicious", "hostile", "tense")
 PAIRED_CONDITIONS = ("baseline", "generic_review", "moodcut")
 RATING_FIELDS = ("rater_id", "item_id", "perceived_tone", "confidence",
                  "naturalness", "story_clarity", "overstatement")

@@ -30,7 +30,7 @@ Current offline increment: explicit `actor_self_review_v3` applies the same maxi
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
-后续小规模实验输入已选定：[六个故事与固定氛围分配](docs/studies/six-story-20261024/README.md)。使用现有素材库的12个不同角色，亲近／怀疑／敌意各2个故事，每故事一种氛围、三条件、暂不重复，共18个条件条目；场景与素材JSON已单独保存。输入范围确认不授权付费执行，模型／时长与预算、方法版本和人工评价安排仍需在执行前确定；`configs/experiment.json` 保留原开发示例。
+后续小规模实验当前输入：[六个明显情绪情景 v2](docs/studies/six-story-clear-emotions-20261024/README.md)。使用现有素材库的12个不同角色，亲密 affectionate／敌对 hostile／紧张 tense 各2个故事，每故事一种氛围、三条件、暂不重复，共18个条件条目。v2 强化了明确关系、直接冲突与共同外部压力，原[v1 输入](docs/studies/six-story-20261024/README.md)保留，旧 suspicious 不改名。输入范围确认不授权付费执行，模型／时长与预算、方法版本和人工评价安排仍需在执行前确定；`configs/experiment.json` 保留原开发示例。
 
 ## 安装与离线开工
 

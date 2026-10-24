@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_frozenii_elsa_primary",
+      "character_id": "frozenii_elsa",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "width": 614,
+      "height": 1156,
+      "sha256": "422c12807142e392ffd0e5e20f4fd39a4001c0b7ca032a727616fe1bc59598bd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_mattias_primary",
+      "character_id": "frozenii_mattias",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/best.png",
+      "width": 1324,
+      "height": 1108,
+      "sha256": "86dfcf78539a03efaa404764abf205f55c478ec728e08dae8e38a4f855f0969e",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

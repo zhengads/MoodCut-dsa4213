@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_nezha2_nezha_primary",
+      "character_id": "nezha2_nezha",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/best.png",
+      "width": 672,
+      "height": 870,
+      "sha256": "58900eba5a65c6574c482073f8eeb8bb85564d5c6d0ce88a52b257f960327d59",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_aobing_primary",
+      "character_id": "nezha2_aobing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/best.png",
+      "width": 406,
+      "height": 640,
+      "sha256": "51f4f6436a652219af5d86360a8796b2e72b0acab1417b63954a421810952944",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

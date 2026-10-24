@@ -183,6 +183,10 @@ def _json_diagnostic(record, layer, exc):
     else:
         detail = {"kind": "parser_error"}
     record["parse_error"] = {"layer": layer, **detail}
+    if layer == "content":
+        record["failure_kind"] = {"syntax_error": "invalid_json_syntax",
+            "duplicate_key": "duplicate_json_key", "non_finite": "non_finite_number",
+            "non_object": "non_object_json"}.get(detail["kind"], "invalid_json_value")
     return OpenRouterError(f"OpenRouter {layer} JSON error: {detail['kind']}; no retry performed")
 
 
@@ -192,6 +196,112 @@ def _number(value, field, *, positive=False):
     if value < 0 or (positive and value == 0):
         raise ValueError(f"{field} must be {'positive' if positive else 'nonnegative'}")
     return Decimal(str(value))
+
+
+def _planning_json_schema(stage):
+    """Basic generated-planning shapes; P2 retains semantic validation."""
+    string = {"type": "string"}
+    strings = {"type": "array", "items": string}
+    dialogue = {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "character_id": string,
+                "text": string,
+            },
+            "required": ["character_id", "text"],
+            "additionalProperties": False,
+        },
+    }
+    segment = {
+        "type": "object",
+        "properties": {
+            "beat_ids": strings,
+            "description": string,
+            "direction": string,
+            "duration_s": {"type": "integer"},
+        },
+        "required": ["beat_ids", "description", "direction", "duration_s"],
+        "additionalProperties": False,
+    }
+    shot = {
+        "type": "object",
+        "properties": {
+            "shot_id": string,
+            "beat_ids": strings,
+            "duration_s": {"type": "integer"},
+            "direction": string,
+            "visuals": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "asset_id": string,
+                        "crop": string,
+                    },
+                    "required": ["asset_id", "crop"],
+                    "additionalProperties": False,
+                },
+            },
+            "dialogue": dialogue,
+            "narration": string,
+        },
+        "required": [
+            "shot_id", "beat_ids", "duration_s", "direction",
+            "visuals", "dialogue", "narration",
+        ],
+        "additionalProperties": False,
+    }
+    schemas = {
+        "director": {
+            "type": "object",
+            "properties": {
+                "scene_id": string,
+                "tone": string,
+                "beat_order": strings,
+                "approach": string,
+            },
+            "required": ["scene_id", "tone", "beat_order", "approach"],
+            "additionalProperties": False,
+        },
+        "scene": {
+            "type": "object",
+            "properties": {
+                "scene_id": string,
+                "scene_direction": string,
+                "segments": {"type": "array", "items": segment},
+            },
+            "required": ["scene_id", "scene_direction", "segments"],
+            "additionalProperties": False,
+        },
+        "shot": {
+            "type": "object",
+            "properties": {
+                "schema_version": string,
+                "output_mode": string,
+                "scene_id": string,
+                "tone": string,
+                "scene_direction": string,
+                "shots": {"type": "array", "items": shot},
+            },
+            "required": [
+                "schema_version", "output_mode", "scene_id",
+                "tone", "scene_direction", "shots",
+            ],
+            "additionalProperties": False,
+        },
+    }
+    if stage not in schemas:
+        raise ValueError("JSON Schema is only available for planning stages")
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "moodcut_" + stage,
+            "strict": True,
+            "schema": schemas[stage],
+        },
+    }
 
 
 class OpenRouterClient(LLMClient):
@@ -209,7 +319,8 @@ class OpenRouterClient(LLMClient):
 
     def __init__(self, *, api_key, model, input_price_per_million,
                  output_price_per_million, allow_paid=False, max_cost_usd=None,
-                 timeout_s=60, temperature=0, reasoning_enabled=None, response_dir=None):
+                 timeout_s=60, temperature=0, reasoning_enabled=None, response_dir=None,
+                 json_schema_stages=None):
         if not isinstance(api_key, str) or not api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required")
         if any(c in api_key for c in "\r\n"):
@@ -228,6 +339,16 @@ class OpenRouterClient(LLMClient):
         if reasoning_enabled is not None and type(reasoning_enabled) is not bool:
             raise ValueError("reasoning_enabled must be a boolean or None")
         self.reasoning_enabled = reasoning_enabled
+        if json_schema_stages is None:
+            json_schema_stages = []
+        if (not isinstance(json_schema_stages, list)
+                or any(not isinstance(stage, str)
+                       for stage in json_schema_stages)
+                or any(stage not in ("director", "scene", "shot")
+                       for stage in json_schema_stages)
+                or len(set(json_schema_stages)) != len(json_schema_stages)):
+            raise ValueError("Invalid planning JSON Schema stage configuration")
+        self.json_schema_stages = tuple(sorted(json_schema_stages))
         if self.temperature > 2:
             raise ValueError("temperature must be in [0, 2]")
         self.allow_paid = allow_paid
@@ -309,6 +430,7 @@ class OpenRouterClient(LLMClient):
                    timeout_s=config.get("timeout_s", 60),
                    temperature=config.get("temperature", 0),
                    reasoning_enabled=config.get("reasoning_enabled"),
+                   json_schema_stages=config.get("json_schema_stages"),
                    allow_paid=allow_paid, max_cost_usd=max_cost_usd)
 
     @property
@@ -325,10 +447,15 @@ class OpenRouterClient(LLMClient):
             raise TypeError("system and user must be strings")
         if type(max_output_tokens) is not int or max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be a positive integer")
-        format_spec = _response_format(json_schema)
+        format_spec = self._request_format(stage, json_schema)
         # Serializes reservations and responses when a single client is shared.
         with self._lock:
             return self._complete(stage, system, user, max_output_tokens, format_spec)
+
+    def _request_format(self, stage, json_schema):
+        if json_schema is None and stage in self.json_schema_stages:
+            return _planning_json_schema(stage)
+        return _response_format(json_schema)
 
     def _reservation(self, system, user, max_output_tokens, json_schema=None):
         estimated_input = len(system.encode("utf-8")) + len(user.encode("utf-8")) + 64
@@ -499,6 +626,10 @@ class RoleRoutedClient(LLMClient):
         roles = {role: {"model_id": c.model, "temperature": c.temperature,
                         "reasoning_enabled": c.reasoning_enabled}
                  for role, c in (("planning", self.planning_client), ("review", self.review_client))}
+        if self.planning_client.json_schema_stages:
+            roles["planning"]["json_schema_stages"] = list(
+                self.planning_client.json_schema_stages
+            )
         return {"model_id": self.policy_id(roles), "roles": roles}
 
     @property
@@ -534,9 +665,10 @@ class RoleRoutedClient(LLMClient):
             if (not isinstance(system, str) or not isinstance(user, str)
                     or type(max_output_tokens) is not int or max_output_tokens <= 0):
                 raise ValueError("Invalid text request")
-            _response_format(json_schema)
+            format_spec = client._request_format(stage, json_schema)
+            schema = format_spec.get("json_schema", {}).get("schema")
             cost = self.spent_usd
-            _, reservation = client._reservation(system, user, max_output_tokens, json_schema)
+            _, reservation = client._reservation(system, user, max_output_tokens, schema)
             if cost is None or Decimal(str(cost)) + reservation > self._max_cost:
                 self.stop("Shared text cost is unknown or its budget is exhausted")
                 raise BudgetError(self._stop_reason)

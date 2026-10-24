@@ -30,9 +30,9 @@ Denied-network replay uses original saved HTTP bytes with the existing real clie
 
 - Latest S06: eight original envelopes/content hashes match; all parse as before. The original Taiyi `[0]` remains unchanged and rejected by ownership, with zero emotional writer rounds or video requests. The request now permits only `[1]`. The failed source cannot be compiled.
 - Existing successful Anna/Elsa: nine original responses pass unchanged and reproduce the same three final plans; existing request preparation succeeds offline, with no video POST.
-- Eight historical request packages remain readable by read-only recompilation, including the previous writer-only schema bundle. The protected 1,115 historical files retain their SHA-256 bytes, including the latest failure and all earlier retained results/media.
+- Eight historical request packages remain readable by read-only recompilation, including the previous writer-only schema bundle. Before main synchronization, all 1,115 protected historical files retained their SHA-256 bytes. After synchronization, all trial inputs, responses, result files and media remain unchanged; the sole documentation exception is explained below.
 
-Local replay records are under ignored `runs/s06-actor-index-offline-20261024/`: `verify_offline.py`, `acceptance.json`, `preserved-before.json`, synthetic replay outputs and test log. They contain no newly generated model evidence. Public reproduction of the ownership regression is available in `tests/test_reviewer.py`; original private HTTP bytes are intentionally not published.
+Pre-sync local replay records are under ignored `runs/s06-actor-index-offline-20261024/`: `verify_offline.py`, `acceptance.json`, `preserved-before.json`, synthetic replay outputs and test log. They contain no newly generated model evidence. Public reproduction of the ownership regression is available in `tests/test_reviewer.py`; original private HTTP bytes are intentionally not published.
 
 Validation commands (offline):
 
@@ -42,4 +42,15 @@ python scripts/prepare_references.py --check
 python runs/s06-actor-index-offline-20261024/verify_offline.py
 ```
 
-The last command is a one-time local verification using retained private artifacts and exclusive output directories. Full local regression completed on 2026-10-25: **1,044 tests and 191 subtests passed** in 537.92 seconds. The reference cache check verified 33 files without downloads, and `git diff --check` passed. The live comparison page continues showing the actual failed S06 run; no new result tab or media is fabricated.
+The last command is a one-time local verification using retained private artifacts and exclusive output directories. The pre-main-sync full local regression completed on 2026-10-25: **1,044 tests and 191 subtests passed** in 537.92 seconds. The reference cache check verified 33 files without downloads, and `git diff --check` passed. The live comparison page continues showing the actual failed S06 run; no new result tab or media is fabricated.
+
+
+## Synchronization with existing main changes
+
+The PR branch had not yet incorporated main's already merged #54 (JSON failure-kind codes), #55 (optional planning schemas) and #56 (new study inputs). Updating the shared client caused one content conflict. Main is merged into this development branch without rewriting history; PR #52 remains unmerged.
+
+Resolution keeps both constructor options (`response_dir` and optional `json_schema_stages`), raw-response diagnostics plus main's stable `failure_kind` codes, and both configured planning and explicit actor/writer schemas. Effective schema selection precedes individual/shared budget reservations; an explicitly supplied schema takes precedence. Optional planning stages remain disabled in the experiment's unchanged configuration. New software checks cover zero-transport budget rejection and explicit-schema/raw-retention coexistence. No new experimental agent answer, setting, story selection or paid run is introduced by synchronization.
+
+Of the original 1,115 protected paths, **1,114 retain their original bytes**. The only exception, `docs/studies/six-story-20261024/README.md`, receives main's existing pointer to its newer study design; it exactly matches main's tracked content. The original README remains in the pre-sync commit/history. All original JSON inputs, trial responses, failures, results and media remain unchanged. The refreshed preservation baseline retains 1,115 paths with this single documented upstream change. Post-sync original-byte replay again rejects the same eight-response S06 failure, reproduces the nine-response Anna/Elsa plans and rechecks eight old packages without network.
+
+Post-sync replay records are separately saved under ignored `runs/s06-actor-index-main-offline-20261025/`; the pre-sync records are retained. Fresh post-sync affected-module verification: **615 tests and 94 subtests passed** in 313.77 seconds across client, reviewer, planner, validation, pipeline and evaluation suites. The pre-sync source also passed its full GitHub CI. The synchronized head requires its own full CI result; earlier checks are not inherited.
