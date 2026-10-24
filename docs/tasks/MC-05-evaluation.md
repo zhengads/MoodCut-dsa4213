@@ -1,5 +1,9 @@
 # MC-05 配对对照、盲评导出与统计
 
+### HeyGen technical pilot record (2026-10-24)
+
+The approved model changed to HeyGen 768p with three five-second fixed-dialogue clips and the same cn-02/cn-04 portraits. The first POST failed on the image URL's Content-Type; there is no video to rate. Preserve one attempted baseline, two unsubmitted conditions and unknown task cost. The inline-image correction has offline verification only and does not count as another paid run. See [pilot record](../pilots/umbrella-single-shot.md). Issues #8 and #9 remain open; no ratings, eligibility or formal inclusion decision is inferred from these engineering checks.
+
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
 当前PNG交付增量分支：`feat/issue-8-png-delivery`；离线素材适配已随PR #43合入。执行接线已随PR #41合入。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。

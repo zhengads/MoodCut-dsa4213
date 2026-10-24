@@ -374,6 +374,49 @@ def compile_generated(case, **overrides):
         template_sha256=overrides.get("template_sha256", get_video_template_sha256()), pricing_config=pricing)
 
 
+@pytest.mark.parametrize("inline", [False, True])
+def test_heygen_compiler_keeps_common_controls_and_only_changes_dialogue(monkeypatch, inline):
+    import base64
+    from test_video_client import heygen_case
+    scene, initial, plans, manifest, settings, _ = _generated_case("umbrella", monkeypatch)
+    if inline:
+        for asset in manifest["assets"]:
+            asset["source_url"] = "data:image/png;base64," + base64.b64encode((ROOT/asset["path"]).read_bytes()).decode("ascii")
+    pricing, _, _ = heygen_case()
+    settings.update(model=pricing["model"], resolution="768p")
+    scene.update(min_duration_s=11, max_duration_s=11)
+    for plan in [initial, *plans.values()]:
+        plan["shots"][0]["duration_s"] = 5
+    bundle = compile_generated((scene, initial, plans, manifest, settings, pricing))
+    common = []
+    for condition in bundle["conditions"]:
+        job = condition["jobs"][0]
+        req = deepcopy(job["request"])
+        assert job["quoted_cost_usd"] == "0.250"
+        assert "generate_audio" not in req and req["duration"] == 5
+        assert req["provider"]["options"]["heygen"]["parameters"]["prompt_enhancement"] == "disabled"
+        assert "<Picture 1>" in req["prompt"] and "<Picture 2>" in req["prompt"]
+        req["prompt"] = req["prompt"].split("\n\nDIALOGUE_JSON:")[0]
+        common.append(req)
+    assert common[0] == common[1] == common[2]
+    if inline:
+        assert all(r["image_url"]["url"].startswith("data:image/png;base64,") for r in common[0]["input_references"])
+
+
+def test_heygen_compiler_rejects_inline_bytes_that_do_not_match_asset(monkeypatch):
+    import base64
+    from test_video_client import heygen_case
+    scene, initial, plans, manifest, settings, _ = _generated_case("umbrella", monkeypatch)
+    pricing, _, _ = heygen_case()
+    settings.update(model=pricing["model"], resolution="768p")
+    scene.update(min_duration_s=11, max_duration_s=11)
+    for plan in [initial, *plans.values()]:
+        plan["shots"][0]["duration_s"] = 5
+    manifest["assets"][0]["source_url"] = "data:image/png;base64," + base64.b64encode(b"different bytes").decode("ascii")
+    with pytest.raises(ValueError, match="Inline PNG"):
+        compile_generated((scene, initial, plans, manifest, settings, pricing))
+
+
 def prompt_parts(request):
     shared, dialogue = request["prompt"].split("SHARED_REQUIREMENTS_JSON:\n", 1)[1].split("\n\nDIALOGUE_JSON:\n", 1)
     return json.loads(shared), json.loads(dialogue)

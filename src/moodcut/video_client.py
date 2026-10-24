@@ -18,6 +18,7 @@ from .client import BudgetError, OpenRouterError, _NoRedirect, _strict_json
 from .pipeline import json_hash
 
 BASE = "https://openrouter.ai/api/v1/videos"
+HEYGEN_MODEL = "heygen/heygen-video-1"
 TERMINAL = {"completed", "failed", "cancelled", "expired"}
 STATUSES = TERMINAL | {"pending", "in_progress"}
 
@@ -80,24 +81,59 @@ def _json_request(opener, request):
                              kind="invalid_response", error_type=type(exc).__name__) from None
 
 
-def fetch_video_models() -> list[dict]:
+def fetch_video_models(*, discount_model=None) -> list[dict]:
     """Public read-only discovery; does not require a key or create a job."""
     data = _json_request(build_opener(_NoRedirect()).open, Request(BASE + "/models"))
     if not isinstance(data.get("data"), list):
         raise OpenRouterError("Invalid video model catalogue")
-    return data["data"]
+    models = data["data"]
+    if discount_model == HEYGEN_MODEL:
+        endpoints = _json_request(build_opener(_NoRedirect()).open, Request(
+            "https://openrouter.ai/api/v1/models/" + HEYGEN_MODEL + "/endpoints"))
+        entries = endpoints.get("data", {}).get("endpoints", [])
+        if len(entries) != 1 or entries[0].get("tag") != "heygen":
+            raise BudgetError("HeyGen provider pricing changed; verify before submission")
+        discount = _money(entries[0].get("pricing", {}).get("discount"))
+        if discount >= 1:
+            raise BudgetError("Invalid HeyGen provider discount")
+        models = deepcopy(models)
+        for model in models:
+            if model.get("id") == HEYGEN_MODEL:
+                model["verified_provider_discount"] = str(discount)
+    elif discount_model is not None:
+        raise ValueError("Unverified provider discount model")
+    return models
+
+
+def video_request_controls(model):
+    """Fixed native audio has no toggle on HeyGen; disable prompt rewriting."""
+    if model == HEYGEN_MODEL:
+        return {"provider": {"options": {"heygen": {"parameters": {"prompt_enhancement": "disabled"}}}}}
+    return {"generate_audio": True}
 
 
 def estimate_video_cost(config: dict, request: dict) -> Decimal:
     """Quote only verified reference-image/audio configurations in USD."""
     if any(request.get(k) != config.get(k) for k in ("model", "resolution", "aspect_ratio")):
         raise ValueError("Video request does not match its pricing config")
-    if request.get("generate_audio") is not True or request.get("aspect_ratio") != "16:9":
+    controls = video_request_controls(config.get("model"))
+    if (any(request.get(k) != v for k, v in controls.items())
+            or config.get("model") == HEYGEN_MODEL and "generate_audio" in request
+            or request.get("aspect_ratio") != "16:9"):
         raise ValueError("This price contract requires native audio and 16:9")
     references = request.get("input_references", [])
     if not isinstance(references, list) or any(not isinstance(ref, dict) or ref.get("type") != "image_url" for ref in references):
         raise ValueError("Only image references are covered by this price contract")
     duration = request.get("duration")
+    if config.get("model") == HEYGEN_MODEL:
+        if (request.get("resolution") != "768p" or type(duration) is not int or duration not in range(5, 16)
+                or not 1 <= len(references) <= 9 or config.get("free_reference_images") != 2):
+            raise ValueError("Unsupported HeyGen reference request")
+        discount = _money(config.get("provider_discount"))
+        if discount >= 1:
+            raise ValueError("Invalid HeyGen provider discount")
+        return (duration * _money(config.get("reference_price_per_second_usd"), positive=True)
+                + max(0, len(references) - 2) * _money(config.get("reference_image_price_usd"), positive=True)) * (1 - discount)
     if config.get("model") == "alibaba/wan-2.7":
         if request.get("resolution") != "720p" or type(duration) is not int or duration not in range(2,11):
             raise ValueError("Unsupported Wan 2.7 request")
@@ -121,13 +157,29 @@ def check_video_model(config: dict, models: list[dict]) -> None:
     for field, supported in (("resolution", "supported_resolutions"), ("aspect_ratio", "supported_aspect_ratios")):
         if config[field] not in (model.get(supported) or []):
             raise ValueError(f"Video model does not support {field}")
-    if model.get("generate_audio") is not True or model.get("seed") is not True:
+    if (config["model"] != HEYGEN_MODEL and model.get("generate_audio") is not True
+            or model.get("seed") is not True):
         raise ValueError("Video model must advertise audio and seed support")
     for shot in config.get("shots", []):
         if shot["duration_s"] not in (model.get("supported_durations") or []):
             raise ValueError("Video model does not support requested duration")
     skus = model.get("pricing_skus") or {}
-    if config["model"] == "alibaba/wan-2.7":
+    if config["model"] == HEYGEN_MODEL:
+        expected = {"duration_seconds_2k", "duration_seconds_480p", "duration_seconds_768p",
+                    "reference_input_images", "reference_duration_seconds_2k",
+                    "reference_duration_seconds_480p", "reference_duration_seconds_768p"}
+        if (set(skus) != expected or config.get("resolution") != "768p"
+                or config.get("free_reference_images") != 2
+                or "prompt_enhancement" not in (model.get("allowed_passthrough_parameters") or [])):
+            raise BudgetError("HeyGen reference pricing/control contract changed")
+        discount = _money(model.get("verified_provider_discount"))
+        if discount != _money(config.get("provider_discount")) or discount >= 1:
+            raise BudgetError("HeyGen provider discount changed")
+        if _money(skus["reference_input_images"], positive=True) > _money(config.get("reference_image_price_usd"), positive=True):
+            raise BudgetError("HeyGen reference image price increased")
+        live_rate = _money(skus["reference_duration_seconds_768p"], positive=True)
+        configured_rate = _money(config.get("reference_price_per_second_usd"), positive=True)
+    elif config["model"] == "alibaba/wan-2.7":
         if set(skus) != {"duration_seconds"}:
             raise BudgetError("Video pricing SKU contract changed; verify before submission")
         live_rate = _money(skus["duration_seconds"], positive=True)
@@ -257,10 +309,11 @@ class OpenRouterVideoClient:
             raise BudgetError("Reconcile earlier charges before any further generation")
         if not self._key or not self._key.strip():
             raise ValueError("Set OPENROUTER_API_KEY in the process environment")
-        allowed = {"model", "prompt", "duration", "resolution", "aspect_ratio", "generate_audio", "seed", "input_references"}
+        controls = video_request_controls(self.config.get("model"))
+        allowed = {"model", "prompt", "duration", "resolution", "aspect_ratio", "seed", "input_references"} | set(controls)
         if set(request) != allowed or not isinstance(request["prompt"], str) or not request["prompt"].strip():
             raise ValueError("Unexpected video request shape")
-        if request["generate_audio"] is not True or type(request["seed"]) is not int or not request["input_references"]:
+        if any(request.get(k) != v for k, v in controls.items()) or type(request["seed"]) is not int or not request["input_references"]:
             raise ValueError("Native audio, seed and references are required")
         estimate = estimate_video_cost(self.config, request)
         if self._spent + estimate > self._limit:

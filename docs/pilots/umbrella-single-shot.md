@@ -1,5 +1,19 @@
 # 试跑单：公交站还伞，首镜头三版本
 
+### Latest authorized HeyGen pilot and stopped attempt (2026-10-24)
+
+The user authorized HeyGen Video (`heygen/heygen-video-1`), 768p, three five-second clips with cn-02/Lin and cn-04/Bo. All three share the scene, action, seed 4213, native Mandarin audio requirements and reference bytes; only the existing handwritten dialogue differs. Prompt enhancement is disabled, with no text-model calls, replacement models or retries. The video budget is $1.00; a separate $0.10 reserve is not spendable. Historical failed tasks and unknown costs remain unchanged. This is a technical pilot, not actual P2/P3 review output or formal evaluation.
+
+Public catalogue, sole HeyGen endpoint's 50% discount and the two existing PNGs' exact remote bytes were checked. The frozen reference-mode quote was $0.25 per clip, $0.75 for three. HeyGen has fixed generated audio, so its unsupported `generate_audio` HTTP switch is omitted; the required audio track is still checked locally.
+
+At 14:43 Beijing time, only the baseline POST was attempted. HTTP 400 reported `invalid_parameter`: `Unsupported Content-Type 'application/octet-stream' for reference_image[0]; expected image/*.` No task ID or video was returned. The receipt and final record retain the diagnostic and `provider_cost_usd=null`; generic_review and moodcut were not submitted. Key usage remained $0.0080172 with $14.9919828 remaining key allowance after the attempt, which does not prove it was free. No retries, text-model calls or reserve spending occurred. Evidence remains in ignored `runs/umbrella-heygen-20261024/`.
+
+The preflight missed the Content-Type requirement despite verifying PNG bytes. The correction uses explicit `data:image/png;base64,...` references with exact original-byte/hash checks, avoiding the attachment redirect and octet-stream header. The preparation in `inline-offline/` has only offline verification, with zero paid requests and all 98 prior run files unchanged. It preserves the failed attempt and original request identities; a further paid attempt requires new authorization. Provenance, CC BY 4.0 attribution and acceptable-use terms remain applicable. Issues #8 and #9 stay open; no subjective ratings or successful real-video claims are recorded.
+
+Sources: [OpenRouter model/prices](https://openrouter.ai/heygen/heygen-video-1), [HeyGen references and enhancement controls](https://developers.heygen.com/docs/models/heygen-video).
+
+The following v3 record describes the earlier Seedance attempts, not the current HeyGen authorization.
+
 关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3，补充首次真实提交诊断。**状态：PNG交付已随PR #44合入；后续单独批准的固定台词试跑已尝试首个POST，未取得任务ID并停止，无成片。** 素材交付阶段新增付费消费为0；这次真实提交的单笔费用未知，不能写成免费。
 
 ### 首次真实提交与本次诊断（2026-10-23）

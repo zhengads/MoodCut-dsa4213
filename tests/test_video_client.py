@@ -701,3 +701,84 @@ def test_seedance_catalogue_and_native_audio_request(tmp_path):
     invalid = {**request(), "model": cfg["model"], "input_references": [{"type":"video_url","video_url":{"url":"https://example.com/video.mp4"}}]}
     with pytest.raises(ValueError):
         estimate_video_cost(cfg, invalid)
+
+
+def heygen_case():
+    from moodcut.video_client import video_request_controls
+    cfg = {"model": "heygen/heygen-video-1", "resolution": "768p", "aspect_ratio": "16:9",
+           "reference_price_per_second_usd": "0.10", "reference_image_price_usd": "0.04",
+           "free_reference_images": 2, "provider_discount": "0.5"}
+    req = {**request(), "model": cfg["model"], "resolution": "768p", "duration": 5,
+           **video_request_controls(cfg["model"])}
+    req.pop("generate_audio")
+    req["input_references"] *= 2
+    model = {"id": cfg["model"], "supported_resolutions": ["480p", "768p", "2K"],
+             "supported_aspect_ratios": ["16:9"], "supported_durations": list(range(5, 16)),
+             "generate_audio": False, "seed": True, "verified_provider_discount": "0.5",
+             "allowed_passthrough_parameters": ["prompt_enhancement"],
+             "pricing_skus": {"duration_seconds_2k": "0.10", "duration_seconds_480p": "0.02",
+                 "duration_seconds_768p": "0.036", "reference_input_images": "0.04",
+                 "reference_duration_seconds_2k": "0.18", "reference_duration_seconds_480p": "0.07",
+                 "reference_duration_seconds_768p": "0.10"}}
+    return cfg, req, model
+
+
+def test_heygen_quote_uses_reference_sku_discount_and_image_allowance():
+    cfg, req, model = heygen_case()
+    check_video_model(cfg, [model])
+    assert estimate_video_cost(cfg, req) == Decimal("0.25")
+    req["input_references"] *= 2
+    assert estimate_video_cost(cfg, req) == Decimal("0.29")
+    model["verified_provider_discount"] = "0"
+    with pytest.raises(BudgetError, match="discount"):
+        check_video_model(cfg, [model])
+
+
+@pytest.mark.parametrize("mutation", ["enhancement", "audio", "duration", "image_price", "sku", "control"])
+def test_heygen_rejects_changed_controls_and_prices_before_post(tmp_path, mutation):
+    cfg, req, model = heygen_case()
+    if mutation == "enhancement":
+        req["provider"]["options"]["heygen"]["parameters"]["prompt_enhancement"] = "quality"
+    elif mutation == "audio":
+        req["generate_audio"] = True
+    elif mutation == "duration":
+        req["duration"] = 4
+    elif mutation == "image_price":
+        model["pricing_skus"]["reference_input_images"] = "0.08"
+    elif mutation == "sku":
+        model["pricing_skus"]["unexpected_fee"] = "1"
+    else:
+        model["allowed_passthrough_parameters"] = []
+    opener = Mock(side_effect=AssertionError("No HTTP expected"))
+    c = OpenRouterVideoClient(cfg, api_key="synthetic", allow_paid=True, max_cost_usd="1", opener=opener)
+    with pytest.raises((ValueError, BudgetError)):
+        check_video_model(cfg, [model])
+        c.generate(req, out_dir=str(tmp_path / "job"))
+    opener.assert_not_called()
+
+
+def test_heygen_fixed_audio_request_and_unknown_cost_stop(tmp_path):
+    cfg, req, _ = heygen_case()
+    opener = Mock(side_effect=[response({"id": "synthetic-heygen", "status": "completed", "usage": None}),
+                               io.BytesIO(b"synthetic-video-bytes")])
+    c = OpenRouterVideoClient(cfg, api_key="synthetic", allow_paid=True, max_cost_usd="1", opener=opener)
+    receipt = c.generate(req, out_dir=str(tmp_path / "first"))
+    payload = json.loads(opener.call_args_list[0].args[0].data)
+    assert "generate_audio" not in payload
+    assert payload["provider"]["options"]["heygen"]["parameters"] == {"prompt_enhancement": "disabled"}
+    assert receipt["provider_cost_usd"] is None and c.spent_usd is None
+    with pytest.raises(BudgetError):
+        c.generate(req, out_dir=str(tmp_path / "must-not-submit"))
+    assert c.post_attempts == 1 and not (tmp_path / "must-not-submit").exists()
+
+
+def test_heygen_discount_discovery_is_read_only(monkeypatch):
+    from moodcut import video_client
+    _, _, model = heygen_case()
+    model.pop("verified_provider_discount")
+    opener = Mock(side_effect=[response({"data": [model]}), response({"data": {"endpoints": [
+        {"tag": "heygen", "pricing": {"discount": 0.5}}]}})])
+    monkeypatch.setattr(video_client, "build_opener", lambda *a: type("Opener", (), {"open": staticmethod(opener)})())
+    models = video_client.fetch_video_models(discount_model=model["id"])
+    assert models[0]["verified_provider_discount"] == "0.5"
+    assert [call.args[0].get_method() for call in opener.call_args_list] == ["GET", "GET"]

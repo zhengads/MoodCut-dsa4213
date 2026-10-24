@@ -221,6 +221,14 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 `video_client.estimate_video_cost(config, request) -> Decimal` 是客户端预算与请求编译共用的报价入口。支持 Wan 2.7 的每秒价格，以及 Seedance 2.0 Mini 的视频 token 价格；不混用计费单位。Seedance 只允许图像参考、原生声音、16:9 的 480p/720p，使用官方 `宽×高×秒数×24/1024` 输出 token 公式；未知 SKU、价格上涨或超出已核对的规格拒绝提交。切换模型保持素材与台词身份，不自动重试被拒绝的输入；新的真实试跑另行确认预算。
 
+### HeyGen pilot adapter (2026-10-24)
+
+`heygen/heygen-video-1` is restricted here to 768p, 16:9, 5–15 integer seconds and 1–9 image references. `video_request_controls` fixes `provider.options.heygen.parameters.prompt_enhancement="disabled"`. HeyGen always generates scene audio and does not expose the `generate_audio` toggle, so its HTTP request omits that field while GenerationSettings still requires native audio. The compiler adds `<Picture N>` reference labels. All other models retain their original request shape; the shared settings schema is unchanged.
+
+Pricing uses the reference-to-video SKU, never its cheaper text-only SKU: `(duration * reference_price_per_second_usd + max(0, image_count - 2) * reference_image_price_usd) * (1 - provider_discount)`. Public GET discovery separately verifies the sole HeyGen endpoint's discount. Missing/changed discounts, new pricing SKUs, increased rates or unavailable enhancement controls stop before POST. Frozen pilot rates are $0.10/second and $0.04/additional image before the verified 50% discount, yielding $0.25 for five seconds and two images. Only returned usage reconciles actual charges.
+
+The compiler also accepts explicit `data:image/png;base64,...` references for this model, checking strict base64, PNG signature and exact SHA-256 equality with the locally verified asset. The inline URL participates in the shared identity and request hash. Ordinary HTTPS preparations remain byte-compatible. The first HeyGen attempt was rejected because the GitHub attachment returned `application/octet-stream`; a valid PNG hash alone did not establish the provider's Content-Type requirement. Inline preparation is verified offline only and does not authorize retrying the failed task. The original transport, ledger, inspection and scoring implementations remain in use.
+
 ## 6. 下一阶段生成式比较约束（待实现）
 
 本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/导出见6.14/6.15，任务执行接线见6.17，真实试跑仍待批准和验收，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
