@@ -3,6 +3,75 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "v3-shot",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.00291790",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-shot.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "修复后 v3 的真实试跑：通用组按镜头返回一份完整台词并通过；情绪组编剧回复未通过严格 JSON 对象解析，已按硬性错误规则停止，没有新视频。",
+      "observations": [
+        "真实调用 9 次：共同规划 3 次，两组各 2 位演员加 1 次编剧。通用组把两位演员的 3 条意见整合进同一镜头的一份台词，得到一条内部补丁。",
+        "情绪组编剧回复未通过 JSON 对象解析。现有日志没有保存失败原文，提供商只读内容查询也不可用，因此不能确定是语法、重复键、非有限值还是非对象根节点。",
+        "系统没有猜测或重构失败台词，没有重试、换模型或手写补位。未进入演员确认或第二轮协商；情绪组显示的是诊断用初稿。",
+        "9 条调用费用已逐笔查回执并与本次账户增量对齐：$0.00291790。视频提交、新视频和人工评分均为 0，备用金未动用。",
+        "先前旧接口 v3 的两条 edit 失败仍单独保留。历史页签的原片继续可看，不是本次 v3 的新输出。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，伞我用完啦，还你。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。伞还好用吗？"
+            }
+          ],
+          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "JSON 校验失败，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "恢复初稿供诊断，不是通过审查的最终稿；失败回复原文不可用，未自行重构。"
+        }
+      ]
+    },
+    {
       "id": "v3",
       "protocol": "actor_self_review_v3",
       "cost": "0.00281304",

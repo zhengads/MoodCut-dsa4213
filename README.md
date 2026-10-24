@@ -1,5 +1,7 @@
 # MoodCut
 
+Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](docs/pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
+
 Offline correction in the same PR #52: v3 writers now submit one complete dialogue per shot ID, with derived atomic patches and preserved raw replies. Both conditions/rounds share the contract; historical failed results stay unchanged and no paid rerun occurs. [Diagnosis and acceptance](docs/pilots/anna-elsa-v3-shot-contract.md). #8/#9 remain open.
 
 视频效果入口：[直接在线播放与对比台词](https://zhengads.github.io/MoodCut-dsa4213/)。可切换两次历史实验，并排播放三条件、查看原句与修改；新演员通用组与 baseline 共享一段。五段原始 MP4 随 Pages 静态产物托管，不加入代码分支 Git 历史。来源、原片下载与部署验收见[视频索引](docs/pilots/anna-elsa-videos.md)；页面没有生成新视频，也不把 v1 原片当成 v2 结果。

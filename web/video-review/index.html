@@ -24,12 +24,13 @@
       <p class="scene">雨天的公交站<br><strong>目标氛围：温暖、亲近</strong></p>
     </div>
     <div class="experiment-tabs" role="tablist" aria-label="选择试跑记录">
-      <button id="tab-v3" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="v3">演员协商 v3 · 本次</button>
+      <button id="tab-v3-shot" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="v3-shot">v3 修复后 · 本次</button>
+      <button id="tab-v3" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3">v3 旧接口 · 历史停止</button>
       <button id="tab-actors" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="actors">演员自审 v1 · 历史</button>
       <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">整段台词统一审查</button>
     </div>
     <p id="experiment-description" class="experiment-description" aria-live="polite">正在载入实验记录…</p>
-    <section id="comparison" role="tabpanel" aria-labelledby="tab-v3" tabindex="0">
+    <section id="comparison" role="tabpanel" aria-labelledby="tab-v3-shot" tabindex="0">
       <div id="players" class="players" aria-label="三条件视频与台词"></div>
     </section>
     <p id="page-error" class="error" role="alert" hidden></p>
@@ -55,7 +56,7 @@
       </aside>
     </section>
     <div class="boundary">
-      <strong>v3 本次因硬性格式错误停止，没有新视频。</strong>
+      <strong>两次 v3 试跑均在视频提交前因硬性错误停止。</strong>
       其他页签仍是历史 global/v1 原片；不把旧片当作 v3 结果。页面台词来自实际计划，不是已核实的语音转录。人工评分仍为空，软件执行和观看差别不证明方法更好。
     </div>
   </main>

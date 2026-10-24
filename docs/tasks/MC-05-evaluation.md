@@ -1,5 +1,7 @@
 # MC-05 配对对照、盲评导出与统计
 
+Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](../pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
+
 Offline correction in the same PR #52: v3 writers now submit one complete dialogue per shot ID, with derived atomic patches and preserved raw replies. Both conditions/rounds share the contract; historical failed results stay unchanged and no paid rerun occurs. [Diagnosis and acceptance](../pilots/anna-elsa-v3-shot-contract.md). #8/#9 remain open.
 
 Latest actual v3 development attempt (2026-10-24): [trial record](../pilots/anna-elsa-actor-v3.md). Nine real text calls, known/reconciled total $0.00281304, stopped on conflicting same-shot writer edits before video preparation. No confirmations/second round, paid retries, new video or human score. This does not test final-disagreement video quality. Existing artifacts remain unchanged; #8/#9 stay open.

@@ -85,8 +85,8 @@ footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
   .scene { text-align: left; margin-top: 12px !important; }
   .scene br { display: none; }
   .scene strong { margin-left: 12px; }
-  .experiment-tabs { display: flex; }
-  .experiment-tabs button { flex: 1; padding: 9px 8px; font-size: 14px; }
+  .experiment-tabs { display: flex; flex-wrap: wrap; }
+  .experiment-tabs button { flex: 1 1 45%; padding: 9px 8px; font-size: 14px; }
   .players { grid-template-columns: 1fr; gap: 18px; }
   .condition > header { display: flex; padding-inline: 16px; }
   .condition .status { margin: 0; text-align: right; }
