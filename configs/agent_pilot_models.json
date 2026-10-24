@@ -1,0 +1,18 @@
+{
+  "planning": {
+    "model": "google/gemini-2.5-flash-lite",
+    "input_price_per_million": 0.1,
+    "output_price_per_million": 0.4,
+    "temperature": 0,
+    "timeout_s": 120,
+    "reasoning_enabled": false
+  },
+  "review": {
+    "model": "deepseek/deepseek-v3.2",
+    "input_price_per_million": 0.26,
+    "output_price_per_million": 0.38,
+    "temperature": 0,
+    "timeout_s": 120,
+    "reasoning_enabled": false
+  }
+}

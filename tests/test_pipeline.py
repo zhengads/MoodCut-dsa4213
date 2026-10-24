@@ -8,7 +8,7 @@ from unittest.mock import Mock
 import pytest
 
 from moodcut import pipeline
-from moodcut.client import FakeClient, OpenRouterClient
+from moodcut.client import FakeClient, OpenRouterClient, RoleRoutedClient
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +44,53 @@ def test_one_planning_three_conditions_share_initial_without_mutating_inputs(inp
     assert generic["initial_plan_sha256"] != generic["final_plan_sha256"]
     # Equal mock edits deliberately do not constitute a claimed treatment benefit.
     assert all(run["mock"] and run["source_kind"] == "synthetic" for run in block["runs"])
+
+
+@pytest.mark.parametrize("failed_review", [False, True])
+def test_role_models_generated_preparation_and_fail_closed_branch(tmp_path, monkeypatch, failed_review):
+    from moodcut.video_generation import get_video_template_sha256
+    data = pipeline.read_json(ROOT / "tests/fixtures/generated_contract.json")
+    manifest = pipeline.read_json(ROOT / "tests/fixtures/assets.json")
+    for asset in manifest["assets"]:
+        asset["source_url"] = "https://example.invalid/" + asset["asset_id"] + ".png"
+    scene, initial = data["scene"], data["initial_plan"]
+    director = {"scene_id": scene["scene_id"], "tone": scene["tone"],
+                "beat_order": [b["id"] for b in scene["beats"]], "approach": "Software response fixture"}
+    staged = {"scene_id": scene["scene_id"], "scene_direction": initial["scene_direction"],
+              "segments": [{k: shot[k] for k in ("beat_ids", "duration_s", "direction")}
+                           | {"description": "Software segment"} for shot in initial["shots"]]}
+    generic = {"schema_version": "1.0", "scene_id": scene["scene_id"],
+               "mode": "moodcut" if failed_review else "generic_review", "issues": []}
+    moodcut = {**generic, "mode": "moodcut"}
+    send = Mock(side_effect=[http_envelope(r) for r in [director, staged, initial, generic, moodcut]])
+    monkeypatch.setattr("moodcut.client.build_opener", Mock(return_value=Mock(open=send)))
+    clients = [OpenRouterClient(api_key="synthetic-key", model=model, input_price_per_million=1,
+        output_price_per_million=2, allow_paid=True, max_cost_usd=.1)
+        for model in ("test/planner", "test/reviewer")]
+    client = RoleRoutedClient(*clients, max_cost_usd=.1)
+    output = tmp_path / "role-source"
+    block = pipeline.run_experiment(scene, manifest, client, out_dir=output, project_root=ROOT,
+        render=False, output_mode="generated", generation_settings=data["settings"],
+        template_sha256=get_video_template_sha256())
+    assert block["planning"]["calls"] == 3
+    assert {c["model_id"] for c in block["planning"]["call_records"]} == {"test/planner"}
+    assert block["model_id"] == client.model
+    assert all(r["text_model_settings"] == block["text_model_settings"] for r in block["runs"])
+    if failed_review:
+        assert block["status"] == "failed" and send.call_count == 4
+        assert block["runs"][2]["review_status"] == "not_started"
+        assert block["runs"][2]["calls"] == 0 and client.stopped
+    else:
+        assert block["status"] == "prepared" and send.call_count == 5
+        assert {c["model_id"] for r in block["runs"] for c in r["call_records"]} == {"test/reviewer"}
+        pipeline._load_generated_block(output, ROOT)
+        planning = deepcopy(block["planning"])
+        planning["call_records"][0]["model_id"] = "test/spoofed"
+        block["planning"] = planning
+        (output / "planning.json").write_text(json.dumps(planning), encoding="utf-8")
+        (output / "block.json").write_text(json.dumps(block), encoding="utf-8")
+        with pytest.raises(ValueError, match="planning call model"):
+            pipeline._load_generated_block(output, ROOT)
 
 
 def test_raw_responses_review_traces_and_independent_run_artifacts(inputs, tmp_path):

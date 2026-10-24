@@ -229,6 +229,16 @@ Pricing uses the reference-to-video SKU, never its cheaper text-only SKU: `(dura
 
 The compiler also accepts explicit `data:image/png;base64,...` references for this model, checking strict base64, PNG signature and exact SHA-256 equality with the locally verified asset. The inline URL participates in the shared identity and request hash. Ordinary HTTPS preparations remain byte-compatible. The first HeyGen attempt was rejected because the GitHub attachment returned `application/octet-stream`; a valid PNG hash alone did not establish the provider's Content-Type requirement. The correction was first verified offline; that preparation did not authorize retrying the failed task. A subsequent, separately authorized inline-PNG pilot completed three actual clips at $0.25 each ($0.75 total), with audio/media checks passed and manual acceptance pending; see [pilot record](pilots/umbrella-single-shot.md). This result grants no automatic retry or further paid execution. The original transport, ledger, inspection and scoring implementations remain in use.
 
+### Role-routed text pilot (2026-10-24)
+
+`RoleRoutedClient.from_env(config_path, allow_paid=..., max_cost_usd=...)` accepts exactly two public configuration objects, `planning` and `review`, and reuses two fresh `OpenRouterClient` instances. The existing director/scene/shot stages use the planning model; critique/revise/verify in both review conditions use the same review model and controls. No prompts, responses, patches or validation rules are changed. `reasoning_enabled` is an optional boolean; omitted preserves the old HTTP shape, while explicit false sends `reasoning.enabled=false`.
+
+The router applies one shared text reservation/actual-cost ceiling across both roles, preserves ordered call records with their actual requested/returned model IDs, and stops on any request failure, unknown charge or budget breach. In `run_experiment`, a routed condition failure also stops later conditions before another model call; their records retain the original inputs, `review_status=not_started`, zero calls and an explicit prior-failure diagnostic. Legacy single-client behavior is unchanged.
+
+For routed blocks, `model_id` is a `role-policy/<sha256>` identifier, not a provider model. `text_model_settings` on the block, planning record and condition records binds both actual role model IDs, temperatures and reasoning controls. It participates in the original planning cache identity. Saved-source rechecks require the same policy and verify each phase's requested call model against its assigned role; a policy ID without its metadata is rejected. Existing records without a role policy remain compatible. Paid text and video limits remain separate client controls; a run must subtract known text spending from its approved combined ceiling before video execution.
+
+The approved Anna/Elsa development pilot and actual results are recorded in [the pilot sheet](pilots/anna-elsa-agent.md). Its budget does not authorize retries, replacement models, handwritten dialogue fallback or formal sample expansion.
+
 ## 6. 下一阶段生成式比较约束（待实现）
 
 本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/导出见6.14/6.15，任务执行接线见6.17，真实试跑仍待批准和验收，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。

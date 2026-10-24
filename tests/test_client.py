@@ -10,7 +10,7 @@ from urllib.error import HTTPError, URLError
 
 import pytest
 
-from moodcut.client import BudgetError, FakeClient, LLMClient, OpenRouterClient, OpenRouterError
+from moodcut.client import BudgetError, FakeClient, LLMClient, OpenRouterClient, OpenRouterError, RoleRoutedClient
 
 
 def make_call(client):
@@ -204,6 +204,62 @@ def live_client(**kwargs):
 
 def respond(http, response):
     http.side_effect = lambda *a, **kw: io.BytesIO(json.dumps(response).encode())
+
+
+def routed_client():
+    clients = [OpenRouterClient(api_key="synthetic-key", model=model,
+        input_price_per_million=1, output_price_per_million=2, reasoning_enabled=False,
+        allow_paid=True, max_cost_usd=.1) for model in ("test/planning", "test/review")]
+    return RoleRoutedClient(*clients, max_cost_usd=.1)
+
+
+def test_role_routing_uses_actual_models_and_explicit_reasoning_control(http):
+    client = routed_client()
+    for stage in ("director", "scene", "shot", "critique", "revise", "verify", "critique"):
+        client.complete_json(stage=stage, system="s", user="u", max_output_tokens=10)
+    bodies = [json.loads(c.args[0].data) for c in http.call_args_list]
+    assert [b["model"] for b in bodies] == ["test/planning"] * 3 + ["test/review"] * 4
+    assert all(b["reasoning"] == {"enabled": False} for b in bodies)
+    assert [c["model_id"] for c in client.calls] == [b["model"] for b in bodies]
+    assert client.spent_usd == pytest.approx(.007)
+    assert client.model.startswith("role-policy/")
+
+
+def test_role_budget_is_shared_and_cannot_be_spent_twice(http):
+    client = routed_client()
+    respond(http, completion(cost=.099))
+    make_call(client)
+    with pytest.raises(BudgetError):
+        client.complete_json(stage="critique", system="s", user="u", max_output_tokens=1000)
+    assert http.call_count == 1 and client.stopped
+    with pytest.raises(BudgetError):
+        make_call(client)
+    assert http.call_count == 1
+
+
+@pytest.mark.parametrize("response", [completion(cost=None), completion(content="not JSON"),
+                                      completion(cost=.11)])
+def test_role_failure_or_unknown_charge_blocks_every_later_role(http, response):
+    client = routed_client()
+    respond(http, response)
+    with pytest.raises((OpenRouterError, BudgetError)):
+        make_call(client)
+    with pytest.raises(BudgetError):
+        client.complete_json(stage="critique", system="s", user="u", max_output_tokens=10)
+    assert http.call_count == len(client.calls) == 1
+
+
+def test_role_policy_identity_binds_both_models_and_controls(http):
+    client = routed_client()
+    before = client.model
+    client.review_client.model = "test/other-review"
+    assert client.model != before
+    before = client.model
+    client.review_client.reasoning_enabled = True
+    assert client.model != before
+    with pytest.raises(ValueError, match="Unknown text stage"):
+        client.complete_json(stage="other", system="s", user="u", max_output_tokens=10)
+    http.assert_not_called()
 
 
 def test_openrouter_request_and_accounting(http):

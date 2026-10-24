@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from collections import deque
 from copy import deepcopy
 import json
+import hashlib
 import math
 import os
 from decimal import Decimal
@@ -145,7 +146,7 @@ class OpenRouterClient(LLMClient):
 
     def __init__(self, *, api_key, model, input_price_per_million,
                  output_price_per_million, allow_paid=False, max_cost_usd=None,
-                 timeout_s=60, temperature=0):
+                 timeout_s=60, temperature=0, reasoning_enabled=None):
         if not isinstance(api_key, str) or not api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required")
         if any(c in api_key for c in "\r\n"):
@@ -161,6 +162,9 @@ class OpenRouterClient(LLMClient):
         self._max_cost = _number(max_cost_usd, "max_cost_usd", positive=True)
         self.timeout_s = float(_number(timeout_s, "timeout_s", positive=True))
         self.temperature = float(_number(temperature, "temperature"))
+        if reasoning_enabled is not None and type(reasoning_enabled) is not bool:
+            raise ValueError("reasoning_enabled must be a boolean or None")
+        self.reasoning_enabled = reasoning_enabled
         if self.temperature > 2:
             raise ValueError("temperature must be in [0, 2]")
         self.allow_paid = allow_paid
@@ -183,6 +187,7 @@ class OpenRouterClient(LLMClient):
                    output_price_per_million=config.get("output_price_per_million"),
                    timeout_s=config.get("timeout_s", 60),
                    temperature=config.get("temperature", 0),
+                   reasoning_enabled=config.get("reasoning_enabled"),
                    allow_paid=allow_paid, max_cost_usd=max_cost_usd)
 
     @property
@@ -203,12 +208,15 @@ class OpenRouterClient(LLMClient):
         with self._lock:
             return self._complete(stage, system, user, max_output_tokens)
 
+    def _reservation(self, system, user, max_output_tokens):
+        estimated_input = len(system.encode("utf-8")) + len(user.encode("utf-8")) + 64
+        return estimated_input, (estimated_input * self._input_price +
+                max_output_tokens * self._output_price) / Decimal(1_000_000)
+
     def _complete(self, stage, system, user, max_output_tokens):
         if self._unknown_charge:
             raise BudgetError("Previous request cost is unknown; reconcile it before further calls")
-        estimated_input = len(system.encode("utf-8")) + len(user.encode("utf-8")) + 64
-        reservation = (estimated_input * self._input_price +
-                       max_output_tokens * self._output_price) / Decimal(1_000_000)
+        estimated_input, reservation = self._reservation(system, user, max_output_tokens)
         if self._spent + reservation > self._max_cost:
             raise BudgetError("Estimated request cost exceeds the remaining client budget")
         payload = {
@@ -222,6 +230,8 @@ class OpenRouterClient(LLMClient):
                          "max_price": {"prompt": float(self._input_price),
                                        "completion": float(self._output_price), "request": 0}},
         }
+        if self.reasoning_enabled is not None:
+            payload["reasoning"] = {"enabled": self.reasoning_enabled}
         request = Request(self.ENDPOINT, data=json.dumps(payload, allow_nan=False).encode("utf-8"),
                           headers={"Authorization": f"Bearer {self._api_key}",
                                    "Content-Type": "application/json",
@@ -308,3 +318,88 @@ class OpenRouterClient(LLMClient):
                  record["output_tokens"] * self._output_price) / Decimal(1_000_000))
         if record["provider_cost_usd"] is None:
             self._unknown_charge = True
+
+
+class RoleRoutedClient(LLMClient):
+    """Route existing text stages with one fail-closed shared budget, no retries."""
+
+    def __init__(self, planning_client, review_client, *, max_cost_usd):
+        if (not all(isinstance(c, OpenRouterClient) for c in (planning_client, review_client))
+                or planning_client is review_client or planning_client.calls or review_client.calls):
+            raise ValueError("Role routing requires two fresh OpenRouter clients")
+        self.planning_client, self.review_client = planning_client, review_client
+        self._max_cost = _number(max_cost_usd, "max_cost_usd", positive=True)
+        self.calls = []
+        self._stop_reason = None
+        self._lock = Lock()
+
+    @classmethod
+    def from_env(cls, config_path, *, allow_paid=False, max_cost_usd=None, environ=None):
+        config = _strict_json(Path(config_path).read_text(encoding="utf-8"))
+        if not isinstance(config, dict) or set(config) != {"planning", "review"}:
+            raise ValueError("Role configuration requires exactly planning and review")
+        environment = os.environ if environ is None else environ
+        clients = [OpenRouterClient(api_key=environment.get("OPENROUTER_API_KEY"),
+                    allow_paid=allow_paid, max_cost_usd=max_cost_usd, **config[role])
+                   for role in ("planning", "review")]
+        return cls(*clients, max_cost_usd=max_cost_usd)
+
+    @staticmethod
+    def policy_id(roles):
+        text = json.dumps(roles, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        return "role-policy/" + hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    @property
+    def model_settings(self):
+        roles = {role: {"model_id": c.model, "temperature": c.temperature,
+                        "reasoning_enabled": c.reasoning_enabled}
+                 for role, c in (("planning", self.planning_client), ("review", self.review_client))}
+        return {"model_id": self.policy_id(roles), "roles": roles}
+
+    @property
+    def model(self):
+        return self.model_settings["model_id"]
+
+    @property
+    def spent_usd(self):
+        costs = [self.planning_client.spent_usd, self.review_client.spent_usd]
+        return None if any(c is None for c in costs) else float(sum(Decimal(str(c)) for c in costs))
+
+    @property
+    def stopped(self):
+        return self._stop_reason is not None
+
+    def stop(self, reason):
+        self._stop_reason = str(reason)
+
+    def complete_json(self, *, stage, system, user, max_output_tokens):
+        with self._lock:
+            if self.stopped:
+                raise BudgetError("Text pipeline stopped: " + self._stop_reason)
+            if stage in ("director", "scene", "shot"):
+                client = self.planning_client
+            elif stage in ("critique", "revise", "verify"):
+                client = self.review_client
+            else:
+                raise ValueError("Unknown text stage; no model selected")
+            if (not isinstance(system, str) or not isinstance(user, str)
+                    or type(max_output_tokens) is not int or max_output_tokens <= 0):
+                raise ValueError("Invalid text request")
+            cost = self.spent_usd
+            _, reservation = client._reservation(system, user, max_output_tokens)
+            if cost is None or Decimal(str(cost)) + reservation > self._max_cost:
+                self.stop("Shared text cost is unknown or its budget is exhausted")
+                raise BudgetError(self._stop_reason)
+            before = len(client.calls)
+            try:
+                result = client.complete_json(stage=stage, system=system, user=user,
+                                              max_output_tokens=max_output_tokens)
+                cost = self.spent_usd
+                if cost is None or Decimal(str(cost)) > self._max_cost:
+                    raise BudgetError("Returned text cost is unknown or exceeds the shared budget")
+                return result
+            except Exception:
+                self.stop("Earlier text request failed or has unresolved charges")
+                raise
+            finally:
+                self.calls.extend(deepcopy(client.calls[before:]))

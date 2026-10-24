@@ -1,5 +1,9 @@
 # MC-01 公共契约、客户端与集成
 
+### Role-routed real-Agent pilot (2026-10-24)
+
+The authorized [Anna/Elsa pilot](../pilots/anna-elsa-agent.md) separates Gemini planning from a common DeepSeek model for both review branches, with one $0.10 text ceiling and a $1.00 combined ceiling. Necessary wiring reuses the original clients/pipeline, adds explicit reasoning control and truthful role-policy/call-model records, and stops subsequent calls on failure/unknown cost. See [contract](../CONTRACTS.md#role-routed-text-pilot-2026-10-24). No prompt or evaluation changes, handwritten dialogue fallback, retries or formal sample expansion are authorized. Actual execution evidence is recorded in the linked pilot; #8/#9 stay open.
+
 ### HeyGen pilot adapter and real-video result (2026-10-24)
 
 The existing branch/PR adds HeyGen 768p reference pricing with verified provider discount, fixed native audio without an HTTP audio toggle, disabled prompt enhancement and `<Picture N>` labels. After the first HTTP 400 Content-Type rejection, a separately authorized run with byte-verified inline PNG references completed all three five-second conditions: three POSTs, $0.25 each, $0.75 total, no automatic retry, text-model request or reserve spending. Returned charges match the later read-only key usage delta. All three raw videos have audio and passed local media checks; user listening/viewing acceptance remains pending. The earlier failed request and unknown cost remain preserved. See [pilot record](../pilots/umbrella-single-shot.md) and [adapter contract](../CONTRACTS.md#heygen-pilot-adapter-2026-10-24). Results stay in draft PR #45; Issues #8 and #9 remain open. No new tool or transport is introduced. Older task sections below retain their original scope and dates.
