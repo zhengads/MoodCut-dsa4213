@@ -213,6 +213,17 @@ def routed_client():
     return RoleRoutedClient(*clients, max_cost_usd=.1)
 
 
+def test_committed_role_configuration_constructs_offline_without_requests(http):
+    client = RoleRoutedClient.from_env(Path(__file__).resolve().parents[1] / "configs/agent_pilot_models.json",
+        allow_paid=False, max_cost_usd=.1, environ={"OPENROUTER_API_KEY": "synthetic-key"})
+    assert client.planning_client.model == "google/gemini-2.5-flash-lite"
+    assert client.review_client.model == "deepseek/deepseek-v3.2"
+    assert client.model_settings["roles"]["review"]["reasoning_enabled"] is False
+    with pytest.raises(PermissionError):
+        make_call(client)
+    http.assert_not_called()
+
+
 def test_role_routing_uses_actual_models_and_explicit_reasoning_control(http):
     client = routed_client()
     for stage in ("director", "scene", "shot", "critique", "revise", "verify", "critique"):
