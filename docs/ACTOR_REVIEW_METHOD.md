@@ -1,5 +1,9 @@
 # Actor self-review protocols
 
+## Actual v3 development trial (2026-10-24)
+
+A separately authorized [real Anna/Elsa v3 trial](pilots/anna-elsa-actor-v3.md) made nine text calls, then stopped on a first emotional writer response containing two conflicting full-dialogue edits for one shot. Cost $0.00281304 reconciled exactly; no confirmations, second writer round, video submission, retry or handwritten repair occurred. This hard contract error is distinct from a valid final creative disagreement. Exact original outputs and historical results are preserved. The earlier implementation/acceptance sections below retain their original offline scope.
+
 ## Current increment: bounded actor negotiation (v3)
 
 The user approved the following offline change on 2026-10-24. Explicit `review_protocol="actor_self_review_v3"` gives both generic_review and moodcut the same bounded negotiation. Existing global/v1 results and strict v2 behavior remain unchanged; no historical source is retagged. This increment authorizes implementation, offline acceptance and one unmerged PR, not paid model/video calls.
