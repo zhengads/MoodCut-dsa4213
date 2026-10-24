@@ -114,10 +114,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="Verify local files without network access")
     parser.add_argument("--papers", action="store_true", help="Include the two paper PDFs (about 57 MB)")
     parser.add_argument("--assets", action="store_true", help="Include two character images and captions (about 1.2 MB)")
+    parser.add_argument("--animation-assets", action="store_true",
+                        help="Include the pinned local animation reference library (75 images and 25 captions, about 57 MB)")
     args = parser.parse_args(argv)
     groups = {"core"} | ({"papers"} if args.papers else set()) | ({"assets"} if args.assets else set())
     try:
         entries = [e for e in load_manifest(ROOT / "references/sources.lock.json") if e["group"] in groups]
+        if args.animation_assets:
+            library = load_manifest(ROOT / "assets/library/movieagent-animation.sources.lock.json")
+            by_path = {e["path"]: e for e in entries}
+            for entry in library:
+                previous = by_path.get(entry["path"])
+                if previous is not None and any(previous[k] != entry[k] for k in
+                        ("url", "revision", "sha256", "size_bytes", "group")):
+                    raise ValueError(f"Conflicting reference identity: {entry['path']}")
+                by_path.setdefault(entry["path"], entry)
+            entries = list(by_path.values())
         print(f"Selected {len(entries)} files, {sum(e['size_bytes'] for e in entries)} bytes")
         cached, fetched = prepare(ROOT, entries, check=args.check)
     except (OSError, ValueError, KeyError, TypeError) as exc:

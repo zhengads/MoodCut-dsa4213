@@ -17,6 +17,12 @@ python scripts/prepare_references.py --check
 
 ## 固定来源
 
+### 动画人物素材扩充（2026-10-24）
+
+本地已导入MovieAgent固定版本四部动画的25个角色、75张图片及25份说明（56,989,354字节）。[素材库说明](../assets/library/README.md)列出角色、来源、许可缺口、确定性选图规则及复核命令；[角色索引](../assets/library/movieagent-animation.selection.json)和[AssetManifest](../assets/library/movieagent-animation.manifest.json)可供显式选材。原图仍在忽略目录，Git仅保存元数据；上游无已核实的图片授权，署名不等于取得许可。不是新评测数据集，也不默认替换旧manifest或批准新生成。
+
+复用原准备工具的显式`--animation-assets`选项下载；加`--check`完全离线，核对133份文件（33份核心资料＋100份素材/说明），不覆盖已有文件。原默认、`--assets`两图及`--papers`范围不变；与`--assets`组合时四份重复文件只处理一次。不导入真人电影图片、音频、权重或上游可执行代码。
+
 | 项目 | 论文与官方入口 | 源码版本 |
 |---|---|---|
 | MovieAgent | [arXiv 2503.07314v1](https://arxiv.org/abs/2503.07314v1)、[项目页](https://weijiawu.github.io/MovieAgent/) | [showlab/MovieAgent](https://github.com/showlab/MovieAgent/tree/d84041bed8bc8be460664528d9e9924cdde384ba) |
