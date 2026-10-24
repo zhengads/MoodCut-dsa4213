@@ -983,3 +983,147 @@ def test_records_multishot_requires_bound_assembly_and_reprobes(generated_source
         else:
             assert generation["by_status"]["failed"] == 1
             assert generation["failed_run_causes"] == {"media": 1}
+
+
+def test_media_assembly_failure_preserves_existing_diagnostics_and_costs(
+    generated_source, tmp_path, monkeypatch
+):
+    """Media failure must retain earlier diagnostics and incurred charges."""
+    from copy import deepcopy
+
+    source, block = generated_source
+    software_compiler(monkeypatch)
+
+    preparation = tmp_path / "prepared"
+    assert main(generated_args(source, preparation)) == 0
+
+    evidence = {
+        "schema_version": "1.1",
+        "block_id": block["block_id"],
+        "conditions": [
+            {"condition": condition, "jobs": []}
+            for condition in CONDITIONS
+        ],
+    }
+
+    clip = synthetic_av(tmp_path)
+
+    for index in range(3):
+        local_receipt(
+            preparation,
+            evidence,
+            tmp_path,
+            job_index=index,
+            status="downloaded",
+            download_attempts=1,
+            video_path=str(clip),
+            provider_cost_usd="0.6",
+        )
+
+    evidence["conditions"][0]["media_check_path"] = str(
+        tmp_path / "invalid-media-check.json"
+    )
+
+    output = tmp_path / "failed-media"
+
+    result = main(
+        records_args(
+            preparation,
+            save_record_evidence(tmp_path, evidence),
+            output,
+        )
+    )
+
+    assert result == 1
+
+    record = read_json(output / "block.json")
+    run = record["runs"][0]
+
+    assert run["run_status"] == "failed"
+    assert run["generation_status"] == "failed"
+    assert run["failure_kind"] == "media"
+    assert run["comparison_status"] == "ineligible"
+
+    assert run["generation_posts"] == 3
+    assert run["provider_cost_usd"] == pytest.approx(1.8)
+
+    assert len(run["generation_jobs"]) == 3
+    assert all(
+        job["status"] == "downloaded"
+        for job in run["generation_jobs"]
+    )
+
+    assert run["errors"]
+    assert run["comparison_errors"]
+
+    assert record["accounting"]["provider_cost_usd"] >= 1.8
+
+
+def test_media_assembly_failure_keeps_prior_diagnostics(
+    generated_source, tmp_path, monkeypatch
+):
+    """A media assembly failure must not discard saved source diagnostics."""
+    source, block = generated_source
+
+    original_diagnostic = "Existing non-fatal review diagnostic"
+
+    block["runs"][0]["errors"].append(original_diagnostic)
+    rewrite_generated_block(source, block)
+
+    software_compiler(monkeypatch)
+
+    preparation = tmp_path / "prepared"
+    assert main(generated_args(source, preparation)) == 0
+
+    evidence = {
+        "schema_version": "1.1",
+        "block_id": block["block_id"],
+        "conditions": [
+            {"condition": condition, "jobs": []}
+            for condition in CONDITIONS
+        ],
+    }
+
+    clip = synthetic_av(tmp_path)
+
+    for index in range(3):
+        local_receipt(
+            preparation,
+            evidence,
+            tmp_path,
+            job_index=index,
+            status="downloaded",
+            download_attempts=1,
+            video_path=str(clip),
+            provider_cost_usd="0.6",
+        )
+
+    evidence["conditions"][0]["media_check_path"] = str(
+        tmp_path / "missing-media-check.json"
+    )
+
+    output = tmp_path / "failed-media"
+
+    assert main(
+        records_args(
+            preparation,
+            save_record_evidence(tmp_path, evidence),
+            output,
+        )
+    ) == 1
+
+    run = read_json(output / "block.json")["runs"][0]
+
+    assert run["run_status"] == "failed"
+    assert run["failure_kind"] == "media"
+    assert run["comparison_status"] == "ineligible"
+
+    assert original_diagnostic in run["errors"]
+    assert any(
+        "missing-media-check.json" in error
+        or "FileNotFoundError" in error
+        for error in run["errors"]
+    )
+
+    assert run["provider_cost_usd"] == pytest.approx(1.8)
+    assert run["generation_posts"] == 3
