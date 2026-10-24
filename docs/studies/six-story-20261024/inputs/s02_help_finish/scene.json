@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261024_s02_help_finish",
+  "tone": "affectionate",
+  "story": "白天，工作室一张普通桌子旁；两人均已站在桌边。工作结束前，Lucy向Gru提出帮忙整理桌边剩下的东西，Gru接受她的帮助。交流期间两人留在桌边，无需实际完成整理或搬动物品。他们是此次共同工作的同伴，不依赖原电影中的家庭或特工设定。 两名角色开场均已在场，只用自然的普通话完成一次简短交流。两人各说一句，共两句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头；动作只服务于给定事件，不添加第三人、旁白、字幕、文字卡、额外情节、魔法、打斗或复杂物品操作。不直接说出目标氛围标签，不引用电影原台词，不依赖观众知道原电影剧情。角色图只用于身份和服装参考；参考图中的表情、姿态、背景及道具不是本场景必须复制的内容。 本场景补充边界：不新增礼物、危险任务、疲劳受伤或浪漫关系。 不要求搬箱、交换道具、变装或完成整理动作。",
+  "characters": [
+    {
+      "id": "despicableme4_lucy",
+      "name": "Lucy / 露西"
+    },
+    {
+      "id": "despicableme4_gru",
+      "name": "Gru / 格鲁"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Lucy提出帮助Gru完成桌边的收尾整理。"
+    },
+    {
+      "id": "b2",
+      "description": "Gru接受Lucy的帮助。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_despicableme4_lucy_primary",
+    "movieagent_despicableme4_gru_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_selected_input_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "New fictional scene brief authored in this conversation; existing MovieAgent images supply character appearance only. Not the source film plot, API-generated planning/review output or independent external evidence.",
+    "design_path": "docs/studies/six-story-20261024/design.json",
+    "design_story_id": "s02_help_finish",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "formal_inclusion_approved": false,
+    "input_scope_approved": true
+  }
+}
