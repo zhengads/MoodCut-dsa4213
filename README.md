@@ -8,7 +8,7 @@ DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，规划 Agent 生成共同初稿；新演员协议由两个演员分别审查自己的台词，再交同一编剧统一修订。baseline 保留初稿，generic_review 使用一般自审，moodcut 使用情绪导向自审。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音；review 只修改台词。
 
-当前修复显式选择 `review_protocol="actor_self_review_v2"`，详见[演员自审方法](docs/ACTOR_REVIEW_METHOD.md)：未采纳意见及编剧理由必须交回对应演员确认；演员仍反对、回复缺失或调用失败时，停止请求准备，保留候选稿与双方原话，不自动增加修订轮次。两种审查共用该机制，最多13次文本调用，原费用门禁保持。此版本只做离线验收，尚无真实 v2 视频。默认 `global_v1` 与历史 `actor_self_review_v1` 继续兼容。[演员 v1 真实试跑](docs/pilots/anna-elsa-actor.md)的8次文本调用、两段视频/三条件和$0.50248398账目均保留；其中Elsa意见未落实的问题不改写成已经解决。
+Current offline increment: explicit `actor_self_review_v3` applies the same maximum of two writer/confirmation rounds to both reviewed conditions. A maintained first-round objection requires one further actual dialogue revision and actor recheck; valid final disagreement permits video preparation with exact disputed IDs retained. Hard errors, unknown cost and budget failures still stop, without retries. The full-block ceiling is 19 text calls. Historical global/v1 results and strict v2 behavior remain unchanged; v3 has no real model/video results. See [method and offline evidence](docs/ACTOR_REVIEW_METHOD.md).
 
 默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。全局审查和演员 v1 结构已有真实视频技术试跑；中文对白、人物一致性和情绪效果仍需人工听看，不由技术跑通认定。
 

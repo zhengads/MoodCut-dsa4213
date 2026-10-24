@@ -16,7 +16,8 @@ TRACE_LOGGER = logging.getLogger("moodcut.review.trace")
 GLOBAL_REVIEW = "global_v1"
 ACTOR_REVIEW = "actor_self_review_v1"
 ACTOR_REVIEW_V2 = "actor_self_review_v2"
-ACTOR_PROTOCOLS = (ACTOR_REVIEW, ACTOR_REVIEW_V2)
+ACTOR_REVIEW_V3 = "actor_self_review_v3"
+ACTOR_PROTOCOLS = (ACTOR_REVIEW, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3)
 
 
 def validate_review_protocol(review_protocol, output_mode):
@@ -30,8 +31,10 @@ def _review_prompts(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW):
     allowed_patch_fields(output_mode=output_mode)
     validate_review_protocol(review_protocol, output_mode)
     if review_protocol in ACTOR_PROTOCOLS:
-        names = ("generic", "moodcut", "revise") + (("confirm",) if review_protocol == ACTOR_REVIEW_V2 else ())
-        return {name: files("moodcut").joinpath("prompts", f"review_actor_{name}.txt").read_text(encoding="utf-8")
+        names = ("generic", "moodcut", "revise") + (("confirm",) if review_protocol in (ACTOR_REVIEW_V2, ACTOR_REVIEW_V3) else ())
+        if review_protocol == ACTOR_REVIEW_V3:
+            names += ("negotiate",)
+        return {name: files("moodcut").joinpath("prompts", f"review_actor_{'confirm_bounded' if name == 'confirm' and review_protocol == ACTOR_REVIEW_V3 else name}.txt").read_text(encoding="utf-8")
                 for name in names}
     prefix = "review_generated" if output_mode == "generated" else "review"
     return {name: files("moodcut").joinpath("prompts", f"{prefix}_{name}.txt").read_text(encoding="utf-8")
@@ -105,9 +108,10 @@ def _disposition_errors(report, disposition):
     return errors
 
 
-def _actor_confirmation_errors(scene, initial, result, mode, *, partial=False):
+def _actor_confirmation_errors(scene, initial, result, mode, *, partial=False, issue_ids=None,
+                               acceptance="accept_omission"):
     """Check only the owning actor can consent to an omitted, candidate-bound issue."""
-    omitted = result["feedback_disposition"]["unaddressed_issue_ids"]
+    omitted = result["feedback_disposition"]["unaddressed_issue_ids"] if issue_ids is None else issue_ids
     issues = [i for i in result["report"]["issues"] if i["issue_id"] in omitted]
     actors = [a for a in scene["characters"] if any(i["actor_id"] == a["id"] for i in issues)]
     records = result.get("actor_confirmations")
@@ -138,7 +142,7 @@ def _actor_confirmation_errors(scene, initial, result, mode, *, partial=False):
         for decision in decisions:
             if (not isinstance(decision, dict) or set(decision) != {"issue_id", "decision", "reason"}
                     or not isinstance(decision["issue_id"], str)
-                    or decision["decision"] not in ("accept_omission", "maintain_objection")
+                    or decision["decision"] not in (acceptance, "maintain_objection")
                     or not isinstance(decision["reason"], str) or not decision["reason"].strip()):
                 errors.append("Each actor omission decision requires an issue, decision and reason")
                 continue
@@ -157,6 +161,8 @@ def validate_actor_review_result(scene, initial, manifest, result, *, mode, proj
     from .patches import apply_patch
     if not isinstance(result, dict) or result.get("review_protocol") not in ACTOR_PROTOCOLS:
         return ["Actor review protocol is missing"]
+    if result["review_protocol"] == ACTOR_REVIEW_V3:
+        return _validate_bounded_actor_result(scene, initial, manifest, result, mode=mode, project_root=project_root)
     report, errors = _merge_actor_reports(scene, initial, mode, result.get("actor_reports"))
     if errors:
         return errors
@@ -224,6 +230,181 @@ def validate_actor_review_result(scene, initial, manifest, result, *, mode, proj
                        and new_lines[i].get("text") != old_lines[i]["text"] for i in issue["line_indices"]):
                 errors.append("Addressed feedback must change a referenced line belonging to that actor")
     return errors
+
+
+_ROUND_FIELDS = ("writer_response", "patch", "feedback_disposition", "writer_candidate_plan", "plan", "status",
+                 "actor_feedback_status", "actor_confirmations", "actor_confirmation_status",
+                 "confirmation_issue_ids", "disputed_issue_ids")
+
+
+def _negotiation_revision_errors(report, previous, current):
+    """Require a real second attempt on every objection, without judging its quality."""
+    disputed = previous["disputed_issue_ids"]
+    writer = current["writer_response"]
+    responses = writer.get("objection_responses")
+    errors = []
+    if (not isinstance(responses, dict) or set(responses) != set(disputed)
+            or any(not isinstance(v, str) or not v.strip() for v in responses.values())):
+        errors.append("Second writer must respond to every maintained actor objection")
+    old_addressed = set(previous["feedback_disposition"]["addressed_issue_ids"])
+    addressed = set(current["feedback_disposition"]["addressed_issue_ids"])
+    if not old_addressed.union(disputed) <= addressed:
+        errors.append("Second writer must retain earlier addressed feedback and attempt all objections")
+    old_shots = {s["shot_id"]: s for s in previous["plan"]["shots"]}
+    new_shots = {s["shot_id"]: s for s in current["plan"]["shots"]}
+    for issue in report["issues"]:
+        if issue["issue_id"] in disputed and not any(
+                old_shots[issue["shot_id"]]["dialogue"][i]["text"] !=
+                new_shots[issue["shot_id"]]["dialogue"][i]["text"] for i in issue["line_indices"]):
+            errors.append("Second writer must actually revise each disputed actor's referenced dialogue")
+    return errors
+
+
+def _validate_bounded_actor_result(scene, initial, manifest, result, *, mode, project_root=None):
+    rounds = result.get("negotiation_rounds")
+    if not isinstance(rounds, list) or len(rounds) > 2:
+        return ["Bounded actor negotiation requires at most two rounds"]
+    # Reuse the v1 checks for all original feedback, ownership, patch and plan invariants.
+    base = deepcopy(result)
+    base["review_protocol"] = ACTOR_REVIEW
+    if isinstance(base.get("writer_response"), dict):
+        base["writer_response"].pop("objection_responses", None)
+    errors = validate_actor_review_result(scene, initial, manifest, base, mode=mode, project_root=project_root)
+    if errors:
+        return errors
+    if bool(result["report"]["issues"]) != bool(rounds):
+        return ["Actor issues require a recorded writer/confirmation round"]
+    previous = None
+    for index, current in enumerate(rounds):
+        if not isinstance(current, dict) or set(current) != set(_ROUND_FIELDS):
+            return ["Invalid actor negotiation round fields"]
+        writer = current["writer_response"]
+        expected_keys = {"patch", "feedback_disposition"} | ({"objection_responses"} if index else set())
+        if not isinstance(writer, dict) or set(writer) != expected_keys:
+            return ["Invalid bounded writer response fields"]
+        check = {**deepcopy(base), **deepcopy(current)}
+        check["writer_response"].pop("objection_responses", None)
+        errors = validate_actor_review_result(scene, initial, manifest, check, mode=mode, project_root=project_root)
+        if errors:
+            return errors
+        if current["writer_candidate_plan"] != current["plan"]:
+            return ["Negotiation confirmation must bind the actual candidate"]
+        if previous is not None:
+            if not previous["disputed_issue_ids"]:
+                return ["An extra writer round requires a maintained actor objection"]
+            errors = _negotiation_revision_errors(result["report"], previous, current)
+            if errors:
+                return errors
+        target = set(current["feedback_disposition"]["unaddressed_issue_ids"])
+        if previous is not None:
+            target.update(previous["disputed_issue_ids"])
+        expected_ids = [i["issue_id"] for i in result["report"]["issues"] if i["issue_id"] in target]
+        if current["confirmation_issue_ids"] != expected_ids:
+            return ["Actor confirmation must cover omissions and all prior objections"]
+        errors, disputed = _actor_confirmation_errors(scene, initial, check, mode,
+            issue_ids=expected_ids, acceptance="accept_candidate")
+        if errors:
+            return errors
+        confirmation_status = "not_needed" if not target else "disputed" if disputed else "accepted"
+        if current["disputed_issue_ids"] != disputed or current["actor_confirmation_status"] != confirmation_status:
+            return ["Actor negotiation decisions and summary differ"]
+        previous = current
+    if rounds:
+        if any(result.get(k) != rounds[-1][k] for k in _ROUND_FIELDS):
+            return ["Final actor negotiation summary/candidate differs from last round"]
+        if len(rounds) == 1 and previous["disputed_issue_ids"]:
+            return ["Maintained objections require the bounded second revision"]
+    elif (result.get("actor_confirmations") != [] or result.get("confirmation_issue_ids") != []
+            or result.get("disputed_issue_ids") != [] or result.get("actor_confirmation_status") != "not_needed"
+            or result.get("writer_candidate_plan") != initial):
+        return ["No-issue negotiation must not invent confirmations or a candidate"]
+    expected = "no_issues" if not rounds else "disputed" if previous["disputed_issue_ids"] else "complete"
+    if result.get("negotiation_status") != expected or type(result.get("negotiation_round_count")) is not int or result["negotiation_round_count"] != len(rounds):
+        return ["Actor negotiation completion/disagreement summary mismatch"]
+    return []
+
+
+def _run_bounded_actor_negotiation(scene, original, manifest, result, context, request, *, mode, project_root):
+    """Two rounds maximum; valid final disagreement is a viewable draft, never approval."""
+    from .patches import apply_patch
+    for index in range(2):
+        previous = deepcopy(result["negotiation_rounds"][-1]) if index else None
+        payload = {**deepcopy(context), "report": deepcopy(result["report"]),
+                   "issues_by_shot": _issues_by_shot(original, result["report"]),
+                   "actor_reports": deepcopy(result["actor_reports"])}
+        if previous is not None:
+            payload.update(previous_round=previous, required_objection_ids=previous["disputed_issue_ids"])
+        # Save the raw attempted round before validation or any further call.
+        current = {k: deepcopy(result[k]) for k in _ROUND_FIELDS}
+        current.update(actor_confirmations=[], confirmation_issue_ids=[], disputed_issue_ids=[],
+                       actor_confirmation_status="pending")
+        result["negotiation_rounds"].append(current)
+        writer = request("actor_revise", "negotiate" if index else "revise", payload)
+        current["writer_response"] = writer
+        expected_keys = {"patch", "feedback_disposition"} | ({"objection_responses"} if index else set())
+        if set(writer) != expected_keys:
+            raise ValueError("Invalid bounded writer response fields")
+        current.update(patch=deepcopy(writer["patch"]), feedback_disposition=deepcopy(writer["feedback_disposition"]))
+        errors = _disposition_errors(result["report"], current["feedback_disposition"])
+        if errors:
+            raise ValueError("; ".join(errors))
+        applied = apply_patch(scene, original, manifest, result["report"], current["patch"],
+                              project_root=project_root, output_mode="generated")
+        current.update(applied)
+        if applied["status"] not in ("applied", "unchanged"):
+            raise ValueError("; ".join(applied["errors"]))
+        current["writer_candidate_plan"] = deepcopy(applied["plan"])
+        current["actor_feedback_status"] = "has_unaddressed" if current["feedback_disposition"]["unaddressed_issue_ids"] else "writer_addressed"
+        check = {**deepcopy(result), **deepcopy(current), "review_protocol": ACTOR_REVIEW}
+        check["writer_response"].pop("objection_responses", None)
+        errors = validate_actor_review_result(scene, original, manifest, check, mode=mode, project_root=project_root)
+        if previous is not None and not errors:
+            errors = _negotiation_revision_errors(result["report"], previous, current)
+        if errors:
+            raise ValueError("; ".join(errors))
+        targets = set(current["feedback_disposition"]["unaddressed_issue_ids"])
+        if previous is not None:
+            targets.update(previous["disputed_issue_ids"])
+        current["confirmation_issue_ids"] = [i["issue_id"] for i in result["report"]["issues"] if i["issue_id"] in targets]
+        for actor in scene["characters"]:
+            own = [i for i in result["report"]["issues"] if i["actor_id"] == actor["id"] and i["issue_id"] in targets]
+            if not own:
+                continue
+            reasons = current["feedback_disposition"]["unaddressed_reasons"]
+            confirm_payload = {"scene": deepcopy(scene), "mode": mode, "actor": deepcopy(actor),
+                "initial_plan": deepcopy(original), "revised_plan": deepcopy(current["plan"]),
+                "initial_plan_sha256": json_hash(original), "candidate_plan_sha256": json_hash(current["plan"]),
+                "actor_report": deepcopy(next(r["response"] for r in result["actor_reports"] if r["actor_id"] == actor["id"])),
+                "issues_to_confirm": [dict(deepcopy(i), writer_reason=reasons.get(i["issue_id"]),
+                    writer_response=writer.get("objection_responses", {}).get(i["issue_id"])) for i in own],
+                "previous_own_decisions": [] if previous is None else deepcopy(next(
+                    (r["response"]["decisions"] for r in previous["actor_confirmations"] if r["actor_id"] == actor["id"]), [])),
+                "own_original_dialogue": _actor_lines(original, actor["id"]),
+                "own_revised_dialogue": _actor_lines(current["plan"], actor["id"]), "round": index + 1}
+            response = request("actor_confirm", "confirm", confirm_payload)
+            current["actor_confirmations"].append({"actor_id": actor["id"], "response": response})
+            errors, _ = _actor_confirmation_errors(scene, original, {**result, **current}, mode,
+                partial=True, issue_ids=current["confirmation_issue_ids"], acceptance="accept_candidate")
+            if errors:
+                raise ValueError("; ".join(errors))
+        errors, disputed = _actor_confirmation_errors(scene, original, {**result, **current}, mode,
+            issue_ids=current["confirmation_issue_ids"], acceptance="accept_candidate")
+        if errors:
+            raise ValueError("; ".join(errors))
+        current.update(disputed_issue_ids=disputed,
+                       actor_confirmation_status="not_needed" if not targets else "disputed" if disputed else "accepted")
+        # Exclude apply_patch diagnostics from the exact serialized round contract.
+        for key in list(current):
+            if key not in _ROUND_FIELDS:
+                current.pop(key)
+        result.update(deepcopy(current), negotiation_round_count=index + 1,
+                      negotiation_status="disputed" if disputed else "complete")
+        if not disputed:
+            break
+    errors = validate_actor_review_result(scene, original, manifest, result, mode=mode, project_root=project_root)
+    if errors:
+        raise ValueError("; ".join(errors))
+    return result
 
 
 def _issues_by_shot(plan, report):
@@ -310,7 +491,7 @@ def validate_verification(report: dict, verification: dict) -> list[str]:
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
                       client: LLMClient, *, mode: str, project_root=None, output_mode="animatic",
                       review_protocol=GLOBAL_REVIEW) -> dict:
-    """Return ReviewResult; v1 uses <=3 calls, v2 <=5 with omission confirmation.
+    """Return ReviewResult; actor v1/v2/v3 use at most 3/5/8 calls per branch.
 
     Attach an INFO handler to moodcut.review.trace to persist request/response
     diagnostics. The client exposes parsed JSON, not provider raw HTTP text.
@@ -334,9 +515,12 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
                       verification_kind="programmatic_only", actor_endorsement="not_requested",
                       actor_feedback_status="incomplete",
                       feedback_disposition={"addressed_issue_ids": [], "unaddressed_issue_ids": [], "unaddressed_reasons": {}})
-    if review_protocol == ACTOR_REVIEW_V2:
+    if review_protocol in (ACTOR_REVIEW_V2, ACTOR_REVIEW_V3):
         result.update(actor_confirmations=[], actor_confirmation_status="not_needed",
                       writer_candidate_plan=deepcopy(original))
+    if review_protocol == ACTOR_REVIEW_V3:
+        result.update(negotiation_rounds=[], negotiation_round_count=0, negotiation_status="failed",
+                      confirmation_issue_ids=[], disputed_issue_ids=[])
     calls = 0
     stage = "preflight"
 
@@ -409,7 +593,12 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             return result
         if not result["report"]["issues"]:
             result["status"] = "unchanged"
+            if review_protocol == ACTOR_REVIEW_V3:
+                result["negotiation_status"] = "no_issues"
             return result
+        if review_protocol == ACTOR_REVIEW_V3:
+            return _run_bounded_actor_negotiation(scene, original, manifest, result, context, request,
+                mode=mode, project_root=project_root)
         revision_context = {**context, "report": result["report"],
                             "issues_by_shot": _issues_by_shot(original, result["report"])}
         if review_protocol in ACTOR_PROTOCOLS:
@@ -492,6 +681,11 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         result.update(applied)
         return result
     except Exception as exc:
+        if review_protocol == ACTOR_REVIEW_V3:
+            if result["negotiation_rounds"]:
+                result.update({k: deepcopy(v) for k, v in result["negotiation_rounds"][-1].items() if k in _ROUND_FIELDS})
+            result.update(negotiation_status="failed", negotiation_round_count=len(result["negotiation_rounds"]),
+                          actor_confirmation_status="failed")
         if review_protocol == ACTOR_REVIEW_V2 and stage == "actor_confirm":
             result["actor_confirmation_status"] = "failed"
         result["plan"] = deepcopy(original)

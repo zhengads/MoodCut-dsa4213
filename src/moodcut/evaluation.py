@@ -595,7 +595,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
     protocols = [row.get("review_protocol", "global_v1") for row in records if isinstance(row, dict)]
     review_protocols = {p for p in protocols if isinstance(p, str)}
     if (len(review_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
-            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2"}):
+            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2", "actor_self_review_v3"}):
         errors.append("records must use one consistent review protocol")
     for index, row in enumerate(records):
         prefix = f"record {index + 1}"
@@ -646,6 +646,26 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
             if (expected_confirmation is None or row.get("actor_confirmation_status") != expected_confirmation
                     or row.get("actor_endorsement") != "not_requested"):
                 errors.append(f"{prefix}: actor omissions lack valid corresponding-actor confirmation")
+        if row.get("review_protocol") == "actor_self_review_v3" and condition != "baseline":
+            disposition = row.get("feedback_disposition")
+            omitted = disposition.get("unaddressed_issue_ids") if isinstance(disposition, dict) else None
+            targets, disputed = row.get("confirmation_issue_ids"), row.get("disputed_issue_ids")
+            count, negotiation = row.get("negotiation_round_count"), row.get("negotiation_status")
+            valid_ids = lambda values: (isinstance(values, list) and all(_text(v) for v in values)
+                                       and len(set(values)) == len(values))
+            valid = (all(valid_ids(v) for v in (omitted, targets, disputed))
+                     and type(count) is int and 0 <= count <= 2
+                     and row.get("actor_endorsement") == "not_requested")
+            if valid:
+                valid = set(omitted) <= set(targets) and set(disputed) <= set(targets)
+                expected_confirmation = "disputed" if disputed else "accepted" if targets else "not_needed"
+                expected_negotiation = "no_issues" if count == 0 else "disputed" if disputed else "complete"
+                valid = (valid and row.get("actor_confirmation_status") == expected_confirmation
+                         and negotiation == expected_negotiation and (not disputed or count == 2)
+                         and (count != 0 or not targets and not disputed and status == "unchanged")
+                         and (count != 2 or bool(targets)))
+            if not valid:
+                errors.append(f"{prefix}: invalid bounded actor negotiation summary")
         if status == "unchanged" and final_hashes.get(condition) != initial_hash:
             errors.append(f"{prefix}: unchanged requires the complete initial plan")
         if row.get("run_status") == "failed" or row.get("generation_status") in ("failed", "interrupted"):
