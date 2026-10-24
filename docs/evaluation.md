@@ -2,6 +2,59 @@
 
 Issue: https://github.com/zhengads/MoodCut-dsa4213/issues/9
 
+## Issue #9 七项待办核对与本次增量（2026-10-24）
+
+本节依据 main `cd76086` 核对 Issue 底部仍标为“下一增量”的七项要求。
+PR #37–#40 和已合并的 #46 已交付大部分工程能力，不重新实现客户端、
+资格检查、匿名导出或评分。下表区分工程证据和仍需真实材料/人工决定的部分；
+不据此关闭 Issue，也不改写其他成员的贡献归属。
+
+| 原待办 | 已有实现与离线验收 | 尚待完成 |
+| --- | --- | --- |
+| 1. 三条件记录、来源与账目 | `validate_generated_comparison`、P1 最终 block 和 6.14 重检保留 source_kind、初稿/最终/共同身份、模型、媒体及费用；只接完整 1.1 三条件，不把旧 dialogue_revision 投影改名 | 真实试跑证据须按原目录关系交接、重检；运行成功不等于正式样本 |
+| 2. 导出前资格与失败分母 | 6.14/6.15 重算来源/共同身份和实际请求；整块通过才复制，其他失败块留在私有诊断和账目 | 正式排除规则仍待团队冻结，不把导出子集视为全部尝试 |
+| 3. 匿名导出、评分与状态分列 | 复用原导出器/汇总器，公开目录只含匿名视频、索引和空表；本次补齐 unchanged、applied、未适用、未知审查状态、可播放的审查失败记录及无渲染视频计数 | 真实听看、语义匿名性检查、观看者分配和评分未由本次完成 |
+| 4. 统计与费用口径 | clip 等权、uncertain 为未命中、M/G 共同 block 差值和覆盖分开；unknown 保留 null，共享规划和合法复用只计一次 | 正式统计计划及重复/复用视频的分析规则待确认 |
+| 5. 合成回归 | 现有回归覆盖三条件、非台词/身份篡改、失败/未提交/未知费用、空评分、零分母、复用和映射标签；本次补审查状态与渲染/评分相互独立的回归 | 软件夹具不是模型效果或独立评分证据 |
+| 6. 待确认协议 | 下方“三条件试跑协议提议”已列输入、规模、设置、预算、停止条件、听看和盲评安排 | 表中的旧技术试跑快照不代表最新授权；正式样本、重复数、评价者安排仍未冻结 |
+| 7. 解释边界 | `interpretation`、generated 资格/导出输出和本文保留研究限制；VBench 仅作视觉质量辅助 | 情绪专项审查优于通用审查仍需独立人工证据；不证明更多 Agent、动作规划或面部表情机制 |
+
+Issue 顶部及开放 PR #48 包含后续真实 Agent/双演员试跑记录，尚未合入本节基线。
+本次不消费其私有运行文件、不合并其实现、不填写主观结果，也不将旧全局审查
+与新演员协议混为同一方法。正式评价应冻结所用方法、代码和提示词身份。
+
+### 新增 coverage 字段
+
+`summarize`、generated 私有导出摘要及评分汇总在 overall 和每个 by_condition
+使用同一组计数：`review_applied_runs`、`review_unchanged_runs`、
+`review_not_applicable_runs`、`review_unknown_status_runs`，与原有
+`review_failed_runs`、`review_rejected_runs` 合计等于 `planned_runs`。
+只按保存的精确状态统计；缺失、未知及旧 `no_changes` 不推断为 unchanged。
+
+`rendered_review_failure_runs` 是 render_status=rendered 且 review_status 为
+review_failed/rejected 的交集，用于显示可播放的审查失败/回退记录；它不认证
+回退内容与原稿相同，也不把这些片段判为有效修订。
+`no_rendered_video_runs = planned_runs - rendered_runs`，包括未开始、未提交、
+失败、中断和未知渲染状态，不直接声称文件物理不存在。它与 missing_ratings
+可能重叠，不能相加当运行总数；rendered 标签也不能代替实际媒体重检。
+
+这些是原始记录诊断，不改变评分、M/G 配对、生成式资格门禁、费用或正式纳入
+规则。没有评分时主观均值仍为 null，没有记录时所有新增计数为 0。
+
+本次增量：FAN XUYANG。原 P5 及团队集成贡献见文末记录，署名保持。
+
+本次离线验收（Windows / PowerShell，FFmpeg/ffprobe 7.1.1 已加入测试进程 PATH）：
+
+- `python -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q`：
+  100 项测试、92 个子测试通过，145.05 秒；包含合成音视频、实际资格/导出/评分链路。
+- `python -m pytest tests/test_cli.py -k 'evaluate or rating' -q`：4 项通过。
+- 三条件 `smoke --mock`、对其 block 的 `evaluate` 和 experiment `--dry-run` 通过；
+  实际 smoke 汇总为 2 applied、1 not_applicable、3 no_rendered_video、3 missing_ratings，
+  tone_accuracy 为 null。合成输入与评分不作为真实方法效果。
+- `prepare_references.py --check`：33 份缓存通过、0 下载；`git diff --check` 通过。
+
+本轮不调用模型/API/GPU，不运行 VBench 推理，不产生真实视频或人工评分。
+
 ## 配对人工评价
 
 主 CLI 的 evaluate 完全离线，不启动模型。configs/experiment.json 是开发分配示例，包含已有软件夹具；--dry-run 仅列出 scene×tone×replicate×condition，不改变原 SceneInput，也不自动批量生成。实际生成使用 run 命令，一次一个明确输入的 block。configs/pilot.json 保留原 VBench 提议配置，不能作为人工评价的 scene 路径配置。

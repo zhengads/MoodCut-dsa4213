@@ -88,6 +88,48 @@ class PairedEvaluationTests(unittest.TestCase):
         self.assertEqual(result["overall"]["coverage"]["missing_ratings"], 6)
         self.assertIsNone(result["by_condition"]["moodcut"]["equal_clip_means"]["naturalness"])
 
+    def test_review_outcomes_keep_rendered_failures_and_missing_video_separate(self):
+        rows = records_fixture()
+        for row, status in zip(rows, ("not_applicable", "unchanged", "applied",
+                                      "not_applicable", "rejected", "review_failed")):
+            row["review_status"] = status
+        rows[-1].update(render_status="render_failed", provider_cost_usd=None)
+        before = copy.deepcopy(rows)
+        # Software votes exercise the existing arithmetic, not quality acceptance.
+        result = summarize(rows, [rating("item1"), rating("item2", "uncertain"), rating("item4")])
+        coverage = result["overall"]["coverage"]
+        self.assertEqual(coverage["review_not_applicable_runs"], 2)
+        self.assertEqual(coverage["review_unchanged_runs"], 1)
+        self.assertEqual(coverage["review_applied_runs"], 1)
+        self.assertEqual(coverage["review_rejected_runs"], 1)
+        self.assertEqual(coverage["review_failed_runs"], 1)
+        self.assertEqual(coverage["review_unknown_status_runs"], 0)
+        self.assertEqual(coverage["rendered_review_failure_runs"], 1)
+        self.assertEqual(coverage["no_rendered_video_runs"], 1)
+        self.assertEqual(coverage["missing_ratings"], 3)
+        self.assertEqual(result["by_condition"]["generic_review"]["coverage"]
+                         ["rendered_review_failure_runs"], 1)
+        self.assertEqual(result["by_condition"]["moodcut"]["coverage"]["no_rendered_video_runs"], 1)
+        self.assertEqual(result["by_condition"]["generic_review"]["equal_clip_means"]["tone_accuracy"], 1)
+        self.assertIsNone(result["overall"]["usage"]["provider_cost_usd"]["total"])
+        self.assertEqual(rows, before)
+
+    def test_review_outcomes_do_not_infer_unchanged_or_video_from_unknown_status(self):
+        for status in (None, "no_changes", "future_status", []):
+            with self.subTest(status=status):
+                rows = records_fixture()
+                for row in rows:
+                    row["review_status"] = status
+                    row.pop("render_status")
+                coverage = summarize(rows, [])["overall"]["coverage"]
+                self.assertEqual(coverage["review_unknown_status_runs"], 6)
+                self.assertEqual(coverage["review_unchanged_runs"], 0)
+                self.assertEqual(coverage["no_rendered_video_runs"], 6)
+                self.assertEqual(coverage["rendered_review_failure_runs"], 0)
+        empty = summarize([], [])["overall"]["coverage"]
+        self.assertEqual(empty["review_unknown_status_runs"], 0)
+        self.assertEqual(empty["no_rendered_video_runs"], 0)
+
     def test_bad_rating_rows_are_not_silently_dropped(self):
         valid = rating("item0")
         for bad in (valid | {"confidence": True}, valid | {"naturalness": "3.0"},
@@ -854,11 +896,17 @@ def test_generated_blind_export_and_rating_cli_preserve_sources(inspection_input
     summary = _generated_scores(case, votes, exported["private_key_path"])
     assert summary["overall"]["coverage"]["planned_runs"] == 3
     assert summary["overall"]["coverage"]["missing_ratings"] == 1
+    assert summary["overall"]["coverage"]["review_not_applicable_runs"] == 1
+    assert summary["overall"]["coverage"]["review_applied_runs"] == 2
+    assert summary["overall"]["coverage"]["review_unchanged_runs"] == 0
+    assert summary["overall"]["coverage"]["no_rendered_video_runs"] == 0
+    assert summary["overall"]["coverage"]["rendered_review_failure_runs"] == 0
     assert summary["overall"]["equal_clip_means"]["tone_accuracy"] == .75
     assert summary["common_moodcut_generic"]["mean_moodcut_minus_generic"]["tone_accuracy"] == .5
     assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == records["accounting"]
     assert records["accounting"]["generation_posts"] == 4  # Reused shots not billed twice.
     assert read_json(exported["summary_path"])["overall"]["coverage"]["rated_clips"] == 0
+    assert read_json(exported["summary_path"])["overall"]["coverage"]["review_applied_runs"] == 2
     diagnostic = read_json(exported["summary_path"])["overall"]["generation"]
     assert diagnostic["by_status"]["assembled_requires_manual_inspection"] == 3
     assert diagnostic["jobs"]["recorded_jobs"] == 6
@@ -966,6 +1014,10 @@ def test_generated_export_keeps_full_failure_and_unknown_ledgers(inspection_inpu
     assert summary["block_ledger_accounting"]["blocks"][0]["accounting"] == block["accounting"]
     assert summary["block_ledger_accounting"]["complete"] is True
     states = summary["overall"]["generation"]["by_status"]
+    coverage = summary["overall"]["coverage"]
+    assert coverage["review_applied_runs"] == 2
+    assert coverage["no_rendered_video_runs"] == {"unknown": 0, "failed": 1, "unsubmitted": 3}[variant]
+    assert coverage["rendered_review_failure_runs"] == 0
     if variant == "unknown":
         assert states["assembled_requires_manual_inspection"] == 3
     elif variant == "failed":
