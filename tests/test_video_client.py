@@ -4,7 +4,7 @@ import json
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import Mock
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.request import Request
 
 import pytest
@@ -412,6 +412,102 @@ def test_unknown_submit_not_retried_and_blocks_later_jobs(tmp_path):
     stored = (tmp_path / "first/receipt.json").read_text()
     assert "never-log" not in stored
     assert json.loads(stored)["provider_cost_usd"] is None
+    assert json.loads(stored)["last_error"] == {
+        "phase": "submit", "kind": "transport", "error_type": "URLError"}
+
+
+@pytest.mark.parametrize("code", [400, 429, 502])
+def test_submit_http_error_retains_diagnostic_without_retry(tmp_path, code):
+    body = response({"error": {"code": "SYNTHETIC_REJECTION", "message":
+        "Cannot fetch HTTPS://example.com/a?token=private; key=never-log-this-key DATA:image/png;base64,private-image",
+        "metadata": {"provider_name": "synthetic", "raw": json.dumps({
+            "error": {"message": "Synthetic reference error"}, "headers": {"secret": "do-not-store"}})},
+        "request": {"prompt": "do-not-store"}}})
+    error = HTTPError("https://openrouter.ai/api/v1/videos", code, "unsafe reason", {
+        "x-request-id": "req-synthetic-123", "Authorization": "never-log-this-key"}, body)
+    opener = Mock(side_effect=error)
+    c = client(opener)
+    with pytest.raises(OpenRouterError, match=f"HTTP {code}"):
+        c.generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": "submit", "kind": "http", "http_status": code,
+                                   "request_id": "req-synthetic-123"}
+    assert saved["provider_error"]["code"] == "SYNTHETIC_REJECTION"
+    assert saved["provider_error"]["metadata"]["raw"] == {"error": {"message": "Synthetic reference error"}}
+    assert saved["status"] == "submission_unknown" and saved["job_id"] is None
+    assert saved["provider_cost_usd"] is None and c.spent_usd is None
+    assert body.closed
+    for secret in ("never-log-this-key", "token=private", "private-image", "do-not-store", "unsafe reason"):
+        assert secret not in json.dumps(saved)
+    with pytest.raises(BudgetError):
+        c.generate(request(), out_dir=str(tmp_path / "second"))
+    assert opener.call_count == c.post_attempts == 1
+
+
+@pytest.mark.parametrize("raw", [b'<html>secret</html>', b'{invalid', b'x' * 8193,
+                                b'[' * 2000 + b'0' + b']' * 2000],
+                         ids=["html", "malformed_json", "oversize", "too_deep"])
+def test_http_error_invalid_or_large_body_keeps_status_only(tmp_path, raw):
+    body = io.BytesIO(raw)
+    opener = Mock(side_effect=HTTPError("https://example.com", 502, "unsafe", {}, body))
+    with pytest.raises(OpenRouterError, match="HTTP 502"):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": "submit", "kind": "http", "http_status": 502}
+    assert "provider_error" not in saved and "secret" not in str(saved)
+    assert body.closed and opener.call_count == 1
+
+
+def test_invalid_json_response_has_distinct_saved_diagnostic(tmp_path):
+    opener = Mock(return_value=io.BytesIO(b'{not-json never-log-this-key'))
+    with pytest.raises(OpenRouterError, match="JSON error"):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"]["phase"] == "submit"
+    assert saved["last_error"]["kind"] == "invalid_response"
+    assert "never-log-this-key" not in str(saved) and opener.call_count == 1
+
+
+@pytest.mark.parametrize("phase", ["poll", "download"])
+def test_http_error_after_submit_retains_phase_id_and_known_cost(tmp_path, phase):
+    initial = {"id": "job-http", "status": "pending" if phase == "poll" else "completed"}
+    if phase == "download":
+        initial["usage"] = {"cost": .6}
+    opener = Mock(side_effect=[response(initial), HTTPError("https://example.com", 503, "unsafe", {},
+        response({"error": {"code": "SYNTHETIC_UNAVAILABLE", "message": "Bearer never-log-this-key"}}))])
+    with pytest.raises(OpenRouterError):
+        client(opener).generate(request(), out_dir=str(tmp_path / "job"))
+    saved = json.loads((tmp_path / "job/receipt.json").read_text())
+    assert saved["last_error"] == {"phase": phase, "kind": "http", "http_status": 503}
+    assert saved["job_id"] == "job-http"
+    assert saved["status"] == ("polling_interrupted" if phase == "poll" else "download_interrupted")
+    assert saved["provider_cost_usd"] == (None if phase == "poll" else "0.6")
+    assert saved["provider_error"]["code"] == "SYNTHETIC_UNAVAILABLE"
+    assert "never-log-this-key" not in str(saved)
+    assert opener.call_count == 2
+    assert [c.args[0].get_method() for c in opener.call_args_list] == ["POST", "GET"]
+
+
+def test_http_submit_diagnostic_survives_executor_final_records(execution_case, tmp_path, monkeypatch):
+    from moodcut import video_client
+    from moodcut.pipeline import read_json
+    case = execution_case
+    original = {p: p.read_bytes() for p in case["prep"].rglob("*.json")}
+    transport = Mock(side_effect=HTTPError("https://example.com", 400, "unsafe", {}, response({
+        "error": {"code": "SYNTHETIC_BAD_INPUT", "message": "Synthetic invalid parameter"}})))
+    monkeypatch.setattr(video_client, "OpenRouterVideoClient", lambda *a, **k:
+        OpenRouterVideoClient(*a, **k, api_key="synthetic-secret-do-not-log", opener=transport))
+    output = tmp_path / "http-stopped"
+    state = execute_case(case, output)
+    assert state["status"] == "stopped" and state["generation_posts_this_invocation"] == 1
+    block = read_json(output / state["records_path"])
+    job = block["runs"][0]["generation_jobs"][0]
+    assert job["last_error"] == {"phase": "submit", "kind": "http", "http_status": 400}
+    assert job["provider_error"]["code"] == "SYNTHETIC_BAD_INPUT"
+    assert job["remote_status"] == "submission_unknown" and job["provider_cost_usd"] is None
+    assert all(j["status"] == "prepared_offline" for r in block["runs"][1:] for j in r["generation_jobs"])
+    assert transport.call_count == 1
+    assert all(p.read_bytes() == b for p, b in original.items())
 
 
 def test_poll_timeout_preserves_job_id_without_resubmission(tmp_path, monkeypatch):
@@ -435,6 +531,7 @@ def test_malformed_submit_job_id_stays_unknown(tmp_path):
     saved = json.loads((tmp_path / "job/receipt.json").read_text())
     assert saved["status"] == "submission_unknown"
     assert saved["job_id"] is None
+    assert saved["last_error"]["reason"] == "missing_or_invalid_job_id"
     assert opener.call_count == 1
 
 
@@ -604,3 +701,84 @@ def test_seedance_catalogue_and_native_audio_request(tmp_path):
     invalid = {**request(), "model": cfg["model"], "input_references": [{"type":"video_url","video_url":{"url":"https://example.com/video.mp4"}}]}
     with pytest.raises(ValueError):
         estimate_video_cost(cfg, invalid)
+
+
+def heygen_case():
+    from moodcut.video_client import video_request_controls
+    cfg = {"model": "heygen/heygen-video-1", "resolution": "768p", "aspect_ratio": "16:9",
+           "reference_price_per_second_usd": "0.10", "reference_image_price_usd": "0.04",
+           "free_reference_images": 2, "provider_discount": "0.5"}
+    req = {**request(), "model": cfg["model"], "resolution": "768p", "duration": 5,
+           **video_request_controls(cfg["model"])}
+    req.pop("generate_audio")
+    req["input_references"] *= 2
+    model = {"id": cfg["model"], "supported_resolutions": ["480p", "768p", "2K"],
+             "supported_aspect_ratios": ["16:9"], "supported_durations": list(range(5, 16)),
+             "generate_audio": False, "seed": True, "verified_provider_discount": "0.5",
+             "allowed_passthrough_parameters": ["prompt_enhancement"],
+             "pricing_skus": {"duration_seconds_2k": "0.10", "duration_seconds_480p": "0.02",
+                 "duration_seconds_768p": "0.036", "reference_input_images": "0.04",
+                 "reference_duration_seconds_2k": "0.18", "reference_duration_seconds_480p": "0.07",
+                 "reference_duration_seconds_768p": "0.10"}}
+    return cfg, req, model
+
+
+def test_heygen_quote_uses_reference_sku_discount_and_image_allowance():
+    cfg, req, model = heygen_case()
+    check_video_model(cfg, [model])
+    assert estimate_video_cost(cfg, req) == Decimal("0.25")
+    req["input_references"] *= 2
+    assert estimate_video_cost(cfg, req) == Decimal("0.29")
+    model["verified_provider_discount"] = "0"
+    with pytest.raises(BudgetError, match="discount"):
+        check_video_model(cfg, [model])
+
+
+@pytest.mark.parametrize("mutation", ["enhancement", "audio", "duration", "image_price", "sku", "control"])
+def test_heygen_rejects_changed_controls_and_prices_before_post(tmp_path, mutation):
+    cfg, req, model = heygen_case()
+    if mutation == "enhancement":
+        req["provider"]["options"]["heygen"]["parameters"]["prompt_enhancement"] = "quality"
+    elif mutation == "audio":
+        req["generate_audio"] = True
+    elif mutation == "duration":
+        req["duration"] = 4
+    elif mutation == "image_price":
+        model["pricing_skus"]["reference_input_images"] = "0.08"
+    elif mutation == "sku":
+        model["pricing_skus"]["unexpected_fee"] = "1"
+    else:
+        model["allowed_passthrough_parameters"] = []
+    opener = Mock(side_effect=AssertionError("No HTTP expected"))
+    c = OpenRouterVideoClient(cfg, api_key="synthetic", allow_paid=True, max_cost_usd="1", opener=opener)
+    with pytest.raises((ValueError, BudgetError)):
+        check_video_model(cfg, [model])
+        c.generate(req, out_dir=str(tmp_path / "job"))
+    opener.assert_not_called()
+
+
+def test_heygen_fixed_audio_request_and_unknown_cost_stop(tmp_path):
+    cfg, req, _ = heygen_case()
+    opener = Mock(side_effect=[response({"id": "synthetic-heygen", "status": "completed", "usage": None}),
+                               io.BytesIO(b"synthetic-video-bytes")])
+    c = OpenRouterVideoClient(cfg, api_key="synthetic", allow_paid=True, max_cost_usd="1", opener=opener)
+    receipt = c.generate(req, out_dir=str(tmp_path / "first"))
+    payload = json.loads(opener.call_args_list[0].args[0].data)
+    assert "generate_audio" not in payload
+    assert payload["provider"]["options"]["heygen"]["parameters"] == {"prompt_enhancement": "disabled"}
+    assert receipt["provider_cost_usd"] is None and c.spent_usd is None
+    with pytest.raises(BudgetError):
+        c.generate(req, out_dir=str(tmp_path / "must-not-submit"))
+    assert c.post_attempts == 1 and not (tmp_path / "must-not-submit").exists()
+
+
+def test_heygen_discount_discovery_is_read_only(monkeypatch):
+    from moodcut import video_client
+    _, _, model = heygen_case()
+    model.pop("verified_provider_discount")
+    opener = Mock(side_effect=[response({"data": [model]}), response({"data": {"endpoints": [
+        {"tag": "heygen", "pricing": {"discount": 0.5}}]}})])
+    monkeypatch.setattr(video_client, "build_opener", lambda *a: type("Opener", (), {"open": staticmethod(opener)})())
+    models = video_client.fetch_video_models(discount_model=model["id"])
+    assert models[0]["verified_provider_discount"] == "0.5"
+    assert [call.args[0].get_method() for call in opener.call_args_list] == ["GET", "GET"]

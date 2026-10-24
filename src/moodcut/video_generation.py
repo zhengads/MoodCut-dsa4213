@@ -1,6 +1,8 @@
 """Offline reference-guided request compilers and real A/V concatenation."""
 from copy import deepcopy
 from decimal import Decimal
+import base64
+import binascii
 import csv
 import hashlib
 import html
@@ -16,7 +18,7 @@ from urllib.parse import urlsplit
 from .contracts import (CONDITIONS, CONTRACT_VERSION, _json_copy,
                         assert_dialogue_only_revision, json_hash, shared_generation_sha256)
 from .validation import validate_plan
-from .video_client import estimate_video_cost
+from .video_client import HEYGEN_MODEL, estimate_video_cost, video_request_controls
 
 _GENERATED_TEMPLATE = Path(__file__).with_name("prompts") / "video_generated.txt"
 
@@ -69,12 +71,23 @@ def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
     # multiple images of one character need not become a new first-frame layout.
     for index, asset_id in enumerate(scene["asset_ids"], 1):
         asset = assets[asset_id]
-        url = _public_reference(asset.get("source_url"))
+        url = asset.get("source_url")
+        if settings["model"] == HEYGEN_MODEL and isinstance(url, str) and url.startswith("data:image/png;base64,"):
+            try:
+                encoded = base64.b64decode(url.split(",", 1)[1], validate=True)
+            except (ValueError, binascii.Error):
+                raise ValueError("Invalid inline PNG reference") from None
+            if not encoded.startswith(b"\x89PNG\r\n\x1a\n") or hashlib.sha256(encoded).hexdigest() != asset["sha256"]:
+                raise ValueError("Inline PNG reference differs from the verified asset bytes")
+        else:
+            url = _public_reference(url)
         references.append({"type": "image_url", "image_url": {"url": url}})
         reference_records.append({k: asset[k] for k in ("asset_id", "character_id", "source_url", "sha256")})
         reference_notes.append({"reference_index": index, "asset_id": asset_id,
                                 "character_id": asset["character_id"], "name": names[asset["character_id"]],
                                 "primary_identity": bindings[asset["character_id"]]["asset_id"] == asset_id})
+        if settings["model"] == HEYGEN_MODEL:
+            reference_notes[-1]["provider_reference_label"] = f"<Picture {index}>"
     common = {"style": settings["style"], "sound": settings["sound"], "target_tone": scene["tone"],
               "scene_direction": initial["scene_direction"], "reference_images": reference_notes,
               "characters": [dict(c, name=names[c["id"]]) for c in settings["characters"]]}
@@ -95,7 +108,7 @@ def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
             prompt = Template(template).substitute(shared=prompt_json(context), dialogue=prompt_json(shot["dialogue"]))
             request = {"model": settings["model"], "prompt": prompt, "duration": shot["duration_s"],
                        "resolution": settings["resolution"], "aspect_ratio": settings["aspect_ratio"],
-                       "generate_audio": True, "seed": settings["seed"] + index,
+                       **video_request_controls(settings["model"]), "seed": settings["seed"] + index,
                        "input_references": deepcopy(references)}
             jobs.append({"shot_id": shot["shot_id"], "request": request,
                          "request_sha256": json_hash(request),

@@ -1,6 +1,48 @@
 # 试跑单：公交站还伞，首镜头三版本
 
-关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3。**状态：PNG公开交付及字节核对已完成，新目录请求prepared_offline；真实试跑未批准。** 本次仅素材交付、公开GET核对和离线编译，新增付费消费为0。
+### Latest result: three real HeyGen clips delivered (2026-10-24)
+
+Under a new explicit authorization for the corrected inline PNG inputs, the existing executor at code commit `5c2edc16642dab2fa1b6344a31188638a3e46b76` completed all three conditions. This was a separately authorized run, not an automatic retry of the earlier failed submission. Model `heygen/heygen-video-1`, 768p, requested duration five seconds each, 16:9, seed 4213, cn-02/Lin and cn-04/Bo, disabled prompt enhancement, common scene/action/audio instructions and exact reference bytes remained frozen; only the handwritten dialogue differs. The $1.00 local video ceiling and separate unspendable $0.10 reserve were respected. No text model, replacement model or automatic retry was used.
+
+| Condition | Lin's fixed dialogue (Bo silent) | Actual task ID | Returned charge | Raw MP4 SHA-256 |
+| --- | --- | --- | --- | --- |
+| baseline | 伞还给你。 | `gen-vid-1792825088-V5ULfiFh4nV5vzrGBhV3` | $0.25 | `dfbe9ff31e4211c50846db61c5fb5b626185508205a62862883f1d174e13154f` |
+| generic_review | 请你收好。 | `gen-vid-1792825135-1Gtl15BWT3zwNSnMPp9j` | $0.25 | `276b4479024e79cc19b46f69a16c8ceeda1999ba3fbf4455fc0fe90f7e908d45` |
+| moodcut | 下次下雨，我还陪你。 | `gen-vid-1792825172-q7H7RZ5SuYyRCIzHzyDI` | $0.25 | `5179d0b4803488a97dbfe12264d997d139a709696f76fa867172aec813e9638c` |
+
+Execution started at 14:58 Beijing time and completed by 15:03. All three receipts are `downloaded`, with one POST per condition, 35 total status polls and three downloads (38 video GETs, 41 video HTTP calls). Final records report actual video cost **$0.75** and status `assembled_requires_manual_inspection`. The immediate key snapshot initially reflected only $0.50; a read-only reconciliation at 15:07 showed usage rising from $0.0080172 to $0.7580172, exactly $0.75, with $14.2419828 remaining key allowance. This is a key limit snapshot, not an account-wide balance. Earlier unknown charges remain unknown and are not retroactively set to zero.
+
+Each original provider MP4 passed local media checks: 1344 x 768, 24 fps, audio present, encoded duration 5.258344 seconds for the five-second request. The files were delivered directly for user viewing; delivery copies match the raw clip hashes above. No cropping, retiming, synthetic replacement or subjective scoring was applied. Dialogue accuracy, speaker identity, lip sync, emotion and action quality still require listening/viewing acceptance; common inputs and seed do not guarantee identical framing or expressions.
+
+Evidence remains in ignored `runs/umbrella-heygen-inline-20261024/`: `result.json`, `execution/*/shot-000/receipt.json`, `execution/inspection/records/block.json`, `observed-posts.json`, `key-before.json`, `key-after.json`, `key-reconciled.json` and `viewer-copy.json`. The shared generation identity is `67f60540e8e8a5caa0e215b18cdb9a1669b67e8581eae6f8964c95c56bb99ba6`. The original PNG bytes, source, license and [portrait attribution](umbrella-sigils-credits.md) remain intact; delivery includes CREDITS and LICENSE-PORTRAITS. Videos, portraits, credentials and inline payloads are not committed.
+
+This is a real-video technical pilot from handwritten software dialogue, not real P2/P3 review output or evidence of method superiority. Planning/review software slots in the records do not represent paid text calls. Manual checks and ratings remain blank. Results and adapter changes stay together in [PR #45](https://github.com/zhengads/MoodCut-dsa4213/pull/45), draft and unmerged; Issues #8 and #9 remain open. No further paid run is implied. Historical records below describe their own earlier attempts.
+
+### Earlier authorized HeyGen pilot and stopped attempt (2026-10-24)
+
+The user authorized HeyGen Video (`heygen/heygen-video-1`), 768p, three five-second clips with cn-02/Lin and cn-04/Bo. All three share the scene, action, seed 4213, native Mandarin audio requirements and reference bytes; only the existing handwritten dialogue differs. Prompt enhancement is disabled, with no text-model calls, replacement models or retries. The video budget is $1.00; a separate $0.10 reserve is not spendable. Historical failed tasks and unknown costs remain unchanged. This is a technical pilot, not actual P2/P3 review output or formal evaluation.
+
+Public catalogue, sole HeyGen endpoint's 50% discount and the two existing PNGs' exact remote bytes were checked. The frozen reference-mode quote was $0.25 per clip, $0.75 for three. HeyGen has fixed generated audio, so its unsupported `generate_audio` HTTP switch is omitted; the required audio track is still checked locally.
+
+At 14:43 Beijing time, only the baseline POST was attempted. HTTP 400 reported `invalid_parameter`: `Unsupported Content-Type 'application/octet-stream' for reference_image[0]; expected image/*.` No task ID or video was returned. The receipt and final record retain the diagnostic and `provider_cost_usd=null`; generic_review and moodcut were not submitted. Key usage remained $0.0080172 with $14.9919828 remaining key allowance after the attempt, which does not prove it was free. No retries, text-model calls or reserve spending occurred. Evidence remains in ignored `runs/umbrella-heygen-20261024/`.
+
+The preflight missed the Content-Type requirement despite verifying PNG bytes. The correction uses explicit `data:image/png;base64,...` references with exact original-byte/hash checks, avoiding the attachment redirect and octet-stream header. The preparation in `inline-offline/` has only offline verification, with zero paid requests and all 98 prior run files unchanged. It preserves the failed attempt and original request identities; a further paid attempt requires new authorization. Provenance, CC BY 4.0 attribution and acceptable-use terms remain applicable. Issues #8 and #9 stay open; no subjective ratings or successful real-video claims are recorded.
+
+Sources: [OpenRouter model/prices](https://openrouter.ai/heygen/heygen-video-1), [HeyGen references and enhancement controls](https://developers.heygen.com/docs/models/heygen-video).
+
+The following v3 record describes the earlier Seedance attempts, not the current HeyGen authorization.
+
+关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3，补充首次真实提交诊断。**状态：PNG交付已随PR #44合入；后续单独批准的固定台词试跑已尝试首个POST，未取得任务ID并停止，无成片。** 素材交付阶段新增付费消费为0；这次真实提交的单笔费用未知，不能写成免费。
+
+### 首次真实提交与本次诊断（2026-10-23）
+
+后续明确授权本单的三段固定手写台词技术试跑，视频本地阈值$1.00，另$0.10备用金不动用；不调用文本模型、不换模型、不自动重试。授权人另明确接受历史Wan单笔费用及账户总余额仍未知，使用已核对key额度继续。这不是将未知费用改记为零，也没有批准方法比较或正式实验。候选JSON中的false/null继续保留冻结提议身份，实际授权与尝试另记于本节，不反写旧请求或软件来源。
+
+北京时间21:46，公开报价仍为三段$0.9072，四份交付附件字节及实际P4重编译/冻结请求核对通过。原execute-generated入口仅尝试baseline的1次POST，随后OpenRouterError；回执status=submission_unknown、job_id=null、provider_cost_usd=null、video_path=null，轮询/下载均0。generic_review和moodcut未提交。21:47的只读GET/key显示usage=$0.0080172、limit_remaining=$14.9919828，与提交前一致；这只是当时未观察新增用量，不能认定该任务免费。本地原始证据保留在忽略目录`runs/umbrella-live-20261023-approved/`，最终账目为其`execution/inspection/records/block.json`。
+
+已查实的诊断缺陷：原_json_request在HTTP错误时丢弃响应正文，只将状态码放入异常字符串；执行器为避免泄密仅保存异常类型，未将该字符串持久化。传输/JSON错误也被合并成同一通用异常；缺ID响应未保存其error字段。现有原始回执、快照和progress均没有本次状态码、服务端原因或request ID，不能追溯补造，也无法仅凭submission_unknown判断是HTTP拒绝、网络中断、JSON损坏或无效ID。官方[请求格式](https://openrouter.ai/docs/guides/overview/multimodal/video-generation#using-images)与本次input_references格式相符；目录/公开GET检查通过不证明提供商接受素材，不能据此断言IP、图片MIME或模型权限导致失败。官方[日志说明](https://openrouter.ai/docs/guides/features/logs#api-access)中的API诊断依赖generation ID；本次未留有可用ID。
+
+本次只修原客户端和记录投影：脱敏HTTP状态/服务端错误、失败阶段及受控传输/响应错误进入原回执，最终记录保留；使用离线传输替身验证，不新建日志服务或工具。旧失败回执/请求/费用不改写，不重发POST、不GET恢复/下载、不调用文本模型。没有恢复出的真实视频，也不能宣称原服务端故障已修复；后续付费请求仍暂停。
 
 首选范围是**冻结已有软件台词的真实音视频技术预检**：一个原镜头、三个版本，检查服务是否接受参考图，以及动作、中文声音和台词能否落到成片。不进行新的LLM规划/审查，不检验审查方法效果；真实P2/P3全流程属于下文单独列价的后续扩展，不能用手写候选冒充其产物。
 
