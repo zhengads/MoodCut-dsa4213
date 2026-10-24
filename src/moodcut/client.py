@@ -17,6 +17,19 @@ from urllib.error import HTTPError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from uuid import uuid4
 
+from .contracts import json_hash, _json_copy
+
+
+def _response_format(json_schema):
+    if json_schema is None:
+        return {"type": "json_object"}
+    if not isinstance(json_schema, dict) or json_schema.get("type") != "object":
+        raise ValueError("json_schema must describe a JSON object")
+    # Copy/validate before any HTTP attempt; no schema or answer repair.
+    schema = _json_copy(json_schema)
+    return {"type": "json_schema", "json_schema": {
+        "name": "moodcut_response", "strict": True, "schema": schema}}
+
 
 class LLMClient(ABC):
     """Common interface for all MoodCut LLM clients."""
@@ -29,6 +42,7 @@ class LLMClient(ABC):
         system: str,
         user: str,
         max_output_tokens: int,
+        json_schema: dict | None = None,
     ) -> dict:
         """Return a JSON-compatible dictionary."""
         raise NotImplementedError
@@ -51,6 +65,7 @@ class FakeClient(LLMClient):
         system: str,
         user: str,
         max_output_tokens: int,
+        json_schema: dict | None = None,
     ) -> dict:
 
         if not isinstance(stage, str) or not stage.strip():
@@ -65,12 +80,16 @@ class FakeClient(LLMClient):
         if type(max_output_tokens) is not int or max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be a positive integer")
 
+        format_spec = _response_format(json_schema)
         self.calls.append({
             "stage": stage,
             "system": system,
             "user": user,
             "max_output_tokens": max_output_tokens,
         })
+        if json_schema is not None:
+            self.calls[-1].update(response_format_type=format_spec["type"],
+                                 json_schema_sha256=json_hash(json_schema))
 
         if not self._responses:
             raise RuntimeError(
@@ -297,7 +316,7 @@ class OpenRouterClient(LLMClient):
         """Actual summed provider cost, or None if any attempt's cost is unknown."""
         return None if self._unknown_charge else float(self._spent)
 
-    def complete_json(self, *, stage, system, user, max_output_tokens):
+    def complete_json(self, *, stage, system, user, max_output_tokens, json_schema=None):
         if not self.allow_paid:
             raise PermissionError("Live OpenRouter calls require explicit allow_paid=True")
         if not isinstance(stage, str) or not stage.strip():
@@ -306,19 +325,23 @@ class OpenRouterClient(LLMClient):
             raise TypeError("system and user must be strings")
         if type(max_output_tokens) is not int or max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be a positive integer")
+        format_spec = _response_format(json_schema)
         # Serializes reservations and responses when a single client is shared.
         with self._lock:
-            return self._complete(stage, system, user, max_output_tokens)
+            return self._complete(stage, system, user, max_output_tokens, format_spec)
 
-    def _reservation(self, system, user, max_output_tokens):
+    def _reservation(self, system, user, max_output_tokens, json_schema=None):
         estimated_input = len(system.encode("utf-8")) + len(user.encode("utf-8")) + 64
+        if json_schema is not None:
+            estimated_input += len(json.dumps(json_schema, ensure_ascii=False, allow_nan=False).encode("utf-8"))
         return estimated_input, (estimated_input * self._input_price +
                 max_output_tokens * self._output_price) / Decimal(1_000_000)
 
-    def _complete(self, stage, system, user, max_output_tokens):
+    def _complete(self, stage, system, user, max_output_tokens, format_spec):
         if self._unknown_charge:
             raise BudgetError("Previous request cost is unknown; reconcile it before further calls")
-        estimated_input, reservation = self._reservation(system, user, max_output_tokens)
+        schema = format_spec.get("json_schema", {}).get("schema")
+        estimated_input, reservation = self._reservation(system, user, max_output_tokens, schema)
         if self._spent + reservation > self._max_cost:
             raise BudgetError("Estimated request cost exceeds the remaining client budget")
         payload = {
@@ -327,7 +350,7 @@ class OpenRouterClient(LLMClient):
                          {"role": "user", "content": user}],
             "stream": False, "max_tokens": max_output_tokens,
             "temperature": self.temperature,
-            "response_format": {"type": "json_object"},
+            "response_format": format_spec,
             "provider": {"allow_fallbacks": False, "require_parameters": True,
                          "max_price": {"prompt": float(self._input_price),
                                        "completion": float(self._output_price), "request": 0}},
@@ -346,6 +369,8 @@ class OpenRouterClient(LLMClient):
                   "provider_cost_usd": None, "status": "request_failed",
                   "http_status": None, "elapsed_s": None, "parse_error": None,
                   "response_artifact": None, "retention_error": None}
+        if schema is not None:
+            record.update(response_format_type="json_schema", json_schema_sha256=json_hash(schema))
         self.calls.append(record)
         start = monotonic()
         envelope = None
@@ -500,7 +525,7 @@ class RoleRoutedClient(LLMClient):
             return "review"
         raise ValueError("Unknown text stage; no model selected")
 
-    def complete_json(self, *, stage, system, user, max_output_tokens):
+    def complete_json(self, *, stage, system, user, max_output_tokens, json_schema=None):
         with self._lock:
             if self.stopped:
                 raise BudgetError("Text pipeline stopped: " + self._stop_reason)
@@ -509,15 +534,17 @@ class RoleRoutedClient(LLMClient):
             if (not isinstance(system, str) or not isinstance(user, str)
                     or type(max_output_tokens) is not int or max_output_tokens <= 0):
                 raise ValueError("Invalid text request")
+            _response_format(json_schema)
             cost = self.spent_usd
-            _, reservation = client._reservation(system, user, max_output_tokens)
+            _, reservation = client._reservation(system, user, max_output_tokens, json_schema)
             if cost is None or Decimal(str(cost)) + reservation > self._max_cost:
                 self.stop("Shared text cost is unknown or its budget is exhausted")
                 raise BudgetError(self._stop_reason)
             before = len(client.calls)
             try:
+                options = {} if json_schema is None else {"json_schema": json_schema}
                 result = client.complete_json(stage=stage, system=system, user=user,
-                                              max_output_tokens=max_output_tokens)
+                                              max_output_tokens=max_output_tokens, **options)
                 cost = self.spent_usd
                 if cost is None or Decimal(str(cost)) > self._max_cost:
                     raise BudgetError("Returned text cost is unknown or exceeds the shared budget")

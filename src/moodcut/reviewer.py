@@ -18,8 +18,28 @@ ACTOR_REVIEW = "actor_self_review_v1"
 ACTOR_REVIEW_V2 = "actor_self_review_v2"
 ACTOR_REVIEW_V3 = "actor_self_review_v3"
 ACTOR_PROTOCOLS = (ACTOR_REVIEW, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3)
-SHOT_WRITER_CONTRACT = "dialogue_by_shot_v1"
+SHOT_WRITER_CONTRACT = "dialogue_by_shot_json_schema_v1"
+JSON_OBJECT_WRITER_CONTRACT = "dialogue_by_shot_v1"
 LEGACY_WRITER_CONTRACT = "issue_patch_v1"
+WRITER_CONTRACTS = (SHOT_WRITER_CONTRACT, JSON_OBJECT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT)
+
+
+def get_writer_json_schema(*, second_round=False):
+    """Shape-only provider constraint; spoken words and issue decisions remain model output."""
+    def obj(properties):
+        return {"type": "object", "properties": properties, "required": list(properties),
+                "additionalProperties": False}
+    text = {"type": "string"}
+    ids = {"type": "array", "items": text}
+    reasons = {"type": "object", "additionalProperties": text}
+    fields = {
+        "dialogue_by_shot": {"type": "object", "additionalProperties": {
+            "type": "array", "items": obj({"character_id": text, "text": text})}},
+        "feedback_disposition": obj({"addressed_issue_ids": ids, "unaddressed_issue_ids": ids,
+                                      "unaddressed_reasons": reasons})}
+    if second_round:
+        fields["objection_responses"] = reasons
+    return obj(fields)
 
 
 def validate_review_protocol(review_protocol, output_mode):
@@ -39,10 +59,12 @@ def _review_prompts(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW, wr
         sources = {name: name for name in names}
         if review_protocol == ACTOR_REVIEW_V3:
             contract = writer_output_contract or SHOT_WRITER_CONTRACT
-            if contract not in (SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT):
+            if contract not in WRITER_CONTRACTS:
                 raise ValueError("Unknown v3 writer output contract")
             sources["confirm"] = "confirm_bounded"
             if contract == SHOT_WRITER_CONTRACT:
+                sources.update(revise="revise_by_shot_schema", negotiate="negotiate_by_shot_schema")
+            elif contract == JSON_OBJECT_WRITER_CONTRACT:
                 sources.update(revise="revise_by_shot", negotiate="negotiate_by_shot")
         return {name: files("moodcut").joinpath("prompts", f"review_actor_{source}.txt").read_text(encoding="utf-8")
                 for name, source in sources.items()}
@@ -250,8 +272,8 @@ _ROUND_FIELDS = ("writer_response", "patch", "feedback_disposition", "writer_can
 
 def _bounded_writer_response(scene, initial, report, writer, *, contract, second_round):
     """Translate one model-selected dialogue per shot; never merge or choose between edits."""
-    field = "dialogue_by_shot" if contract == SHOT_WRITER_CONTRACT else "patch"
-    if contract not in (SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT):
+    field = "patch" if contract == LEGACY_WRITER_CONTRACT else "dialogue_by_shot"
+    if contract not in WRITER_CONTRACTS:
         raise ValueError("Unknown v3 writer output contract")
     expected = {field, "feedback_disposition"} | ({"objection_responses"} if second_round else set())
     if not isinstance(writer, dict) or set(writer) != expected:
@@ -302,7 +324,7 @@ def _validate_bounded_actor_result(scene, initial, manifest, result, *, mode, pr
     base = deepcopy(result)
     base["review_protocol"] = ACTOR_REVIEW
     contract = result.get("writer_output_contract", LEGACY_WRITER_CONTRACT)
-    if contract not in (SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT):
+    if contract not in WRITER_CONTRACTS:
         return ["Unknown v3 writer output contract"]
     if base.get("writer_response") is not None:
         try:
@@ -579,10 +601,13 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         system = prompts[prompt]
         user = json.dumps(payload, ensure_ascii=False, allow_nan=False)
         calls += 1
+        options = {}
+        if review_protocol == ACTOR_REVIEW_V3 and name == "actor_revise":
+            options["json_schema"] = get_writer_json_schema(second_round=prompt == "negotiate")
         trace("request", stage=name, max_output_tokens=MAX_OUTPUT_TOKENS,
-              system=system, user=payload)
+              system=system, user=payload, **({"json_schema_sha256": json_hash(options["json_schema"])} if options else {}))
         response = client.complete_json(stage=name, system=system, user=user,
-                                        max_output_tokens=MAX_OUTPUT_TOKENS)
+                                        max_output_tokens=MAX_OUTPUT_TOKENS, **options)
         trace("response", stage=name, response=response)
         if not isinstance(response, dict):
             raise ValueError(f"{name} response must be a JSON object")

@@ -110,7 +110,7 @@ condition 为 baseline/generic_review/moodcut。cost 未知为 null，不能置�
 # client.py — P1，所有付费请求只能经过该接口
 class LLMClient:
     def complete_json(self, *, stage: str, system: str, user: str,
-                      max_output_tokens: int) -> dict: ...
+                      max_output_tokens: int, json_schema: dict | None = None) -> dict: ...
 
 # validation.py — P1；返回错误列表，空列表表示结构通过
 def validate_scene(scene: dict, manifest: dict, *, project_root=None, output_mode="animatic") -> list[str]: ...
@@ -749,3 +749,13 @@ Before parsing each received body, exclusively write `PRIVATE/text-responses/<un
 Retained bytes are exact except defensive removal of an echoed current key in literal/JSON-escaped form; hashes cover retained bytes and metadata discloses redaction. No request headers are saved. Private directories are Git-ignored and are not copied by the existing anonymous export. These are private local development evidence, not signed provider attestations. Filesystem failures record `retention_error`, preserve original failures/available usage, and cannot release an otherwise successful completion.
 
 The two earlier actual v3 failures retain all original result bytes. The historical missing invalid content and exact JSON subtype remain unknown; new diagnostics cannot reconstruct them. See [offline acceptance and limitations](pilots/text-response-diagnostics.md).
+
+### 6.23 Schema-constrained v3 writer transport
+
+`LLMClient.complete_json`, FakeClient, OpenRouterClient and RoleRoutedClient accept optional `json_schema=None`. Without it, the old `json_object` request is unchanged. An explicit JSON-object schema is copied/JSON-validated before transport and sent as `response_format={type:json_schema,json_schema:{name:moodcut_response,strict:true,schema:...}}`. No tool, plugin, repair or extra model request is added. Existing provider parameter requirements, disabled fallbacks, price limits, strict whole-content parsing and no-retry behavior remain. Unsupported schemas or invalid returned JSON/task data stop; no format downgrade or prefix extraction occurs.
+
+New v3 writers use `writer_output_contract=dialogue_by_shot_json_schema_v1`. Both conditions use the same shape schema in both rounds; the second adds required `objection_responses`. The schema carries types/required fields, not task words or issue decisions; original programmatic ownership/coverage/change/confirmation checks still decide acceptance. Planning/actor requests and other protocols keep their old formats. Separate schema-writer prompt files/hashes enter existing source identity.
+
+Call records and request traces bind `response_format_type=json_schema` / `json_schema_sha256` when requested; source loading checks the digest against the round's actual schema. Serialized schema bytes are included in both shared and individual input-budget reservations. FakeClient logs the same request identity but remains a software response queue, not a provider schema decoder. API returned costs/unknowns and raw retention remain unchanged.
+
+Historical `dialogue_by_shot_v1` and `issue_patch_v1` preserve their original prompts/validation; new execution selects the schema contract and comparison rejects mixed contracts. Old actual failed results are not repaired. Original-byte negative/positive replay, seven old read-only recompilations and provider-support limitations are described in [S06 offline correction](pilots/s06-structured-writer.md). Provider enforcement has not been paid-tested by this increment; a future live trial still needs separate authorization and normal capability/quote checks.

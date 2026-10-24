@@ -298,6 +298,81 @@ def test_openrouter_request_and_accounting(http):
     assert client.spent_usd == pytest.approx(0.001)
 
 
+def test_explicit_json_schema_is_sent_and_bound_to_call_without_changing_defaults(http):
+    from moodcut.contracts import json_hash
+    schema = {"type": "object", "properties": {"ok": {"type": "boolean"}},
+              "required": ["ok"], "additionalProperties": False}
+    client = live_client()
+    assert client.complete_json(stage="actor_revise", system="s", user="u",
+        max_output_tokens=100, json_schema=schema) == {"ok": True}
+    body = json.loads(http.call_args.args[0].data)
+    assert body["response_format"] == {"type": "json_schema", "json_schema": {
+        "name": "moodcut_response", "strict": True, "schema": schema}}
+    assert client.calls[0]["json_schema_sha256"] == json_hash(schema)
+    assert client.calls[0]["response_format_type"] == "json_schema"
+    assert body["provider"]["allow_fallbacks"] is False and body["provider"]["require_parameters"] is True
+
+
+def test_actual_s06_trailing_reply_remains_rejected_with_schema_and_known_cost(http, tmp_path):
+    from moodcut.reviewer import get_writer_json_schema
+    saved = json.loads((Path(__file__).resolve().parents[1] /
+        "docs/pilots/s06-actor-v3.results.json").read_text(encoding="utf-8"))["failed_reply"]
+    respond(http, completion(saved["content"], cost=saved["provider_cost_usd"]))
+    client = routed_client()
+    from moodcut.client import capture_text_responses
+    with capture_text_responses(tmp_path):
+        with pytest.raises(OpenRouterError, match="syntax_error"):
+            client.complete_json(stage="actor_revise", system="s", user="u",
+                max_output_tokens=2048, json_schema=get_writer_json_schema())
+    call = client.calls[0]
+    assert call["parse_error"] == saved["parse_error"] and call["provider_cost_usd"] == saved["provider_cost_usd"]
+    assert (tmp_path / call["response_artifact"]["content_path"]).read_text(encoding="utf-8") == saved["content"]
+    assert client.stopped
+    with pytest.raises(BudgetError):
+        make_call(client)
+    assert http.call_count == 1
+
+
+@pytest.mark.parametrize("schema", [[], {"type": "array"}, {"type": "object", "bad": float("nan")},
+                                    {"type": "object", 1: {}}])
+def test_invalid_schema_stops_before_transport_or_call_record(http, schema):
+    client = live_client()
+    with pytest.raises(ValueError):
+        client.complete_json(stage="actor_revise", system="s", user="u", max_output_tokens=10,
+                             json_schema=schema)
+    assert client.calls == []
+    http.assert_not_called()
+
+
+def test_schema_size_is_included_in_shared_budget_reservation(http):
+    from moodcut.reviewer import get_writer_json_schema
+    planning = live_client()
+    review = live_client()
+    _, old_reservation = planning._reservation("s", "u", 10)
+    client = RoleRoutedClient(planning, review, max_cost_usd=float(old_reservation))
+    with pytest.raises(BudgetError):
+        client.complete_json(stage="actor_revise", system="s", user="u", max_output_tokens=10,
+                             json_schema=get_writer_json_schema())
+    assert client.calls == [] and client.stopped
+    http.assert_not_called()
+
+
+def test_schema_unsupported_response_never_downgrades_or_retries(http):
+    from moodcut.reviewer import get_writer_json_schema
+    http.side_effect = HTTPError("https://example.invalid", 400, "unsupported", {},
+        io.BytesIO(json.dumps({"error": {"message": "schema unsupported"}, "usage": {"cost": 0}}).encode()))
+    client = routed_client()
+    with pytest.raises(OpenRouterError, match="HTTP 400"):
+        client.complete_json(stage="actor_revise", system="s", user="u", max_output_tokens=100,
+                             json_schema=get_writer_json_schema())
+    assert client.calls[0]["provider_cost_usd"] == 0 and client.stopped
+    with pytest.raises(BudgetError):
+        make_call(client)
+    body = json.loads(http.call_args.args[0].data)
+    assert body["response_format"]["type"] == "json_schema" and http.call_count == 1
+    assert "plugins" not in body and "tools" not in body
+
+
 def test_paid_disabled_and_budget_preflight_do_not_send(http):
     with pytest.raises(PermissionError):
         make_call(live_client(allow_paid=False))

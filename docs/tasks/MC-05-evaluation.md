@@ -1,5 +1,7 @@
 # MC-05 配对对照、盲评导出与统计
 
+Offline S06 correction versions future schema-constrained writers as `dialogue_by_shot_json_schema_v1`; comparison rejects mixing that identity with old per-shot/patch contracts. Original S06 failure/raw text/fees and all earlier results remain unchanged; no recovered candidate, new video or score. [Diagnosis and acceptance](../pilots/s06-structured-writer.md). No paid rerun; PR #52 unmerged, #8/#9 open.
+
 Latest S06 attempt has no video: emotional writer JSON failed after nine text calls, $0.00361854 reconciled. [Actual record](../pilots/s06-actor-v3.md) preserves the original invalid content, valid generic revision and diagnostic restored emotional initial plan. This cannot compare video quality or support generic superiority; no ratings/formal inclusion were filled. Prior trials/media are unchanged; PR #52 unmerged, #8/#9 open.
 
 Latest authorized v3 trial produced three distinct original videos after nine text calls, total $0.75277694 reconciled. [Play and compare](https://zhengads.github.io/MoodCut-dsa4213/#v3-captured), [actual record](../pilots/anna-elsa-actor-v3-captured.md). All feedback was writer-declared addressed; no actor confirmation or second round occurred. This is development execution evidence, not semantic endorsement, ratings or method superiority. Human checks/formal evaluation remain pending, earlier failures preserved, PR #52 unmerged, #8/#9 open.

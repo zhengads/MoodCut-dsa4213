@@ -750,6 +750,27 @@ def test_v3_old_writer_contract_prompt_identity_remains_available():
     assert old["negotiate"] == hashlib.sha256((root / "review_actor_negotiate.txt").read_text(encoding="utf-8").encode()).hexdigest()
     assert old["revise"] != new["revise"] and old["negotiate"] != new["negotiate"]
     assert all(old[k] == new[k] for k in ("generic", "moodcut", "confirm"))
+    previous = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3,
+        writer_output_contract="dialogue_by_shot_v1")
+    for phase in ("revise", "negotiate"):
+        assert previous[phase] == hashlib.sha256((root / f"review_actor_{phase}_by_shot.txt").read_text(encoding="utf-8").encode()).hexdigest()
+        assert previous[phase] != new[phase]
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_writer_schema_is_used_in_both_rounds_without_new_actor_calls(mode):
+    from moodcut.reviewer import get_writer_json_schema
+    from moodcut.contracts import json_hash
+    case, replies = bounded_software_case(mode)
+    client = FakeClient(replies)
+    result = call_bounded(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    assert result["writer_output_contract"] == "dialogue_by_shot_json_schema_v1"
+    writers = [c for c in client.calls if c["stage"] == "actor_revise"]
+    assert len(writers) == 2 and len(client.calls) == 8
+    assert [c["json_schema_sha256"] for c in writers] == [
+        json_hash(get_writer_json_schema(second_round=second)) for second in (False, True)]
+    assert all(c.get("response_format_type") != "json_schema" for c in client.calls if c["stage"] != "actor_revise")
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
@@ -933,6 +954,9 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
     options = dict(scene=scene, initial=initial, plans=plans, manifest=manifest, settings=settings,
                    template_sha256=get_video_template_sha256(), project_root=root)
     assert validate_generated_comparison(block["runs"], **options) == []
+    mixed = deepcopy(block["runs"])
+    mixed[0]["writer_output_contract"] = "dialogue_by_shot_v1"
+    assert any("consistent v3 writer" in e for e in validate_generated_comparison(mixed, **options))
     for field, value in (("negotiation_status", "failed"), ("negotiation_round_count", 3),
                          ("confirmation_issue_ids", []), ("actor_confirmation_status", "failed")):
         records = deepcopy(block["runs"])
@@ -964,6 +988,20 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
         run_path.write_text(run_saved, encoding="utf-8")
         block_path.write_text(block_saved, encoding="utf-8")
     pipeline._load_generated_block(out, root)
+    for bad in ("digest", "missing"):
+        saved_block = (out / "block.json").read_text(encoding="utf-8")
+        saved_run = (out / "generic_review/run.json").read_text(encoding="utf-8")
+        modified = json.loads(saved_block)
+        row = modified["runs"][1]
+        call = next(c for c in row["call_records"] if c["stage"] == "actor_revise")
+        if bad == "digest": call["json_schema_sha256"] = "0" * 64
+        else: call.pop("response_format_type")
+        (out / "block.json").write_text(json.dumps(modified), encoding="utf-8")
+        (out / "generic_review/run.json").write_text(json.dumps(row), encoding="utf-8")
+        with pytest.raises(ValueError, match="JSON Schema request identity"):
+            pipeline._load_generated_block(out, root)
+        (out / "block.json").write_text(saved_block, encoding="utf-8")
+        (out / "generic_review/run.json").write_text(saved_run, encoding="utf-8")
     assert send.call_count == 19
 
 
