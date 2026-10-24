@@ -1219,8 +1219,16 @@ def _compute_generated_records(preparation, *, evidence, pricing_config, project
                            video_path=checked["video_path"], media_check=checked,
                            speech_and_visual_quality="requires_manual_inspection")
             except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
-                run.update(run_status="failed", generation_status="failed", render_status="render_failed", failure_kind="media",
-                           comparison_status="ineligible", comparison_errors=[str(exc)], errors=[str(exc)])
+                media_error = str(exc)
+                run.update(
+                    run_status="failed",
+                    generation_status="failed",
+                    render_status="render_failed",
+                    failure_kind="media",
+                    comparison_status="ineligible",
+                    comparison_errors=[*run.get("comparison_errors", []), media_error],
+                    errors=[*run.get("errors", []), media_error],
+                )
         else:
             run["generation_status"] = "prepared_offline" if all(j["status"] == "prepared_offline" for j in jobs) else "in_progress"
     ledger_rows = [block["planning"], *runs]
