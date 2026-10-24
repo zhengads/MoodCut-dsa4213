@@ -18,10 +18,12 @@ ACTOR_REVIEW = "actor_self_review_v1"
 ACTOR_REVIEW_V2 = "actor_self_review_v2"
 ACTOR_REVIEW_V3 = "actor_self_review_v3"
 ACTOR_PROTOCOLS = (ACTOR_REVIEW, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3)
-SHOT_WRITER_CONTRACT = "dialogue_by_shot_json_schema_v1"
+SHOT_WRITER_CONTRACT = "dialogue_by_shot_json_schema_v2"
+WRITER_ONLY_SCHEMA_CONTRACT = "dialogue_by_shot_json_schema_v1"
 JSON_OBJECT_WRITER_CONTRACT = "dialogue_by_shot_v1"
 LEGACY_WRITER_CONTRACT = "issue_patch_v1"
-WRITER_CONTRACTS = (SHOT_WRITER_CONTRACT, JSON_OBJECT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT)
+WRITER_CONTRACTS = (SHOT_WRITER_CONTRACT, WRITER_ONLY_SCHEMA_CONTRACT,
+                    JSON_OBJECT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT)
 
 
 def get_writer_json_schema(*, second_round=False):
@@ -62,8 +64,10 @@ def _review_prompts(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW, wr
             if contract not in WRITER_CONTRACTS:
                 raise ValueError("Unknown v3 writer output contract")
             sources["confirm"] = "confirm_bounded"
-            if contract == SHOT_WRITER_CONTRACT:
+            if contract in (SHOT_WRITER_CONTRACT, WRITER_ONLY_SCHEMA_CONTRACT):
                 sources.update(revise="revise_by_shot_schema", negotiate="negotiate_by_shot_schema")
+                if contract == SHOT_WRITER_CONTRACT:
+                    sources.update(generic="generic_schema", moodcut="moodcut_schema")
             elif contract == JSON_OBJECT_WRITER_CONTRACT:
                 sources.update(revise="revise_by_shot", negotiate="negotiate_by_shot")
         return {name: files("moodcut").joinpath("prompts", f"review_actor_{source}.txt").read_text(encoding="utf-8")
@@ -84,6 +88,36 @@ def _actor_lines(plan, actor_id):
     return [{"shot_id": shot["shot_id"], "line_index": index, "text": line["text"]}
             for shot in plan["shots"] for index, line in enumerate(shot["dialogue"])
             if line["character_id"] == actor_id]
+
+
+def get_actor_json_schema(scene, plan, actor_id, mode):
+    """Constrain references using existing ownership, without supplying an opinion."""
+    def obj(properties):
+        return {"type": "object", "properties": properties, "required": list(properties),
+                "additionalProperties": False}
+
+    text = {"type": "string"}
+    by_shot = {}
+    for line in _actor_lines(plan, actor_id):
+        by_shot.setdefault(line["shot_id"], []).append(line["line_index"])
+
+    def issue(shot_id=None, indices=None):
+        return obj({"issue_id": text,
+                    "shot_id": {"type": "string", **({"enum": [shot_id]} if shot_id is not None else {})},
+                    "line_indices": {"type": "array", "minItems": 1, "items": {
+                        "type": "integer", **({"enum": indices} if indices is not None else {})}},
+                    "dimension": {"type": "string", "enum": ["tone", "naturalness", "story", "renderability"]},
+                    "severity": {"type": "string", "enum": ["minor", "major"]},
+                    "evidence": text, "suggestion": text})
+
+    issues = {"type": "array", "items": {"anyOf": [issue(s, indices) for s, indices in by_shot.items()]}
+              if by_shot else issue()}
+    if not by_shot:
+        issues["maxItems"] = 0
+    return obj({"schema_version": {"type": "string", "enum": ["1.0"]},
+                "scene_id": {"type": "string", "enum": [scene["scene_id"]]},
+                "mode": {"type": "string", "enum": [mode]},
+                "actor_id": {"type": "string", "enum": [actor_id]}, "issues": issues})
 
 
 def _merge_actor_reports(scene, plan, mode, records, *, partial=False):
@@ -604,6 +638,8 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         options = {}
         if review_protocol == ACTOR_REVIEW_V3 and name == "actor_revise":
             options["json_schema"] = get_writer_json_schema(second_round=prompt == "negotiate")
+        elif review_protocol == ACTOR_REVIEW_V3 and name == "actor_critique":
+            options["json_schema"] = get_actor_json_schema(scene, original, payload["actor"]["id"], mode)
         trace("request", stage=name, max_output_tokens=MAX_OUTPUT_TOKENS,
               system=system, user=payload, **({"json_schema_sha256": json_hash(options["json_schema"])} if options else {}))
         response = client.complete_json(stage=name, system=system, user=user,

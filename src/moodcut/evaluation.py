@@ -599,7 +599,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
         errors.append("records must use one consistent review protocol")
     if review_protocols == {"actor_self_review_v3"}:
         contracts = [r.get("writer_output_contract", "issue_patch_v1") for r in records if isinstance(r, dict)]
-        if (any(not isinstance(c, str) or c not in ("issue_patch_v1", "dialogue_by_shot_v1", "dialogue_by_shot_json_schema_v1") for c in contracts)
+        if (any(not isinstance(c, str) or c not in ("issue_patch_v1", "dialogue_by_shot_v1", "dialogue_by_shot_json_schema_v1", "dialogue_by_shot_json_schema_v2") for c in contracts)
                 or len(set(c for c in contracts if isinstance(c, str))) != 1):
             errors.append("records must use one consistent v3 writer output contract")
     for index, row in enumerate(records):

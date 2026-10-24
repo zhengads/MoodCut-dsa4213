@@ -19,7 +19,7 @@ from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashe
 from .renderer import render_plan
 from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3,
                        validate_review_protocol, validate_actor_review_result, SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT,
-                       get_writer_json_schema)
+                       get_writer_json_schema, get_actor_json_schema, WRITER_ONLY_SCHEMA_CONTRACT)
 from .validation import validate_plan, validate_scene
 
 def resolve_render_dependencies(*, project_root=".", font_path=None, config_path="configs/render.json"):
@@ -545,11 +545,18 @@ def _load_generated_block(path, project_root):
                 contract = block.get("writer_output_contract", LEGACY_WRITER_CONTRACT)
                 need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == contract, "writer output contract mismatch")
                 writer_options["writer_output_contract"] = contract
-                if contract == SHOT_WRITER_CONTRACT:
+                if contract in (SHOT_WRITER_CONTRACT, WRITER_ONLY_SCHEMA_CONTRACT):
                     writers = [c for c in row.get("call_records", []) if c.get("stage") == "actor_revise"]
                     need(all(c.get("response_format_type") == "json_schema"
                         and c.get("json_schema_sha256") == json_hash(get_writer_json_schema(second_round=index == 1))
                         for index, c in enumerate(writers)), "writer JSON Schema request identity mismatch")
+                if contract == SHOT_WRITER_CONTRACT:
+                    actors = [c for c in row.get("call_records", []) if c.get("stage") == "actor_critique"]
+                    need(len(actors) == (0 if condition == "baseline" else len(scene["characters"])),
+                         "actor JSON Schema request count mismatch")
+                    need(all(c.get("response_format_type") == "json_schema"
+                        and c.get("json_schema_sha256") == json_hash(get_actor_json_schema(scene, initial, actor["id"], condition))
+                        for c, actor in zip(actors, scene["characters"])), "actor JSON Schema request identity mismatch")
             expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol, **writer_options)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
