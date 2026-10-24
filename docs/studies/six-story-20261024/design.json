@@ -1,0 +1,272 @@
+{
+  "kind": "six_story_input_design_not_execution_config",
+  "version": "1.0",
+  "created_on": "2026-10-24",
+  "status": "selected_inputs_for_next_small_scale_study",
+  "input_scope_approved": true,
+  "input_scope_approved_on": "2026-10-24",
+  "fixed_story_and_tone_assignment": true,
+  "source_kind": "assistant_authored_selected_stories",
+  "source_method": "Authored in the current conversation; new fictional scene briefs using existing character references. No external model/API generation or independent external data.",
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_per_story": 1,
+  "tone_assignment": "one_fixed_tone_per_story_two_stories_per_tone",
+  "planned_condition_entries": 18,
+  "duration_s": 5,
+  "max_shots": 1,
+  "common_story_constraints": "两名角色开场均已在场，只用自然的普通话完成一次简短交流。两人各说一句，共两句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头；动作只服务于给定事件，不添加第三人、旁白、字幕、文字卡、额外情节、魔法、打斗或复杂物品操作。不直接说出目标氛围标签，不引用电影原台词，不依赖观众知道原电影剧情。角色图只用于身份和服装参考；参考图中的表情、姿态、背景及道具不是本场景必须复制的内容。",
+  "reference_selection": {
+    "selection_path": "assets/library/movieagent-animation.selection.json",
+    "manifest_path": "assets/library/movieagent-animation.manifest.json",
+    "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "rule": "Use each selected character's indexed primary_asset_id, the unchanged upstream best.png. All three candidates per selected character were inspected locally; keep this deterministic selection rather than optimize reference expressions for the assigned tone.",
+    "distinct_characters": 12,
+    "films": [
+      "FrozenII",
+      "DespicableMe4",
+      "NeZha2"
+    ],
+    "same_film_within_each_pair": true,
+    "rights_status": "unconfirmed",
+    "public_redistribution_authorized": false,
+    "commercial_use_cleared": false
+  },
+  "scope_limits": [
+    "Six stories support a small exploratory comparison; no power calculation or broad generalization claim is supplied.",
+    "Tone is assigned between stories. Story, cast, source film and target tone are not independently identified.",
+    "All three conditions share one initial plan per story; review may change dialogue only.",
+    "The existing umbrella and letter cases remain development material, outside these six stories.",
+    "Five-second two-line feasibility must be checked on development material before freezing paid execution. No longer duration is silently enabled.",
+    "InsideOut2 emotion-personification characters are excluded because their names/appearance may cue emotion; Minions are excluded because standard Mandarin delivery is the common task.",
+    "No generation settings, paid execution config, Agent plan, review response, media output or human rating is created by this design."
+  ],
+  "historical_cost_scenario": {
+    "basis": "2026-10-24 actual actor pilot: one requested five-second video cost USD0.25; eight text calls together cost USD0.00248398.",
+    "historical_video_cost_per_distinct_clip_usd": "0.25",
+    "all_18_distinct_video_submissions_usd": "4.50",
+    "current_live_quote": null,
+    "approved_budget_usd": null,
+    "new_api_calls": 0,
+    "new_spending_usd": "0",
+    "note": "Historical scenario only, excluding new text calls, failed attempts, recovery, price/SKU changes or longer clips. Same-block identical complete requests may reuse media under existing rules; do not assume savings in the budget."
+  },
+  "stories": [
+    {
+      "id": "s01_wait_together",
+      "title": "等到你了",
+      "tone": "affectionate",
+      "tone_label": "亲近",
+      "film": "FrozenII",
+      "cast": [
+        {
+          "source_name": "Anna",
+          "display_name": "安娜",
+          "role": "先开口的同行者"
+        },
+        {
+          "source_name": "Kristoff",
+          "display_name": "克里斯托夫",
+          "role": "一直在等候的同行者"
+        }
+      ],
+      "setting": "白天，安静的车站等候区旁；两人已经并肩站定。",
+      "story": "在车站等候区旁，Anna确认Kristoff是否一直在等自己，Kristoff说明自己留下来是为了与Anna一起离开。交流结束时两人仍在原处，尚未出发。两人是本次出行的同行者，不额外设定恋爱关系或前史。",
+      "beats": [
+        "Anna向Kristoff确认他是否一直在等自己。",
+        "Kristoff说明他留下是为了与Anna一起离开。"
+      ],
+      "dialogue_functions": [
+        "Anna：询问等候这件事。",
+        "Kristoff：说明留下等候、准备同行的意思。"
+      ],
+      "boundaries": [
+        "不增加迟到原因、争执、拥抱或告白。",
+        "不实际登车、换地点或开始另一段事件。"
+      ],
+      "design_question": "能否用日常措辞表达被惦记与陪伴，避免把亲近写成突兀告白。",
+      "material_observations": "Anna主图略显担心，Kristoff主图张口且有桌面背景；图像表达不视为中性或目标情绪证据。"
+    },
+    {
+      "id": "s02_help_finish",
+      "title": "收工搭把手",
+      "tone": "affectionate",
+      "tone_label": "亲近",
+      "film": "DespicableMe4",
+      "cast": [
+        {
+          "source_name": "Lucy",
+          "display_name": "露西",
+          "role": "主动提出帮助的同伴"
+        },
+        {
+          "source_name": "Gru",
+          "display_name": "格鲁",
+          "role": "接受帮助的同伴"
+        }
+      ],
+      "setting": "白天，工作室一张普通桌子旁；两人均已站在桌边。",
+      "story": "工作结束前，Lucy向Gru提出帮忙整理桌边剩下的东西，Gru接受她的帮助。交流期间两人留在桌边，无需实际完成整理或搬动物品。他们是此次共同工作的同伴，不依赖原电影中的家庭或特工设定。",
+      "beats": [
+        "Lucy提出帮助Gru完成桌边的收尾整理。",
+        "Gru接受Lucy的帮助。"
+      ],
+      "dialogue_functions": [
+        "Lucy：提出具体、简短的帮助。",
+        "Gru：接受帮助并作出回应。"
+      ],
+      "boundaries": [
+        "不新增礼物、危险任务、疲劳受伤或浪漫关系。",
+        "不要求搬箱、交换道具、变装或完成整理动作。"
+      ],
+      "design_question": "能否在实用性的帮助与回应中表现亲近，同时保留生活化表达。",
+      "material_observations": "Lucy主图持杯，Gru主图戴着头顶眼镜；这些物品不转化为剧情任务，也不追加生成要求。"
+    },
+    {
+      "id": "s03_changed_meeting",
+      "title": "集合地点变了",
+      "tone": "suspicious",
+      "tone_label": "怀疑",
+      "film": "FrozenII",
+      "cast": [
+        {
+          "source_name": "Elsa",
+          "display_name": "艾莎",
+          "role": "核实变更信息的活动协作者"
+        },
+        {
+          "source_name": "Mattias",
+          "display_name": "马蒂亚斯",
+          "role": "收到变更消息的活动协作者"
+        }
+      ],
+      "setting": "白天，活动大厅外的走廊；两人已停下交谈。",
+      "story": "Elsa向Mattias询问集合地点变更的消息来源，Mattias说明自己只是收到通知，还没有核实。交流结束后消息真伪仍未确定。两人是此次活动的协作者，没有给定上下级关系，也没有确认谁说了谎。",
+      "beats": [
+        "Elsa询问集合地点变更的消息来源。",
+        "Mattias说明收到通知但尚未核实。"
+      ],
+      "dialogue_functions": [
+        "Elsa：询问信息来源。",
+        "Mattias：说明信息的有限来源与尚未核实的状态。"
+      ],
+      "boundaries": [
+        "不揭示幕后人物、阴谋、欺骗或责任归属。",
+        "不展示手机、可读通知文字、信件或第三人。"
+      ],
+      "design_question": "能否用克制的询问与回应产生怀疑感，而不是直接升级为指责。",
+      "material_observations": "Elsa主图为明亮近景，Mattias主图眉头明显收紧；保留表情先验与构图差异的限制，不将素材本身当作方法改善。"
+    },
+    {
+      "id": "s04_knew_the_place",
+      "title": "你怎么知道我在这",
+      "tone": "suspicious",
+      "tone_label": "怀疑",
+      "film": "NeZha2",
+      "cast": [
+        {
+          "source_name": "Nezha",
+          "display_name": "哪吒",
+          "role": "原先在院中等候的同伴"
+        },
+        {
+          "source_name": "Aobing",
+          "display_name": "敖丙",
+          "role": "已经找到此处的同伴"
+        }
+      ],
+      "setting": "白天，普通院子一角；两人开场均已站定。",
+      "story": "Nezha向Aobing询问对方如何知道自己会在这个院子里，Aobing回答自己是推测的。故事不说明这个解释是否真实，交流后两人仍留在院中。两人是本次活动的同伴，不加入神话能力或原电影前史。",
+      "beats": [
+        "Nezha询问Aobing如何知道自己在这里。",
+        "Aobing说明自己是推测的。"
+      ],
+      "dialogue_functions": [
+        "Nezha：询问对方如何知道位置。",
+        "Aobing：给出推测这一解释，不确认其他信息来源。"
+      ],
+      "boundaries": [
+        "不确认跟踪、读心、偷听、背叛或撒谎。",
+        "不使用法术、兵器、变身、追逐或新角色。"
+      ],
+      "design_question": "能否在简短解释留下的信息空隙中表现怀疑，不靠编造新证据。",
+      "material_observations": "Nezha主图为笑脸，Aobing主图为灰底全身展示姿势；这些先验与身体比例差异可能影响生成，尚无此配对的提供商接受证据。"
+    },
+    {
+      "id": "s05_shared_workbench",
+      "title": "工作台先给谁用",
+      "tone": "hostile",
+      "tone_label": "敌意",
+      "film": "DespicableMe4",
+      "cast": [
+        {
+          "source_name": "Maxime",
+          "display_name": "马克西姆",
+          "role": "提出优先使用要求的工作室成员"
+        },
+        {
+          "source_name": "Valentina",
+          "display_name": "瓦伦蒂娜",
+          "role": "已经占用工作台的工作室成员"
+        }
+      ],
+      "setting": "白天，工作室的共用工作台旁；两人已在台边。",
+      "story": "Maxime向Valentina提出自己现在先使用共用工作台，Valentina拒绝让出当前的使用顺序。交流结束时工作台使用安排没有改变，两人没有动手或离开。他们是本次工作室活动的成员，不使用电影中的反派身份或既有冲突作为剧情理由。",
+      "beats": [
+        "Maxime提出现在优先使用共用工作台。",
+        "Valentina拒绝让出当前的使用顺序。"
+      ],
+      "dialogue_functions": [
+        "Maxime：提出优先使用要求。",
+        "Valentina：拒绝让步，保持当前安排。"
+      ],
+      "boundaries": [
+        "不增加偷窃、报复、犯罪、辱骂或威胁。",
+        "不砸桌、推搡、抢夺物品或强行改变使用权。"
+      ],
+      "design_question": "能否在短促的要求与拒绝中表达对抗，又避免用喊叫和夸张威胁代替有效台词。",
+      "material_observations": "Maxime主图有明显笑容和握拳姿态，Valentina主图夸张眼镜遮挡眼部且嘴部张开；主图不是中性素材，眼部情绪判断受限。"
+    },
+    {
+      "id": "s06_cleanup_assignment",
+      "title": "这次谁来收尾",
+      "tone": "hostile",
+      "tone_label": "敌意",
+      "film": "NeZha2",
+      "cast": [
+        {
+          "source_name": "Lijing",
+          "display_name": "李靖",
+          "role": "提出收尾分工的活动参与者"
+        },
+        {
+          "source_name": "Taiyi",
+          "display_name": "太乙",
+          "role": "不同意该分工的活动参与者"
+        }
+      ],
+      "setting": "白天，普通活动室门边；两人均已站定。",
+      "story": "活动结束后，Lijing向Taiyi提出由Taiyi负责这次收尾，Taiyi拒绝这一安排并要求重新分工。两人都没有开始收尾，分工仍未达成一致。他们是此次活动的共同参与者，不设定师徒、官职或其他权力关系。",
+      "beats": [
+        "Lijing提出由Taiyi负责这次收尾。",
+        "Taiyi拒绝该安排并要求重新分工。"
+      ],
+      "dialogue_functions": [
+        "Lijing：提出具体分工。",
+        "Taiyi：拒绝并要求重新商量分工。"
+      ],
+      "boundaries": [
+        "不新增过去的欠账、受伤、惩罚或道德罪责。",
+        "不增加第三人、法术、饮酒、搬运或争斗。"
+      ],
+      "design_question": "能否在责任分配的分歧中表现双方的对抗立场，并保持内容清楚、强度适当。",
+      "material_observations": "Lijing主图为皱眉近景，Taiyi主图为低清晰度上半身图；需保留清晰度与表情先验限制，不声称已验证对白或动作生成质量。"
+    }
+  ]
+}

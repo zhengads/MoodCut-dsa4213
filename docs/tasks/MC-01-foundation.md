@@ -1,5 +1,17 @@
 # MC-01 公共契约、客户端与集成
 
+The offline `actor_self_review_v2` increment in PR #48 routes `actor_confirm` to review, binds owner/issue/candidate decisions at source/request boundaries and refuses incomplete or disputed consent. Both review conditions share the mechanism and budget rules. Historical v1/global results are unchanged; [team video links](../pilots/anna-elsa-videos.md) now point to exact repository release attachments. No new paid run or merge is authorized by this increment.
+
+The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) completed eight text calls and two distinct videos covering three conditions for $0.50248398, with exact key reconciliation. Generic retained/reused baseline; moodcut retained one unaddressed actor opinion with a problematic explanation. Human acceptance is pending, historical results are intact, and PR #48 stays unmerged. The offline implementation record below remains its original scope.
+
+### Actor protocol integration (2026-10-24)
+
+PR #48 now also contains the explicitly authorized [actor self-review increment](../ACTOR_REVIEW_METHOD.md). `actor_critique` routes to the review role, `actor_revise` to the planning/screenwriting role. The existing budget, clients, compiler and source gates are reused. Source loading rechecks actor ownership, full feedback disposition, the actual dialogue patch, protocol/prompt identity and truthful lack of final actor approval. Mixed review protocols are rejected at comparison boundaries. This increment is offline only; original global-review outputs remain unchanged, #8/#9 stay open and the PR remains unmerged.
+
+### Role-routed real-Agent pilot (2026-10-24)
+
+The authorized [Anna/Elsa pilot](../pilots/anna-elsa-agent.md) separates Gemini planning from a common DeepSeek model for both review branches, with one $0.10 text ceiling and a $1.00 combined ceiling. Necessary wiring reuses the original clients/pipeline, adds explicit reasoning control and truthful role-policy/call-model records, and stops subsequent calls on failure/unknown cost. See [contract](../CONTRACTS.md#role-routed-text-pilot-2026-10-24). No prompt or evaluation changes, handwritten dialogue fallback, retries or formal sample expansion are authorized. Actual execution evidence is recorded in the linked pilot; #8/#9 stay open.
+
 ### HeyGen pilot adapter and real-video result (2026-10-24)
 
 The existing branch/PR adds HeyGen 768p reference pricing with verified provider discount, fixed native audio without an HTTP audio toggle, disabled prompt enhancement and `<Picture N>` labels. After the first HTTP 400 Content-Type rejection, a separately authorized run with byte-verified inline PNG references completed all three five-second conditions: three POSTs, $0.25 each, $0.75 total, no automatic retry, text-model request or reserve spending. Returned charges match the later read-only key usage delta. All three raw videos have audio and passed local media checks; user listening/viewing acceptance remains pending. The earlier failed request and unknown cost remain preserved. See [pilot record](../pilots/umbrella-single-shot.md) and [adapter contract](../CONTRACTS.md#heygen-pilot-adapter-2026-10-24). Results stay in draft PR #45; Issues #8 and #9 remain open. No new tool or transport is introduced. Older task sections below retain their original scope and dates.

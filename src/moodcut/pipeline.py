@@ -11,13 +11,14 @@ from pathlib import Path
 import shutil
 from time import monotonic
 
-from .client import BudgetError, FakeClient, _strict_json
+from .client import BudgetError, FakeClient, RoleRoutedClient, _strict_json
 from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
                         assert_dialogue_only_revision, shared_generation_sha256)
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import get_review_prompt_hashes, review_and_revise
+from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2,
+                       validate_review_protocol, validate_actor_review_result)
 from .validation import validate_plan, validate_scene
 
 def resolve_render_dependencies(*, project_root=".", font_path=None, config_path="configs/render.json"):
@@ -115,14 +116,16 @@ def usage_totals(records, *, mock=False):
 
 
 def _model_settings(client):
+    if isinstance(client, RoleRoutedClient):
+        return deepcopy(client.model_settings)
     if client is None or isinstance(client, FakeClient):
         return {"model_id": "fake/offline", "temperature": 0, "fixture_version": "1"}
     return {"model_id": getattr(client, "model", type(client).__name__),
             "temperature": getattr(client, "temperature", None)}
 
 
-def _review_hashes(*, output_mode="animatic"):
-    return get_review_prompt_hashes(output_mode=output_mode)
+def _review_hashes(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW):
+    return get_review_prompt_hashes(output_mode=output_mode, review_protocol=review_protocol)
 
 
 def _assignment(scene, replicate, condition):
@@ -147,7 +150,8 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
                   condition: str, out_dir: str, project_root: str, font_path: str | None,
                   render=True, replicate=1, source_kind="development", output_mode="animatic",
                   generation_settings=None, template_sha256=None,
-                  expected_initial_plan_sha256=None, expected_shared_generation_sha256=None) -> dict:
+                  expected_initial_plan_sha256=None, expected_shared_generation_sha256=None,
+                  review_protocol=GLOBAL_REVIEW) -> dict:
     """Save each condition; generated mode only prepares scripts, never video jobs.
 
     Its two expected identities bind every condition to the block's frozen input.
@@ -156,6 +160,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
     if condition not in CONDITIONS or type(replicate) is not int or replicate < 1:
         raise ValueError("Invalid condition or replicate")
     mode_options = _mode_options(output_mode, generation_settings, template_sha256)
+    validate_review_protocol(review_protocol, output_mode)
     generated = output_mode == "generated"
     if not generated and (expected_initial_plan_sha256 is not None or expected_shared_generation_sha256 is not None):
         raise ValueError("Expected generation identities require explicit generated mode")
@@ -172,10 +177,14 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
               "source_kind": "synthetic" if mock else source_kind, "mock": mock,
               "provenance": deepcopy(scene.get("provenance", {})),
               "initial_plan_sha256": json_hash(initial_plan) if initial_plan is not None and not generated else None,
-              "final_plan_sha256": None, "prompt_hashes": _review_hashes(**mode_options),
+              "final_plan_sha256": None, "prompt_hashes": _review_hashes(**mode_options, review_protocol=review_protocol),
               "review_status": "not_applicable" if condition == "baseline" else "not_started",
               "validation_status": "not_started", "render_status": "not_started",
               "run_status": "failed", "failure_kind": None, "video_path": None, "errors": []}
+    if isinstance(client, RoleRoutedClient):
+        record["text_model_settings"] = _model_settings(client)
+    if review_protocol in ACTOR_PROTOCOLS:
+        record["review_protocol"] = review_protocol
     if generated:
         record.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                       shared_generation_sha256=None, video_model_id=generation_settings.get("model"),
@@ -187,6 +196,10 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
         write_json(output / "scene.json", scene)
         write_json(output / "assets.json", manifest)
         write_json(output / "initial.json", initial_plan)
+        if isinstance(client, RoleRoutedClient) and client.stopped:
+            record["failure_kind"] = "execution"
+            record["errors"].append("Not attempted after an earlier text failure; no model request")
+            return record
         if generated:
             write_json(output / "generation_settings.json", generation_settings)
             if initial_plan is not None:
@@ -217,8 +230,11 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
             try:
+                review_options = dict(mode_options)
+                if review_protocol in ACTOR_PROTOCOLS:
+                    review_options["review_protocol"] = review_protocol
                 reviewed = review_and_revise(deepcopy(scene), deepcopy(initial_plan), deepcopy(manifest),
-                                             client, mode=condition, project_root=project_root, **mode_options)
+                                             client, mode=condition, project_root=project_root, **review_options)
             finally:
                 logger.removeHandler(handler)
                 handler.close()
@@ -226,6 +242,9 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             write_json(output / "review.json", reviewed)
             final = reviewed["plan"]
             record["review_status"] = reviewed["status"]
+            if review_protocol in ACTOR_PROTOCOLS:
+                for name in ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status"):
+                    record[name] = deepcopy(reviewed.get(name))
             record["errors"].extend(reviewed["errors"])
             if any("BudgetError:" in error for error in reviewed["errors"]):
                 record["failure_kind"] = "budget"
@@ -298,7 +317,8 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
 
 def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                    font_path=None, render=True, replicate=1, cache_dir=None, source_kind="development",
-                   output_mode="animatic", generation_settings=None, template_sha256=None):
+                   output_mode="animatic", generation_settings=None, template_sha256=None,
+                   review_protocol=GLOBAL_REVIEW):
     """Plan once; generated mode freezes shared identity and prepares script records.
 
     No generated request compilation, video transport or animatic rendering occurs
@@ -309,6 +329,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     if source_kind not in ("synthetic", "development", "formal"):
         raise ValueError("Invalid source_kind")
     mode_options = _mode_options(output_mode, generation_settings, template_sha256)
+    validate_review_protocol(review_protocol, output_mode)
     generated = output_mode == "generated"
     if generated:
         scene, manifest, generation_settings = deepcopy((scene, manifest, generation_settings))
@@ -331,12 +352,17 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     if generated:
         identity.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                         generation_settings=deepcopy(generation_settings), template_sha256=template_sha256)
+    if review_protocol in ACTOR_PROTOCOLS:
+        identity["review_protocol"] = review_protocol
+        identity["review_prompt_hashes"] = _review_hashes(output_mode=output_mode, review_protocol=review_protocol)
     cache_key = json_hash(identity)
     cache = Path(cache_dir).resolve() / f"{cache_key}.json" if cache_dir else None
     initial = None
     shared = None
     planning = {"status": "not_started", "cache_hit": False, "cache_key": cache_key,
                 "prompt_hashes": identity["planning_prompt_hashes"], "raw_responses": {}, "errors": []}
+    if isinstance(client, RoleRoutedClient):
+        planning["text_model_settings"] = deepcopy(settings)
     lock = None
     own_lock = False
     before = len(getattr(client, "calls", [])) if client is not None else 0
@@ -416,16 +442,25 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                                  template_sha256=template_sha256,
                                  expected_initial_plan_sha256=json_hash(initial) if initial is not None else None,
                                  expected_shared_generation_sha256=shared)
-    runs = [run_condition(deepcopy(scene), deepcopy(initial), deepcopy(manifest), client, condition=condition,
+    runs = []
+    for condition in CONDITIONS:
+        row = run_condition(deepcopy(scene), deepcopy(initial), deepcopy(manifest), client, condition=condition,
                           out_dir=str(output / condition), project_root=str(root), font_path=font_path,
-                          render=render, replicate=replicate, source_kind=source_kind, **condition_options)
-            for condition in CONDITIONS]
+                          render=render, replicate=replicate, source_kind=source_kind,
+                          review_protocol=review_protocol, **condition_options)
+        runs.append(row)
+        if isinstance(client, RoleRoutedClient) and row["run_status"] == "failed":
+            client.stop("An earlier condition failed validation or review")
     block = {"block_id": runs[0]["block_id"], "scene_id": scene["scene_id"], "tone": scene["tone"],
              "replicate": replicate, "initial_plan_sha256": json_hash(initial) if initial is not None else None,
              "source_kind": "synthetic" if mock else source_kind, "mock": mock,
              "model_id": settings["model_id"], "planning": planning, "runs": runs,
              "status": ("prepared" if generated else "completed") if planning["status"] == "completed"
              and all(r["run_status"] == ("prepared" if generated else "completed") for r in runs) else "failed"}
+    if isinstance(client, RoleRoutedClient):
+        block["text_model_settings"] = deepcopy(settings)
+    if review_protocol in ACTOR_PROTOCOLS:
+        block["review_protocol"] = review_protocol
     if generated:
         block.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                      shared_generation_sha256=shared, generation_settings=generation_settings,
@@ -448,6 +483,8 @@ def _load_generated_block(path, project_root):
     need(isinstance(block, dict) and block.get("schema_version") == CONTRACT_VERSION
          and block.get("output_mode") == "generated" and block.get("status") == "prepared",
          "source must be a prepared 1.1/generated script block")
+    review_protocol = block.get("review_protocol", GLOBAL_REVIEW)
+    validate_review_protocol(review_protocol, "generated")
     folder = path.parent
     scene, manifest, initial, settings = [read_json(folder / name) for name in
         ("scene.json", "assets.json", "initial.json", "generation_settings.json")]
@@ -462,6 +499,15 @@ def _load_generated_block(path, project_root):
     planning = read_json(folder / "planning.json")
     need(isinstance(planning, dict) and planning.get("status") == "completed"
          and json_hash(planning) == json_hash(block.get("planning")), "source planning record mismatch")
+    policy = block.get("text_model_settings")
+    need(not str(block.get("model_id", "")).startswith("role-policy/") or policy is not None,
+         "role policy metadata is missing")
+    if policy is not None:
+        need(isinstance(policy, dict) and set(policy.get("roles", {})) == {"planning", "review"}
+             and policy.get("model_id") == block.get("model_id") == RoleRoutedClient.policy_id(policy["roles"])
+             and planning.get("text_model_settings") == policy, "text role policy mismatch")
+        need(all(c.get("model_id") == policy["roles"]["planning"].get("model_id")
+                 for c in planning.get("call_records", [])), "planning call model differs from role policy")
     rows = block.get("runs")
     need(isinstance(rows, list) and len(rows) == 3 and all(isinstance(r, dict) for r in rows)
          and [r.get("condition") for r in rows] == list(CONDITIONS), "exactly three ordered conditions are required")
@@ -477,6 +523,21 @@ def _load_generated_block(path, project_root):
                       "model_id", "source_kind", "mock"):
             need(field in row and field in block and json_hash(row[field]) == json_hash(block[field]),
                  "run/block mismatch: " + field)
+        if policy is not None:
+            need(row.get("text_model_settings") == policy
+                 and all(c.get("model_id") == policy["roles"][RoleRoutedClient.role_for_stage(c.get("stage"))].get("model_id")
+                         for c in row.get("call_records", [])), "review call model differs from role policy")
+        need(row.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "review protocol mismatch")
+        if review_protocol in ACTOR_PROTOCOLS:
+            expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol)
+            need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
+                 "actor prompt identity mismatch")
+            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol == ACTOR_REVIEW_V2 else ())
+            need(all(c.get("stage") in actor_stages for c in row.get("call_records", [])),
+                 "actor source contains a legacy review call")
+        else:
+            need(all(c.get("stage") not in ("actor_critique", "actor_revise", "actor_confirm") for c in row.get("call_records", [])),
+                 "legacy source contains actor review calls")
         run_id = row.get("run_id")
         need(isinstance(run_id, str) and bool(run_id.strip()) and run_id not in run_ids, "run IDs must be nonempty and unique")
         run_ids.add(run_id)
@@ -505,6 +566,21 @@ def _load_generated_block(path, project_root):
             reviewed = read_json(directory / "review.json")
             need(isinstance(reviewed, dict) and reviewed.get("status") == status
                  and json_hash(reviewed.get("plan")) == json_hash(final), "saved review/final script mismatch")
+            need(reviewed.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "saved review protocol mismatch")
+            if review_protocol in ACTOR_PROTOCOLS:
+                need(all(row.get(name) == reviewed.get(name) for name in
+                         ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status")),
+                     "saved actor feedback summary mismatch")
+                errors = validate_actor_review_result(scene, initial, manifest, reviewed,
+                                                      mode=condition, project_root=project_root)
+                need(not errors, "; ".join(errors))
+                if review_protocol == ACTOR_REVIEW_V2:
+                    stages = ["actor_critique"] * len(scene["characters"])
+                    if reviewed["report"]["issues"]:
+                        stages.append("actor_revise")
+                    stages.extend(["actor_confirm"] * len(reviewed["actor_confirmations"]))
+                    need([c.get("stage") for c in row.get("call_records", [])] == stages,
+                         "actor confirmation call sequence mismatch")
         plans[condition] = final
     return path, block, dict(scene=scene, initial=initial, plans=plans, manifest=manifest,
                             settings=settings, template_sha256=template)
@@ -1143,8 +1219,16 @@ def _compute_generated_records(preparation, *, evidence, pricing_config, project
                            video_path=checked["video_path"], media_check=checked,
                            speech_and_visual_quality="requires_manual_inspection")
             except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:
-                run.update(run_status="failed", generation_status="failed", render_status="render_failed", failure_kind="media",
-                           comparison_status="ineligible", comparison_errors=[str(exc)], errors=[str(exc)])
+                media_error = str(exc)
+                run.update(
+                    run_status="failed",
+                    generation_status="failed",
+                    render_status="render_failed",
+                    failure_kind="media",
+                    comparison_status="ineligible",
+                    comparison_errors=[*run.get("comparison_errors", []), media_error],
+                    errors=[*run.get("errors", []), media_error],
+                )
         else:
             run["generation_status"] = "prepared_offline" if all(j["status"] == "prepared_offline" for j in jobs) else "in_progress"
     ledger_rows = [block["planning"], *runs]

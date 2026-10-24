@@ -592,6 +592,11 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
     run_ids, conditions, block_ids, replicates, kinds, models = set(), set(), set(), set(), set(), set()
     selected_scopes = []
+    protocols = [row.get("review_protocol", "global_v1") for row in records if isinstance(row, dict)]
+    review_protocols = {p for p in protocols if isinstance(p, str)}
+    if (len(review_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
+            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2"}):
+        errors.append("records must use one consistent review protocol")
     for index, row in enumerate(records):
         prefix = f"record {index + 1}"
         if not isinstance(row, dict):
@@ -634,6 +639,13 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
         allowed = ("not_applicable",) if condition == "baseline" else ("applied", "unchanged")
         if status not in allowed:
             errors.append(f"{prefix}: invalid review source {status!r}")
+        if row.get("review_protocol") == "actor_self_review_v2" and condition != "baseline":
+            disposition = row.get("feedback_disposition")
+            omitted = disposition.get("unaddressed_issue_ids") if isinstance(disposition, dict) else None
+            expected_confirmation = ("accepted" if omitted else "not_needed") if isinstance(omitted, list) else None
+            if (expected_confirmation is None or row.get("actor_confirmation_status") != expected_confirmation
+                    or row.get("actor_endorsement") != "not_requested"):
+                errors.append(f"{prefix}: actor omissions lack valid corresponding-actor confirmation")
         if status == "unchanged" and final_hashes.get(condition) != initial_hash:
             errors.append(f"{prefix}: unchanged requires the complete initial plan")
         if row.get("run_status") == "failed" or row.get("generation_status") in ("failed", "interrupted"):

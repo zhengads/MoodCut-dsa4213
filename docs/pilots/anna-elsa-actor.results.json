@@ -1,0 +1,819 @@
+{
+  "kind": "actual_actor_self_review_development_pilot",
+  "review_protocol": "actor_self_review_v1",
+  "formal_inclusion_approved": false,
+  "executed_code_commit": "64416d8e8774a17c3ba6cdfebf387614e10db88c",
+  "source_kind": "development",
+  "mock": false,
+  "text_model_settings": {
+    "model_id": "role-policy/30db591df7f6dc35d645c4a79d82287fc37e33c43baaefa658dbeadf4dc146ed",
+    "roles": {
+      "planning": {
+        "model_id": "google/gemini-2.5-flash-lite",
+        "temperature": 0.0,
+        "reasoning_enabled": false
+      },
+      "review": {
+        "model_id": "deepseek/deepseek-v3.2",
+        "temperature": 0.0,
+        "reasoning_enabled": false
+      }
+    }
+  },
+  "initial_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+  "shared_generation_sha256": "6efd71dc277d1cf47474828d390537a95bd5726789a43256a7e6422fa9c0f70d",
+  "template_sha256": "fd02ec3b8b13f962bd5d9ce25cbd49f1b29eefe09cf39866900fabe0c12e4479",
+  "scene": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "scene_id": "anna_elsa_umbrella_agent_pilot",
+    "tone": "affectionate",
+    "story": "下雨的清晨，在公交站，Anna把借用的伞还给Elsa。两人有简短、自然的普通话对话，传达温暖亲近的氛围。只表现还伞这一事件，不增加人物或后续事件；所有对白应在五秒内自然说完。",
+    "characters": [
+      {
+        "id": "a",
+        "name": "Anna / 安娜"
+      },
+      {
+        "id": "b",
+        "name": "Elsa / 艾莎"
+      }
+    ],
+    "beats": [
+      {
+        "id": "return-umbrella",
+        "description": "Anna把借用的伞还给Elsa。"
+      }
+    ],
+    "asset_ids": [
+      "movieagent_anna",
+      "movieagent_elsa"
+    ],
+    "min_duration_s": 5,
+    "max_duration_s": 5,
+    "min_shot_duration_s": 5,
+    "max_shot_duration_s": 5,
+    "max_shots": 1,
+    "provenance": {
+      "kind": "user_authorized_development_story",
+      "adaptation": "Existing umbrella-return development event with Anna/Elsa references; no supplied dialogue or shot directions. Not a formal evaluation sample."
+    }
+  },
+  "generation_settings": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "model": "heygen/heygen-video-1",
+    "resolution": "768p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "seed": 4213,
+    "style": "A continuous cinematic 3D animated scene. Match the two supplied character identities and clothing. Reference images specify identity and clothing only; do not copy their backgrounds or layouts. Natural continuous motion. No cards, slideshow, labels, subtitles or text overlays.",
+    "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied dialogue with the assigned speakers. Quiet rain ambience, no narrator, extra dialogue or music. Finish the lines naturally within the requested duration.",
+    "characters": [
+      {
+        "id": "a",
+        "asset_id": "movieagent_anna",
+        "voice": "Adult female Mandarin voice, warm middle register, natural measured delivery."
+      },
+      {
+        "id": "b",
+        "asset_id": "movieagent_elsa",
+        "voice": "Distinct adult female Mandarin voice, slightly lower register, natural measured delivery."
+      }
+    ]
+  },
+  "planning": {
+    "status": "completed",
+    "raw_responses": {
+      "director": {
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "tone": "affectionate",
+        "beat_order": [
+          "return-umbrella"
+        ],
+        "approach": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond."
+      },
+      "scene": {
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+        "segments": [
+          {
+            "beat_ids": [
+              "return-umbrella"
+            ],
+            "description": "Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness.",
+            "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+            "duration_s": 5
+          }
+        ]
+      },
+      "shot": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "tone": "affectionate",
+        "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+        "shots": [
+          {
+            "shot_id": "return-umbrella-shot",
+            "beat_ids": [
+              "return-umbrella"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_anna",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_elsa",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "a",
+                "text": "艾莎，这是你的伞。"
+              },
+              {
+                "character_id": "b",
+                "text": "谢谢你，安娜。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      }
+    },
+    "call_records": [
+      {
+        "stage": "director",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792833613-3fBpYb5TORGlrnswTmtm",
+        "max_output_tokens": 1024,
+        "estimated_input_tokens": 3804,
+        "reserved_cost_usd": 0.00079,
+        "input_tokens": 1152,
+        "output_tokens": 132,
+        "estimated_cost_usd": 0.000168,
+        "provider_cost_usd": 0.000168,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 1.4220000000004802
+      },
+      {
+        "stage": "scene",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792833614-Xluhkk2yybbM9uw2H4eO",
+        "max_output_tokens": 2048,
+        "estimated_input_tokens": 4811,
+        "reserved_cost_usd": 0.0013003,
+        "input_tokens": 1365,
+        "output_tokens": 238,
+        "estimated_cost_usd": 0.0002317,
+        "provider_cost_usd": 0.0002317,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 1.375
+      },
+      {
+        "stage": "shot",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792833616-P1ynlv1eUE8IvHTdOVt2",
+        "max_output_tokens": 4096,
+        "estimated_input_tokens": 6365,
+        "reserved_cost_usd": 0.0022749,
+        "input_tokens": 1688,
+        "output_tokens": 396,
+        "estimated_cost_usd": 0.0003272,
+        "provider_cost_usd": 0.0003272,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 1.5319999999992433
+      }
+    ],
+    "provider_cost_usd": 0.0007268999999999999
+  },
+  "conditions": [
+    {
+      "condition": "baseline",
+      "initial_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+      "final_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+      "shared_generation_sha256": "6efd71dc277d1cf47474828d390537a95bd5726789a43256a7e6422fa9c0f70d",
+      "review_status": "not_applicable",
+      "review_protocol": "actor_self_review_v1",
+      "call_records": [],
+      "provider_text_cost_usd": 0,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "tone": "affectionate",
+        "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+        "shots": [
+          {
+            "shot_id": "return-umbrella-shot",
+            "beat_ids": [
+              "return-umbrella"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_anna",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_elsa",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "a",
+                "text": "艾莎，这是你的伞。"
+              },
+              {
+                "character_id": "b",
+                "text": "谢谢你，安娜。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": {
+        "job_id": "gen-vid-1792833638-86XUwF9Lw5jkuEPsGLjX",
+        "status": "downloaded",
+        "post_attempts": 1,
+        "poll_attempts": 5,
+        "download_attempts": 1,
+        "request_sha256": "cabeeedc7f13367c2bd4228c5ddaa2ac9b1b5de705775cf3a8c8b406776681bd",
+        "provider_cost_usd": 0.25,
+        "reused_from": null,
+        "source_provider_cost_usd": null,
+        "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
+        "width": 1344,
+        "height": 768,
+        "duration_s": 5.258344,
+        "has_audio": true,
+        "frame_rate": "24/1",
+        "encoded_duration_s": "5.258344",
+        "new_submission_for_condition": true
+      }
+    },
+    {
+      "condition": "generic_review",
+      "initial_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+      "final_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+      "shared_generation_sha256": "6efd71dc277d1cf47474828d390537a95bd5726789a43256a7e6422fa9c0f70d",
+      "review_status": "unchanged",
+      "review_protocol": "actor_self_review_v1",
+      "call_records": [
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792833617-rw6epc4AmBzBMwmOWK1j",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 5428,
+          "reserved_cost_usd": 0.00218952,
+          "input_tokens": 1452,
+          "output_tokens": 53,
+          "estimated_cost_usd": 0.00039766,
+          "provider_cost_usd": 0.00039766,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 1.9529999999995198
+        },
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792833619-NAt06n17dFaaQpr8BJP9",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 5422,
+          "reserved_cost_usd": 0.00218796,
+          "input_tokens": 1451,
+          "output_tokens": 53,
+          "estimated_cost_usd": 0.0003974,
+          "provider_cost_usd": 0.000231,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 2.25
+        }
+      ],
+      "provider_text_cost_usd": 0.00062866,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "tone": "affectionate",
+        "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+        "shots": [
+          {
+            "shot_id": "return-umbrella-shot",
+            "beat_ids": [
+              "return-umbrella"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_anna",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_elsa",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "a",
+                "text": "艾莎，这是你的伞。"
+              },
+              {
+                "character_id": "b",
+                "text": "谢谢你，安娜。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": {
+        "job_id": "gen-vid-1792833638-86XUwF9Lw5jkuEPsGLjX",
+        "status": "downloaded",
+        "post_attempts": 1,
+        "poll_attempts": 5,
+        "download_attempts": 1,
+        "request_sha256": "cabeeedc7f13367c2bd4228c5ddaa2ac9b1b5de705775cf3a8c8b406776681bd",
+        "provider_cost_usd": 0.0,
+        "reused_from": {
+          "run_id": "block_178d921467d5ce6b94d3c3393b39684c1372fc564a30dbf33b10be07ab35cfea_baseline",
+          "shot_id": "return-umbrella-shot"
+        },
+        "source_provider_cost_usd": 0.25,
+        "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
+        "width": 1344,
+        "height": 768,
+        "duration_s": 5.258344,
+        "has_audio": true,
+        "frame_rate": "24/1",
+        "encoded_duration_s": "5.258344",
+        "new_submission_for_condition": false
+      },
+      "review_result": {
+        "plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "tone": "affectionate",
+          "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+          "shots": [
+            {
+              "shot_id": "return-umbrella-shot",
+              "beat_ids": [
+                "return-umbrella"
+              ],
+              "duration_s": 5,
+              "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_anna",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_elsa",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "a",
+                  "text": "艾莎，这是你的伞。"
+                },
+                {
+                  "character_id": "b",
+                  "text": "谢谢你，安娜。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "report": {
+          "schema_version": "1.0",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "mode": "generic_review",
+          "issues": []
+        },
+        "patch": {
+          "schema_version": "1.0",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "edits": []
+        },
+        "verification": null,
+        "status": "unchanged",
+        "errors": [],
+        "review_protocol": "actor_self_review_v1",
+        "actor_reports": [
+          {
+            "actor_id": "a",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "anna_elsa_umbrella_agent_pilot",
+              "mode": "generic_review",
+              "actor_id": "a",
+              "issues": []
+            }
+          },
+          {
+            "actor_id": "b",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "anna_elsa_umbrella_agent_pilot",
+              "mode": "generic_review",
+              "actor_id": "b",
+              "issues": []
+            }
+          }
+        ],
+        "writer_response": null,
+        "verification_kind": "programmatic_only",
+        "actor_endorsement": "not_requested",
+        "actor_feedback_status": "no_issues",
+        "feedback_disposition": {
+          "addressed_issue_ids": [],
+          "unaddressed_issue_ids": [],
+          "unaddressed_reasons": {}
+        }
+      }
+    },
+    {
+      "condition": "moodcut",
+      "initial_plan_sha256": "b87c16da0dcd06177a37dae76f7c32d6fb177ec027aa3789384777e1759a2e81",
+      "final_plan_sha256": "895bf60fe879cceccc53e81eb4ef53a69f02a66f45c5e0d0c6bece560a8aab5c",
+      "shared_generation_sha256": "6efd71dc277d1cf47474828d390537a95bd5726789a43256a7e6422fa9c0f70d",
+      "review_status": "applied",
+      "review_protocol": "actor_self_review_v1",
+      "call_records": [
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792833622-PEtYy6jocivHvKs3LnQU",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 5547,
+          "reserved_cost_usd": 0.00222046,
+          "input_tokens": 1472,
+          "output_tokens": 210,
+          "estimated_cost_usd": 0.00046252,
+          "provider_cost_usd": 0.00046252,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 8.796999999998661
+        },
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792833630-Z4AtkTI2DDNMlwwpoEsw",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 5541,
+          "reserved_cost_usd": 0.0022189,
+          "input_tokens": 1471,
+          "output_tokens": 227,
+          "estimated_cost_usd": 0.00046872,
+          "provider_cost_usd": 0.000294,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 6.063000000000102
+        },
+        {
+          "stage": "actor_revise",
+          "model_id": "google/gemini-2.5-flash-lite",
+          "response_model": "google/gemini-2.5-flash-lite",
+          "generation_id": "gen-1792833636-xS78ysRZ02fnQSyuSUn2",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 10632,
+          "reserved_cost_usd": 0.0018824,
+          "input_tokens": 2927,
+          "output_tokens": 198,
+          "estimated_cost_usd": 0.0003719,
+          "provider_cost_usd": 0.0003719,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 1.4369999999998981
+        }
+      ],
+      "provider_text_cost_usd": 0.00112842,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "anna_elsa_umbrella_agent_pilot",
+        "tone": "affectionate",
+        "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+        "shots": [
+          {
+            "shot_id": "return-umbrella-shot",
+            "beat_ids": [
+              "return-umbrella"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_anna",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_elsa",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "a",
+                "text": "艾莎，伞还你啦。"
+              },
+              {
+                "character_id": "b",
+                "text": "谢谢你，安娜。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": {
+        "job_id": "gen-vid-1792833681-0VDpBkaIA4MV8WesLfAA",
+        "status": "downloaded",
+        "post_attempts": 1,
+        "poll_attempts": 12,
+        "download_attempts": 1,
+        "request_sha256": "3f6a3cf51a6d16bcb080d5ae0836e933630668af3ce8cdfad8adc07c32fdf4b3",
+        "provider_cost_usd": 0.25,
+        "reused_from": null,
+        "source_provider_cost_usd": null,
+        "sha256": "cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8",
+        "width": 1344,
+        "height": 768,
+        "duration_s": 5.258344,
+        "has_audio": true,
+        "frame_rate": "24/1",
+        "encoded_duration_s": "5.258344",
+        "new_submission_for_condition": true
+      },
+      "review_result": {
+        "plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "tone": "affectionate",
+          "scene_direction": "A rainy morning at a bus stop. Anna hands Elsa a borrowed umbrella. They share a brief, natural Mandarin conversation conveying warmth and closeness. The focus is solely on the umbrella return, with no additional characters or events. Dialogue should be completed naturally within five seconds. Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+          "shots": [
+            {
+              "shot_id": "return-umbrella-shot",
+              "beat_ids": [
+                "return-umbrella"
+              ],
+              "duration_s": 5,
+              "direction": "Medium shot, showing both characters from the waist up, with subtle, affectionate gestures and expressions. The setting is a simple, slightly wet bus stop shelter. Performance is restrained and natural, emphasizing their bond.",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_anna",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_elsa",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "a",
+                  "text": "艾莎，伞还你啦。"
+                },
+                {
+                  "character_id": "b",
+                  "text": "谢谢你，安娜。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "report": {
+          "schema_version": "1.0",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "mode": "moodcut",
+          "issues": [
+            {
+              "issue_id": "actor-1:tone_flatness_1",
+              "shot_id": "return-umbrella-shot",
+              "line_indices": [
+                0
+              ],
+              "dimension": "tone",
+              "severity": "minor",
+              "evidence": "The line '艾莎，这是你的伞。' is a simple, factual statement of return. While polite and clear, it lacks the warmth and affectionate tone specified for the scene. It feels transactional rather than conveying the closeness between Anna and Elsa.",
+              "suggestion": "Add a term of endearment or a warmer lead-in, such as '艾莎，你的伞还给你。' or '艾莎，伞还你啦。'",
+              "source_issue_id": "tone_flatness_1",
+              "actor_id": "a"
+            },
+            {
+              "issue_id": "actor-2:tone_underwhelming",
+              "shot_id": "return-umbrella-shot",
+              "line_indices": [
+                1
+              ],
+              "dimension": "tone",
+              "severity": "minor",
+              "evidence": "The line '谢谢你，安娜。' is a simple, direct 'Thank you, Anna.' While polite and appropriate, it feels slightly formal and distant for an 'affectionate' tone between close characters in a warm, intimate scene. It lacks the subtext of warmth and closeness the scene aims to convey.",
+              "suggestion": "Add a term of endearment or a slight elaboration to infuse more warmth, e.g., '谢谢你，安娜。伞没淋湿吧？' or simply '谢啦，安娜。'",
+              "source_issue_id": "tone_underwhelming",
+              "actor_id": "b"
+            }
+          ]
+        },
+        "patch": {
+          "schema_version": "1.0",
+          "scene_id": "anna_elsa_umbrella_agent_pilot",
+          "edits": [
+            {
+              "issue_id": "actor-1:tone_flatness_1",
+              "shot_id": "return-umbrella-shot",
+              "set": {
+                "dialogue": [
+                  {
+                    "character_id": "a",
+                    "text": "艾莎，伞还你啦。"
+                  },
+                  {
+                    "character_id": "b",
+                    "text": "谢谢你，安娜。"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "verification": null,
+        "status": "applied",
+        "errors": [],
+        "review_protocol": "actor_self_review_v1",
+        "actor_reports": [
+          {
+            "actor_id": "a",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "anna_elsa_umbrella_agent_pilot",
+              "mode": "moodcut",
+              "actor_id": "a",
+              "issues": [
+                {
+                  "issue_id": "tone_flatness_1",
+                  "shot_id": "return-umbrella-shot",
+                  "line_indices": [
+                    0
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "The line '艾莎，这是你的伞。' is a simple, factual statement of return. While polite and clear, it lacks the warmth and affectionate tone specified for the scene. It feels transactional rather than conveying the closeness between Anna and Elsa.",
+                  "suggestion": "Add a term of endearment or a warmer lead-in, such as '艾莎，你的伞还给你。' or '艾莎，伞还你啦。'"
+                }
+              ]
+            }
+          },
+          {
+            "actor_id": "b",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "anna_elsa_umbrella_agent_pilot",
+              "mode": "moodcut",
+              "actor_id": "b",
+              "issues": [
+                {
+                  "issue_id": "tone_underwhelming",
+                  "shot_id": "return-umbrella-shot",
+                  "line_indices": [
+                    1
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "The line '谢谢你，安娜。' is a simple, direct 'Thank you, Anna.' While polite and appropriate, it feels slightly formal and distant for an 'affectionate' tone between close characters in a warm, intimate scene. It lacks the subtext of warmth and closeness the scene aims to convey.",
+                  "suggestion": "Add a term of endearment or a slight elaboration to infuse more warmth, e.g., '谢谢你，安娜。伞没淋湿吧？' or simply '谢啦，安娜。'"
+                }
+              ]
+            }
+          }
+        ],
+        "writer_response": {
+          "patch": {
+            "schema_version": "1.0",
+            "scene_id": "anna_elsa_umbrella_agent_pilot",
+            "edits": [
+              {
+                "issue_id": "actor-1:tone_flatness_1",
+                "shot_id": "return-umbrella-shot",
+                "set": {
+                  "dialogue": [
+                    {
+                      "character_id": "a",
+                      "text": "艾莎，伞还你啦。"
+                    },
+                    {
+                      "character_id": "b",
+                      "text": "谢谢你，安娜。"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "feedback_disposition": {
+            "addressed_issue_ids": [
+              "actor-1:tone_flatness_1"
+            ],
+            "unaddressed_issue_ids": [
+              "actor-2:tone_underwhelming"
+            ],
+            "unaddressed_reasons": {
+              "actor-2:tone_underwhelming": "The suggestion to add '伞没淋湿吧？' or '谢啦' to Anna's line would extend the dialogue beyond the 5-second limit and alter the simple, direct nature of the thank you, which might not be desired."
+            }
+          }
+        },
+        "verification_kind": "programmatic_only",
+        "actor_endorsement": "not_requested",
+        "actor_feedback_status": "has_unaddressed",
+        "feedback_disposition": {
+          "addressed_issue_ids": [
+            "actor-1:tone_flatness_1"
+          ],
+          "unaddressed_issue_ids": [
+            "actor-2:tone_underwhelming"
+          ],
+          "unaddressed_reasons": {
+            "actor-2:tone_underwhelming": "The suggestion to add '伞没淋湿吧？' or '谢啦' to Anna's line would extend the dialogue beyond the 5-second limit and alter the simple, direct nature of the thank you, which might not be desired."
+          }
+        }
+      }
+    }
+  ],
+  "video_status": "assembled_requires_manual_inspection",
+  "rights_status": "unconfirmed",
+  "accounting": {
+    "calls": 10,
+    "real_http_calls": 29,
+    "input_tokens": null,
+    "output_tokens": null,
+    "estimated_cost_usd": null,
+    "provider_cost_usd": 0.50248398,
+    "known_subtotals": {
+      "calls": 10,
+      "real_http_calls": 29,
+      "input_tokens": 12978,
+      "output_tokens": 1507,
+      "estimated_cost_usd": 0.0028251,
+      "provider_cost_usd": 0.50248398,
+      "generation_posts": 2,
+      "video_get_calls": 19
+    },
+    "incomplete_fields": [
+      "input_tokens",
+      "output_tokens",
+      "estimated_cost_usd"
+    ],
+    "review_calls": 5,
+    "generation_posts": 2,
+    "video_get_calls": 19,
+    "planning_counted_once": true
+  },
+  "text_cost_usd": 0.00248398,
+  "key_usage_delta_usd": "0.50248398",
+  "key_remaining_usd_after": "12.73573756",
+  "key_reconciliation": "immediate snapshot lagged by one video charge; subsequent read-only snapshot matched the complete returned total; neither snapshot overwritten",
+  "budget_usd": {
+    "text_ceiling": "0.10",
+    "combined_ceiling": "1.00",
+    "unspendable_reserve": "0.10",
+    "reserve_spent": "0"
+  },
+  "actual_text_posts": 8,
+  "actual_video_posts": 2,
+  "independent_actor_inputs_rechecked": true,
+  "preserved_historical_files": 124,
+  "manual_quality_checks": "pending; no ratings filled",
+  "developer_observations": [
+    "Both generic actors returned empty reports, so the writer was skipped. Generic dialogue/request/video equals baseline; its same-block video reuse adds no new provider charge.",
+    "Moodcut actor A and actor B each raised one opinion. The writer changed A and retained B with a reason. No final actor endorsement was requested.",
+    "The unaddressed reason misattributes actor B's suggestion to Anna. It claims the suggestions would extend the five-second dialogue, although the offered shorter alternative is not shown to exceed that duration. The reason is model output, not verified justification; it remains unchanged for human judgment.",
+    "This technical run does not establish emotional improvement or method superiority. There are three condition entries and two distinct actual provider videos, not three independent generations."
+  ]
+}

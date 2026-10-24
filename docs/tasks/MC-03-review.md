@@ -1,5 +1,13 @@
 # MC-03 通用审查、情绪审查与局部修订
 
+The offline `actor_self_review_v2` change returns all omitted opinions to their corresponding actor. Each affected actor sees its own original report, actual candidate and writer reasons once; accepted omissions stay recorded as unaddressed, while objections/missing/invalid/failed replies block request preparation. Raw decisions and the writer candidate survive for human resolution. No automatic rewrite loop or full-script endorsement is added. See [method](../ACTOR_REVIEW_METHOD.md); old real results remain untouched and their [videos are shared](../pilots/anna-elsa-videos.md). PR #48 remains unmerged.
+
+The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) records both generic actors returning no issues, both emotional actors raising one opinion, and one unified writer changing Anna while retaining Elsa's opinion with an explanation that misidentifies the speaker. Exact output is preserved without developer repair or retries. Real videos are available for human acceptance; no final actor approval or quality conclusion is inferred. The offline implementation record below is preserved as history.
+
+### Actor self-review increment (2026-10-24)
+
+The user-authorized cross-module increment stays in PR #48: explicit `actor_self_review_v1`, two independent own-dialogue actor reports and one unified screenwriter patch. DeepSeek supplies both actors in both conditions; Gemini integrates their feedback. All opinions remain visible, ownership and actual changes are checked, unaddressed issues require reasons, and no final actor approval is fabricated. Valid disagreement may proceed to a pending-acceptance video; structural failures stop. See [method and offline evidence](../ACTOR_REVIEW_METHOD.md). This change uses labeled software responses only and preserves all original paid results. The default `global_v1` implementation described below remains compatible; no new paid execution or merge is authorized.
+
 当前任务：[GitHub Issue #23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)。本次审查实现与离线验收已提供；先核对Issue中的PR合并状态，不重复实现已勾选模块。末尾既有交付用于复用与回归。
 
 首个增量建议分支：`fix/issue-23-dialogue-review`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。
