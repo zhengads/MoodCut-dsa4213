@@ -1,5 +1,15 @@
 # Actor self-review protocols
 
+Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
+
+## Current offline writer-interface correction
+
+Future v3 writers now return one complete dialogue array per unique shot ID via `writer_output_contract="dialogue_by_shot_v1"`; a deterministic adapter builds one atomic edit per shot without merging competing replies or selecting task wording. Both review conditions and both writer rounds use the same contract. Raw responses, derived patches and contract/prompt identities are rechecked at source boundaries; legacy global/v1/v2 and old-v3 records remain readable under their original identities. See [diagnosis, schema and offline acceptance](pilots/anna-elsa-v3-shot-contract.md). The failed paid trial below and its public/runtime results remain unchanged; no new model/video call or paid retry occurred.
+
+## Actual v3 development trial (2026-10-24)
+
+A separately authorized [real Anna/Elsa v3 trial](pilots/anna-elsa-actor-v3.md) made nine text calls, then stopped on a first emotional writer response containing two conflicting full-dialogue edits for one shot. Cost $0.00281304 reconciled exactly; no confirmations, second writer round, video submission, retry or handwritten repair occurred. This hard contract error is distinct from a valid final creative disagreement. Exact original outputs and historical results are preserved. The earlier implementation/acceptance sections below retain their original offline scope.
+
 ## Current increment: bounded actor negotiation (v3)
 
 The user approved the following offline change on 2026-10-24. Explicit `review_protocol="actor_self_review_v3"` gives both generic_review and moodcut the same bounded negotiation. Existing global/v1 results and strict v2 behavior remain unchanged; no historical source is retagged. This increment authorizes implementation, offline acceptance and one unmerged PR, not paid model/video calls.

@@ -1,5 +1,11 @@
 # Anna/Elsa videos for team review
 
+Latest corrected-contract v3 attempt: [record](anna-elsa-actor-v3-shot.md), [page tab](https://zhengads.github.io/MoodCut-dsa4213/#v3-shot). It stopped on emotional writer JSON-object parsing after nine known-cost text calls ($0.00291790); no new video exists. The earlier v3 two-edit failure and historical global/v1 media remain separate and unchanged.
+
+## Latest v3 attempt: no new video
+
+The separately authorized [actor-v3 real trial](anna-elsa-actor-v3.md) stopped before video preparation on a conflicting/duplicate edit for the same shot. Nine text calls cost $0.00281304, reconciled; video submissions and new clips are zero. [Open the v3 attempt tab](https://zhengads.github.io/MoodCut-dsa4213/#v3) for actual text/status differences. Historical global/v1 tabs below still play the original five files and are not v3 outputs. No paid retry or hand repair occurred. The earlier deployment paragraphs are historical snapshots, not the current PR/branch state.
+
 **[Open the online video comparison page](https://zhengads.github.io/MoodCut-dsa4213/)** to play the original clips directly, switch between the two historical experiments and compare planned line changes across three conditions. Only one clip plays at a time; there is no autoplay. The responsive page also preserves the shared baseline/generic video and the original unresolved opinions. This is a GitHub Pages player page, not a native attachment inside the PR conversation.
 
 The [repository's experimental video Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024) remains the download archive for five different original MP4 files, covering six condition entries from the two historical PR #48 pilots. All five Release digests/sizes and all five Pages-hosted files match the original local provider files, totaling 5,336,098 video bytes. Videos are copied into a temporary Pages artifact, not Git blobs. The table below retains the original download links; use the Pages link above for in-page playback.

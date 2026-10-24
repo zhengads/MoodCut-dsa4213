@@ -1,5 +1,13 @@
 # MC-01 公共契约、客户端与集成
 
+PR #52 offline diagnostics: the existing text client retains private HTTP bytes/model strings before parsing, records envelope/content error kinds and safe positions, and preserves known/unknown accounting. Pipeline and CLI capture automatically; direct library callers select a capture root. Original failed trials and missing historical content remain unchanged. [Contract and acceptance](../pilots/text-response-diagnostics.md). No paid calls; PR unmerged, #8/#9 open.
+
+Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](../pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
+
+Offline correction in the same PR #52: v3 writers now submit one complete dialogue per shot ID, with derived atomic patches and preserved raw replies. Both conditions/rounds share the contract; historical failed results stay unchanged and no paid rerun occurs. [Diagnosis and acceptance](../pilots/anna-elsa-v3-shot-contract.md). #8/#9 remain open.
+
+Latest actual v3 development attempt (2026-10-24): [trial record](../pilots/anna-elsa-actor-v3.md). Nine real text calls, known/reconciled total $0.00281304, stopped on conflicting same-shot writer edits before video preparation. No confirmations/second round, paid retries, new video or human score. This does not test final-disagreement video quality. Existing artifacts remain unchanged; #8/#9 stay open.
+
 ## Current bounded negotiation increment (2026-10-24)
 
 PR #48 is merged. Explicit `actor_self_review_v3` supersedes strict v2 for the newly approved bounded workflow: both reviewed conditions get at most two writer/confirmation rounds, with final valid disagreement preserved and allowed to prepare video. Hard errors still block. The source loader rechecks both rounds, exact candidate/owner/issue bindings, summaries and routed call order; P5 accepts consistent v3 summaries while retaining qualification/export rechecks and unchanged scores/denominators. No paid run, new video, human score or formal inclusion is authorized. Historical results and v2 behavior remain intact; #8/#9 remain open. See [current method](../ACTOR_REVIEW_METHOD.md).

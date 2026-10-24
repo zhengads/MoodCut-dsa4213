@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="MoodCut Anna/Elsa 历史视频对比：在线播放三条件原片，查看台词修改和未解决意见。">
+  <meta name="description" content="MoodCut Anna/Elsa 三条件试跑：查看 v3 实际状态、历史原片、台词修改和未解决意见。">
   <title>Anna 与 Elsa 的台词对照 · MoodCut</title>
   <link rel="stylesheet" href="site.css">
   <script src="app.js" defer></script>
@@ -13,7 +13,7 @@
   <a class="skip" href="#comparison">跳到视频对比</a>
   <header class="masthead">
     <a class="brand" href="https://github.com/zhengads/MoodCut-dsa4213">MoodCut</a>
-    <a href="https://github.com/zhengads/MoodCut-dsa4213/pull/48">查看 PR #48</a>
+    <a href="https://github.com/zhengads/MoodCut-dsa4213/pulls">查看实验 PR</a>
   </header>
   <main>
     <div class="intro">
@@ -23,12 +23,14 @@
       </div>
       <p class="scene">雨天的公交站<br><strong>目标氛围：温暖、亲近</strong></p>
     </div>
-    <div class="experiment-tabs" role="tablist" aria-label="选择历史实验">
-      <button id="tab-actors" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="actors">两位演员各自审查</button>
+    <div class="experiment-tabs" role="tablist" aria-label="选择试跑记录">
+      <button id="tab-v3-shot" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="v3-shot">v3 修复后 · 本次</button>
+      <button id="tab-v3" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3">v3 旧接口 · 历史停止</button>
+      <button id="tab-actors" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="actors">演员自审 v1 · 历史</button>
       <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">整段台词统一审查</button>
     </div>
     <p id="experiment-description" class="experiment-description" aria-live="polite">正在载入实验记录…</p>
-    <section id="comparison" role="tabpanel" aria-labelledby="tab-actors" tabindex="0">
+    <section id="comparison" role="tabpanel" aria-labelledby="tab-v3-shot" tabindex="0">
       <div id="players" class="players" aria-label="三条件视频与台词"></div>
     </section>
     <p id="page-error" class="error" role="alert" hidden></p>
@@ -48,14 +50,14 @@
           <div><dt>运行日期</dt><dd>2026-10-24</dd></div>
           <div><dt>模型</dt><dd>Gemini / DeepSeek<br>HeyGen 768p</dd></div>
           <div><dt>文本与视频实付</dt><dd id="cost">—</dd></div>
-          <div><dt>每段</dt><dd>请求 5 秒，原片约 5.26 秒</dd></div>
+          <div><dt>每段</dt><dd id="duration">—</dd></div>
         </dl>
         <a id="source-record" href="https://github.com/zhengads/MoodCut-dsa4213/pull/48">阅读试跑单与完整输出</a>
       </aside>
     </section>
     <div class="boundary">
-      <strong>这些是历史 v1 原片。</strong>
-      演员确认 v2 目前只有离线验收，没有对应的新视频。页面中的台词来自计划，尚未核实视频是否逐字说对；人工评分仍为空，看得到差别不等于证明方法更好。
+      <strong>两次 v3 试跑均在视频提交前因硬性错误停止。</strong>
+      其他页签仍是历史 global/v1 原片；不把旧片当作 v3 结果。页面台词来自实际计划，不是已核实的语音转录。人工评分仍为空，软件执行和观看差别不证明方法更好。
     </div>
   </main>
   <footer>

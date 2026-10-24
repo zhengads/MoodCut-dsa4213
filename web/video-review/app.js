@@ -25,41 +25,47 @@ function makeCondition(condition, baseline) {
   const header = element("header");
   header.append(element("h2", condition.label), element("span", condition.status, "status"));
   const stage = element("div", undefined, "video-stage");
-  const video = element("video");
-  video.controls = true;
-  video.preload = "auto";
-  video.playsInline = true;
-  video.src = condition.video;
-  video.setAttribute("aria-label", condition.label + "原始视频，含原生音轨");
-  video.append(element("p", "浏览器不支持视频播放，请使用下方原片存档链接。"));
-  const play = element("button", undefined, "play-overlay");
-  play.type = "button";
-  play.setAttribute("aria-label", "播放" + condition.label);
-  const playLabel = element("span", "▶ 播放");
-  play.append(playLabel);
-  const error = element("p", "视频暂时无法加载，请刷新，或从页面底部的原片存档下载。", "error");
-  error.hidden = true;
-  error.setAttribute("role", "alert");
-  play.addEventListener("click", async () => {
-    try {
-      error.hidden = true;
-      await video.play();
-    } catch {
-      error.hidden = false;
-    }
-  });
-  video.addEventListener("play", () => {
-    pauseAll(video);
-    play.hidden = true;
-  });
-  video.addEventListener("pause", () => { play.hidden = false; });
-  video.addEventListener("ended", () => {
-    playLabel.textContent = "▶ 重播";
-    play.hidden = false;
-  });
-  video.addEventListener("error", () => { error.hidden = false; });
-  stage.append(video, play);
-  card.append(header, stage, error, element("p", condition.note, "video-note"));
+  if (condition.video) {
+    const video = element("video");
+    video.controls = true;
+    video.preload = "auto";
+    video.playsInline = true;
+    video.src = condition.video;
+    video.setAttribute("aria-label", condition.label + "原始视频，含原生音轨");
+    video.append(element("p", "浏览器不支持视频播放，请使用下方原片存档链接。"));
+    const play = element("button", undefined, "play-overlay");
+    play.type = "button";
+    play.setAttribute("aria-label", "播放" + condition.label);
+    const playLabel = element("span", "▶ 播放");
+    play.append(playLabel);
+    const error = element("p", "视频暂时无法加载，请刷新，或从页面底部的原片存档下载。", "error");
+    error.hidden = true;
+    error.setAttribute("role", "alert");
+    play.addEventListener("click", async () => {
+      try {
+        error.hidden = true;
+        await video.play();
+      } catch {
+        error.hidden = false;
+      }
+    });
+    video.addEventListener("play", () => {
+      pauseAll(video);
+      play.hidden = true;
+    });
+    video.addEventListener("pause", () => { play.hidden = false; });
+    video.addEventListener("ended", () => {
+      playLabel.textContent = "▶ 重播";
+      play.hidden = false;
+    });
+    video.addEventListener("error", () => { error.hidden = false; });
+    stage.append(video, play);
+    card.append(header, stage, error);
+  } else {
+    stage.append(element("p", "未提交视频生成", "video-empty"));
+    card.append(header, stage);
+  }
+  card.append(element("p", condition.note, "video-note"));
   const dialogue = element("div", undefined, "dialogue");
   for (const [index, line] of condition.dialogue.entries()) {
     const row = element("div", undefined, "line");
@@ -99,6 +105,7 @@ function showExperiment(id) {
   players.replaceChildren(...experiment.conditions.map(condition => makeCondition(condition, baseline)));
   document.querySelector("#observations").replaceChildren(...experiment.observations.map(text => element("li", text)));
   document.querySelector("#cost").textContent = "$" + experiment.cost;
+  document.querySelector("#duration").textContent = experiment.duration || "请求 5 秒，原片约 5.26 秒";
   document.querySelector("#source-record").href = experiment.record;
   const unresolved = document.querySelector("#unresolved");
   unresolved.hidden = !experiment.unresolved;
@@ -143,11 +150,11 @@ fetch("data.json")
   })
   .then(data => {
     experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "actors");
+    showExperiment(location.hash.slice(1) || "v3-shot");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";
     const error = document.querySelector("#page-error");
-    error.textContent = "请刷新页面，或前往 PR #48 查看原始记录与下载链接。";
+    error.textContent = "请刷新页面，或前往仓库查看原始试跑记录与下载链接。";
     error.hidden = false;
   });

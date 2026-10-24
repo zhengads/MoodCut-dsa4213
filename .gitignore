@@ -75,3 +75,6 @@ temp/
 /references/papers/
 /assets/raw/
 /runs/
+
+# Private raw text responses, including custom output locations
+**/PRIVATE/text-responses/

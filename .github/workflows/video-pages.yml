@@ -2,7 +2,7 @@ name: Video comparison Pages
 
 on:
   push:
-    branches: [main, feat/issue-8-agent-animation-pilot]
+    branches: [main, feat/issue-8-agent-animation-pilot, feat/issue-8-actor-v3-live]
     paths:
       - web/video-review/**
       - .github/workflows/video-pages.yml

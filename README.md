@@ -1,5 +1,11 @@
 # MoodCut
 
+Latest offline diagnostics increment in PR #52: text HTTP bodies and extracted model content are retained privately before parsing, with separate envelope/content JSON error kinds and syntax positions. Pipeline/CLI capture is automatic; known charges and unknown costs retain their existing meaning. Both failed v3 trials remain unchanged and the earlier missing reply is still unknown. No paid API or new video. [Scope and acceptance](docs/pilots/text-response-diagnostics.md); PR unmerged, #8/#9 open.
+
+Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](docs/pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
+
+Offline correction in the same PR #52: v3 writers now submit one complete dialogue per shot ID, with derived atomic patches and preserved raw replies. Both conditions/rounds share the contract; historical failed results stay unchanged and no paid rerun occurs. [Diagnosis and acceptance](docs/pilots/anna-elsa-v3-shot-contract.md). #8/#9 remain open.
+
 视频效果入口：[直接在线播放与对比台词](https://zhengads.github.io/MoodCut-dsa4213/)。可切换两次历史实验，并排播放三条件、查看原句与修改；新演员通用组与 baseline 共享一段。五段原始 MP4 随 Pages 静态产物托管，不加入代码分支 Git 历史。来源、原片下载与部署验收见[视频索引](docs/pilots/anna-elsa-videos.md)；页面没有生成新视频，也不把 v1 原片当成 v2 结果。
 
 动画选材入口：[本地动画素材库](assets/library/README.md)含MovieAgent固定版本四部动画的25个角色、75张参考图及来源/许可状态。运行`python scripts/prepare_references.py --animation-assets`显式下载，加`--check`离线复核；原图不提交Git，署名不等于已取得图片使用或再分发许可。
@@ -8,7 +14,7 @@ DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，规划 Agent 生成共同初稿；新演员协议由两个演员分别审查自己的台词，再交同一编剧统一修订。baseline 保留初稿，generic_review 使用一般自审，moodcut 使用情绪导向自审。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音；review 只修改台词。
 
-Current offline increment: explicit `actor_self_review_v3` applies the same maximum of two writer/confirmation rounds to both reviewed conditions. A maintained first-round objection requires one further actual dialogue revision and actor recheck; valid final disagreement permits video preparation with exact disputed IDs retained. Hard errors, unknown cost and budget failures still stop, without retries. The full-block ceiling is 19 text calls. Historical global/v1 results and strict v2 behavior remain unchanged; v3 has no real model/video results. See [method and offline evidence](docs/ACTOR_REVIEW_METHOD.md).
+Current offline increment: explicit `actor_self_review_v3` applies the same maximum of two writer/confirmation rounds to both reviewed conditions. A maintained first-round objection requires one further actual dialogue revision and actor recheck; valid final disagreement permits video preparation with exact disputed IDs retained. Hard errors, unknown cost and budget failures still stop, without retries. The full-block ceiling is 19 text calls. Historical global/v1 results and strict v2 behavior remain unchanged; a separately authorized [real v3 trial](docs/pilots/anna-elsa-actor-v3.md) made nine text calls and stopped on a hard same-shot edit error before video submission ($0.00281304 reconciled, zero new clips). See [method and offline evidence](docs/ACTOR_REVIEW_METHOD.md).
 
 默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。全局审查和演员 v1 结构已有真实视频技术试跑；中文对白、人物一致性和情绪效果仍需人工听看，不由技术跑通认定。
 
