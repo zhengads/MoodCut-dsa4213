@@ -131,6 +131,112 @@ def _number(value, field, *, positive=False):
     return Decimal(str(value))
 
 
+def _planning_json_schema(stage):
+    """Basic generated-planning shapes; P2 retains semantic validation."""
+    string = {"type": "string"}
+    strings = {"type": "array", "items": string}
+    dialogue = {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "character_id": string,
+                "text": string,
+            },
+            "required": ["character_id", "text"],
+            "additionalProperties": False,
+        },
+    }
+    segment = {
+        "type": "object",
+        "properties": {
+            "beat_ids": strings,
+            "description": string,
+            "direction": string,
+            "duration_s": {"type": "integer"},
+        },
+        "required": ["beat_ids", "description", "direction", "duration_s"],
+        "additionalProperties": False,
+    }
+    shot = {
+        "type": "object",
+        "properties": {
+            "shot_id": string,
+            "beat_ids": strings,
+            "duration_s": {"type": "integer"},
+            "direction": string,
+            "visuals": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "asset_id": string,
+                        "crop": string,
+                    },
+                    "required": ["asset_id", "crop"],
+                    "additionalProperties": False,
+                },
+            },
+            "dialogue": dialogue,
+            "narration": string,
+        },
+        "required": [
+            "shot_id", "beat_ids", "duration_s", "direction",
+            "visuals", "dialogue", "narration",
+        ],
+        "additionalProperties": False,
+    }
+    schemas = {
+        "director": {
+            "type": "object",
+            "properties": {
+                "scene_id": string,
+                "tone": string,
+                "beat_order": strings,
+                "approach": string,
+            },
+            "required": ["scene_id", "tone", "beat_order", "approach"],
+            "additionalProperties": False,
+        },
+        "scene": {
+            "type": "object",
+            "properties": {
+                "scene_id": string,
+                "scene_direction": string,
+                "segments": {"type": "array", "items": segment},
+            },
+            "required": ["scene_id", "scene_direction", "segments"],
+            "additionalProperties": False,
+        },
+        "shot": {
+            "type": "object",
+            "properties": {
+                "schema_version": string,
+                "output_mode": string,
+                "scene_id": string,
+                "tone": string,
+                "scene_direction": string,
+                "shots": {"type": "array", "items": shot},
+            },
+            "required": [
+                "schema_version", "output_mode", "scene_id",
+                "tone", "scene_direction", "shots",
+            ],
+            "additionalProperties": False,
+        },
+    }
+    if stage not in schemas:
+        raise ValueError("JSON Schema is only available for planning stages")
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "moodcut_" + stage,
+            "strict": True,
+            "schema": schemas[stage],
+        },
+    }
+
+
 class OpenRouterClient(LLMClient):
     """Stateless JSON calls with separate usage records and a local budget.
 
@@ -146,7 +252,7 @@ class OpenRouterClient(LLMClient):
 
     def __init__(self, *, api_key, model, input_price_per_million,
                  output_price_per_million, allow_paid=False, max_cost_usd=None,
-                 timeout_s=60, temperature=0, reasoning_enabled=None):
+                 timeout_s=60, temperature=0, reasoning_enabled=None, json_schema_stages=None):
         if not isinstance(api_key, str) or not api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required")
         if any(c in api_key for c in "\r\n"):
@@ -165,6 +271,16 @@ class OpenRouterClient(LLMClient):
         if reasoning_enabled is not None and type(reasoning_enabled) is not bool:
             raise ValueError("reasoning_enabled must be a boolean or None")
         self.reasoning_enabled = reasoning_enabled
+        if json_schema_stages is None:
+            json_schema_stages = []
+        if (not isinstance(json_schema_stages, list)
+                or any(not isinstance(stage, str)
+                       for stage in json_schema_stages)
+                or any(stage not in ("director", "scene", "shot")
+                       for stage in json_schema_stages)
+                or len(set(json_schema_stages)) != len(json_schema_stages)):
+            raise ValueError("Invalid planning JSON Schema stage configuration")
+        self.json_schema_stages = tuple(sorted(json_schema_stages))
         if self.temperature > 2:
             raise ValueError("temperature must be in [0, 2]")
         self.allow_paid = allow_paid
@@ -188,6 +304,7 @@ class OpenRouterClient(LLMClient):
                    timeout_s=config.get("timeout_s", 60),
                    temperature=config.get("temperature", 0),
                    reasoning_enabled=config.get("reasoning_enabled"),
+                   json_schema_stages=config.get("json_schema_stages"),
                    allow_paid=allow_paid, max_cost_usd=max_cost_usd)
 
     @property
@@ -225,7 +342,11 @@ class OpenRouterClient(LLMClient):
                          {"role": "user", "content": user}],
             "stream": False, "max_tokens": max_output_tokens,
             "temperature": self.temperature,
-            "response_format": {"type": "json_object"},
+            "response_format": (
+                _planning_json_schema(stage)
+                if stage in self.json_schema_stages
+                else {"type": "json_object"}
+            ),
             "provider": {"allow_fallbacks": False, "require_parameters": True,
                          "max_price": {"prompt": float(self._input_price),
                                        "completion": float(self._output_price), "request": 0}},
@@ -370,6 +491,10 @@ class RoleRoutedClient(LLMClient):
         roles = {role: {"model_id": c.model, "temperature": c.temperature,
                         "reasoning_enabled": c.reasoning_enabled}
                  for role, c in (("planning", self.planning_client), ("review", self.review_client))}
+        if self.planning_client.json_schema_stages:
+            roles["planning"]["json_schema_stages"] = list(
+                self.planning_client.json_schema_stages
+            )
         return {"model_id": self.policy_id(roles), "roles": roles}
 
     @property

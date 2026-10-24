@@ -523,3 +523,106 @@ def test_invalid_model_json_has_structured_failure_kind(
     assert client.spent_usd == pytest.approx(0.001)
 
     assert "test-secret-not-real" not in json.dumps(client.calls)
+
+
+@pytest.mark.parametrize("stage", ["director", "scene", "shot"])
+def test_optional_planning_schema_request(http, stage):
+    from moodcut.client import _planning_json_schema
+
+    client = live_client()
+    client.json_schema_stages = ("director", "scene", "shot")
+
+    client.complete_json(
+        stage=stage,
+        system="Return JSON",
+        user="Synthetic software test",
+        max_output_tokens=500,
+    )
+
+    request = http.call_args.args[0]
+    body = json.loads(request.data)
+
+    expected = _planning_json_schema(stage)
+
+    assert body["response_format"] == expected
+    assert body["provider"]["allow_fallbacks"] is False
+    assert body["provider"]["require_parameters"] is True
+    assert http.call_count == 1
+
+
+def test_optional_schema_does_not_change_review_format(http):
+    client = live_client()
+    client.json_schema_stages = ("director", "scene", "shot")
+
+    client.complete_json(
+        stage="critique",
+        system="Return JSON",
+        user="Synthetic software test",
+        max_output_tokens=500,
+    )
+
+    body = json.loads(http.call_args.args[0].data)
+
+    assert body["response_format"] == {"type": "json_object"}
+    assert http.call_count == 1
+
+
+@pytest.mark.parametrize("stages", [
+    ["unknown"],
+    ["director", "director"],
+    ["critique"],
+    "director",
+])
+def test_invalid_schema_stage_configuration_rejected(stages):
+    from moodcut.client import OpenRouterClient
+
+    with pytest.raises((ValueError, TypeError)):
+        OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/test-model",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+            json_schema_stages=stages,
+        )
+
+
+def test_schema_configuration_changes_role_policy_identity():
+    from moodcut.client import OpenRouterClient, RoleRoutedClient
+
+    def build(stages):
+        planning = OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/planning",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+            json_schema_stages=stages,
+        )
+        review = OpenRouterClient(
+            api_key="synthetic-test-key",
+            model="vendor/review",
+            input_price_per_million=1,
+            output_price_per_million=2,
+            allow_paid=False,
+            max_cost_usd=0.1,
+        )
+        return RoleRoutedClient(
+            planning, review, max_cost_usd=0.1
+        )
+
+    legacy = build([])
+    director = build(["director"])
+    all_stages = build(["director", "scene", "shot"])
+
+    assert legacy.model != director.model
+    assert director.model != all_stages.model
+    assert legacy.model_settings["roles"]["planning"].get(
+        "json_schema_stages"
+    ) is None
+
+    assert all_stages.model_settings["roles"]["planning"][
+        "json_schema_stages"
+    ] == ["director", "scene", "shot"]
