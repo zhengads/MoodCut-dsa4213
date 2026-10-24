@@ -1,5 +1,7 @@
 # MC-01 公共契约、客户端与集成
 
+Corrected-v3 S06 live trial used one successful native-schema writer request, then stopped on emotional Taiyi's invalid global line reference `[0]` instead of supplied `[1]`. Eight known-cost text calls, $0.00336748 reconciled, zero video. No runtime/prompt change, retry or index repair. [Actual record](../pilots/s06-actor-v3-schema.md). Original history preserved; PR #52 unmerged, #8/#9 open.
+
 Offline S06 correction adds optional JSON Schema to the existing text clients/router and requests it only for new v3 writers. Schema bytes enter shared/per-client reservations; digest/round identity is rechecked. Historical contracts stay readable; bad replies/unsupported schemas still stop without repair or retry. [Original-byte replay and scope](../pilots/s06-structured-writer.md). No paid calls; PR #52 unmerged, #8/#9 open.
 
 Latest S06 real trial stopped on emotional writer content JSON syntax after nine known-cost text calls ($0.00361854, reconciled). Raw-body/content retention captured the actual extra-data failure at line 1 / column 312; the failed source remains rejected for preparation. No video, retry or manual repair. [Actual record](../pilots/s06-actor-v3.md). Original inputs/history unchanged; PR #52 unmerged, #8/#9 open.

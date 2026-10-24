@@ -1,5 +1,7 @@
 # MoodCut
 
+Latest corrected-v3 S06 trial: **stopped on actor line ownership, no video**. The generic native-schema writer passed; emotional Taiyi returned global index `[0]` despite being supplied own line index `1`. Eight text calls cost **$0.00336748**, individually verified and matched to account usage. No JSON error, retry, index repair or handwritten fallback. [Actual page](https://zhengads.github.io/MoodCut-dsa4213/#s06-schema), [exact trial record](docs/pilots/s06-actor-v3-schema.md). Earlier failures/media remain intact; PR #52 unmerged, #8/#9 open.
+
 Offline S06 correction in PR #52: new v3 writer requests now carry a native JSON Schema, with schema/round identities and budget accounting, while strict parsing and failure stops remain. Original S06 HTTP bytes replay to the same rejection; previously valid raw replies pass the new request path without changing words. Historical results remain unchanged and no paid rerun occurred. [Diagnosis, compatibility and offline acceptance](docs/pilots/s06-structured-writer.md). PR unmerged, #8/#9 open.
 
 Latest authorized S06 v3 trial: **stopped before video** on emotional writer JSON syntax (`Extra data`, line 1 / column 312). All nine raw replies were retained; nine text charges total **$0.00361854**, individually verified and matched to the account increment. No video POST, retry, repair or handwritten fallback. [Actual status and text](https://zhengads.github.io/MoodCut-dsa4213/#s06), [exact trial record](docs/pilots/s06-actor-v3.md). Previous trials/media are unchanged; PR #52 unmerged, #8/#9 open.

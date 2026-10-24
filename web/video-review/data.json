@@ -3,6 +3,86 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "s06-schema",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "本次使用修复后的结构化编剧请求；情绪组演员行归属校验失败，未出片。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+      "cost": "0.00336748",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "修复后的 v3 再跑 S06：通用组 Schema 编剧请求成功，但情绪组太乙把自己的台词索引填成 0，指向李靖的台词。系统按硬性错误规则停止，没有视频提交或重试。",
+      "observations": [
+        "真实调用 8 次：共同规划 3 次，通用组演员 2 次加编剧 1 次，情绪组演员 2 次。情绪组未进入编剧、演员确认或第二轮协商。",
+        "通用组编剧实际使用 json_schema，输出和修订均通过；本轮全部 8 份响应都是合法 JSON。一次成功不代表今后所有调用都能保证合规。",
+        "本镜头的全局行索引为 0＝李靖、1＝太乙。输入给太乙的 own_dialogue 明确标注 line_index=1，太乙回复的 line_indices 却为 [0]；角色归属检查因此拒绝。",
+        "没有替演员改索引、重试、换模型或手写补位；没有编译或提交视频，情绪组显示的仍是诊断用初稿。",
+        "8 笔文本费用合计 $0.00336748，逐笔服务端核对且与本次账户增量一致。视频费为 0，$0.10 备用金未动用。",
+        "上次 S06 的 JSON 多余尾部失败单独保留；本次是新的演员引用索引错误。无新视频可供效果比较，不能据此判断通用或情绪审查谁更好。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "共同初稿已保存；情绪组演员行归属错误导致整块停止，视频未提交。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾，该你负责了。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "不行，得重新分工。"
+            }
+          ],
+          "note": "两位通用演员各提 1 条意见，Schema 编剧申报均已处理，修订通过；整块停止，没有新视频。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "演员行归属错误，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "太乙回复引用了李靖的全局行索引，已拒绝。这里是恢复的诊断用初稿，不是通过审查的最终稿，也没有自动改索引。"
+        }
+      ]
+    },
+    {
       "id": "s06",
       "title": "李靖与太乙：这次谁来收尾",
       "intro": "同一场分工争执，比较通用审查与情绪审查。本次在文本阶段停止。",

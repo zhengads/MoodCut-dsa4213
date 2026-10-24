@@ -163,7 +163,7 @@ fetch("data.json")
   })
   .then(data => {
     experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "s06");
+    showExperiment(location.hash.slice(1) || "s06-schema");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";

@@ -1,5 +1,7 @@
 # Anna/Elsa videos for team review
 
+Latest separate [S06 schema trial](https://zhengads.github.io/MoodCut-dsa4213/#s06-schema), [exact record](s06-actor-v3-schema.md): generic Schema writer succeeded, but emotional Taiyi's global line index was wrong. Eight text calls / $0.00336748 reconciled / zero video. The seventh tab preserves this actor-binding failure separately from the preceding JSON failure and all eight unchanged historical MP4s; no new media upload or Release was made.
+
 Latest page addition: [S06 cleanup-assignment attempt](https://zhengads.github.io/MoodCut-dsa4213/#s06), [exact record](s06-actor-v3.md). It stopped on emotional writer JSON syntax before any video submission: nine text calls, $0.00361854 reconciled, raw reply retained. The six-tab page distinguishes this no-video attempt from all eight original Anna/Elsa MP4s below. No new media Release or upload was made for S06; old files and hashes remain unchanged.
 
 ## New actual v3 videos (2026-10-24)
