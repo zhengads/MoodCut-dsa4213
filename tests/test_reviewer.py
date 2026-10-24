@@ -861,7 +861,7 @@ def test_v3_saved_source_cannot_hide_rounds_disagreements_or_actual_candidate(ba
     assert validate_actor_review_result(*case[:3], result, mode="moodcut")
 
 
-@pytest.mark.parametrize("outcome", ["disputed", "accepted", "unknown_cost", "over_budget", "http_error"])
+@pytest.mark.parametrize("outcome", ["disputed", "accepted", "unknown_cost", "over_budget", "http_error", "json_error"])
 def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tmp_path, monkeypatch, outcome):
     import io
     from unittest.mock import Mock
@@ -887,7 +887,7 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
         envelopes.append(HTTPError("https://example.invalid", 503, "Software failure", {}, None)
             if outcome == "http_error" and index == 9 else io.BytesIO(json.dumps({
                 "id": "software-only", "model": "software-response", "choices": [
-                    {"finish_reason": "stop", "message": {"content": json.dumps(response)}}],
+                    {"finish_reason": "stop", "message": {"content": '{"broken":' if outcome == "json_error" and index == 9 else json.dumps(response)}}],
                 "usage": {"prompt_tokens": 100, "completion_tokens": 20, "cost": cost}}).encode()))
     send = Mock(side_effect=envelopes)
     monkeypatch.setattr("moodcut.client.build_opener", Mock(return_value=Mock(open=send)))
@@ -900,6 +900,15 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
     block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
         output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(),
         review_protocol=ACTOR_REVIEW_V3)
+    for call in block['planning']['call_records']:
+        assert (out / call['response_artifact']['body_path']).is_file()
+    for row in block['runs']:
+        for call in row['call_records']:
+            assert (out / row['condition'] / call['response_artifact']['body_path']).is_file()
+    if outcome == 'json_error':
+        failed=block['runs'][1]['call_records'][-1]
+        assert failed['parse_error']['kind']=='syntax_error' and failed['provider_cost_usd']==.001
+        assert (out/'generic_review'/failed['response_artifact']['content_path']).read_text()=='{"broken":'
     if outcome not in ("disputed", "accepted"):
         assert block["status"] == "failed" and send.call_count == 10 and client.stopped
         assert block["runs"][1]["negotiation_status"] == "failed"

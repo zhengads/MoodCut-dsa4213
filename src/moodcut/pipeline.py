@@ -11,7 +11,7 @@ from pathlib import Path
 import shutil
 from time import monotonic
 
-from .client import BudgetError, FakeClient, RoleRoutedClient, _strict_json
+from .client import BudgetError, FakeClient, RoleRoutedClient, _strict_json, capture_text_responses
 from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
                         assert_dialogue_only_revision, shared_generation_sha256)
 from .evaluation import build_assignments
@@ -236,8 +236,9 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
                 review_options = dict(mode_options)
                 if review_protocol in ACTOR_PROTOCOLS:
                     review_options["review_protocol"] = review_protocol
-                reviewed = review_and_revise(deepcopy(scene), deepcopy(initial_plan), deepcopy(manifest),
-                                             client, mode=condition, project_root=project_root, **review_options)
+                with capture_text_responses(output):
+                    reviewed = review_and_revise(deepcopy(scene), deepcopy(initial_plan), deepcopy(manifest),
+                                                 client, mode=condition, project_root=project_root, **review_options)
             finally:
                 logger.removeHandler(handler)
                 handler.close()
@@ -404,8 +405,9 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                 scene, manifest, include_planning=initial is None, initial_plan=initial))
         before = len(getattr(client, "calls", []))
         if initial is None:
-            traced = make_plan_with_trace(deepcopy(scene), deepcopy(manifest), client,
-                                          project_root=root, **mode_options)
+            with capture_text_responses(output):
+                traced = make_plan_with_trace(deepcopy(scene), deepcopy(manifest), client,
+                                              project_root=root, **mode_options)
             planning["raw_responses"] = deepcopy(traced["raw_responses"])
             initial = deepcopy(traced["plan"])
             errors = validate_plan(scene, initial, manifest, project_root=root, **mode_options)

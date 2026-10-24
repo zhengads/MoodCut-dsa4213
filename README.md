@@ -1,5 +1,7 @@
 # MoodCut
 
+Latest offline diagnostics increment in PR #52: text HTTP bodies and extracted model content are retained privately before parsing, with separate envelope/content JSON error kinds and syntax positions. Pipeline/CLI capture is automatic; known charges and unknown costs retain their existing meaning. Both failed v3 trials remain unchanged and the earlier missing reply is still unknown. No paid API or new video. [Scope and acceptance](docs/pilots/text-response-diagnostics.md); PR unmerged, #8/#9 open.
+
 Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](docs/pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
 
 Offline correction in the same PR #52: v3 writers now submit one complete dialogue per shot ID, with derived atomic patches and preserved raw replies. Both conditions/rounds share the contract; historical failed results stay unchanged and no paid rerun occurs. [Diagnosis and acceptance](docs/pilots/anna-elsa-v3-shot-contract.md). #8/#9 remain open.
