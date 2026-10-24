@@ -1,6 +1,6 @@
 # MoodCut
 
-视频效果入口：[Anna/Elsa 历史实验视频与台词对照](docs/pilots/anna-elsa-videos.md)。五段原始 MP4 已上传到本仓库 Release，覆盖两次实验的六条条件记录；新演员通用组与 baseline 共享一段。组员可下载原片，视频不塞入 Git 历史；PR 内嵌在线播放尚未完成，另行处理，不阻塞演员确认机制提交。
+视频效果入口：[直接在线播放与对比台词](https://zhengads.github.io/MoodCut-dsa4213/)。可切换两次历史实验，并排播放三条件、查看原句与修改；新演员通用组与 baseline 共享一段。五段原始 MP4 随 Pages 静态产物托管，不加入代码分支 Git 历史。来源、原片下载与部署验收见[视频索引](docs/pilots/anna-elsa-videos.md)；页面没有生成新视频，也不把 v1 原片当成 v2 结果。
 
 动画选材入口：[本地动画素材库](assets/library/README.md)含MovieAgent固定版本四部动画的25个角色、75张参考图及来源/许可状态。运行`python scripts/prepare_references.py --animation-assets`显式下载，加`--check`离线复核；原图不提交Git，署名不等于已取得图片使用或再分发许可。
 

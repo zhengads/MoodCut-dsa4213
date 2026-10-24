@@ -14,7 +14,7 @@ Both review conditions use this same mechanism and the same review model/setting
 
 Offline replay retained the actual historical Elsa opinion, exact writer response and candidate as development inputs. A developer-authored `maintain_objection` response blocked preparation; a separately labeled software acceptance allowed `prepared_offline`. Each used nine software slots because the historical generic actors had no issues and only Elsa required confirmation. Network audit observed zero HTTP attempts and $0 new spending. Both legacy global/v1 prepared runs passed read-only recompilation; all 303 protected historical files remained unchanged. This is a targeted engineering regression informed by a development failure, not independent evaluation or an autonomous v2 result.
 
-The five original historical videos are now available via the [team video index](pilots/anna-elsa-videos.md) and repository Release; remote digests match the source files. They are not v2 outputs. No videos or original images enter Git.
+The five original historical videos are now available via the [online Pages comparison](https://zhengads.github.io/MoodCut-dsa4213/), [team video index](pilots/anna-elsa-videos.md) and repository Release; hosted bytes match the source files. They are not v2 outputs. Videos enter only the temporary deployment artifact and Release, not the code branch's Git history; original reference images are excluded.
 
 - [x] Add the bounded actor-confirmation prompt/stage and strict owner/issue/candidate binding, preserving v1 behavior and raw decisions.
 - [x] Recheck confirmation at saved-source/request/comparison boundaries; reject absent, forged, disputed or mixed-protocol sources.
@@ -27,7 +27,7 @@ The five original historical videos are now available via the [team video index]
 
 The broader related regression completed **602 tests and 113 subtests** in 393.98 seconds during implementation. After the final missing-candidate diagnostic guard, a fresh reviewer/patch/client/pipeline/evaluation run passed **278 tests and 47 subtests** in 20.85 seconds. This includes accepted/disputed/malformed/failed/no-omission cases, correct actor/candidate binding, raw-response preservation, extra-stage role routing, unknown-cost stopping, source tampering and comparison summaries. The broader suite was not repeated for documentation-only edits.
 
-A fresh network-denied read-only recheck confirmed the accepted software preparation still compiles, the disputed block cannot prepare requests, both historical global/v1 preparations remain compatible and all 303 protected files are SHA-256 unchanged. New model/video HTTP attempts and spending are zero. The repository Release's five original MP4 digests/sizes match their sources. Its links are downloads; in-PR playback is a separate unresolved delivery task and does not block this code increment.
+A fresh network-denied read-only recheck confirmed the accepted software preparation still compiles, the disputed block cannot prepare requests, both historical global/v1 preparations remain compatible and all 303 protected files are SHA-256 unchanged. New model/video HTTP attempts and spending are zero. A subsequent, separately authorized GitHub Pages delivery now plays the five original files directly on a comparison page; both Release and Pages digests/sizes match the sources. This delivery does not change the offline-only status of v2 or generate new videos.
 
 ## Historical v1 real pilot (2026-10-24)
 
