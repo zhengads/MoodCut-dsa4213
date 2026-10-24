@@ -907,3 +907,142 @@ snapshots must remain intact, and missing costs must remain unknown.
 Actual receipt/media rechecks, VBench runs on accepted real clips and independent
 human ratings remain outstanding in this checkout. No formal sample size,
 participant assignment or new paid execution is approved by this document.
+
+## Public pilot media audit and evaluation readiness (2026-10-25)
+
+P5 audited the actual downloadable Anna/Elsa pilot videos against their release
+manifests and published result records. All **8 distinct videos** passed byte,
+metadata and full audio/video decode checks. They represent **9 condition
+entries**, because actor-v1 baseline and generic_review share one video. This is
+media integrity evidence, not a VBench result, independent rating, full source
+qualification or approval for formal inclusion.
+
+### Versioned evidence inventory
+
+Repository snapshot: `f45590de4a89d9c5d787771dcc59308e41f274d3` (main).
+The v3 public result record was read separately at
+`c7e6bd87437bef05dad45805f55c184ad4e1b041` (Draft PR #52).
+
+| Pilot protocol | Condition entries | Distinct videos | Interpretation |
+| --- | ---: | ---: | --- |
+| global-v1 | 3 | 3 | Historical global review; keep separate from actor self-review. |
+| actor-v1 | 3 | 2 | baseline and unchanged generic_review reuse identical bytes; retain both condition entries without inventing an independent generation. |
+| actor-v3 | 3 | 3 | Historical bounded actor negotiation; public record says completed_requires_manual_inspection. |
+| Total inventory | 9 | 8 | An inventory count across protocols, not nine independent experimental samples. |
+
+Public releases and pinned records:
+
+- [Historical global-v1 / actor-v1 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024):
+  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/manifest.json),
+  [global result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-agent.results.json),
+  [actor-v1 result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-actor.results.json).
+- [Historical actor-v3 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024):
+  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/manifest.json),
+  [pinned result](https://github.com/zhengads/MoodCut-dsa4213/blob/c7e6bd87437bef05dad45805f55c184ad4e1b041/docs/pilots/anna-elsa-actor-v3-captured.results.json).
+  Its executed code is `7817623a76de5d5ff68b7da5c12aa943e28798c4`, with
+  `dialogue_by_shot_v1`. The commit hosting the published record is not the
+  executed commit. Do not relabel these clips as outputs of the newer
+  `dialogue_by_shot_json_schema_v2` contract in PR #52.
+
+Release manifest SHA-256 values, in the release order above:
+
+```text
+b89b95de4577cbe8d2611df4e210dc49e91400170aaf1359fed26e4875b0472b
+b3d479ef1b6141165ecee8bed374318a575fa9e02c4fa1bb41aaa14bbe06abd3
+```
+
+### Observed file checks
+
+Every listed MP4 matched its manifest size/hash and GitHub asset size/digest
+(where the API supplied a digest). Each mapped condition's published video hash,
+width, height and encoded duration matched the downloaded file. All videos have
+1344 x 768 video, reported frame rate 24/1, an audio stream and encoded duration
+5.258344 seconds. Total downloaded MP4 size: **8,662,796 bytes**. Full decoding
+reported no errors for all eight files with FFmpeg 9.0.1 Essentials.
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `global-v1-baseline.mp4` | 923,816 | `4cdadb0ab1d66868caad62bb7c11e8c8b9c24e43a89f73f5f88767539f1c85e1` |
+| `global-v1-generic_review.mp4` | 1,090,596 | `8badfe78d6a9253cdf7f081112d64d5af933704015db235e51fcc7fb6e11c2a4` |
+| `global-v1-moodcut.mp4` | 1,023,858 | `bab555e2b4dfeef1d4183baaee857ded13540502cc14284d01d7baa1f61bee4b` |
+| `actor-v1-baseline-and-generic.mp4` | 1,261,699 | `bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7` |
+| `actor-v1-moodcut.mp4` | 1,036,129 | `cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8` |
+| `actor-v3-baseline.mp4` | 1,070,733 | `c4c527b7a9f8bfd3ab7e0cec41bf077d980226d4e147a55d65979a6ed734050c` |
+| `actor-v3-generic_review.mp4` | 1,156,634 | `dba7f08313592ba258f820eb78c6f01d2dd16620e8c05c5c2cedcaba545fcff8` |
+| `actor-v3-moodcut.mp4` | 1,099,331 | `0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7` |
+
+To reproduce, download the MP4 assets and manifests from the two releases into
+separate ignored run directories, retain their SOURCE.md attribution, and first
+verify the manifest hashes above. Compare each file's byte count and SHA-256
+with the manifest and pinned per-condition result. Probe both streams using
+P4's existing media probe (or `ffprobe -v error -show_format -show_streams
+-of json <clip.mp4>`), then decode each file with:
+
+```text
+ffmpeg -v error -xerror -i <clip.mp4> -map 0:v:0 -map 0:a:0 -f null -
+```
+
+The audit's local evidence is under `runs/release-audit-20261025/`: `audit.json`,
+`videos.csv`, downloaded manifests/source records, per-file ffprobe JSON and
+decode logs. These artifacts and videos remain ignored. The pinned links,
+checksums, observations and reproduction procedure above are the public record.
+
+Audio presence and successful decoding do not establish intelligible speech,
+correct speaker attribution, emotional delivery or visual quality. This audit
+made zero provider calls, ran no benchmark inference and collected no ratings.
+It did not independently reconcile the published spending with original receipts.
+
+### Project status and next evidence handoff
+
+At this snapshot, PR #46 (P5 anonymous-label regressions) and PR #57 (review
+coverage and repeatable offline verification, authored by `fanx9905-blip`) are
+merged. The PR #46 status in the dated contribution table above is historical.
+PR #52 remains Draft: the later S06 attempts stopped before video generation;
+the latest recorded stop was invalid actor dialogue ownership. The subsequent
+schema/ownership fixes have offline evidence, but no new successful S06 video
+is established by the eight historical Anna/Elsa files.
+
+The [six-story clear-emotion inputs](studies/six-story-clear-emotions-20261024/README.md)
+define affectionate/hostile/tense scenes and 18 planned condition entries. They
+are an input design, not 18 completed results. Do not merge the older Anna/Elsa
+pilot into that dataset or combine global-v1, actor-v1 and actor-v3 into a paired
+method-effect estimate.
+
+| Next activity | Available evidence / dependency | Required interpretation |
+| --- | --- | --- |
+| Inspect historical pilot media | The eight files are now locally available and byte-checked. | A human can inspect speech, speakers and emotion; no answers have been filled automatically. |
+| Requalify actual source records | Still needs final block records, frozen inputs, preparation artifacts, configuration and original receipts with relative relationships intact. Published summary JSON and MP4 files alone are insufficient. | Reuse P1 source rechecks and P5 qualification; retain failures, unknown costs and each final ledger once. |
+| Run real-clip VBench | Freeze the accepted clip inventory and obtain the required model, scale and compute/budget approval. | Existing adapter covers imaging_quality; it does not measure dialogue emotion or constitute full VBench. Report protocol and reused-file mappings alongside scores. |
+| Collect independent ratings | Needs source-qualified export, agreed protocol/rater assignment and blank templates. | Reuse existing export/import rechecks; keep private mappings private and human answers independent. |
+| Compare the current method | Needs a frozen common protocol, completed approved runs and independent evidence for the intended study. | Preserve failed/unchanged/reused entries and coverage; do not infer effectiveness from these integrity checks. |
+
+The [public viewing page](https://zhengads.github.io/MoodCut-dsa4213/) reveals
+conditions and target tones. It is suitable for team inspection, not blind
+rating distribution. Use the existing anonymous export route after complete
+source handoff; account for prior exposure when assigning independent raters.
+
+P5 contribution in this increment: independently retrieved and audited the
+published media, reconciled condition-to-file reuse and protocol versions, and
+recorded the remaining evaluation dependencies. Generation, protocol changes
+and the shared verification workflow remain attributed to their original authors.
+
+### Current offline integration verification
+
+Reused the team's existing workflow on the same main snapshot:
+
+```text
+python scripts/verify_workflow.py --output runs/workflow-verification-20261025
+```
+
+All five stages passed: three-condition mock run, anonymous export, coverage
+without ratings, assignment dry-run and generated integration. The final stage
+passed **12 tests**, with zero failures/errors/skips. The mock run produced three
+clips; all three remained unrated and score means remained null. Local evidence
+is `runs/workflow-verification-20261025/verification.json`, stage logs and
+`generated-tests.xml`. These synthetic fixtures verify software integration;
+they do not requalify the real pilot media audited above. No full-suite rerun
+is claimed for this documentation-only increment.
+
+### 简短中文总结
+
+已核验公开的 8 段真实视频，文件哈希、音视频轨及完整解码均通过；9 条条件记录中有一段复用，且来自三个不同协议，不能混作独立实验样本。当前尚无这些视频的 VBench 分数或独立人工评分；正式来源核验仍需队友提供完整原始记录与回执。
