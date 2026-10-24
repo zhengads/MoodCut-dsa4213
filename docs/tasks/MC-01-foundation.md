@@ -1,8 +1,8 @@
 # MC-01 公共契约、客户端与集成
 
-### HeyGen pilot adapter and stopped attempt (2026-10-24)
+### HeyGen pilot adapter and real-video result (2026-10-24)
 
-The existing branch/PR adds HeyGen 768p reference pricing with verified provider discount, fixed native audio without an HTTP audio toggle, disabled prompt enhancement and `<Picture N>` labels. An authorized three-by-five-second pilot stopped after one HTTP 400 rejection: the PNG URL returned `application/octet-stream`, which the provider rejects. The actual cost remains unknown; no retry, later condition or text-model request occurred. Explicit inline PNG references now have byte/hash validation and offline preparation only. Original records remain unchanged. See [pilot record](../pilots/umbrella-single-shot.md) and [adapter contract](../CONTRACTS.md#heygen-pilot-adapter-2026-10-24). Issues #8 and #9 remain open; no new tool or transport is introduced.
+The existing branch/PR adds HeyGen 768p reference pricing with verified provider discount, fixed native audio without an HTTP audio toggle, disabled prompt enhancement and `<Picture N>` labels. After the first HTTP 400 Content-Type rejection, a separately authorized run with byte-verified inline PNG references completed all three five-second conditions: three POSTs, $0.25 each, $0.75 total, no automatic retry, text-model request or reserve spending. Returned charges match the later read-only key usage delta. All three raw videos have audio and passed local media checks; user listening/viewing acceptance remains pending. The earlier failed request and unknown cost remain preserved. See [pilot record](../pilots/umbrella-single-shot.md) and [adapter contract](../CONTRACTS.md#heygen-pilot-adapter-2026-10-24). Results stay in draft PR #45; Issues #8 and #9 remain open. No new tool or transport is introduced. Older task sections below retain their original scope and dates.
 
 当前任务：[GitHub Issue #8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 

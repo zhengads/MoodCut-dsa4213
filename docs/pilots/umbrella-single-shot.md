@@ -1,6 +1,24 @@
 # 试跑单：公交站还伞，首镜头三版本
 
-### Latest authorized HeyGen pilot and stopped attempt (2026-10-24)
+### Latest result: three real HeyGen clips delivered (2026-10-24)
+
+Under a new explicit authorization for the corrected inline PNG inputs, the existing executor at code commit `5c2edc16642dab2fa1b6344a31188638a3e46b76` completed all three conditions. This was a separately authorized run, not an automatic retry of the earlier failed submission. Model `heygen/heygen-video-1`, 768p, requested duration five seconds each, 16:9, seed 4213, cn-02/Lin and cn-04/Bo, disabled prompt enhancement, common scene/action/audio instructions and exact reference bytes remained frozen; only the handwritten dialogue differs. The $1.00 local video ceiling and separate unspendable $0.10 reserve were respected. No text model, replacement model or automatic retry was used.
+
+| Condition | Lin's fixed dialogue (Bo silent) | Actual task ID | Returned charge | Raw MP4 SHA-256 |
+| --- | --- | --- | --- | --- |
+| baseline | 伞还给你。 | `gen-vid-1792825088-V5ULfiFh4nV5vzrGBhV3` | $0.25 | `dfbe9ff31e4211c50846db61c5fb5b626185508205a62862883f1d174e13154f` |
+| generic_review | 请你收好。 | `gen-vid-1792825135-1Gtl15BWT3zwNSnMPp9j` | $0.25 | `276b4479024e79cc19b46f69a16c8ceeda1999ba3fbf4455fc0fe90f7e908d45` |
+| moodcut | 下次下雨，我还陪你。 | `gen-vid-1792825172-q7H7RZ5SuYyRCIzHzyDI` | $0.25 | `5179d0b4803488a97dbfe12264d997d139a709696f76fa867172aec813e9638c` |
+
+Execution started at 14:58 Beijing time and completed by 15:03. All three receipts are `downloaded`, with one POST per condition, 35 total status polls and three downloads (38 video GETs, 41 video HTTP calls). Final records report actual video cost **$0.75** and status `assembled_requires_manual_inspection`. The immediate key snapshot initially reflected only $0.50; a read-only reconciliation at 15:07 showed usage rising from $0.0080172 to $0.7580172, exactly $0.75, with $14.2419828 remaining key allowance. This is a key limit snapshot, not an account-wide balance. Earlier unknown charges remain unknown and are not retroactively set to zero.
+
+Each original provider MP4 passed local media checks: 1344 x 768, 24 fps, audio present, encoded duration 5.258344 seconds for the five-second request. The files were delivered directly for user viewing; delivery copies match the raw clip hashes above. No cropping, retiming, synthetic replacement or subjective scoring was applied. Dialogue accuracy, speaker identity, lip sync, emotion and action quality still require listening/viewing acceptance; common inputs and seed do not guarantee identical framing or expressions.
+
+Evidence remains in ignored `runs/umbrella-heygen-inline-20261024/`: `result.json`, `execution/*/shot-000/receipt.json`, `execution/inspection/records/block.json`, `observed-posts.json`, `key-before.json`, `key-after.json`, `key-reconciled.json` and `viewer-copy.json`. The shared generation identity is `67f60540e8e8a5caa0e215b18cdb9a1669b67e8581eae6f8964c95c56bb99ba6`. The original PNG bytes, source, license and [portrait attribution](umbrella-sigils-credits.md) remain intact; delivery includes CREDITS and LICENSE-PORTRAITS. Videos, portraits, credentials and inline payloads are not committed.
+
+This is a real-video technical pilot from handwritten software dialogue, not real P2/P3 review output or evidence of method superiority. Planning/review software slots in the records do not represent paid text calls. Manual checks and ratings remain blank. Results and adapter changes stay together in [PR #45](https://github.com/zhengads/MoodCut-dsa4213/pull/45), draft and unmerged; Issues #8 and #9 remain open. No further paid run is implied. Historical records below describe their own earlier attempts.
+
+### Earlier authorized HeyGen pilot and stopped attempt (2026-10-24)
 
 The user authorized HeyGen Video (`heygen/heygen-video-1`), 768p, three five-second clips with cn-02/Lin and cn-04/Bo. All three share the scene, action, seed 4213, native Mandarin audio requirements and reference bytes; only the existing handwritten dialogue differs. Prompt enhancement is disabled, with no text-model calls, replacement models or retries. The video budget is $1.00; a separate $0.10 reserve is not spendable. Historical failed tasks and unknown costs remain unchanged. This is a technical pilot, not actual P2/P3 review output or formal evaluation.
 

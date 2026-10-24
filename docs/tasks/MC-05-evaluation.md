@@ -2,7 +2,7 @@
 
 ### HeyGen technical pilot record (2026-10-24)
 
-The approved model changed to HeyGen 768p with three five-second fixed-dialogue clips and the same cn-02/cn-04 portraits. The first POST failed on the image URL's Content-Type; there is no video to rate. Preserve one attempted baseline, two unsubmitted conditions and unknown task cost. The inline-image correction has offline verification only and does not count as another paid run. See [pilot record](../pilots/umbrella-single-shot.md). Issues #8 and #9 remain open; no ratings, eligibility or formal inclusion decision is inferred from these engineering checks.
+A separately authorized run of HeyGen 768p with the corrected inline cn-02/cn-04 PNGs completed all three five-second fixed-dialogue clips, $0.25 each and $0.75 total. Real provider videos with audio are now available for direct user listening/viewing; encoded duration is about 5.26 seconds. There were no text-model calls, automatic retries or reserve spending. The earlier Content-Type failure and unknown cost remain in history. See [pilot record](../pilots/umbrella-single-shot.md) for actual task IDs, file hashes, charges and key reconciliation. These are handwritten technical-pilot lines, not actual P2/P3 review outputs. Manual checks/ratings remain blank; no eligibility, formal inclusion or quality superiority is inferred from media completion. Adapter and results stay together in draft PR #45, with Issues #8 and #9 open. Older task sections below retain their original scope and dates.
 
 当前任务：[GitHub Issue #9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)。先做下面未勾选的下一增量；末尾既有交付仅用于复用和回归。
 
