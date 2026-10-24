@@ -1,0 +1,908 @@
+{
+  "schema_version": 1,
+  "source_repository": "https://github.com/showlab/MovieAgent",
+  "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+  "rights_status": "unconfirmed",
+  "files": [
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "6086a3d86af1b14cd0ff281fc494a94e5b41d5593b0493a4af06fa067a9394dd",
+      "size_bytes": 439194,
+      "git_blob_sha1": "1b5bc60871e513addb3d44139cab56e80077008e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/2025-02-18 00.37.51.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/2025-02-18%2000.37.51.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "ee6f90de5737237c55fccdc57b94ef25b46cdff167c31b254f504529d8eebb0b",
+      "size_bytes": 257376,
+      "git_blob_sha1": "bdffa055491ccd342a462064d7e31e78f817b80c"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/2025-02-18 00.39.41.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/2025-02-18%2000.39.41.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "fc43dff9b6484bf90cb4f274cd8228d5d4dc8fda768f61354d1a679825427f85",
+      "size_bytes": 317395,
+      "git_blob_sha1": "797e227e8ca5747bd93916cd12bdaa6c6bc9f3bf"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9864dae1c8d55481071ba9d0f7bba6a4086d45805086d6ec61e4d0186bba43a6",
+      "size_bytes": 83,
+      "git_blob_sha1": "2c3936b154ebf83efb61c55827ded7722fe71416"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "422c12807142e392ffd0e5e20f4fd39a4001c0b7ca032a727616fe1bc59598bd",
+      "size_bytes": 792419,
+      "git_blob_sha1": "9349072145e879f0b8d9f4c4977e865a72e0fd93"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/2025-02-18 00.39.19.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/2025-02-18%2000.39.19.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "a8babc8e4fdb02d47a3cf84b1a1ccf8ef39e32fd2e779d00d0dfde1612156638",
+      "size_bytes": 629157,
+      "git_blob_sha1": "dd7b0e71e2988ea04f1e32c16fcd4f19f58f6229"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/2025-02-18 00.39.52.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/2025-02-18%2000.39.52.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "eae1c276650610c19016edbbefb2d257ff5d3694d193b5b059c33ccb19e92407",
+      "size_bytes": 837596,
+      "git_blob_sha1": "1331c128350f9d4128bf96d308ef0166027eae5d"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "a12ce1875e0d36c1f0bebb9c4bb43806bc222633a48bdcbde910887964811392",
+      "size_bytes": 107,
+      "git_blob_sha1": "a567be48ff9dd5bca37c2b66f1006cf7424b5452"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9d1859ebd2eb505b17e177491bc1ce5abec237498724ace523a74bc9c01d6e8f",
+      "size_bytes": 830649,
+      "git_blob_sha1": "d6121c3dc0141acd5ca47384bcfda0af11ce6cd1"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/2025-02-18 00.38.11.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/2025-02-18%2000.38.11.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "10439503e23a0c68a77ee7bc0987d73bf97d9bab27c1edce8e7573963d708446",
+      "size_bytes": 399360,
+      "git_blob_sha1": "3d70dacec148acf6eb8586736b4a9329877aeed6"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/2025-02-18 00.39.12.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/2025-02-18%2000.39.12.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "15e33e4b59ef7f10e12255b0ea49dc7015b2e494ece068f716ba943a6fdadb05",
+      "size_bytes": 407840,
+      "git_blob_sha1": "2394e15945cceac6b6a00140122334a96380a7e2"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8950c62a97317356af8e628ed1c419bfd13dcce6710505d9921cde00dc4d3b88",
+      "size_bytes": 97,
+      "git_blob_sha1": "ab3869bcabd408dcc313ead669dd300e7a36bbec"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "86dfcf78539a03efaa404764abf205f55c478ec728e08dae8e38a4f855f0969e",
+      "size_bytes": 1225017,
+      "git_blob_sha1": "b4291a9724074e4037c454c467dbe7a90cc923ea"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/2025-02-18 00.48.25.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/2025-02-18%2000.48.25.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "c8ca056472a986bf2c8487c1ea4a341ce1c939c01ec2d4a268f5601d52b504d0",
+      "size_bytes": 938143,
+      "git_blob_sha1": "3afcdbd327f25568734b6bcd988eb0e7855db701"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/2025-02-18 00.48.44.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/2025-02-18%2000.48.44.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "971326c557d09b93f743160937a13fc02e6ac14e7e9d8e7de34c93171c2b3d1a",
+      "size_bytes": 260001,
+      "git_blob_sha1": "045d8dcdd88ff2f419430c6fea52aaf2fd1fd45f"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "08e6afa1d490840710903eedfae9eb57a93e5f24771007a970db63765c02f990",
+      "size_bytes": 97,
+      "git_blob_sha1": "47cc7cf4e18a334514dac4af8db6f8961ffb29a3"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "01b95a4cf6842c17120766a708938ab7cf00edf38c4ae017e14122c166a97540",
+      "size_bytes": 635212,
+      "git_blob_sha1": "d56e1117b79451f2f9d3f3182b0590a69691df9e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/2025-02-18 00.39.09.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/2025-02-18%2000.39.09.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "937104915a8614eb199bb1fba1bbd7c69c03b16f2a81e975f3a3640233a6a0b3",
+      "size_bytes": 155926,
+      "git_blob_sha1": "ecdc4648bf7bb76e9a9fbd29e342fe8e52ff3cb9"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/2025-02-18 00.39.37.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/2025-02-18%2000.39.37.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "096f5e0053d204656d4702f0a976d588cc7c151255c270651cee8ec6d0536944",
+      "size_bytes": 208164,
+      "git_blob_sha1": "7f687b5c6cd3a7e82dccd2c7fc066b26b618e759"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "e3abab14a508e5ae731de775c6e5e0b7aae6a2c0171f26f047804c775c9c0faf",
+      "size_bytes": 92,
+      "git_blob_sha1": "c20e83cde43338a6325e0a6ed37cb98105606391"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "7074b8ab33781ce3ac0250a7bd0892f41b064f84051abc76a1c6c6a94817e3ab",
+      "size_bytes": 1607036,
+      "git_blob_sha1": "48d0e956cc33ea945469eb986d188a84118e7945"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/025-02-12 15.11.33.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/025-02-12%2015.11.33.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "39ceec216d5f0d7f40c1700fc1a89b32100d6200a29da3225c4ba2007d022e17",
+      "size_bytes": 817752,
+      "git_blob_sha1": "64f266f0216bb8cf69ee202d41a2d98a381cc77e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/2025-02-11 12.04.51.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/2025-02-11%2012.04.51.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8e71d037963df82a68dfd795c2608857ee24a8cd04175f4a8b1ff581e67a0fad",
+      "size_bytes": 2495359,
+      "git_blob_sha1": "ed2e8567411dc90ae877fb5913a6b440ff501a64"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "22ea6eb5bb6e76a4063ef4ecc47537355230cf6e9d39b2edee411e22b60dd03e",
+      "size_bytes": 87,
+      "git_blob_sha1": "c07c758fe95ce81f38e59a17a071f45fc511603a"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "aaeeb1ea278d2499c0bb78323db74db1c1a8fba288ab45cc6bf80c41399054ae",
+      "size_bytes": 1449745,
+      "git_blob_sha1": "230245a20fab310af36a4faee8cefc0d2d328578"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/2025-02-11 12.09.40.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/2025-02-11%2012.09.40.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "911d028ff8cc15737a4354fc89887dd632edd39ac73e2d55ef280bb507c031de",
+      "size_bytes": 1936995,
+      "git_blob_sha1": "c1818d89ebb9305f926dee4340a795ab69c7765c"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/2025-02-11 12.10.07.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/2025-02-11%2012.10.07.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "dca83e898213a4b5e6e22f0c85c275082282082c7410e39da5e5feabba0187b7",
+      "size_bytes": 1502179,
+      "git_blob_sha1": "50034ecf82428e0a246f8e81ca44c98df33127e3"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8d2b278eb92423e3be7caf78c970773e349f534c1da285745bd521b3c2c98896",
+      "size_bytes": 78,
+      "git_blob_sha1": "6033f1e6948667aeed060e9751fcbf716eabea4d"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "6d479c0e75b7f6b93b17e8e19e7ffcc18e5468471a2da86d0b6d4ccf6c22994f",
+      "size_bytes": 1996160,
+      "git_blob_sha1": "29d720c4015396797e1392bd930691a133125f54"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/2025-02-11 12.33.12.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/2025-02-11%2012.33.12.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "4a37df3eceda30facf0522c218239447f31cae761a473d6ac6a603baecdcb710",
+      "size_bytes": 415226,
+      "git_blob_sha1": "8d51945fe2607a07e2334e6b42dcc22021c3e30e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/2025-02-11 12.33.50.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/2025-02-11%2012.33.50.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8ecdf0f4cd72dd2e75509f8b797260cde73d32ad8a67b504e02cdf1ae23438fc",
+      "size_bytes": 886470,
+      "git_blob_sha1": "82686ac7c51721b8138e552f4f2b0aca0b944490"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "0e848cfaef661766a6d30c7373fcb1a0b3e6ed8ec13cfc43b1cf2005b98755ae",
+      "size_bytes": 111,
+      "git_blob_sha1": "533dcbb8037ecdc2248c95687a1200ed0464574d"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "817a8e89f911320252453d6245ca3c8f3fee15aa809e54e01989145771b354d4",
+      "size_bytes": 795865,
+      "git_blob_sha1": "4df15f26898121a5c52e640144f064608240c244"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/2025-02-11 12.13.32.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/2025-02-11%2012.13.32.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "fd7c77ac9b65285d9a228e9b1975bd2001aca663cbe612cbbfb959ab17fdc7ab",
+      "size_bytes": 387803,
+      "git_blob_sha1": "9716a2e645ee16b13d68e27ed1ad1c69fa7daea5"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/2025-02-11 12.13.53.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/2025-02-11%2012.13.53.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9aa5ad301fd4bc03bb2096dece79bbf4a3b8e5541fa244e2c610d783f66dca2b",
+      "size_bytes": 452932,
+      "git_blob_sha1": "38e557fcd29ac1a7ef4b032950f426bb8a8014fb"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "ce7894ec1a53ced3e3cb025de64ab60c3aaa5752d72c074464ef4def15a8901e",
+      "size_bytes": 94,
+      "git_blob_sha1": "6109a5dc6ec6647dbfeca6fdfb053d9d583acc31"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "fda3f12b3fc3c6c15405e101d6ffd206a1caaa81a4db755579be0f975ae5cd4f",
+      "size_bytes": 1347411,
+      "git_blob_sha1": "78dd52e4c75d4d3d5433feccc67a66aab0e04bce"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/2025-02-11 12.28.43.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/2025-02-11%2012.28.43.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "56ce187f9a88eb9ed00776656f294270b20b905021e0dc490bc43a14fac516d0",
+      "size_bytes": 1857254,
+      "git_blob_sha1": "d7ce7e53da7f266f5a5edfbb41b30ce2513b366a"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/2025-02-11 12.29.08.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/2025-02-11%2012.29.08.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "267016ffd44bd6b317e2099a9c0bfb858599a8fac12cff7eb3ecc84787cac9af",
+      "size_bytes": 225579,
+      "git_blob_sha1": "90276d262588a9dd33bb2aadbee335d5f9788502"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "36fe095f5078309bcad462ab8ab5ba2df051c966a83a5d35f2b6d536c0f325d0",
+      "size_bytes": 95,
+      "git_blob_sha1": "47fb28a683d75055a4dc1b7ecdb4ef1eb23b3a07"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "c36ebce22b220abe1bdec66235b4eda3c82aaae2c7641d8d3b56fc06942b6b32",
+      "size_bytes": 1131882,
+      "git_blob_sha1": "b12730b4af603758d7a47bec2dcf8c347cf1c9e9"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/2025-02-11 12.38.10.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/2025-02-11%2012.38.10.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "e2b54b5f8dc0f630937b4c2193d808156360f716b60a6c3fcaaad1f27829a49b",
+      "size_bytes": 1310499,
+      "git_blob_sha1": "ff8f69a5eff169a4099e2ff53dabd4fa8a26bf12"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/2025-02-11 12.38.24.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/2025-02-11%2012.38.24.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "2e9d434ded0ea0fec1b448e17bb94f1916cef66b36c8aa75302cd1a93077dd14",
+      "size_bytes": 1741659,
+      "git_blob_sha1": "a8dda67fb0e710075997c52ba64c96abeef8d6c6"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8737fbb57ef3b9f679ffe58881fb7d88d45bb9cd17a00c07269d07f703cec1e7",
+      "size_bytes": 97,
+      "git_blob_sha1": "f18ddc0d7b5e482fe87fa9e90b1f1526b3c13765"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "218746f425ca10bcde189ee4cddd32eb5dbad9284f1c9a21d729e48c92887178",
+      "size_bytes": 441719,
+      "git_blob_sha1": "d66fcbd653031de5d5b160a9ffa05fcf8b87b1bb"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/2025-02-10 15.14.25.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/2025-02-10%2015.14.25.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "f7e414a7b1d8e2b7ce9a0b7dfa98ea61255f7e5e607ee86262bfaa41f8ab75ca",
+      "size_bytes": 267941,
+      "git_blob_sha1": "0516e691c037e0119e7756e51f70086d3517f2a0"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/2025-02-10 15.14.38.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/2025-02-10%2015.14.38.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "66c4fc476e37a580749d4dfdd675dac1b3a0f56b6ffbda9848db13fee0abf63f",
+      "size_bytes": 602367,
+      "git_blob_sha1": "80ce6e5e6d647453da43515e13e0938e05905bd5"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "b78948adda3122caf46eb6362bdcbf0cbe151912b0e5ef97c0bb98bcc6f4d7f9",
+      "size_bytes": 98,
+      "git_blob_sha1": "b4a93012def0a1f9afa8c4f65fa24b4eec6401af"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "234045151ac3822a02777e7f15b26702632f096105b2bf03136d3654bf0743a4",
+      "size_bytes": 804516,
+      "git_blob_sha1": "c7ba3964bf83839d948f9021320dbb3eaf84be92"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/2025-02-10 14.58.55.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/2025-02-10%2014.58.55.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "6823cc2d4f8330515d48a4989b8d1f5d61291fa1e37d9ef1c73318fad8aad36e",
+      "size_bytes": 382875,
+      "git_blob_sha1": "98fc63f5e9ac263b920627b7d43d839d64b8cfeb"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/2025-02-10 14.59.06.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/2025-02-10%2014.59.06.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "19d67b7eb60aaf18d41ddb7443df37fd2f9ecea5756b670909c101db3e27d7bc",
+      "size_bytes": 1432781,
+      "git_blob_sha1": "c7f19cbeb0300af55734e90883578ac63b8b6093"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "91b690756754a5d6db7d251d79b2696c50e81a3e8cad7c9f9137e92fb679d442",
+      "size_bytes": 105,
+      "git_blob_sha1": "28a779a90b2e95e405dd09684fab99408337d940"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "a8986ab9c9a4d3cf0771c0ef07b5f5a1f7d178251613c5925e8f87cb37ab2fe6",
+      "size_bytes": 406129,
+      "git_blob_sha1": "3a8f82349f97add1d7e1b3c94546aac6910ddd91"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/2025-02-10 15.07.00.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/2025-02-10%2015.07.00.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "5399519f28d668c745d61f515804902fcf9facc75b16a27bc04fa782fbd43b10",
+      "size_bytes": 643850,
+      "git_blob_sha1": "7a7e72eba3737b68c8a8ce72f941c0f4463369bb"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/2025-02-10 15.07.16.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/2025-02-10%2015.07.16.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "b2acebe9f26b2bf559aa06c76338fbe658f23f396904362230508bcc9d0f0e7d",
+      "size_bytes": 772632,
+      "git_blob_sha1": "5de4767369600419245983f900a7b9416d6591c9"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "da9fa1bbe1fbbf2c66a1177ed4e871559692874b4ff25cc8dcd4c16b9696f02c",
+      "size_bytes": 99,
+      "git_blob_sha1": "a6f78c784f29e4bc6c254542e08803cbaec41fb9"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "50ef509f290d2871fffb9de055f1da9ce3037dd5c5cf7284dbe165434ab86e08",
+      "size_bytes": 2641038,
+      "git_blob_sha1": "96b8d786f1ebff6387607ed6e473b24f54eee19c"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/2025-02-10 15.21.06.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/2025-02-10%2015.21.06.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "cdb414357d999c5b1d0b3570e2547b6df847970e5bbed8bc315d03928940c5f4",
+      "size_bytes": 312291,
+      "git_blob_sha1": "7bdb848dc3755fb0147c2f425b7f1a8c3b6cf01e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/2025-02-10 15.21.32.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/2025-02-10%2015.21.32.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9f1414bd7563edb79dd458a89014e9bd6a6559d28d14058cbedc606640d7d9e3",
+      "size_bytes": 1211767,
+      "git_blob_sha1": "4a1f85c2d5a4426f644ab9f2ae8e235957e63a7e"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "1ddf2ecc59ed898f27689a3c0d776379c593b50ee888b4d0e7b8bf60676c21ee",
+      "size_bytes": 102,
+      "git_blob_sha1": "793b07d3e217aa2d263883b4d459d2160732f3dc"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "0321bc5527f23d64497eb015a483356ac28be979cf2a5cf72d1b8efcf4aae442",
+      "size_bytes": 483860,
+      "git_blob_sha1": "0579555ef5a63ddf8dd1a6baf78b122e18459306"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/2025-02-10 15.10.21.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/2025-02-10%2015.10.21.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8e0b101c88975ad18f40bd626a59ba21f67ac97a26cb3affdd202622b695604f",
+      "size_bytes": 247468,
+      "git_blob_sha1": "5e339bafb2da281ac49b02ddd0b7481d90d87556"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/2025-02-10 15.10.33.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/2025-02-10%2015.10.33.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "8f8df3d4ae384167c08872347d7426b760a49e7f4e0a95b726c1bdcb6a123743",
+      "size_bytes": 173784,
+      "git_blob_sha1": "0b11e798072b89f01aa7e39ff9792d02c65ad2ec"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "1128728beb1db8174929fd40ce58686eeccb58c2c10896ee158700c7daab9712",
+      "size_bytes": 97,
+      "git_blob_sha1": "6cdee6ffef9ec3c08a33c2c667252a8686d750cd"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "c167c7e050ec5a791e15c9c010226d79ee9bc34c486147fac4167f3f593cbea7",
+      "size_bytes": 630083,
+      "git_blob_sha1": "0c0194c063e7a30193329c6fcb3454d117c0d408"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/2025-02-10 14.54.18.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/2025-02-10%2014.54.18.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "044da35966e2b9a6eb094ad89c0f86ae0eae6ce4a5fd10890273025f1dbb5a1a",
+      "size_bytes": 270450,
+      "git_blob_sha1": "91e4750cba546ff37cc4d1ac42b32849408c20a1"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/2025-02-10 14.54.52.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/2025-02-10%2014.54.52.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "0f1c179579df570620e28d025b0d1c83e1df390a54035d82a292e466a8e8f999",
+      "size_bytes": 212801,
+      "git_blob_sha1": "f724b529af913e2ba36ef0c73d676befafb4037b"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "492618e19424409c6ebb46162b428e1477c95fb4586d3cd633e88ee6dc48e7a1",
+      "size_bytes": 103,
+      "git_blob_sha1": "c47d0396f456197cb5f7ca30a5be5a8ee4dbe27f"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "827c65c9ce7ef51a736441e46a2121e9a22a025639a6cba896fc2bbf2809a796",
+      "size_bytes": 863021,
+      "git_blob_sha1": "e548db46076d69c834f29dbcb80c466521dcb438"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/2025-02-10 15.02.46.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/2025-02-10%2015.02.46.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "6713866d21ca7126d300ede7fc410ebcce8192eb39ed900c0e2c0a6c260727f3",
+      "size_bytes": 969478,
+      "git_blob_sha1": "488749060b23c80687d36e56d95e29bd862ade17"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/2025-02-10 15.03.21.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/2025-02-10%2015.03.21.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "d940a0edc124cd05cd20b5e0ec6df2b595ccfeebeb327a1e793e6f336033dfa0",
+      "size_bytes": 2483510,
+      "git_blob_sha1": "abfa0041157717545e204329f751a5c68d1167a1"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9f76946872edaa0bc57fbf390d7bbdd783d33564709c38870d678931c0ccda87",
+      "size_bytes": 91,
+      "git_blob_sha1": "4dba6e79759c36149e0184969c6c60473647eb4b"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "1122eff92df708b49682d68ebb338a047476353702516982be6f01195a8dc18f",
+      "size_bytes": 464644,
+      "git_blob_sha1": "af717aceb8b29a1790f766a782a3363317d5f2fb"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/2025-02-10 15.17.02.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/2025-02-10%2015.17.02.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "28464a4f566ad7316a656f59dbbc5277af79af059aa31a2edd8c7569d8ee4b89",
+      "size_bytes": 233493,
+      "git_blob_sha1": "735f05be326dc396cd06af881253ef6dd384be5b"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/2025-02-10 15.17.20.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/2025-02-10%2015.17.20.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "52da9acfa976b31be53424b2417727703122a0f5b3f4a9196e748cedb69c8ca9",
+      "size_bytes": 442067,
+      "git_blob_sha1": "407d6c0882a34619dcbe43a4969d080d214c4ae0"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "ad561a0a12d19e103ce3cfe367fbcd735c44b43bdbb272e5d85fbf0514a55a1d",
+      "size_bytes": 76,
+      "git_blob_sha1": "b192c7baf03b827708a1afd9b2b70c54d89be960"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "51f4f6436a652219af5d86360a8796b2e72b0acab1417b63954a421810952944",
+      "size_bytes": 265828,
+      "git_blob_sha1": "80d1e99d7b085d617d48cce1d5ea7db6c137ce04"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/025-02-09 21.57.56.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/025-02-09%2021.57.56.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "167c458a37dab7da2c2d692f2fb3cdee619ff9f48ea7a0c7c129015813110884",
+      "size_bytes": 350193,
+      "git_blob_sha1": "1b0b54d2b1a9d4d234f09e82e5827e8ff27bd966"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/025-02-09 21.58.24.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/025-02-09%2021.58.24.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "fb9dd35a9c20b242a956e9e1497b61572c37c3a0d839e46b9730dba0daf3c9c9",
+      "size_bytes": 315161,
+      "git_blob_sha1": "75a18bbe653c6ff5adef4dc6f4a359669adf0755"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "0928355cc08ee0decbc7b5d888a59f07b2aedebf35b5c0c9c4b89ebff798c3a8",
+      "size_bytes": 113,
+      "git_blob_sha1": "32686f7577d439dd6b414de59de1fdad0baf2b39"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "702ac76b70cd0dcef8a5f4e1c7ca8dd318fe897e2dc95ac97cb6a4a825d9f73f",
+      "size_bytes": 612317,
+      "git_blob_sha1": "0b4b1768767a9df48094677c25c422c423d7cb46"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/2025-02-11 15.41.13.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/2025-02-11%2015.41.13.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "ddc5c5b73be640dc46bd5cc70b9eb0b7f92787d973e5a8778ca0aa05a4d17191",
+      "size_bytes": 536363,
+      "git_blob_sha1": "ddc529a9873702a1b8e774ced469cee09f06c023"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/2025-02-11 15.48.49.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/2025-02-11%2015.48.49.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "73ae88d1d157fbf69086c7992004c1f89138004b8cb239105b2ea8aaed15dc72",
+      "size_bytes": 228525,
+      "git_blob_sha1": "1a90bc6b7bb3a72c754051d8682bab74aaf70cb5"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "af683211d2531d85bdfcb56e9581f82a34d76255c8988c9c5b119079f37fa995",
+      "size_bytes": 109,
+      "git_blob_sha1": "2431e032bd925699558ff74c6b4f0c832c7f1c6a"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "1d76acc9ae754ee7c03cc2d43d63355965885fa7cc2c59ad5b98e68193e34921",
+      "size_bytes": 1088510,
+      "git_blob_sha1": "abc271274322fe7503a145608aa0f63a7e39b30c"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/2025-02-11 15.41.09.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/2025-02-11%2015.41.09.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "761255222e9ecc8215c4865392c9b2265c97d08b04b11188041df93c82b435d7",
+      "size_bytes": 1024104,
+      "git_blob_sha1": "4ddf3027840cbab16a6ba1c25a659521fb9a9189"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/2025-02-11 15.44.55.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/2025-02-11%2015.44.55.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "9b048125185c13342d5c677ff46909f1d8a112b876cc1463a653d7f7309c31f9",
+      "size_bytes": 394208,
+      "git_blob_sha1": "1cf34ef2606aef79ea4b55bd5ce61a4606575875"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "2c6b9c59744f62b57bcf831b7a0b5f8e217ab30625c485a6aa7ea44d9d76d775",
+      "size_bytes": 117,
+      "git_blob_sha1": "59f26e8b3eb47b416396ada2afb98b28095b6d9f"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "58900eba5a65c6574c482073f8eeb8bb85564d5c6d0ce88a52b257f960327d59",
+      "size_bytes": 878146,
+      "git_blob_sha1": "601ffb253751d398023dade9af2568cf4e210e05"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/025-02-09 21.55.17.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/025-02-09%2021.55.17.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "09581c33b4ec813742b4c8bb1b1a86e997cff991a4f95c1cf5a8f1444fa40902",
+      "size_bytes": 609749,
+      "git_blob_sha1": "565983389d38b73051a95cd05c023ccc232e3fb9"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/025-02-09 21.55.27.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/025-02-09%2021.55.27.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "22e15fc1490db247a4262ee2a2bd70bc48f957e07d01c22d5afda2c36ec1964f",
+      "size_bytes": 594686,
+      "git_blob_sha1": "fbb2de9083935ee8c445161307b800f17f090c0a"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "a4cbb041c6e5f92aed50b24ed72e5cf6bc65d189dedd6db2d762589436a8cf5d",
+      "size_bytes": 110,
+      "git_blob_sha1": "c3b8171341ebe4de4350df25b0b3607b29c245c7"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "3e7d3c8f025071ed9d5a33292f8d59026f01e1c55e4a34d095164ff885e2799f",
+      "size_bytes": 307812,
+      "git_blob_sha1": "1e63ee2aed776d00b1d1fd6616afb428c5f6b40d"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/025-02-09 22.00.30.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/025-02-09%2022.00.30.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "dceb40d2b5cda08692c780c590be492962d113ff6e28dea4beffc94c9e126ca2",
+      "size_bytes": 305190,
+      "git_blob_sha1": "22f8c80a89f7bef40318951a9be775d948ac9d96"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/025-02-09 22.00.39.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/025-02-09%2022.00.39.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "eebf2a6bfae4bb6cb397a5ad44a4de631d0437477b0f6fb17dcdf08fa1e523a9",
+      "size_bytes": 238355,
+      "git_blob_sha1": "81cdb0b1a57207c5c0bcb5d947d50c990ce60d4c"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "5c9937a0e46c0b38977ef2e7730cd8e16cbeedbbf7e38a79e1ebeabb74ecdcf8",
+      "size_bytes": 125,
+      "git_blob_sha1": "103bebc5859a0645adf01f05927cfe5a2bb3bbe6"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/best.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "ec12b5b39235984f1443e5da224d5b177c662ddb463dc83f3bdde8389b4aa75a",
+      "size_bytes": 375696,
+      "git_blob_sha1": "72280e7476c552d4c42f98c65be3cd92c5edc5c7"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/025-02-09 22.02.07.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/025-02-09%2022.02.07.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "882b698e5065f1709d377dd394fd424fddeab87d0bf1c992375123e7cfa98be3",
+      "size_bytes": 451026,
+      "git_blob_sha1": "84a0fff4551e197764bc385258e1484e3314cb6a"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/025-02-09 22.02.13.png",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/025-02-09%2022.02.13.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "85c47d8fc8840b9ed7ad6b8ca2d9f665a094f8b2680cc4bb9677c0ec7aadf046",
+      "size_bytes": 325176,
+      "git_blob_sha1": "eaf3ee9ca99a707e9c5c4d4a5d2b6bce08084472"
+    },
+    {
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/best.txt",
+      "group": "assets",
+      "url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/best.txt",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "sha256": "13b2e1dcdf79e69564f9b7b04e7a25fd41e8afb7ad87271cb9a3d8bd92ef8da8",
+      "size_bytes": 106,
+      "git_blob_sha1": "f996643468960ead3a1aceace9fd60932162bc24"
+    }
+  ]
+}
