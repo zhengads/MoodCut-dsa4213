@@ -283,8 +283,24 @@ class OpenRouterClient(LLMClient):
                 json.dumps(result, allow_nan=False)
                 if not isinstance(result, dict):
                     raise ValueError("not an object")
-            except (ValueError, TypeError, OverflowError, RecursionError):
-                raise OpenRouterError("Model output must be a finite JSON object without duplicate keys") from None
+            except (ValueError, TypeError, OverflowError, RecursionError) as exc:
+                if isinstance(exc, ValueError) and str(exc) == "duplicate JSON key":
+                    failure_kind = "duplicate_json_key"
+                elif isinstance(exc, ValueError) and str(exc) == "non-finite JSON value":
+                    failure_kind = "non_finite_number"
+                elif isinstance(exc, ValueError) and str(exc) == "not an object":
+                    failure_kind = "non_object_json"
+                elif isinstance(exc, ValueError) and str(exc).startswith("Out of range float values"):
+                    failure_kind = "non_finite_number"
+                elif isinstance(exc, (OverflowError, RecursionError, TypeError)):
+                    failure_kind = "invalid_json_value"
+                else:
+                    failure_kind = "invalid_json_syntax"
+
+                record["failure_kind"] = failure_kind
+                raise OpenRouterError(
+                    "Model output failed strict JSON validation: " + failure_kind
+                ) from None
             record["status"] = "success"
             return result
         except OpenRouterError as exc:
