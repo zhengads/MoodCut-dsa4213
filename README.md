@@ -1,12 +1,16 @@
 # MoodCut
 
+视频效果入口：[直接在线播放与对比台词](https://zhengads.github.io/MoodCut-dsa4213/)。可切换两次历史实验，并排播放三条件、查看原句与修改；新演员通用组与 baseline 共享一段。五段原始 MP4 随 Pages 静态产物托管，不加入代码分支 Git 历史。来源、原片下载与部署验收见[视频索引](docs/pilots/anna-elsa-videos.md)；页面没有生成新视频，也不把 v1 原片当成 v2 结果。
+
 动画选材入口：[本地动画素材库](assets/library/README.md)含MovieAgent固定版本四部动画的25个角色、75张参考图及来源/许可状态。运行`python scripts/prepare_references.py --animation-assets`显式下载，加`--check`离线复核；原图不提交Git，署名不等于已取得图片使用或再分发许可。
 
 DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
-给定故事、两个角色参考图与目标氛围，系统规划台词并执行审查—修订—复查。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音。第一阶段 review 只修改台词。
+给定故事、两个角色参考图与目标氛围，规划 Agent 生成共同初稿；新演员协议由两个演员分别审查自己的台词，再交同一编剧统一修订。baseline 保留初稿，generic_review 使用一般自审，moodcut 使用情绪导向自审。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音；review 只修改台词。
 
-默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。接口与拼接已做离线验证，真实视频、中文对白和人物一致性尚待付费pilot验收。
+当前修复显式选择 `review_protocol="actor_self_review_v2"`，详见[演员自审方法](docs/ACTOR_REVIEW_METHOD.md)：未采纳意见及编剧理由必须交回对应演员确认；演员仍反对、回复缺失或调用失败时，停止请求准备，保留候选稿与双方原话，不自动增加修订轮次。两种审查共用该机制，最多13次文本调用，原费用门禁保持。此版本只做离线验收，尚无真实 v2 视频。默认 `global_v1` 与历史 `actor_self_review_v1` 继续兼容。[演员 v1 真实试跑](docs/pilots/anna-elsa-actor.md)的8次文本调用、两段视频/三条件和$0.50248398账目均保留；其中Elsa意见未落实的问题不改写成已经解决。
+
+默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。全局审查和演员 v1 结构已有真实视频技术试跑；中文对白、人物一致性和情绪效果仍需人工听看，不由技术跑通认定。
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
@@ -149,7 +153,7 @@ Start-Process (Resolve-Path runs/generated-pair-01/comparison.html).Path
 
 恢复只下载该镜头，不自动继续整对或重新计账；先核对已有 receipt 和平台扣费，再决定后续操作。提交超时且没有 job ID 时需到平台核对，不重新提交来猜测状态。receipt.json 保留状态、已知/未知费用、generation ID 和脱敏后的服务端错误原因，不保存 key 或签名下载 URL。任一费用未知停止后续生成。
 
-成片拼接实际生成的音视频轨，不补静态占位，不把缺少音轨当作成功。输出含每镜头 generated.mp4/receipt.json、每版 film.mp4、generation.json 与 comparison.html。检查音轨存在只证明文件含音频；是否正确说出中文台词、说话人、口型、声音连续和情绪自然度仍需人工听看。固定 seed 不能保证改变台词后画面完全相同，单个样例也不能证明情绪效果提升。当前没有真实视频生成验收证据，不承诺一次调用达到最终质量。
+成片拼接实际生成的音视频轨，不补静态占位，不把缺少音轨当作成功。输出含每镜头 generated.mp4/receipt.json、每版 film.mp4、generation.json 与 comparison.html。检查音轨存在只证明文件含音频；是否正确说出中文台词、说话人、口型、声音连续和情绪自然度仍需人工听看。固定 seed 不能保证改变台词后画面完全相同，单个样例也不能证明情绪效果提升。已取得[动漫素材与真实Agent三条件成片的技术试跑证据](docs/pilots/anna-elsa-agent.md)，人工质量和正式方法效果仍待验收。
 
 另支持 `bytedance/seedance-2.0-mini` 的参考图＋原生声音配置：保留相同输入，配置中设置该 model，移除 price_per_second_usd，使用 `price_per_million_video_tokens_usd: "3.50"`。当前仅实现 16:9 下 480p（854×480）或 720p（1280×720）、4–15 秒的明确价格契约；不覆盖音视频参考输入。2026-10-16 核对[官方模型页](https://openrouter.ai/bytedance/seedance-2.0-mini)和公开目录：费用按 `宽×高×秒数×24/1024 × $3.50/百万视频 token` 估算，带声音的 720p 六秒约 $0.4536，480p 六秒约 $0.2018。付费入口仍检查实时参数/价格及本次预算，不因切换后端而获得新运行授权。
 
@@ -241,7 +245,7 @@ python -m moodcut qualify-generated-records --records runs/video-inspection/reco
 
 生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
-生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿，不补长为60秒。台词限定审查接口见[CONTRACTS 6.11](docs/CONTRACTS.md#611-台词限定审查与实际最终脚本复查)，汇集同镜头意见、保持单edit并复查实际最终计划。实际P2/P3/P4代码加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic，离线媒体检查/资格报告已实现，真实任务与盲评仍待接线，不能视为真实三条件实验已可运行。
+生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿。旧全局审查见6.11，演员v1见6.18，新确认门禁须显式传 `review_protocol="actor_self_review_v2"`，见[CONTRACTS 6.19](docs/CONTRACTS.md#619-actor-confirmation-of-omitted-feedback)。实际P2/P3/P4加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic。离线媒体检查、资格、盲评与真实任务入口已实现，v2尚未真实调用或完成人工效果验收。
 
 本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后可用qualify-generated-records核对离线资格（6.14），人工听看仍待完成；盲评导出/评分须走6.15重检入口，不以旧导出绕过来源及副本核对。
 

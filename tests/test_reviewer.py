@@ -8,7 +8,8 @@ from pathlib import Path
 from unittest.mock import patch
 from moodcut.client import FakeClient
 from moodcut.reviewer import (MAX_OUTPUT_TOKENS, review_and_revise,
-                             get_review_prompt_hashes, validate_report, validate_verification)
+                             get_review_prompt_hashes, validate_report, validate_verification,
+                             ACTOR_REVIEW, ACTOR_REVIEW_V2, validate_actor_review_result)
 
 
 def inputs():
@@ -417,3 +418,415 @@ def test_actual_planner_reviewer_pipeline_prepares_three_conditions(tmp_path, mo
     # compiler, video client or paid/model call is required or substituted.
     _path, saved, source = pipeline._load_generated_block(output, root)
     assert saved == block and source["plans"]["generic_review"] == checked
+
+
+
+def actor_software_case(mode='moodcut'):
+    """Explicit software opinions/patches for structural checks, not model evidence."""
+    root = Path(__file__).resolve().parents[1]
+    data = json.loads((root / 'tests/fixtures/generated_contract.json').read_text(encoding='utf-8'))
+    scene, plan = data['scene'], data['initial_plan']
+    manifest = json.loads((root / 'tests/fixtures/assets.json').read_text(encoding='utf-8'))
+    plan['shots'][0]['dialogue'][0]['text'] = 'Here it is.'
+    plan['shots'][0]['dialogue'].append({'character_id': 'b', 'text': 'Thank you.'})
+    sid = plan['shots'][0]['shot_id']
+    reports = [{'schema_version': '1.0', 'scene_id': scene['scene_id'], 'mode': mode,
+        'actor_id': actor, 'issues': [{'issue_id': 'local-1', 'shot_id': sid, 'line_indices': [index],
+        'dimension': 'naturalness', 'severity': 'minor', 'evidence': 'Software feedback on my own line.',
+        'suggestion': 'Software-only revision marker.'}]} for index, actor in enumerate(('a', 'b'))]
+    lines = [{'character_id': 'a', 'text': 'Software revised A.'},
+             {'character_id': 'b', 'text': 'Software revised B.'}]
+    writer = {'patch': {'schema_version': '1.0', 'scene_id': scene['scene_id'], 'edits': [
+        {'issue_id': 'actor-1:local-1', 'shot_id': sid, 'set': {'dialogue': lines}}]},
+        'feedback_disposition': {'addressed_issue_ids': ['actor-1:local-1', 'actor-2:local-1'],
+                                'unaddressed_issue_ids': [], 'unaddressed_reasons': {}}}
+    return scene, plan, manifest, reports, writer
+
+
+def call_actor(case, client, mode='moodcut'):
+    return review_and_revise(*case[:3], client, mode=mode, output_mode='generated',
+        review_protocol=ACTOR_REVIEW, project_root=Path(__file__).resolve().parents[1])
+
+
+@pytest.mark.parametrize('mode', ['generic_review', 'moodcut'])
+def test_actor_feedback_independent_owned_and_unified_once(mode, monkeypatch):
+    monkeypatch.setattr('socket.socket.connect', lambda *a, **k: pytest.fail('No network allowed'))
+    case = actor_software_case(mode)
+    before = deepcopy(case)
+    client = FakeClient(case[3] + [case[4]])
+    result = call_actor(case, client, mode)
+    assert result['status'] == 'applied' and case == before
+    assert [c['stage'] for c in client.calls] == ['actor_critique', 'actor_critique', 'actor_revise']
+    assert result['actor_reports'] == [{'actor_id': a['actor_id'], 'response': a} for a in case[3]]
+    for position, actor in enumerate(('a', 'b')):
+        payload = json.loads(client.calls[position]['user'])
+        assert payload['actor']['id'] == actor and payload['plan'] == case[1]
+        assert all(case[1]['shots'][0]['dialogue'][r['line_index']]['character_id'] == actor
+                   for r in payload['own_dialogue'] if r['shot_id'] == case[1]['shots'][0]['shot_id'])
+        assert 'actor_reports' not in payload and 'report' not in payload
+    rewrite = json.loads(client.calls[2]['user'])
+    assert rewrite['actor_reports'] == result['actor_reports']
+    assert len(rewrite['issues_by_shot']) == 1 and len(rewrite['issues_by_shot'][0]['issues']) == 2
+    assert [i['issue_id'] for i in result['report']['issues']] == ['actor-1:local-1', 'actor-2:local-1']
+    assert result['verification'] is None and result['actor_endorsement'] == 'not_requested'
+    assert result['actor_feedback_status'] == 'writer_addressed'
+    assert validate_actor_review_result(*case[:3], result, mode=mode,
+        project_root=Path(__file__).resolve().parents[1]) == []
+
+
+def test_actor_empty_first_does_not_suppress_second_and_silent_actor_is_valid():
+    case = actor_software_case()
+    case[3][0]['issues'] = []
+    case[4]['patch']['edits'][0]['issue_id'] = 'actor-2:local-1'
+    case[4]['patch']['edits'][0]['set']['dialogue'][0] = deepcopy(case[1]['shots'][0]['dialogue'][0])
+    case[4]['feedback_disposition']['addressed_issue_ids'] = ['actor-2:local-1']
+    client = FakeClient(case[3] + [case[4]])
+    assert call_actor(case, client)['status'] == 'applied' and len(client.calls) == 3
+    case = actor_software_case()
+    for shot in case[1]['shots']:
+        shot['dialogue'] = [line for line in shot['dialogue'] if line['character_id'] == 'a']
+    for report in case[3]: report['issues'] = []
+    client = FakeClient(case[3])
+    result = call_actor(case, client)
+    assert result['status'] == 'unchanged' and len(client.calls) == 2
+    assert json.loads(client.calls[1]['user'])['own_dialogue'] == []
+
+
+@pytest.mark.parametrize('bad', ['wrong_actor', 'other_line', 'bool_index', 'unknown_line', 'duplicate_index', 'duplicate_issue'])
+def test_actor_invalid_ownership_stops_before_other_actor_or_writer(bad):
+    case = actor_software_case()
+    report = case[3][0]
+    if bad == 'wrong_actor': report['actor_id'] = 'b'
+    elif bad == 'other_line': report['issues'][0]['line_indices'] = [1]
+    elif bad == 'bool_index': report['issues'][0]['line_indices'] = [False]
+    elif bad == 'unknown_line': report['issues'][0]['line_indices'] = [100]
+    elif bad == 'duplicate_index': report['issues'][0]['line_indices'] = [0, 0]
+    else: report['issues'].append(deepcopy(report['issues'][0]))
+    client = FakeClient(case[3] + [case[4]])
+    result = call_actor(case, client)
+    assert result['status'] == 'review_failed' and result['plan'] == case[1]
+    assert len(client.calls) == 1 and len(result['actor_reports']) == 1
+
+
+def test_actor_second_failure_preserves_first_report_and_never_rewrites():
+    case = actor_software_case()
+    case[3][1]['actor_id'] = 'a'
+    client = FakeClient(case[3] + [case[4]])
+    result = call_actor(case, client)
+    assert result['status'] == 'review_failed' and len(client.calls) == 2
+    assert result['actor_reports'][0]['response'] == case[3][0]
+    assert result['writer_response'] is None
+
+
+@pytest.mark.parametrize('bad', ['drop_feedback', 'fake_addressed', 'delete_actor', 'change_speaker', 'illegal_field', 'duplicate_shot', 'no_reason'])
+def test_actor_writer_cannot_silently_veto_or_overwrite_feedback(bad):
+    case = actor_software_case()
+    writer = case[4]
+    if bad == 'drop_feedback': writer['feedback_disposition']['addressed_issue_ids'].pop()
+    elif bad == 'fake_addressed': writer['patch']['edits'][0]['set']['dialogue'][1]['text'] = case[1]['shots'][0]['dialogue'][1]['text']
+    elif bad == 'delete_actor': writer['patch']['edits'][0]['set']['dialogue'].pop()
+    elif bad == 'change_speaker': writer['patch']['edits'][0]['set']['dialogue'][1]['character_id'] = 'a'
+    elif bad == 'illegal_field': writer['patch']['edits'][0]['set']['duration_s'] = 99
+    elif bad == 'duplicate_shot': writer['patch']['edits'].append(deepcopy(writer['patch']['edits'][0]))
+    else:
+        writer['feedback_disposition']['addressed_issue_ids'].pop()
+        writer['feedback_disposition']['unaddressed_issue_ids'] = ['actor-2:local-1']
+    client = FakeClient(case[3] + [writer])
+    result = call_actor(case, client)
+    assert result['status'] in ('review_failed', 'rejected') and result['plan'] == case[1]
+    assert len(client.calls) == 3 and len(result['actor_reports']) == 2
+    assert result['writer_response'] == writer
+
+
+def test_actor_disagreement_with_reason_remains_a_viewable_pending_draft():
+    case = actor_software_case()
+    writer = case[4]
+    writer['patch']['edits'][0]['set']['dialogue'][1] = deepcopy(case[1]['shots'][0]['dialogue'][1])
+    writer['feedback_disposition'] = {'addressed_issue_ids': ['actor-1:local-1'],
+        'unaddressed_issue_ids': ['actor-2:local-1'],
+        'unaddressed_reasons': {'actor-2:local-1': 'Software example: conflicting suggestion, retained for viewing.'}}
+    result = call_actor(case, FakeClient(case[3] + [writer]))
+    assert result['status'] == 'applied' and result['actor_feedback_status'] == 'has_unaddressed'
+    assert result['actor_endorsement'] == 'not_requested'
+    assert result['feedback_disposition'] == writer['feedback_disposition']
+    changed = deepcopy(result); changed['actor_endorsement'] = 'approved'
+    assert validate_actor_review_result(*case[:3], changed, mode='moodcut')
+
+
+
+def test_actor_pipeline_routes_writer_to_planner_and_binds_saved_feedback(tmp_path, monkeypatch):
+    import io
+    from unittest.mock import Mock
+    from moodcut import pipeline
+    from moodcut.client import OpenRouterClient, RoleRoutedClient
+    from moodcut.video_generation import get_video_template_sha256
+    from moodcut.evaluation import validate_generated_comparison
+    root = Path(__file__).resolve().parents[1]
+    case = actor_software_case('generic_review')
+    scene, initial, manifest = case[:3]
+    for asset in manifest['assets']:
+        asset['source_url'] = 'https://example.invalid/' + asset['asset_id'] + '.png'
+    director = {'scene_id': scene['scene_id'], 'tone': scene['tone'],
+                'beat_order': [b['id'] for b in scene['beats']], 'approach': 'Software replay only'}
+    staged = {'scene_id': scene['scene_id'], 'scene_direction': initial['scene_direction'],
+        'segments': [{k: shot[k] for k in ('beat_ids', 'duration_s', 'direction')} | {'description': 'Software segment'}
+                     for shot in initial['shots']]}
+    other = actor_software_case('moodcut')
+    responses = [director, staged, initial] + case[3] + [case[4]] + other[3] + [other[4]]
+    def envelope(response):
+        return io.BytesIO(json.dumps({'id': 'software-envelope', 'model': 'software-response-model',
+            'choices': [{'finish_reason': 'stop', 'message': {'content': json.dumps(response)}}],
+            'usage': {'prompt_tokens': 100, 'completion_tokens': 20, 'cost': .001}}).encode())
+    send = Mock(side_effect=[envelope(r) for r in responses])
+    monkeypatch.setattr('moodcut.client.build_opener', Mock(return_value=Mock(open=send)))
+    clients = [OpenRouterClient(api_key='software-key', model=model, allow_paid=True, max_cost_usd=.1,
+        input_price_per_million=1, output_price_per_million=1) for model in ('test/planning', 'test/review')]
+    client = RoleRoutedClient(*clients, max_cost_usd=.1)
+    settings = pipeline.read_json(root / 'tests/fixtures/generated_contract.json')['settings']
+    settings['model'] = pipeline.read_json(root / 'configs/video.json')['model']
+    out = tmp_path / 'actor-source'
+    block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
+        output_mode='generated', generation_settings=settings, template_sha256=get_video_template_sha256(),
+        review_protocol=ACTOR_REVIEW)
+    assert block['status'] == 'prepared' and send.call_count == 9
+    assert block['review_protocol'] == ACTOR_REVIEW
+    assert [json.loads(c.args[0].data)['model'] for c in send.call_args_list] == (
+        ['test/planning'] * 3 + ['test/review'] * 2 + ['test/planning'] + ['test/review'] * 2 + ['test/planning'])
+    assert all(r.get('actor_endorsement') == 'not_requested' for r in block['runs'][1:])
+    pipeline._load_generated_block(out, root)
+    prepared = pipeline.prepare_generated_run(out, out_dir=tmp_path / 'requests', project_root=root,
+                                              pricing_config=root / 'configs/video.json')
+    assert prepared['status'] == 'prepared_offline' and send.call_count == 9
+    plans = {r['condition']: pipeline.read_json(out / r['condition'] / 'final.json') for r in block['runs']}
+    mixed = deepcopy(block['runs']); mixed[0].pop('review_protocol')
+    errors = validate_generated_comparison(mixed, scene=scene, initial=initial, plans=plans,
+        manifest=manifest, settings=settings, template_sha256=get_video_template_sha256(), project_root=root)
+    assert any('consistent review protocol' in e for e in errors)
+    path = out / 'generic_review/review.json'
+    saved = path.read_text(encoding='utf-8');review = json.loads(saved)
+    review['actor_reports'].pop()
+    path.write_text(json.dumps(review), encoding='utf-8')
+    with pytest.raises(ValueError, match='one report per actor'):
+        pipeline._load_generated_block(out, root)
+    path.write_text(saved, encoding='utf-8')
+    review['actor_reports'] = json.loads(saved)['actor_reports']
+    review['actor_reports'][0]['response']['issues'][0]['line_indices'] = [1]
+    path.write_text(json.dumps(review), encoding='utf-8')
+    with pytest.raises(ValueError, match='only that actor'):
+        pipeline._load_generated_block(out, root)
+    path.write_text(saved, encoding='utf-8')
+    assert send.call_count == 9
+
+
+def omission_case(mode="moodcut", omitted=("b",)):
+    """Developer-authored structural example; never a paid Agent fallback."""
+    case = actor_software_case(mode)
+    addressed, unaddressed, reasons = [], [], {}
+    for index, actor in enumerate(("a", "b"), 1):
+        issue = f"actor-{index}:local-1"
+        if actor in omitted:
+            unaddressed.append(issue)
+            reasons[issue] = "Software-only writer omission reason."
+            case[4]["patch"]["edits"][0]["set"]["dialogue"][index-1] = deepcopy(case[1]["shots"][0]["dialogue"][index-1])
+        else:
+            addressed.append(issue)
+    if not addressed:
+        case[4]["patch"]["edits"] = []
+    case[4]["feedback_disposition"] = {"addressed_issue_ids": addressed,
+        "unaddressed_issue_ids": unaddressed, "unaddressed_reasons": reasons}
+    return case
+
+
+def confirmation_response(case, actor, decision="accept_omission", mode="moodcut"):
+    candidate = deepcopy(case[1])
+    if case[4]["patch"]["edits"]:
+        candidate["shots"][0]["dialogue"] = deepcopy(case[4]["patch"]["edits"][0]["set"]["dialogue"])
+    from moodcut.contracts import json_hash
+    prefix = f"actor-{('a', 'b').index(actor)+1}:"
+    ids = [i for i in case[4]["feedback_disposition"]["unaddressed_issue_ids"] if i.startswith(prefix)]
+    return {"schema_version": "1.0", "scene_id": case[0]["scene_id"], "mode": mode, "actor_id": actor,
+        "initial_plan_sha256": json_hash(case[1]), "candidate_plan_sha256": json_hash(candidate),
+        "decisions": [{"issue_id": i, "decision": decision, "reason": "Software-only actor decision, not a quality judgment."} for i in ids]}
+
+
+def call_confirmed(case, client, mode="moodcut"):
+    return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
+        review_protocol=ACTOR_REVIEW_V2, project_root=Path(__file__).resolve().parents[1])
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v2_only_corresponding_actor_can_accept_its_omission(mode):
+    case = omission_case(mode)
+    response = confirmation_response(case, "b", mode=mode)
+    before = deepcopy(case)
+    client = FakeClient(case[3] + [case[4], response])
+    result = call_confirmed(case, client, mode)
+    assert result["status"] == "applied" and result["actor_confirmation_status"] == "accepted"
+    assert result["actor_feedback_status"] == "has_unaddressed" and result["actor_endorsement"] == "not_requested"
+    assert result["actor_confirmations"] == [{"actor_id": "b", "response": response}] and case == before
+    assert [c["stage"] for c in client.calls] == ["actor_critique", "actor_critique", "actor_revise", "actor_confirm"]
+    payload = json.loads(client.calls[-1]["user"])
+    assert payload["actor"]["id"] == "b" and payload["actor_report"] == case[3][1]
+    assert payload["initial_plan"] == case[1] and payload["revised_plan"] == result["plan"]
+    assert [i["issue_id"] for i in payload["unaddressed_issues"]] == ["actor-2:local-1"]
+    assert payload["unaddressed_issues"][0]["writer_reason"] == case[4]["feedback_disposition"]["unaddressed_reasons"]["actor-2:local-1"]
+    assert "actor_reports" not in payload and "actor_confirmations" not in payload
+    assert validate_actor_review_result(*case[:3], result, mode=mode) == []
+
+
+def test_v2_objection_blocks_finalization_but_keeps_candidate_and_both_positions():
+    case = omission_case()
+    response = confirmation_response(case, "b", "maintain_objection")
+    client = FakeClient(case[3] + [case[4], response])
+    result = call_confirmed(case, client)
+    assert result["status"] == "review_failed" and result["actor_confirmation_status"] == "disputed"
+    assert result["plan"] == case[1] and result["writer_candidate_plan"] != case[1]
+    assert result["writer_response"] == case[4] and result["actor_reports"][1]["response"] == case[3][1]
+    assert result["actor_confirmations"][0]["response"] == response and len(client.calls) == 4
+    assert any("maintains objection" in e for e in result["errors"])
+
+
+def test_v2_groups_all_omitted_issues_per_actor_in_at_most_two_calls():
+    case = omission_case(omitted=("a", "b"))
+    extra = deepcopy(case[3][1]["issues"][0]);extra["issue_id"] = "local-2"
+    case[3][1]["issues"].append(extra)
+    case[4]["feedback_disposition"]["unaddressed_issue_ids"].append("actor-2:local-2")
+    case[4]["feedback_disposition"]["unaddressed_reasons"]["actor-2:local-2"] = "Second software-only reason."
+    responses = [confirmation_response(case, a) for a in ("a", "b")]
+    client = FakeClient(case[3] + [case[4]] + responses)
+    result = call_confirmed(case, client)
+    assert result["status"] == "unchanged" and result["actor_confirmation_status"] == "accepted"
+    assert len(client.calls) == 5 and [r["actor_id"] for r in result["actor_confirmations"]] == ["a", "b"]
+    assert len(json.loads(client.calls[-1]["user"])["unaddressed_issues"]) == 2
+    assert all("actor_confirmations" not in json.loads(c["user"]) for c in client.calls[-2:])
+
+
+@pytest.mark.parametrize("bad", ["wrong_actor", "other_issue", "missing_issue", "duplicate_issue", "wrong_candidate",
+    "wrong_initial", "wrong_scene", "wrong_mode", "patch", "empty_reason", "invalid_decision"])
+def test_v2_invalid_confirmation_cannot_release_writer_omission(bad):
+    case = omission_case()
+    response = confirmation_response(case, "b")
+    if bad == "wrong_actor": response["actor_id"] = "a"
+    elif bad == "other_issue": response["decisions"][0]["issue_id"] = "actor-1:local-1"
+    elif bad == "missing_issue": response["decisions"] = []
+    elif bad == "duplicate_issue": response["decisions"].append(deepcopy(response["decisions"][0]))
+    elif bad == "wrong_candidate": response["candidate_plan_sha256"] = "0"*64
+    elif bad == "wrong_initial": response["initial_plan_sha256"] = "0"*64
+    elif bad == "wrong_scene": response["scene_id"] = "other"
+    elif bad == "wrong_mode": response["mode"] = "generic_review"
+    elif bad == "patch": response["patch"] = case[4]["patch"]
+    elif bad == "empty_reason": response["decisions"][0]["reason"] = " "
+    else: response["decisions"][0]["decision"] = True
+    client = FakeClient(case[3] + [case[4], response])
+    result = call_confirmed(case, client)
+    assert result["status"] == "review_failed" and result["actor_confirmation_status"] == "failed"
+    assert result["plan"] == case[1] and result["actor_confirmations"][0]["response"] == response
+    assert len(client.calls) == 4 and result["writer_response"] == case[4]
+
+
+def test_v2_invalid_first_confirmation_stops_before_second_actor_and_does_not_retry():
+    case = omission_case(omitted=("a", "b"))
+    wrong = confirmation_response(case, "a");wrong["actor_id"] = "b"
+    client = FakeClient(case[3] + [case[4], wrong, confirmation_response(case, "b")])
+    result = call_confirmed(case, client)
+    assert result["status"] == "review_failed" and len(client.calls) == 4 and client.remaining == 1
+    client = FakeClient(case[3] + [case[4]])
+    result = call_confirmed(case, client)
+    assert result["status"] == "review_failed" and result["actor_confirmation_status"] == "failed"
+    assert len(client.calls) == 4 and result["actor_confirmations"] == [] and result["writer_candidate_plan"] == case[1]
+
+
+@pytest.mark.parametrize("empty", [False, True])
+def test_v2_no_omission_has_no_confirmation_or_extra_call(empty):
+    case = actor_software_case()
+    if empty:
+        for report in case[3]:report["issues"] = []
+    client = FakeClient(case[3] + ([] if empty else [case[4]]))
+    result = call_confirmed(case, client)
+    assert result["status"] == ("unchanged" if empty else "applied")
+    assert result["actor_confirmation_status"] == "not_needed" and result["actor_confirmations"] == []
+    assert len(client.calls) == (2 if empty else 3)
+    assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
+
+
+def test_v2_source_checks_cannot_be_satisfied_by_a_writer_status_or_other_candidate():
+    case = omission_case()
+    result = call_confirmed(case, FakeClient(case[3] + [case[4], confirmation_response(case, "b")]))
+    for change in ("missing", "disputed", "candidate", "missing_candidate", "endorsement"):
+        tampered = deepcopy(result)
+        if change == "missing":tampered["actor_confirmations"] = []
+        elif change == "disputed":tampered["actor_confirmations"][0]["response"]["decisions"][0]["decision"] = "maintain_objection"
+        elif change == "candidate":tampered["writer_candidate_plan"] = case[1]
+        elif change == "missing_candidate":tampered.pop("writer_candidate_plan")
+        else:tampered["actor_endorsement"] = "approved"
+        assert validate_actor_review_result(*case[:3], tampered, mode="moodcut")
+    assert set(get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW)) == {"generic", "moodcut", "revise"}
+    v2 = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V2)
+    assert set(v2) == {"generic", "moodcut", "revise", "confirm"}
+    assert {k:v for k,v in v2.items() if k!="confirm"} == get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW)
+
+
+@pytest.mark.parametrize("outcome", ["accepted", "disputed", "unknown_cost"])
+def test_v2_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source(tmp_path, monkeypatch, outcome):
+    import io
+    from unittest.mock import Mock
+    from moodcut import pipeline
+    from moodcut.client import OpenRouterClient, RoleRoutedClient
+    from moodcut.video_generation import get_video_template_sha256
+    from moodcut.evaluation import validate_generated_comparison
+    root = Path(__file__).resolve().parents[1]
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("No real network"))
+    case = omission_case("generic_review");other = omission_case("moodcut")
+    scene, initial, manifest = case[:3]
+    for asset in manifest["assets"]:asset["source_url"] = "https://example.invalid/"+asset["asset_id"]+".png"
+    director = {"scene_id": scene["scene_id"], "tone": scene["tone"], "beat_order": [b["id"] for b in scene["beats"]], "approach": "Software only"}
+    staged = {"scene_id": scene["scene_id"], "scene_direction": initial["scene_direction"], "segments": [
+        {k:s[k] for k in ("beat_ids", "duration_s", "direction")} | {"description": "Software segment"} for s in initial["shots"]]}
+    confirmation = confirmation_response(case, "b", "maintain_objection" if outcome=="disputed" else "accept_omission", "generic_review")
+    responses = [director, staged, initial] + case[3] + [case[4], confirmation] + other[3] + [other[4], confirmation_response(other, "b")]
+    envelopes = []
+    for index, response in enumerate(responses):
+        cost = None if outcome=="unknown_cost" and index==6 else .001
+        envelopes.append(io.BytesIO(json.dumps({"id": "software-only", "model": "software-response", "choices": [
+            {"finish_reason": "stop", "message": {"content": json.dumps(response)}}],
+            "usage": {"prompt_tokens": 100, "completion_tokens": 20, "cost": cost}}).encode()))
+    send = Mock(side_effect=envelopes)
+    monkeypatch.setattr("moodcut.client.build_opener", Mock(return_value=Mock(open=send)))
+    clients = [OpenRouterClient(api_key="software-key", model=model, allow_paid=True, max_cost_usd=.1,
+        input_price_per_million=1, output_price_per_million=1) for model in ("test/planning", "test/review")]
+    client = RoleRoutedClient(*clients, max_cost_usd=.1)
+    settings = pipeline.read_json(root/"tests/fixtures/generated_contract.json")["settings"]
+    settings["model"] = pipeline.read_json(root/"configs/video.json")["model"]
+    out = tmp_path/"source"
+    block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
+        output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(), review_protocol=ACTOR_REVIEW_V2)
+    if outcome!="accepted":
+        assert block["status"] == "failed" and send.call_count == 7
+        assert block["runs"][1]["actor_confirmation_status"] == ("disputed" if outcome=="disputed" else "failed")
+        assert block["runs"][2]["review_status"] == "not_started" and client.stopped
+        with pytest.raises(ValueError, match="prepared"):
+            pipeline.prepare_generated_run(out, out_dir=tmp_path/"blocked", project_root=root, pricing_config=root/"configs/video.json")
+        assert not (tmp_path/"blocked").exists()
+        return
+    assert block["status"] == "prepared" and send.call_count == 11
+    assert [json.loads(c.args[0].data)["model"] for c in send.call_args_list] == (
+        ["test/planning"]*3 + ["test/review"]*2 + ["test/planning", "test/review"] + ["test/review"]*2 + ["test/planning", "test/review"])
+    prepared = pipeline.prepare_generated_run(out, out_dir=tmp_path/"prepared", project_root=root, pricing_config=root/"configs/video.json")
+    assert prepared["status"] == "prepared_offline" and send.call_count == 11
+    mixed = deepcopy(block["runs"]);mixed[0]["review_protocol"] = ACTOR_REVIEW
+    plans = {c:pipeline.read_json(out/c/"final.json") for c in ("baseline", "generic_review", "moodcut")}
+    assert any("consistent review protocol" in e for e in validate_generated_comparison(mixed, scene=scene, initial=initial,
+        plans=plans, manifest=manifest, settings=settings, template_sha256=get_video_template_sha256(), project_root=root))
+    for forged in ("disputed", "not_needed", None):
+        bad = deepcopy(block["runs"]);bad[1]["actor_confirmation_status"] = forged
+        assert any("corresponding-actor confirmation" in e for e in validate_generated_comparison(bad,
+            scene=scene, initial=initial, plans=plans, manifest=manifest, settings=settings,
+            template_sha256=get_video_template_sha256(), project_root=root))
+    path = out/"generic_review/review.json";saved = path.read_text(encoding="utf-8")
+    review = json.loads(saved);review["actor_confirmations"] = []
+    path.write_text(json.dumps(review),encoding="utf-8")
+    with pytest.raises(ValueError, match="one omission confirmation"):
+        pipeline._load_generated_block(out,root)
+    path.write_text(saved,encoding="utf-8")
+    pipeline._load_generated_block(out,root)
+    assert send.call_count == 11
