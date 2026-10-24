@@ -1,5 +1,7 @@
 # MC-01 公共契约、客户端与集成
 
+The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) completed eight text calls and two distinct videos covering three conditions for $0.50248398, with exact key reconciliation. Generic retained/reused baseline; moodcut retained one unaddressed actor opinion with a problematic explanation. Human acceptance is pending, historical results are intact, and PR #48 stays unmerged. The offline implementation record below remains its original scope.
+
 ### Actor protocol integration (2026-10-24)
 
 PR #48 now also contains the explicitly authorized [actor self-review increment](../ACTOR_REVIEW_METHOD.md). `actor_critique` routes to the review role, `actor_revise` to the planning/screenwriting role. The existing budget, clients, compiler and source gates are reused. Source loading rechecks actor ownership, full feedback disposition, the actual dialogue patch, protocol/prompt identity and truthful lack of final actor approval. Mixed review protocols are rejected at comparison boundaries. This increment is offline only; original global-review outputs remain unchanged, #8/#9 stay open and the PR remains unmerged.

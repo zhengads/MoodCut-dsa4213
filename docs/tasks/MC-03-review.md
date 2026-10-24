@@ -1,5 +1,7 @@
 # MC-03 通用审查、情绪审查与局部修订
 
+The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) records both generic actors returning no issues, both emotional actors raising one opinion, and one unified writer changing Anna while retaining Elsa's opinion with an explanation that misidentifies the speaker. Exact output is preserved without developer repair or retries. Real videos are available for human acceptance; no final actor approval or quality conclusion is inferred. The offline implementation record below is preserved as history.
+
 ### Actor self-review increment (2026-10-24)
 
 The user-authorized cross-module increment stays in PR #48: explicit `actor_self_review_v1`, two independent own-dialogue actor reports and one unified screenwriter patch. DeepSeek supplies both actors in both conditions; Gemini integrates their feedback. All opinions remain visible, ownership and actual changes are checked, unaddressed issues require reasons, and no final actor approval is fabricated. Valid disagreement may proceed to a pending-acceptance video; structural failures stop. See [method and offline evidence](../ACTOR_REVIEW_METHOD.md). This change uses labeled software responses only and preserves all original paid results. The default `global_v1` implementation described below remains compatible; no new paid execution or merge is authorized.

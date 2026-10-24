@@ -1,5 +1,9 @@
 # Actor self-review method, version actor_self_review_v1
 
+## Subsequent authorized real pilot (2026-10-24)
+
+After the offline implementation below, a separately authorized [actual Anna/Elsa actor pilot](pilots/anna-elsa-actor.md) completed eight text calls and two distinct HeyGen videos covering three condition entries. Generic actors had no issues and retained/reused baseline; moodcut changed Anna while retaining one Elsa opinion with a problematic writer explanation. Total $0.50248398 reconciled, reserve untouched. Human acceptance remains pending. Exact outputs are separate from the unchanged historical global-review result. The offline evidence below describes implementation verification, not this later real run.
+
 ## Authorized change and implementation checklist
 
 The approved structure is one planning/screenwriting Agent and two character-specific actor Agents. Baseline keeps the shared initial plan. Both reviewed conditions collect independent feedback from the two actors on the same initial dialogue, then send both reports to one shared screenwriter for a unified dialogue patch. Generic actors use general self-review criteria; moodcut actors use emotion-oriented self-review criteria. The second actor never reads the first actor's feedback, and neither condition starts from the other's revision.
@@ -22,7 +26,7 @@ The existing global critique/revise/verify implementation is retained as `global
 4. After both reports validate, aggregate all feedback with stable actor-position namespaces. A single planning/screenwriting call receives both reports and all issues grouped by shot. It produces one RevisionPatch plus a complete addressed/unaddressed disposition. No actor directly modifies the plan.
 5. Apply the existing patch transaction, generated-plan validator and non-dialogue identity check. No second rewrite or model-judge loop is added. `applied` means a valid changed script; writer-declared issue disposition is not independent verification or a human score. A rejected patch/failed actor stops the workflow.
 
-Both reviewed conditions therefore use at most three requests: two actor reports plus one unified rewrite. If both actors have no issues, retain unchanged and skip rewriting after collecting both reports. Across one planning pass and both conditions, the ceiling remains nine text requests. The model settings and maximum output-token allocation are the same between the two conditions. Actual calls and charges must be reported; this offline change authorizes none.
+Both reviewed conditions therefore use at most three requests: two actor reports plus one unified rewrite. If both actors have no issues, retain unchanged and skip rewriting after collecting both reports. Across one planning pass and both conditions, the ceiling remains nine text requests. The model settings and maximum output-token allocation are the same between the two conditions. Actual calls and charges must be reported; the offline implementation itself authorized no paid execution. The later pilot above used its own explicit scope and budget.
 
 ## Comparison boundary
 
@@ -42,7 +46,7 @@ The screenwriter integrates both actors' opinions. Every namespaced issue must b
 
 Unaddressed feedback requires a specific retained reason. Such a disagreement is visible in the saved review and run summary and does not by itself prevent request preparation or an independently authorized video run. The resulting video is a draft for listening/viewing, not a declaration that both actors approved it. The protocol has no final actor sign-off and no independent model judge. Programmatic traceability cannot prove that a changed line fulfills the actor's semantic intent or that the writer's reason is sound; those limitations remain for human acceptance.
 
-Real video is necessary to evaluate performed dialogue, speakers, timing and emotional expression. This increment verifies the software path only. The historical global-review videos cannot establish the quality of this changed actor method; a new explicitly authorized model/video trial is still required.
+Real video is necessary to evaluate performed dialogue, speakers, timing and emotional expression. The offline implementation verifies the software path only. The historical global-review videos cannot establish the quality of this changed actor method. The subsequent actual actor pilot supplies new videos for human acceptance, which remains pending.
 
 ## Selecting the protocol
 

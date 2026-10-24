@@ -1,5 +1,7 @@
 # MC-05 配对对照、盲评导出与统计
 
+The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) produced three condition entries from two distinct provider videos because generic had no changes and reused baseline. Do not treat the reused video as an independent generation or the writer's disposition as a score. Total $0.50248398 reconciled; one emotional actor opinion remains unaddressed with a questionable explanation. Human listening/viewing, independent ratings and formal inclusion remain pending. Historical global-review outputs are unchanged; #8/#9 remain open and PR #48 unmerged.
+
 ### Actor-method comparison boundary (2026-10-24)
 
 PR #48 adds an offline-tested [actor self-review protocol](../ACTOR_REVIEW_METHOD.md). Each reviewed condition uses two independent actors and one shared screenwriter; only general versus emotion-oriented self-review criteria differ. Comparison checks reject mixed actor/global protocols and saved-source checks revalidate all actor reports and dispositions. Writer declarations and programmatic traceability are not independent verification, actor endorsement or scores. A valid unresolved draft may reach video acceptance with opinions/reasons retained. No new model/video run or human rating occurred; the historical global-review result below remains unchanged and is not evidence of the new actor method. #8/#9 remain open.
