@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261024_s05_shared_workbench",
+  "tone": "hostile",
+  "story": "白天，工作室的共用工作台旁；两人已在台边。Maxime向Valentina提出自己现在先使用共用工作台，Valentina拒绝让出当前的使用顺序。交流结束时工作台使用安排没有改变，两人没有动手或离开。他们是本次工作室活动的成员，不使用电影中的反派身份或既有冲突作为剧情理由。 两名角色开场均已在场，只用自然的普通话完成一次简短交流。两人各说一句，共两句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头；动作只服务于给定事件，不添加第三人、旁白、字幕、文字卡、额外情节、魔法、打斗或复杂物品操作。不直接说出目标氛围标签，不引用电影原台词，不依赖观众知道原电影剧情。角色图只用于身份和服装参考；参考图中的表情、姿态、背景及道具不是本场景必须复制的内容。 本场景补充边界：不增加偷窃、报复、犯罪、辱骂或威胁。 不砸桌、推搡、抢夺物品或强行改变使用权。",
+  "characters": [
+    {
+      "id": "despicableme4_maxime",
+      "name": "Maxime / 马克西姆"
+    },
+    {
+      "id": "despicableme4_valentina",
+      "name": "Valentina / 瓦伦蒂娜"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Maxime提出现在优先使用共用工作台。"
+    },
+    {
+      "id": "b2",
+      "description": "Valentina拒绝让出当前的使用顺序。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_despicableme4_maxime_primary",
+    "movieagent_despicableme4_valentina_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_selected_input_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "New fictional scene brief authored in this conversation; existing MovieAgent images supply character appearance only. Not the source film plot, API-generated planning/review output or independent external evidence.",
+    "design_path": "docs/studies/six-story-20261024/design.json",
+    "design_story_id": "s05_shared_workbench",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "formal_inclusion_approved": false,
+    "input_scope_approved": true
+  }
+}

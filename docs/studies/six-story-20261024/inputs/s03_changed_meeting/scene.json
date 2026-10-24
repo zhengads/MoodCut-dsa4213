@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261024_s03_changed_meeting",
+  "tone": "suspicious",
+  "story": "白天，活动大厅外的走廊；两人已停下交谈。Elsa向Mattias询问集合地点变更的消息来源，Mattias说明自己只是收到通知，还没有核实。交流结束后消息真伪仍未确定。两人是此次活动的协作者，没有给定上下级关系，也没有确认谁说了谎。 两名角色开场均已在场，只用自然的普通话完成一次简短交流。两人各说一句，共两句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头；动作只服务于给定事件，不添加第三人、旁白、字幕、文字卡、额外情节、魔法、打斗或复杂物品操作。不直接说出目标氛围标签，不引用电影原台词，不依赖观众知道原电影剧情。角色图只用于身份和服装参考；参考图中的表情、姿态、背景及道具不是本场景必须复制的内容。 本场景补充边界：不揭示幕后人物、阴谋、欺骗或责任归属。 不展示手机、可读通知文字、信件或第三人。",
+  "characters": [
+    {
+      "id": "frozenii_elsa",
+      "name": "Elsa / 艾莎"
+    },
+    {
+      "id": "frozenii_mattias",
+      "name": "Mattias / 马蒂亚斯"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Elsa询问集合地点变更的消息来源。"
+    },
+    {
+      "id": "b2",
+      "description": "Mattias说明收到通知但尚未核实。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_frozenii_elsa_primary",
+    "movieagent_frozenii_mattias_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_selected_input_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "New fictional scene brief authored in this conversation; existing MovieAgent images supply character appearance only. Not the source film plot, API-generated planning/review output or independent external evidence.",
+    "design_path": "docs/studies/six-story-20261024/design.json",
+    "design_story_id": "s03_changed_meeting",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "formal_inclusion_approved": false,
+    "input_scope_approved": true
+  }
+}

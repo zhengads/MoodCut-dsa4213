@@ -1,0 +1,132 @@
+{
+  "kind": "local_story_input_index_not_execution_config",
+  "created_on": "2026-10-24",
+  "design_path": "docs/studies/six-story-20261024/design.json",
+  "design_sha256": "61e41a48e2b48fa54a8158369ed47601a02a14b9befb5e92f4faf0cfd62644b9",
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "new_api_calls": 0,
+  "new_spending_usd": "0",
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "stories": [
+    {
+      "story_id": "s01_wait_together",
+      "title": "等到你了",
+      "tone": "affectionate",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_anna",
+        "frozenii_kristoff"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_anna_primary",
+        "movieagent_frozenii_kristoff_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s01_wait_together/scene.json",
+      "scene_sha256": "83d2fb0cc823f620bedecdd93a8e0ecae4c3ba2f1a25ff8726a1a3f99ee2a4d5",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s01_wait_together/assets.json",
+      "assets_sha256": "987bbf15b201d9d8ab7c221b08298dde8faa031abbf564251859e248f7b98a18"
+    },
+    {
+      "story_id": "s02_help_finish",
+      "title": "收工搭把手",
+      "tone": "affectionate",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_lucy",
+        "despicableme4_gru"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_lucy_primary",
+        "movieagent_despicableme4_gru_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s02_help_finish/scene.json",
+      "scene_sha256": "ed7d0eb62104fd4ff908d435ca3762d1140dd57b70811f0f5aaf09cf966ff45c",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s02_help_finish/assets.json",
+      "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8"
+    },
+    {
+      "story_id": "s03_changed_meeting",
+      "title": "集合地点变了",
+      "tone": "suspicious",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_elsa",
+        "frozenii_mattias"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_elsa_primary",
+        "movieagent_frozenii_mattias_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s03_changed_meeting/scene.json",
+      "scene_sha256": "ee7fc3028176f1d22a14b7d4d654f34fbfc051798fda7b523033557138006358",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s03_changed_meeting/assets.json",
+      "assets_sha256": "7fbaa42906016f782c499edba5ba14b1c5af3fb819bf060a49b9f3d80bca431f"
+    },
+    {
+      "story_id": "s04_knew_the_place",
+      "title": "你怎么知道我在这",
+      "tone": "suspicious",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_nezha",
+        "nezha2_aobing"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_nezha_primary",
+        "movieagent_nezha2_aobing_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s04_knew_the_place/scene.json",
+      "scene_sha256": "156e3801e3284a1c1ae0b31b550796137b99f7936386c908d3bf3c1e3bddf513",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s04_knew_the_place/assets.json",
+      "assets_sha256": "c77e7ee797ee29538772d8306731144f5fada63ccb6844557d39809a79ce384c"
+    },
+    {
+      "story_id": "s05_shared_workbench",
+      "title": "工作台先给谁用",
+      "tone": "hostile",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_maxime",
+        "despicableme4_valentina"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_maxime_primary",
+        "movieagent_despicableme4_valentina_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s05_shared_workbench/scene.json",
+      "scene_sha256": "3de1e4625b43fb7e1958efe2d4956958a250c9eecb3cc1cc08c5d23a538e100c",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s05_shared_workbench/assets.json",
+      "assets_sha256": "01bc8fd79e1c678aedc81fb417ce6855fb52a4b7c3b3e3dcb4e4678efa54a6e2"
+    },
+    {
+      "story_id": "s06_cleanup_assignment",
+      "title": "这次谁来收尾",
+      "tone": "hostile",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_lijing",
+        "nezha2_taiyi"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_lijing_primary",
+        "movieagent_nezha2_taiyi_primary"
+      ],
+      "scene_path": "docs/studies/six-story-20261024/inputs/s06_cleanup_assignment/scene.json",
+      "scene_sha256": "4eb9c6508a3d05d94c83960346d57dfd09a906628ed26682c88e58dcdc65edbe",
+      "assets_path": "docs/studies/six-story-20261024/inputs/s06_cleanup_assignment/assets.json",
+      "assets_sha256": "dcd3f04b3575e1aec6cb389352d8b2170457a60de4a4fa8063bc81dbf2a1ab75"
+    }
+  ],
+  "status": "selected_inputs_for_next_small_scale_study",
+  "input_scope_approved": true,
+  "input_scope_approved_on": "2026-10-24",
+  "fixed_story_and_tone_assignment": true
+}
