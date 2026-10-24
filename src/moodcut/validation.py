@@ -16,7 +16,7 @@ from PIL import Image, UnidentifiedImageError
 from .contracts import CONTRACT_VERSION, OUTPUT_MODES, _json_copy
 
 SCHEMA_VERSION = "1.0"
-ALLOWED_TONES = frozenset({"affectionate", "suspicious", "hostile"})
+ALLOWED_TONES = frozenset({"affectionate", "suspicious", "hostile", "tense"})
 ALLOWED_CROPS = frozenset({"full", "center_close"})
 
 

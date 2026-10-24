@@ -28,7 +28,7 @@
 }
 ```
 
-tone 仅允许 affectionate/suspicious/hostile。两个角色是第一版边界。story、characters、beats、tone、允许素材和时长约束不能由 Reviewer 修改。
+tone 允许 affectionate/suspicious/hostile/tense。当前六故事 v2 使用 affectionate（亲密）、hostile（敌对）、tense（紧张）；tense 表示共同面对外部危险或时间压力的警觉与急迫，不等于针对对方的怀疑。suspicious 保留原义，用于旧输入与历史记录兼容，不重命名、不自动映射到 tense。两个角色是第一版边界。story、characters、beats、tone、允许素材和时长约束不能由 Reviewer 修改。
 
 ### AssetManifest
 

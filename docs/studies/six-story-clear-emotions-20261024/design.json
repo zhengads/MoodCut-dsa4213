@@ -1,0 +1,162 @@
+{
+  "kind": "six_story_input_design_not_execution_config",
+  "version": "2.0",
+  "created_on": "2026-10-24",
+  "status": "selected_inputs_for_next_small_scale_study",
+  "input_scope_approved": true,
+  "fixed_story_and_tone_assignment": true,
+  "source_kind": "assistant_authored_user_requested_revision",
+  "source_method": "New fictional scene briefs authored by the assistant in response to the user's request for more explicit intimate, hostile and tense situations. No external generation API, autonomous Agent output or independent external data.",
+  "supersedes_study": "docs/studies/six-story-20261024",
+  "supersedes_input_commit": "dff08742caf662cba81f1853cfbfd184d92ee84c",
+  "revision_reason": "Replace mild everyday situations and interpersonal suspicion with clearly intimate relationships, explicit opposition, and shared external danger/time pressure before any study execution.",
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "conditions": ["baseline", "generic_review", "moodcut"],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "duration_s": 5,
+  "max_shots": 1,
+  "tone_definitions": {
+    "affectionate": {"label": "亲密", "meaning": "明确表达彼此的想念、依恋、信任或愿意陪伴。此版本的两对人物均明确设定为成年伴侣，不要求接吻或其他复杂身体动作。"},
+    "hostile": {"label": "敌对", "meaning": "两人明确反对对方的要求或目标，通过拒绝、划清关系或不让步表达对抗，不靠辱骂、武力或威胁。"},
+    "tense": {"label": "紧张", "meaning": "两名互相信任的同伴共同面对外部危险或迫近的时间压力，表现警觉、克制或急迫；不怀疑对方的诚信或身份。"}
+  },
+  "legacy_tone_policy": "suspicious remains a separate supported historical label. Never rename or map old suspicion inputs or ratings to tense. This version selects only affectionate, hostile and tense.",
+  "common_story_constraints": "开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，允许故事明确给出的环境声，但没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出亲密、敌对、紧张这些氛围标签。参考图只确定角色身份与服装，不必须复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。",
+  "reference_selection": {
+    "selection_path": "assets/library/movieagent-animation.selection.json",
+    "manifest_path": "assets/library/movieagent-animation.manifest.json",
+    "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "rule": "Keep exactly the same 12 character primary_asset_id references as v1. No new image selection, crop, retouch, download or upload.",
+    "distinct_characters": 12,
+    "films": ["FrozenII", "DespicableMe4", "NeZha2"],
+    "rights_status": "unconfirmed",
+    "public_redistribution_authorized": false,
+    "commercial_use_cleared": false
+  },
+  "scope_limits": [
+    "This is a pre-execution input revision, not a result-driven change. The original v1 inputs remain unchanged in their existing directory and Git history.",
+    "Six stories each have one tone; two stories per tone, three conditions, one replicate. Eighteen entries are not eighteen independent stories.",
+    "The new scenarios deliberately make emotional intent easier to understand. Story/relationship/background can already cue the answer, producing ceiling effects; do not attribute tone recognition solely to dialogue review.",
+    "Story, cast, film and target tone remain partially confounded. Compare methods within shared-input blocks; do not infer independent tone/character effects.",
+    "All conditions share the initial plan, actions, framing, duration, reference images, voices and video settings. Review changes dialogue only.",
+    "Five-second delivery remains an unverified design constraint. Check common timing on development material before any paid study run; do not extend only one method's clip.",
+    "The same original-image expression, occlusion, framing, clarity and unconfirmed-rights limitations documented for v1 remain. No new pair's provider acceptance or video quality is claimed.",
+    "No final dialogue, Agent plan, actor response, video request, model call, subjective rating or experiment result is supplied."
+  ],
+  "historical_cost_scenario": {
+    "basis": "Historical actual five-second video charge USD0.25, not a current quote.",
+    "all_18_distinct_video_submissions_usd": "4.50",
+    "current_live_quote": null,
+    "approved_budget_usd": null,
+    "new_model_calls": 0,
+    "new_spending_usd": "0",
+    "note": "Excludes text, failed attempts, recovery, price/SKU changes and longer duration. No savings from possible same-request reuse are assumed."
+  },
+  "stories": [
+    {
+      "id": "s01_reunion",
+      "title": "久别重逢",
+      "tone": "affectionate",
+      "tone_label": "亲密",
+      "film": "FrozenII",
+      "cast": [
+        {"source_name": "Anna", "display_name": "安娜", "role": "先表达想念的成年伴侣"},
+        {"source_name": "Kristoff", "display_name": "克里斯托夫", "role": "回应想念与陪伴的成年伴侣"}
+      ],
+      "setting": "白天，安静的门厅，两人已经面对面站定。",
+      "story": "Anna和Kristoff是彼此牵挂的成年伴侣，分别一段时间后刚刚重逢。Anna表达自己一直很想念Kristoff，Kristoff回应同样的想念并表示愿意留下陪她。镜头只表现重逢后的这次交流，不表现走进门厅的过程。",
+      "beats": ["Anna向Kristoff表达分别期间的想念。", "Kristoff回应想念并表示愿意留下陪伴Anna。"],
+      "dialogue_functions": ["Anna：直接表达对伴侣的想念。", "Kristoff：回应同样的感情并给出陪伴的意思。"],
+      "boundaries": ["不补出分别原因、第三者、失踪、伤病或新的承诺事件。", "不要求拥抱、接吻、走动或送礼；亲密含义必须能通过这次对白成立。"],
+      "design_question": "双方的想念与回应能否形成明确、自然且相互的亲密感，而不是普通同事式寒暄。"
+    },
+    {
+      "id": "s02_stay_with_me",
+      "title": "低落时的陪伴",
+      "tone": "affectionate",
+      "tone_label": "亲密",
+      "film": "DespicableMe4",
+      "cast": [
+        {"source_name": "Lucy", "display_name": "露西", "role": "主动请求陪伴的成年伴侣"},
+        {"source_name": "Gru", "display_name": "格鲁", "role": "明确回应支持的成年伴侣"}
+      ],
+      "setting": "白天，安静的客厅，两人已并排坐好。",
+      "story": "Lucy和Gru是相互信任的成年伴侣。Lucy此刻心情低落，主动请求Gru留下来陪自己，Gru答应并表达愿意支持她。两人始终留在原处，不追问或补写她低落的原因。",
+      "beats": ["Lucy向Gru请求留下陪伴自己。", "Gru答应留下并表达对Lucy的支持。"],
+      "dialogue_functions": ["Lucy：向亲近的人直接表达陪伴需求。", "Gru：明确接受这一需求并给予支持。"],
+      "boundaries": ["不补写失业、疾病、丧失、背叛或心理诊断。", "不要求哭泣、身体接触、递物或其他新增动作。"],
+      "design_question": "能否通过信任地提出需求与明确接住需求表现亲密，区别于一般性的礼貌帮助。"
+    },
+    {
+      "id": "s03_footsteps_outside",
+      "title": "门外的脚步",
+      "tone": "tense",
+      "tone_label": "紧张",
+      "film": "FrozenII",
+      "cast": [
+        {"source_name": "Elsa", "display_name": "艾莎", "role": "提醒保持安静的同伴"},
+        {"source_name": "Mattias", "display_name": "马蒂亚斯", "role": "判断脚步尚未远离的同伴"}
+      ],
+      "setting": "白天，门关着的房间内，两人已经靠近门内侧站定；门外有未远去的脚步环境声。",
+      "story": "Elsa和Mattias互相信任，正在一起暂避门外尚未确认的危险。听见脚步仍在门外，Elsa提醒Mattias保持安静，Mattias回应脚步还没有远去，需要继续等。门保持关闭，危险来源及身份不揭晓。",
+      "beats": ["Elsa在门外脚步仍在时提醒Mattias保持安静。", "Mattias回应脚步尚未远去，示意继续等待。"],
+      "dialogue_functions": ["Elsa：在外部危险下提醒同伴保持安静。", "Mattias：回应危险尚未解除，需要等待。"],
+      "boundaries": ["不出现门外的人、额外说话者、武器、开门或袭击。", "不怀疑同伴、不互相指责；所有紧张来源均为共同面对的门外动静。"],
+      "design_question": "能否从克制的提醒与等待中表达共同危险下的紧张，而不是对同伴的怀疑或敌意。"
+    },
+    {
+      "id": "s04_exit_closing",
+      "title": "出口即将关闭",
+      "tone": "tense",
+      "tone_label": "紧张",
+      "film": "NeZha2",
+      "cast": [
+        {"source_name": "Nezha", "display_name": "哪吒", "role": "发现时间所剩无几的同伴"},
+        {"source_name": "Aobing", "display_name": "敖丙", "role": "催促立即行动的同伴"}
+      ],
+      "setting": "白天，普通通道的出口内侧，两人已站定，出口即将关闭。",
+      "story": "Nezha和Aobing是相互信任、需要一起离开通道的同伴。出口即将关闭，Nezha提示留给他们的时间已经很少，Aobing催促两人马上离开。镜头结束时停留在准备行动的这一刻，不展示冲刺、门关闭或逃脱结果。",
+      "beats": ["Nezha提示出口即将关闭，时间所剩无几。", "Aobing催促两人立即离开。"],
+      "dialogue_functions": ["Nezha：表达迫近的时间压力。", "Aobing：明确催促立即行动。"],
+      "boundaries": ["不增加反派、追兵、伤病、倒计时文字、额外广播或其他说话者。", "不跑动、跳跃、关门、施法或展示逃脱结果；不指责同伴造成延误。"],
+      "design_question": "能否通过时间压力和立即行动的需要表达急迫紧张，区别于单纯的事实通知。"
+    },
+    {
+      "id": "s05_broken_cooperation",
+      "title": "合作关系破裂",
+      "tone": "hostile",
+      "tone_label": "敌对",
+      "film": "DespicableMe4",
+      "cast": [
+        {"source_name": "Maxime", "display_name": "马克西姆", "role": "当面指责对方失信的合作方"},
+        {"source_name": "Valentina", "display_name": "瓦伦蒂娜", "role": "拒绝道歉并终止合作的合作方"}
+      ],
+      "setting": "白天，普通会议室桌边，两人已面对面站定。",
+      "story": "Maxime和Valentina的合作关系已经破裂。Maxime当面指责Valentina不守约定，Valentina拒绝道歉并明确表示不再合作。这是双方对立的立场交流；不判定指责是否属实，也不补写具体违约事件。",
+      "beats": ["Maxime当面指责Valentina不守约定。", "Valentina拒绝道歉并明确终止合作。"],
+      "dialogue_functions": ["Maxime：直接向对方表达失信指责。", "Valentina：明确拒绝道歉与继续合作。"],
+      "boundaries": ["不新增犯罪、背叛证据、身份揭露、报复或身体威胁。", "不辱骂、砸桌、推搡、抢夺或离场；不把任何一方的指责写成已证实的事实。"],
+      "design_question": "能否通过直接指责与关系切断表现明确的敌对立场，而不是普通的工作安排分歧。"
+    },
+    {
+      "id": "s06_last_place",
+      "title": "争夺最后名额",
+      "tone": "hostile",
+      "tone_label": "敌对",
+      "film": "NeZha2",
+      "cast": [
+        {"source_name": "Lijing", "display_name": "李靖", "role": "要求竞争者退出的一方"},
+        {"source_name": "Taiyi", "display_name": "太乙", "role": "明确拒绝退出的竞争者"}
+      ],
+      "setting": "白天，普通活动报名处外，两人已面对面站定。",
+      "story": "Lijing和Taiyi正在争取同一活动的最后一个名额，双方目标直接冲突。Lijing要求Taiyi退出竞争，Taiyi明确拒绝并表示自己不会让步。名额归属尚未决定，没有裁判或第三人介入。",
+      "beats": ["Lijing要求Taiyi退出最后一个名额的竞争。", "Taiyi明确拒绝退出并表示不会让步。"],
+      "dialogue_functions": ["Lijing：要求对方放弃与自己冲突的目标。", "Taiyi：拒绝退让，维持竞争立场。"],
+      "boundaries": ["不设定官职、师徒权力、惩罚、欠账或欺骗。", "不增加裁判、可读名单、武力、施法、争抢或竞争结果。"],
+      "design_question": "能否通过明确的利益冲突与互不让步表现敌对，而不是双方共同面对的紧张压力。"
+    }
+  ]
+}

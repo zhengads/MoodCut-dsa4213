@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_nezha2_lijing_primary",
+      "character_id": "nezha2_lijing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/best.png",
+      "width": 1430,
+      "height": 858,
+      "sha256": "1d76acc9ae754ee7c03cc2d43d63355965885fa7cc2c59ad5b98e68193e34921",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_taiyi_primary",
+      "character_id": "nezha2_taiyi",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/best.png",
+      "width": 620,
+      "height": 556,
+      "sha256": "ec12b5b39235984f1443e5da224d5b177c662ddb463dc83f3bdde8389b4aa75a",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}
