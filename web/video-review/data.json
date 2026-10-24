@@ -1,0 +1,146 @@
+{
+  "kind": "presentation_derived_from_preserved_actual_records",
+  "formal_inclusion_approved": false,
+  "experiments": [
+    {
+      "id": "actors",
+      "protocol": "actor_self_review_v1",
+      "cost": "0.50248398",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/a466b1bc000889e30af0254126f7c0ec41def436/docs/pilots/anna-elsa-actor.md",
+      "description": "共同规划一次。两位演员独立审自己的台词，再由同一编剧整合；通用与情绪组只改变自审重点。",
+      "observations": [
+        "通用组：两位演员都没有提出问题，编剧未被调用，台词和视频均与共同初稿相同。",
+        "情绪组：两人各提出一条意见，编剧把 Anna 改为“艾莎，伞还你啦。”，Elsa 的台词未改。",
+        "Elsa 的意见仍未采纳，编剧理由还有角色误指。此处保留原结果，等待人工听看判断。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "规划 Agent 原稿",
+          "video": "media/actor-v1-baseline-and-generic.mp4",
+          "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "原始视频与原生声音，未剪辑或调速"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "无修改，复用初稿视频",
+          "video": "media/actor-v1-baseline-and-generic.mp4",
+          "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "同一段原片，没有另行生成"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "仅修改台词",
+          "video": "media/actor-v1-moodcut.mp4",
+          "sha256": "cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，伞还你啦。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "原始视频与原生声音，未剪辑或调速"
+        }
+      ],
+      "unresolved": {
+        "summary": "Elsa 建议让感谢更亲近，例如“谢啦，安娜。”；编剧保留了原句。",
+        "writerReason": "The suggestion to add '伞没淋湿吧？' or '谢啦' to Anna's line would extend the dialogue beyond the 5-second limit and alter the simple, direct nature of the thank you, which might not be desired."
+      }
+    },
+    {
+      "id": "global",
+      "protocol": "global_v1",
+      "cost": "0.75376126",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/a466b1bc000889e30af0254126f7c0ec41def436/docs/pilots/anna-elsa-agent.md",
+      "description": "共同规划一次。通用与情绪组分别进行整段台词审查、修订和复查，均从同一初稿出发。",
+      "observations": [
+        "通用组把 Anna 的说法缩短，并将 Elsa 的“谢谢你”改为“谢啦”。",
+        "情绪组强调还伞动作，并将 Elsa 的回应改为“嗯，辛苦你了。”。",
+        "两种审查的模型复查均保留一条未解决意见；尚无独立人工评分。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "规划 Agent 原稿",
+          "video": "media/global-v1-baseline.mp4",
+          "sha256": "4cdadb0ab1d66868caad62bb7c11e8c8b9c24e43a89f73f5f88767539f1c85e1",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "原始视频与原生声音，未剪辑或调速"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用审查",
+          "status": "仅修改台词",
+          "video": "media/global-v1-generic_review.mp4",
+          "sha256": "8badfe78d6a9253cdf7f081112d64d5af933704015db235e51fcc7fb6e11c2a4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢啦，安娜。"
+            }
+          ],
+          "note": "原始视频与原生声音，未剪辑或调速"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪审查",
+          "status": "仅修改台词",
+          "video": "media/global-v1-moodcut.mp4",
+          "sha256": "bab555e2b4dfeef1d4183baaee857ded13540502cc14284d01d7baa1f61bee4b",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，你的伞，还给你。"
+            },
+            {
+              "character_id": "b",
+              "text": "嗯，辛苦你了。"
+            }
+          ],
+          "note": "原始视频与原生声音，未剪辑或调速"
+        }
+      ]
+    }
+  ]
+}
