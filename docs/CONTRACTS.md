@@ -221,6 +221,14 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 `video_client.estimate_video_cost(config, request) -> Decimal` 是客户端预算与请求编译共用的报价入口。支持 Wan 2.7 的每秒价格，以及 Seedance 2.0 Mini 的视频 token 价格；不混用计费单位。Seedance 只允许图像参考、原生声音、16:9 的 480p/720p，使用官方 `宽×高×秒数×24/1024` 输出 token 公式；未知 SKU、价格上涨或超出已核对的规格拒绝提交。切换模型保持素材与台词身份，不自动重试被拒绝的输入；新的真实试跑另行确认预算。
 
+### HeyGen pilot adapter (2026-10-24)
+
+`heygen/heygen-video-1` is restricted here to 768p, 16:9, 5–15 integer seconds and 1–9 image references. `video_request_controls` fixes `provider.options.heygen.parameters.prompt_enhancement="disabled"`. HeyGen always generates scene audio and does not expose the `generate_audio` toggle, so its HTTP request omits that field while GenerationSettings still requires native audio. The compiler adds `<Picture N>` reference labels. All other models retain their original request shape; the shared settings schema is unchanged.
+
+Pricing uses the reference-to-video SKU, never its cheaper text-only SKU: `(duration * reference_price_per_second_usd + max(0, image_count - 2) * reference_image_price_usd) * (1 - provider_discount)`. Public GET discovery separately verifies the sole HeyGen endpoint's discount. Missing/changed discounts, new pricing SKUs, increased rates or unavailable enhancement controls stop before POST. Frozen pilot rates are $0.10/second and $0.04/additional image before the verified 50% discount, yielding $0.25 for five seconds and two images. Only returned usage reconciles actual charges.
+
+The compiler also accepts explicit `data:image/png;base64,...` references for this model, checking strict base64, PNG signature and exact SHA-256 equality with the locally verified asset. The inline URL participates in the shared identity and request hash. Ordinary HTTPS preparations remain byte-compatible. The first HeyGen attempt was rejected because the GitHub attachment returned `application/octet-stream`; a valid PNG hash alone did not establish the provider's Content-Type requirement. The correction was first verified offline; that preparation did not authorize retrying the failed task. A subsequent, separately authorized inline-PNG pilot completed three actual clips at $0.25 each ($0.75 total), with audio/media checks passed and manual acceptance pending; see [pilot record](pilots/umbrella-single-shot.md). This result grants no automatic retry or further paid execution. The original transport, ledger, inspection and scoring implementations remain in use.
+
 ## 6. 下一阶段生成式比较约束（待实现）
 
 本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/导出见6.14/6.15，任务执行接线见6.17，真实试跑仍待批准和验收，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
@@ -654,6 +662,8 @@ CLI路径相对project-root，程序接口路径相对当前目录。media-origi
 三条件按CONDITIONS、镜头按保存顺序执行。只把原request交给现有客户端，不注入方法标签，不改seed或非台词参数。路径使用固定条件和数字索引，不用shot_id作目录名。先保存evidence中的本地回执目标和execution检查点，再调用generate；回执由原客户端在POST前写入，执行器不伪造/补齐回执。若硬中断发生在预留路径与真实POST之间，缺回执仍按未知处理，不能自动重交。
 
 每个已下载片段在下一POST/复用前通过原P1回执、实际音视频/时长/账目检查。仅同block、同shot_id、完整request_sha256相同且拥有非复用下载来源时复用，记录reused_from；不复用失败/未下载来源，不形成链式复用。费用未知、任务/媒体失败、异常及人工键盘中断立即停止后续POST，所有三条件和未执行镜头继续留在evidence及最终记录。异常记录只留类型与通用诊断，提供商详情沿用脱敏回执，不保存任意依赖异常文本。
+
+视频客户端在原receipt.json追加可选`last_error`，记录`phase=submit/poll/download`、`kind=http/transport/invalid_response`及已知HTTP状态码、异常类型或受控原因；HTTP响应有x-request-id时保存脱敏后的请求标识。HTTP错误正文最多读取8193字节，仅对不超过8192字节的JSON提取白名单错误字段写入原`provider_error`；HTML、损坏或超长正文不落盘，仍保留状态码。字符串限长、嵌套限深，移除key、Bearer、URL及data URI；不保存请求头、完整响应或请求副本。最终generation_jobs同时保留last_error/provider_error，原始回执快照继续保存。诊断不改变任务状态、ID、费用与计数，缺ID/未知费用仍阻止后续POST，不增加重试或恢复权限；旧回执缺这些字段仍按原规则读取，不能补造历史错误。
 
 恢复与继续是两个互斥、显式动作：
 

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("prepare_references", ROOT / "scripts/prepare_references.py")
@@ -73,6 +73,60 @@ class ReferencePreparationTests(unittest.TestCase):
         self.assertEqual({group: sum(e["group"] == group for e in entries)
                           for group in ("core", "papers", "assets")},
                          {"core": 33, "papers": 2, "assets": 4})
+
+    def test_animation_library_identities_match_selection_and_manifest(self):
+        directory = ROOT / "assets/library"
+        entries = references.load_manifest(directory / "movieagent-animation.sources.lock.json")
+        selection = json.loads((directory / "movieagent-animation.selection.json").read_text(encoding="utf-8"))
+        manifest = json.loads((directory / "movieagent-animation.manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(entries), 100)
+        self.assertEqual(len(manifest["assets"]), 75)
+        self.assertEqual(len(selection["characters"]), 25)
+        self.assertFalse(selection["public_redistribution_authorized"])
+        self.assertFalse(selection["commercial_use_cleared"])
+        self.assertEqual(selection["rights_status"], "unconfirmed")
+        by_path = {e["path"]: e for e in entries}
+        self.assertEqual(len(by_path), len(entries))
+        self.assertEqual({c["film"] for c in selection["characters"]},
+                         {"FrozenII", "DespicableMe4", "InsideOut2", "NeZha2"})
+        for selected, asset in zip(selection["assets"], manifest["assets"]):
+            with self.subTest(asset=asset["asset_id"]):
+                self.assertEqual({k: asset[k] for k in selected}, selected)
+                source = by_path[asset["path"]]
+                self.assertEqual(asset["sha256"], source["sha256"])
+                self.assertEqual(asset["revision"], source["revision"])
+                self.assertEqual(asset["source_url"], source["url"])
+                self.assertEqual(asset["allowed_crops"], ["full"])
+        for character in selection["characters"]:
+            images = [a for a in manifest["assets"] if a["character_id"] == character["character_id"]]
+            self.assertEqual(len(images), 3)
+            self.assertEqual(len({a["sha256"] for a in images}), 3)
+            self.assertIn(character["primary_asset_id"], {a["asset_id"] for a in images})
+            self.assertIn(character["caption_path"], by_path)
+
+    def test_animation_download_is_opt_in_and_shared_files_are_checked_once(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shared = dict(entry(), group="assets", path="assets/raw/movieagent/test.png")
+            target = root / shared["path"]
+            target.parent.mkdir(parents=True)
+            target.write_bytes(b"reference source\n")
+            (root / "references").mkdir()
+            base = root / "references/sources.lock.json"
+            base.write_text(json.dumps({"schema_version": 1, "files": [shared]}), encoding="utf-8")
+            with patch.object(references, "ROOT", root):
+                self.assertEqual(references.main(["--assets", "--check"]), 0)
+                library = root / "assets/library/movieagent-animation.sources.lock.json"
+                library.parent.mkdir(parents=True)
+                library.write_text(json.dumps({"schema_version": 1, "files": [shared]}), encoding="utf-8")
+                with patch.object(references, "prepare", wraps=references.prepare) as prepare:
+                    self.assertEqual(references.main(["--assets", "--animation-assets", "--check"]), 0)
+                    self.assertEqual(len(prepare.call_args.args[1]), 1)
+                changed = dict(shared, sha256="0" * 64)
+                library.write_text(json.dumps({"schema_version": 1, "files": [changed]}), encoding="utf-8")
+                with patch.object(references, "prepare") as prepare:
+                    self.assertEqual(references.main(["--assets", "--animation-assets", "--check"]), 1)
+                    prepare.assert_not_called()
 
 
 if __name__ == "__main__":

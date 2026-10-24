@@ -513,7 +513,7 @@ def _load_generated_block(path, project_root):
 def _validate_generated_bundle(bundle, source, block, pricing, *, selected_shot_ids=None):
     """Check the compiler protocol and identities without recreating its prompts."""
     from .contracts import _json_copy
-    from .video_client import _money, estimate_video_cost
+    from .video_client import _money, estimate_video_cost, video_request_controls
     need = _require_generated
     bundle = _json_copy(bundle)
     need(isinstance(bundle, dict) and bundle.get("schema_version") == CONTRACT_VERSION
@@ -543,7 +543,8 @@ def _validate_generated_bundle(bundle, source, block, pricing, *, selected_shot_
             request = job.get("request")
             need(isinstance(request, dict) and job.get("request_sha256") == json_hash(request), "request hash mismatch")
             need(all(request.get(k) == settings[k] for k in ("model", "resolution", "aspect_ratio"))
-                 and request.get("generate_audio") is True, "request generation settings mismatch")
+                 and all(request.get(k) == v for k, v in video_request_controls(settings["model"]).items()),
+                 "request generation settings mismatch")
             need(type(request.get("seed")) is int and request["seed"] == settings["seed"] + index,
                  "request seed must use the original shot index")
             need(type(request.get("duration")) is int and request["duration"] == initial["shots"][index]["duration_s"],
@@ -730,7 +731,9 @@ def execute_generated_run(preparation, *, out_dir, pricing_config, project_root=
             # Validate actual selected durations rather than legacy recipe shots.
             live_config = {**pricing, "shots": [{"duration_s": j["request"]["duration"]}
                 for c in bundle["conditions"] for j in c["jobs"]]}
-            check_video_model(live_config, fetch_video_models())
+            models = (fetch_video_models(discount_model=pricing["model"])
+                      if pricing["model"] == "heygen/heygen-video-1" else fetch_video_models())
+            check_video_model(live_config, models)
         # Repeat saved-source checks after discovery and before the first call.
         current = _load_generated_preparation(directory, pricing_config, project_root, recompile=True)
         if any(json_hash(old) != json_hash(new) for old, new in zip(
@@ -1019,8 +1022,9 @@ def _compute_generated_records(preparation, *, evidence, pricing_config, project
                 snapshots[f"{row['condition']}/{job['shot_id']}"] = deepcopy(receipt)
                 entry["remote_status"] = receipt.get("status")
                 entry["job_id"] = receipt.get("job_id")
-                if "provider_error" in receipt:
-                    entry["provider_error"] = deepcopy(receipt["provider_error"])
+                for field in ("provider_error", "last_error"):
+                    if field in receipt:
+                        entry[field] = deepcopy(receipt[field])
                 counts = _generated_receipt_counts(receipt)
                 entry.update(counts)
                 entry["errors"].extend(counts["counter_errors"])

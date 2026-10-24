@@ -1,5 +1,7 @@
 # MoodCut
 
+动画选材入口：[本地动画素材库](assets/library/README.md)含MovieAgent固定版本四部动画的25个角色、75张参考图及来源/许可状态。运行`python scripts/prepare_references.py --animation-assets`显式下载，加`--check`离线复核；原图不提交Git，署名不等于已取得图片使用或再分发许可。
+
 DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，系统规划台词并执行审查—修订—复查。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音。第一阶段 review 只修改台词。

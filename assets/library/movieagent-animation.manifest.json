@@ -1,0 +1,1055 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_frozenii_anna_primary",
+      "character_id": "frozenii_anna",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "width": 420,
+      "height": 1000,
+      "sha256": "6086a3d86af1b14cd0ff281fc494a94e5b41d5593b0493a4af06fa067a9394dd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_anna_reference_1",
+      "character_id": "frozenii_anna",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/2025-02-18 00.37.51.png",
+      "width": 382,
+      "height": 742,
+      "sha256": "ee6f90de5737237c55fccdc57b94ef25b46cdff167c31b254f504529d8eebb0b",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/2025-02-18%2000.37.51.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_anna_reference_2",
+      "character_id": "frozenii_anna",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/2025-02-18 00.39.41.png",
+      "width": 430,
+      "height": 660,
+      "sha256": "fc43dff9b6484bf90cb4f274cd8228d5d4dc8fda768f61354d1a679825427f85",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/2025-02-18%2000.39.41.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_elsa_primary",
+      "character_id": "frozenii_elsa",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/best.png",
+      "width": 614,
+      "height": 1156,
+      "sha256": "422c12807142e392ffd0e5e20f4fd39a4001c0b7ca032a727616fe1bc59598bd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_elsa_reference_1",
+      "character_id": "frozenii_elsa",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/2025-02-18 00.39.19.png",
+      "width": 430,
+      "height": 1156,
+      "sha256": "a8babc8e4fdb02d47a3cf84b1a1ccf8ef39e32fd2e779d00d0dfde1612156638",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/2025-02-18%2000.39.19.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_elsa_reference_2",
+      "character_id": "frozenii_elsa",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Elsa/2025-02-18 00.39.52.png",
+      "width": 966,
+      "height": 728,
+      "sha256": "eae1c276650610c19016edbbefb2d257ff5d3694d193b5b059c33ccb19e92407",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Elsa/2025-02-18%2000.39.52.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_kristoff_primary",
+      "character_id": "frozenii_kristoff",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/best.png",
+      "width": 770,
+      "height": 1102,
+      "sha256": "9d1859ebd2eb505b17e177491bc1ce5abec237498724ace523a74bc9c01d6e8f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_kristoff_reference_1",
+      "character_id": "frozenii_kristoff",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/2025-02-18 00.38.11.png",
+      "width": 462,
+      "height": 866,
+      "sha256": "10439503e23a0c68a77ee7bc0987d73bf97d9bab27c1edce8e7573963d708446",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/2025-02-18%2000.38.11.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_kristoff_reference_2",
+      "character_id": "frozenii_kristoff",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/2025-02-18 00.39.12.png",
+      "width": 408,
+      "height": 988,
+      "sha256": "15e33e4b59ef7f10e12255b0ea49dc7015b2e494ece068f716ba943a6fdadb05",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/2025-02-18%2000.39.12.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_mattias_primary",
+      "character_id": "frozenii_mattias",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/best.png",
+      "width": 1324,
+      "height": 1108,
+      "sha256": "86dfcf78539a03efaa404764abf205f55c478ec728e08dae8e38a4f855f0969e",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_mattias_reference_1",
+      "character_id": "frozenii_mattias",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/2025-02-18 00.48.25.png",
+      "width": 714,
+      "height": 1174,
+      "sha256": "c8ca056472a986bf2c8487c1ea4a341ce1c939c01ec2d4a268f5601d52b504d0",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/2025-02-18%2000.48.25.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_mattias_reference_2",
+      "character_id": "frozenii_mattias",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Mattias/2025-02-18 00.48.44.png",
+      "width": 336,
+      "height": 782,
+      "sha256": "971326c557d09b93f743160937a13fc02e6ac14e7e9d8e7de34c93171c2b3d1a",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Mattias/2025-02-18%2000.48.44.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_olaf_primary",
+      "character_id": "frozenii_olaf",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/best.png",
+      "width": 874,
+      "height": 1038,
+      "sha256": "01b95a4cf6842c17120766a708938ab7cf00edf38c4ae017e14122c166a97540",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_olaf_reference_1",
+      "character_id": "frozenii_olaf",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/2025-02-18 00.39.09.png",
+      "width": 270,
+      "height": 410,
+      "sha256": "937104915a8614eb199bb1fba1bbd7c69c03b16f2a81e975f3a3640233a6a0b3",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/2025-02-18%2000.39.09.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_olaf_reference_2",
+      "character_id": "frozenii_olaf",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Olaf/2025-02-18 00.39.37.png",
+      "width": 284,
+      "height": 608,
+      "sha256": "096f5e0053d204656d4702f0a976d588cc7c151255c270651cee8ec6d0536944",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Olaf/2025-02-18%2000.39.37.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_gru_primary",
+      "character_id": "despicableme4_gru",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/best.png",
+      "width": 1372,
+      "height": 1032,
+      "sha256": "7074b8ab33781ce3ac0250a7bd0892f41b064f84051abc76a1c6c6a94817e3ab",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_gru_reference_1",
+      "character_id": "despicableme4_gru",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/025-02-12 15.11.33.png",
+      "width": 880,
+      "height": 954,
+      "sha256": "39ceec216d5f0d7f40c1700fc1a89b32100d6200a29da3225c4ba2007d022e17",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/025-02-12%2015.11.33.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_gru_reference_2",
+      "character_id": "despicableme4_gru",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/2025-02-11 12.04.51.png",
+      "width": 1662,
+      "height": 1312,
+      "sha256": "8e71d037963df82a68dfd795c2608857ee24a8cd04175f4a8b1ff581e67a0fad",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/2025-02-11%2012.04.51.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_lucy_primary",
+      "character_id": "despicableme4_lucy",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "width": 1246,
+      "height": 1484,
+      "sha256": "aaeeb1ea278d2499c0bb78323db74db1c1a8fba288ab45cc6bf80c41399054ae",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_lucy_reference_1",
+      "character_id": "despicableme4_lucy",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/2025-02-11 12.09.40.png",
+      "width": 1102,
+      "height": 1428,
+      "sha256": "911d028ff8cc15737a4354fc89887dd632edd39ac73e2d55ef280bb507c031de",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/2025-02-11%2012.09.40.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_lucy_reference_2",
+      "character_id": "despicableme4_lucy",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/2025-02-11 12.10.07.png",
+      "width": 960,
+      "height": 1126,
+      "sha256": "dca83e898213a4b5e6e22f0c85c275082282082c7410e39da5e5feabba0187b7",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/2025-02-11%2012.10.07.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_maxime_primary",
+      "character_id": "despicableme4_maxime",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "width": 1282,
+      "height": 1478,
+      "sha256": "6d479c0e75b7f6b93b17e8e19e7ffcc18e5468471a2da86d0b6d4ccf6c22994f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_maxime_reference_1",
+      "character_id": "despicableme4_maxime",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/2025-02-11 12.33.12.png",
+      "width": 402,
+      "height": 678,
+      "sha256": "4a37df3eceda30facf0522c218239447f31cae761a473d6ac6a603baecdcb710",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/2025-02-11%2012.33.12.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_maxime_reference_2",
+      "character_id": "despicableme4_maxime",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/2025-02-11 12.33.50.png",
+      "width": 712,
+      "height": 684,
+      "sha256": "8ecdf0f4cd72dd2e75509f8b797260cde73d32ad8a67b504e02cdf1ae23438fc",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/2025-02-11%2012.33.50.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_minions_primary",
+      "character_id": "despicableme4_minions",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/best.png",
+      "width": 722,
+      "height": 920,
+      "sha256": "817a8e89f911320252453d6245ca3c8f3fee15aa809e54e01989145771b354d4",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_minions_reference_1",
+      "character_id": "despicableme4_minions",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/2025-02-11 12.13.32.png",
+      "width": 580,
+      "height": 464,
+      "sha256": "fd7c77ac9b65285d9a228e9b1975bd2001aca663cbe612cbbfb959ab17fdc7ab",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/2025-02-11%2012.13.32.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_minions_reference_2",
+      "character_id": "despicableme4_minions",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Minions/2025-02-11 12.13.53.png",
+      "width": 574,
+      "height": 686,
+      "sha256": "9aa5ad301fd4bc03bb2096dece79bbf4a3b8e5541fa244e2c610d783f66dca2b",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Minions/2025-02-11%2012.13.53.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_prescott_primary",
+      "character_id": "despicableme4_prescott",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/best.png",
+      "width": 906,
+      "height": 1054,
+      "sha256": "fda3f12b3fc3c6c15405e101d6ffd206a1caaa81a4db755579be0f975ae5cd4f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_prescott_reference_1",
+      "character_id": "despicableme4_prescott",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/2025-02-11 12.28.43.png",
+      "width": 958,
+      "height": 1368,
+      "sha256": "56ce187f9a88eb9ed00776656f294270b20b905021e0dc490bc43a14fac516d0",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/2025-02-11%2012.28.43.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_prescott_reference_2",
+      "character_id": "despicableme4_prescott",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Prescott/2025-02-11 12.29.08.png",
+      "width": 344,
+      "height": 694,
+      "sha256": "267016ffd44bd6b317e2099a9c0bfb858599a8fac12cff7eb3ecc84787cac9af",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Prescott/2025-02-11%2012.29.08.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_valentina_primary",
+      "character_id": "despicableme4_valentina",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "width": 1332,
+      "height": 1058,
+      "sha256": "c36ebce22b220abe1bdec66235b4eda3c82aaae2c7641d8d3b56fc06942b6b32",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_valentina_reference_1",
+      "character_id": "despicableme4_valentina",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/2025-02-11 12.38.10.png",
+      "width": 1012,
+      "height": 1078,
+      "sha256": "e2b54b5f8dc0f630937b4c2193d808156360f716b60a6c3fcaaad1f27829a49b",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/2025-02-11%2012.38.10.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_valentina_reference_2",
+      "character_id": "despicableme4_valentina",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/2025-02-11 12.38.24.png",
+      "width": 938,
+      "height": 1302,
+      "sha256": "2e9d434ded0ea0fec1b448e17bb94f1916cef66b36c8aa75302cd1a93077dd14",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/2025-02-11%2012.38.24.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anger_primary",
+      "character_id": "insideout2_anger",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/best.png",
+      "width": 586,
+      "height": 532,
+      "sha256": "218746f425ca10bcde189ee4cddd32eb5dbad9284f1c9a21d729e48c92887178",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anger_reference_1",
+      "character_id": "insideout2_anger",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/2025-02-10 15.14.25.png",
+      "width": 424,
+      "height": 450,
+      "sha256": "f7e414a7b1d8e2b7ce9a0b7dfa98ea61255f7e5e607ee86262bfaa41f8ab75ca",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/2025-02-10%2015.14.25.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anger_reference_2",
+      "character_id": "insideout2_anger",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anger/2025-02-10 15.14.38.png",
+      "width": 718,
+      "height": 640,
+      "sha256": "66c4fc476e37a580749d4dfdd675dac1b3a0f56b6ffbda9848db13fee0abf63f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anger/2025-02-10%2015.14.38.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anxiety_primary",
+      "character_id": "insideout2_anxiety",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/best.png",
+      "width": 578,
+      "height": 732,
+      "sha256": "234045151ac3822a02777e7f15b26702632f096105b2bf03136d3654bf0743a4",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anxiety_reference_1",
+      "character_id": "insideout2_anxiety",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/2025-02-10 14.58.55.png",
+      "width": 428,
+      "height": 472,
+      "sha256": "6823cc2d4f8330515d48a4989b8d1f5d61291fa1e37d9ef1c73318fad8aad36e",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/2025-02-10%2014.58.55.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_anxiety_reference_2",
+      "character_id": "insideout2_anxiety",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Anxiety/2025-02-10 14.59.06.png",
+      "width": 862,
+      "height": 1012,
+      "sha256": "19d67b7eb60aaf18d41ddb7443df37fd2f9ecea5756b670909c101db3e27d7bc",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Anxiety/2025-02-10%2014.59.06.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_disgust_primary",
+      "character_id": "insideout2_disgust",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/best.png",
+      "width": 452,
+      "height": 646,
+      "sha256": "a8986ab9c9a4d3cf0771c0ef07b5f5a1f7d178251613c5925e8f87cb37ab2fe6",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_disgust_reference_1",
+      "character_id": "insideout2_disgust",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/2025-02-10 15.07.00.png",
+      "width": 570,
+      "height": 870,
+      "sha256": "5399519f28d668c745d61f515804902fcf9facc75b16a27bc04fa782fbd43b10",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/2025-02-10%2015.07.00.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_disgust_reference_2",
+      "character_id": "insideout2_disgust",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Disgust/2025-02-10 15.07.16.png",
+      "width": 574,
+      "height": 1118,
+      "sha256": "b2acebe9f26b2bf559aa06c76338fbe658f23f396904362230508bcc9d0f0e7d",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Disgust/2025-02-10%2015.07.16.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_envy_primary",
+      "character_id": "insideout2_envy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/best.png",
+      "width": 1708,
+      "height": 1466,
+      "sha256": "50ef509f290d2871fffb9de055f1da9ce3037dd5c5cf7284dbe165434ab86e08",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_envy_reference_1",
+      "character_id": "insideout2_envy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/2025-02-10 15.21.06.png",
+      "width": 434,
+      "height": 372,
+      "sha256": "cdb414357d999c5b1d0b3570e2547b6df847970e5bbed8bc315d03928940c5f4",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/2025-02-10%2015.21.06.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_envy_reference_2",
+      "character_id": "insideout2_envy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Envy/2025-02-10 15.21.32.png",
+      "width": 1008,
+      "height": 884,
+      "sha256": "9f1414bd7563edb79dd458a89014e9bd6a6559d28d14058cbedc606640d7d9e3",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Envy/2025-02-10%2015.21.32.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_fear_primary",
+      "character_id": "insideout2_fear",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/best.png",
+      "width": 522,
+      "height": 810,
+      "sha256": "0321bc5527f23d64497eb015a483356ac28be979cf2a5cf72d1b8efcf4aae442",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_fear_reference_1",
+      "character_id": "insideout2_fear",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/2025-02-10 15.10.21.png",
+      "width": 430,
+      "height": 730,
+      "sha256": "8e0b101c88975ad18f40bd626a59ba21f67ac97a26cb3affdd202622b695604f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/2025-02-10%2015.10.21.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_fear_reference_2",
+      "character_id": "insideout2_fear",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Fear/2025-02-10 15.10.33.png",
+      "width": 342,
+      "height": 660,
+      "sha256": "8f8df3d4ae384167c08872347d7426b760a49e7f4e0a95b726c1bdcb6a123743",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Fear/2025-02-10%2015.10.33.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_joy_primary",
+      "character_id": "insideout2_joy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/best.png",
+      "width": 584,
+      "height": 770,
+      "sha256": "c167c7e050ec5a791e15c9c010226d79ee9bc34c486147fac4167f3f593cbea7",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_joy_reference_1",
+      "character_id": "insideout2_joy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/2025-02-10 14.54.18.png",
+      "width": 308,
+      "height": 488,
+      "sha256": "044da35966e2b9a6eb094ad89c0f86ae0eae6ce4a5fd10890273025f1dbb5a1a",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/2025-02-10%2014.54.18.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_joy_reference_2",
+      "character_id": "insideout2_joy",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Joy/2025-02-10 14.54.52.png",
+      "width": 296,
+      "height": 622,
+      "sha256": "0f1c179579df570620e28d025b0d1c83e1df390a54035d82a292e466a8e8f999",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Joy/2025-02-10%2014.54.52.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_riley_primary",
+      "character_id": "insideout2_riley",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/best.png",
+      "width": 658,
+      "height": 836,
+      "sha256": "827c65c9ce7ef51a736441e46a2121e9a22a025639a6cba896fc2bbf2809a796",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_riley_reference_1",
+      "character_id": "insideout2_riley",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/2025-02-10 15.02.46.png",
+      "width": 924,
+      "height": 1130,
+      "sha256": "6713866d21ca7126d300ede7fc410ebcce8192eb39ed900c0e2c0a6c260727f3",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/2025-02-10%2015.02.46.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_riley_reference_2",
+      "character_id": "insideout2_riley",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Riley/2025-02-10 15.03.21.png",
+      "width": 1520,
+      "height": 1260,
+      "sha256": "d940a0edc124cd05cd20b5e0ec6df2b595ccfeebeb327a1e793e6f336033dfa0",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Riley/2025-02-10%2015.03.21.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_sadness_primary",
+      "character_id": "insideout2_sadness",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/best.png",
+      "width": 432,
+      "height": 574,
+      "sha256": "1122eff92df708b49682d68ebb338a047476353702516982be6f01195a8dc18f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_sadness_reference_1",
+      "character_id": "insideout2_sadness",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/2025-02-10 15.17.02.png",
+      "width": 296,
+      "height": 406,
+      "sha256": "28464a4f566ad7316a656f59dbbc5277af79af059aa31a2edd8c7569d8ee4b89",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/2025-02-10%2015.17.02.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_insideout2_sadness_reference_2",
+      "character_id": "insideout2_sadness",
+      "path": "assets/raw/movieagent/dataset/InsideOut2/character_list/Sadness/2025-02-10 15.17.20.png",
+      "width": 440,
+      "height": 642,
+      "sha256": "52da9acfa976b31be53424b2417727703122a0f5b3f4a9196e748cedb69c8ca9",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/InsideOut2/character_list/Sadness/2025-02-10%2015.17.20.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_aobing_primary",
+      "character_id": "nezha2_aobing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/best.png",
+      "width": 406,
+      "height": 640,
+      "sha256": "51f4f6436a652219af5d86360a8796b2e72b0acab1417b63954a421810952944",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_aobing_reference_1",
+      "character_id": "nezha2_aobing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/025-02-09 21.57.56.png",
+      "width": 636,
+      "height": 670,
+      "sha256": "167c458a37dab7da2c2d692f2fb3cdee619ff9f48ea7a0c7c129015813110884",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/025-02-09%2021.57.56.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_aobing_reference_2",
+      "character_id": "nezha2_aobing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Aobing/025-02-09 21.58.24.png",
+      "width": 454,
+      "height": 522,
+      "sha256": "fb9dd35a9c20b242a956e9e1497b61572c37c3a0d839e46b9730dba0daf3c9c9",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Aobing/025-02-09%2021.58.24.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_ladyyin_primary",
+      "character_id": "nezha2_ladyyin",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/best.png",
+      "width": 678,
+      "height": 826,
+      "sha256": "702ac76b70cd0dcef8a5f4e1c7ca8dd318fe897e2dc95ac97cb6a4a825d9f73f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_ladyyin_reference_1",
+      "character_id": "nezha2_ladyyin",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/2025-02-11 15.41.13.png",
+      "width": 534,
+      "height": 650,
+      "sha256": "ddc5c5b73be640dc46bd5cc70b9eb0b7f92787d973e5a8778ca0aa05a4d17191",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/2025-02-11%2015.41.13.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_ladyyin_reference_2",
+      "character_id": "nezha2_ladyyin",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Ladyyin/2025-02-11 15.48.49.png",
+      "width": 432,
+      "height": 414,
+      "sha256": "73ae88d1d157fbf69086c7992004c1f89138004b8cb239105b2ea8aaed15dc72",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Ladyyin/2025-02-11%2015.48.49.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_lijing_primary",
+      "character_id": "nezha2_lijing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/best.png",
+      "width": 1430,
+      "height": 858,
+      "sha256": "1d76acc9ae754ee7c03cc2d43d63355965885fa7cc2c59ad5b98e68193e34921",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_lijing_reference_1",
+      "character_id": "nezha2_lijing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/2025-02-11 15.41.09.png",
+      "width": 826,
+      "height": 842,
+      "sha256": "761255222e9ecc8215c4865392c9b2265c97d08b04b11188041df93c82b435d7",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/2025-02-11%2015.41.09.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_lijing_reference_2",
+      "character_id": "nezha2_lijing",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/2025-02-11 15.44.55.png",
+      "width": 668,
+      "height": 766,
+      "sha256": "9b048125185c13342d5c677ff46909f1d8a112b876cc1463a653d7f7309c31f9",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/2025-02-11%2015.44.55.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_nezha_primary",
+      "character_id": "nezha2_nezha",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/best.png",
+      "width": 672,
+      "height": 870,
+      "sha256": "58900eba5a65c6574c482073f8eeb8bb85564d5c6d0ce88a52b257f960327d59",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_nezha_reference_1",
+      "character_id": "nezha2_nezha",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/025-02-09 21.55.17.png",
+      "width": 618,
+      "height": 642,
+      "sha256": "09581c33b4ec813742b4c8bb1b1a86e997cff991a4f95c1cf5a8f1444fa40902",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/025-02-09%2021.55.17.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_nezha_reference_2",
+      "character_id": "nezha2_nezha",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Nezha/025-02-09 21.55.27.png",
+      "width": 552,
+      "height": 642,
+      "sha256": "22e15fc1490db247a4262ee2a2bd70bc48f957e07d01c22d5afda2c36ec1964f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Nezha/025-02-09%2021.55.27.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_shenggongbao_primary",
+      "character_id": "nezha2_shenggongbao",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/best.png",
+      "width": 578,
+      "height": 588,
+      "sha256": "3e7d3c8f025071ed9d5a33292f8d59026f01e1c55e4a34d095164ff885e2799f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_shenggongbao_reference_1",
+      "character_id": "nezha2_shenggongbao",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/025-02-09 22.00.30.png",
+      "width": 444,
+      "height": 666,
+      "sha256": "dceb40d2b5cda08692c780c590be492962d113ff6e28dea4beffc94c9e126ca2",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/025-02-09%2022.00.30.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_shenggongbao_reference_2",
+      "character_id": "nezha2_shenggongbao",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Shenggongbao/025-02-09 22.00.39.png",
+      "width": 378,
+      "height": 646,
+      "sha256": "eebf2a6bfae4bb6cb397a5ad44a4de631d0437477b0f6fb17dcdf08fa1e523a9",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Shenggongbao/025-02-09%2022.00.39.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_taiyi_primary",
+      "character_id": "nezha2_taiyi",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/best.png",
+      "width": 620,
+      "height": 556,
+      "sha256": "ec12b5b39235984f1443e5da224d5b177c662ddb463dc83f3bdde8389b4aa75a",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_taiyi_reference_1",
+      "character_id": "nezha2_taiyi",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/025-02-09 22.02.07.png",
+      "width": 766,
+      "height": 572,
+      "sha256": "882b698e5065f1709d377dd394fd424fddeab87d0bf1c992375123e7cfa98be3",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/025-02-09%2022.02.07.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_nezha2_taiyi_reference_2",
+      "character_id": "nezha2_taiyi",
+      "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/025-02-09 22.02.13.png",
+      "width": 542,
+      "height": 464,
+      "sha256": "85c47d8fc8840b9ed7ad6b8ca2d9f665a094f8b2680cc4bb9677c0ec7aadf046",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/025-02-09%2022.02.13.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}
