@@ -1339,6 +1339,14 @@ def _summarize(records, ratings):
                               ("rendered", "render_failed") for row in rows),
                           review_failed_runs=sum(row.get("review_status") == "review_failed" for row in rows),
                           review_rejected_runs=sum(row.get("review_status") == "rejected" for row in rows),
+                          review_applied_runs=sum(row.get("review_status") == "applied" for row in rows),
+                          review_unchanged_runs=sum(row.get("review_status") == "unchanged" for row in rows),
+                          review_not_applicable_runs=sum(row.get("review_status") == "not_applicable" for row in rows),
+                          review_unknown_status_runs=sum(row.get("review_status") not in
+                              ("applied", "unchanged", "not_applicable", "review_failed", "rejected") for row in rows),
+                          rendered_review_failure_runs=sum(row.get("render_status") == "rendered" and
+                              row.get("review_status") in ("review_failed", "rejected") for row in rows),
+                          no_rendered_video_runs=len(rows) - rendered,
                           timeout_runs=sum(row.get("failure_kind") == "timeout" for row in rows),
                           budget_refused_runs=sum(row.get("failure_kind") == "budget" for row in rows),
                           known_zero_call_runs=sum(n == 0 for n in call_counts),
