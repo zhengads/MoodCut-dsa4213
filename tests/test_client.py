@@ -493,3 +493,33 @@ def test_redirects_are_refused_before_forwarding_auth():
 
     request = Request(OpenRouterClient.ENDPOINT, headers={"Authorization": "Bearer private"})
     assert _NoRedirect().redirect_request(request, None, 302, "redirect", {}, "https://other.example") is None
+
+
+@pytest.mark.parametrize("content,expected_kind", [
+    ("not JSON", "invalid_json_syntax"),
+    ("[]", "non_object_json"),
+    ("null", "non_object_json"),
+    ('{"x":NaN}', "non_finite_number"),
+    ('{"x":1e999}', "non_finite_number"),
+    ('{"x":1,"x":2}', "duplicate_json_key"),
+])
+def test_invalid_model_json_has_structured_failure_kind(
+    http, content, expected_kind
+):
+    respond(http, completion(content))
+    client = live_client()
+
+    with pytest.raises(OpenRouterError):
+        make_call(client)
+
+    assert http.call_count == 1
+    assert len(client.calls) == 1
+
+    record = client.calls[0]
+
+    assert record["status"] == "invalid_response"
+    assert record["failure_kind"] == expected_kind
+    assert record["provider_cost_usd"] == 0.001
+    assert client.spent_usd == pytest.approx(0.001)
+
+    assert "test-secret-not-real" not in json.dumps(client.calls)
