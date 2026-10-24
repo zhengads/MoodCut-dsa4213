@@ -1,5 +1,7 @@
 # MC-01 公共契约、客户端与集成
 
+Latest authorized v3 trial completed three actual videos with the existing pipeline and automatic private retention for all nine text replies. Cost $0.75277694 reconciled exactly; no retry/manual dialogue. Both first-round writers declared all feedback addressed, with no actor confirmation or second round. [Actual result](../pilots/anna-elsa-actor-v3-captured.md). Earlier failures are unchanged; human listening/viewing remains pending, PR #52 unmerged, #8/#9 open.
+
 PR #52 offline diagnostics: the existing text client retains private HTTP bytes/model strings before parsing, records envelope/content error kinds and safe positions, and preserves known/unknown accounting. Pipeline and CLI capture automatically; direct library callers select a capture root. Original failed trials and missing historical content remain unchanged. [Contract and acceptance](../pilots/text-response-diagnostics.md). No paid calls; PR unmerged, #8/#9 open.
 
 Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](../pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.

@@ -150,7 +150,7 @@ fetch("data.json")
   })
   .then(data => {
     experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "v3-shot");
+    showExperiment(location.hash.slice(1) || "v3-captured");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";

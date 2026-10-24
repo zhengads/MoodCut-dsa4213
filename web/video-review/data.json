@@ -3,6 +3,77 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "v3-captured",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.75277694",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-captured.md",
+      "duration": "请求 5 秒，原片约 5.26 秒",
+      "description": "本次 v3 真实三条件已出片：Gemini 共同规划、两位 DeepSeek 演员独立自审、Gemini 按镜头统一修订，再由 HeyGen 分别生成三段新视频。原始文本响应已私下完整保存。",
+      "observations": [
+        "真实调用：共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用；随后 3 次独立视频提交，得到 3 段不同原片，没有复用旧视频。",
+        "通用组 Anna 无意见、Elsa 有 1 条；情绪组两位演员各有 1 条。两组编剧都申报采纳了全部意见，结构校验通过。",
+        "本次没有未采纳意见，因而没有触发演员确认或第二轮协商。编剧申报已采纳不等于演员最终认可，也不证明语义上完全满足反馈。",
+        "9 份 HTTP 原始响应与模型文本均已私下保存并核对哈希，没有 JSON、留存或结构错误；无付费重试、换模型或手写台词补位。",
+        "文本 $0.00277694，视频 $0.75，总消费 $0.75277694，与本次账户扣款增量一致；$0.10 备用金未动用。",
+        "软件确认三段原片都有音轨、时长约 5.26 秒。台词是否说对、人物是否稳定、语速与温暖感如何，请实际听看；人工评分仍为空，不据此宣称情绪组更好。",
+        "前两次 v3 失败和五段历史 global/v1 原片仍原样保留在其他页签。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "本次共同规划的真实原片；未修改台词。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-generic_review.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你啊，安娜。"
+            }
+          ],
+          "note": "Anna 没有提出意见，Elsa 提出 1 条；编剧申报已采纳，修改 Elsa 台词。未触发演员确认。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-moodcut.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，你的伞还给你。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。你真好。"
+            }
+          ],
+          "note": "两位演员各提出 1 条意见；编剧申报均已采纳，修改两人的台词。未触发演员确认。"
+        }
+      ]
+    },
+    {
       "id": "v3-shot",
       "protocol": "actor_self_review_v3",
       "writer_output_contract": "dialogue_by_shot_v1",

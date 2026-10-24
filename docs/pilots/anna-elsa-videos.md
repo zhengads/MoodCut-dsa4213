@@ -1,8 +1,16 @@
 # Anna/Elsa videos for team review
 
-Latest corrected-contract v3 attempt: [record](anna-elsa-actor-v3-shot.md), [page tab](https://zhengads.github.io/MoodCut-dsa4213/#v3-shot). It stopped on emotional writer JSON-object parsing after nine known-cost text calls ($0.00291790); no new video exists. The earlier v3 two-edit failure and historical global/v1 media remain separate and unchanged.
+## New actual v3 videos (2026-10-24)
 
-## Latest v3 attempt: no new video
+[Play the latest three-condition comparison](https://zhengads.github.io/MoodCut-dsa4213/#v3-captured). Three distinct new HeyGen videos use the corrected v3 writer contract and privately retained raw text replies. Nine text calls and three video submissions cost $0.75277694, reconciled exactly; no retry or handwritten dialogue. Both writers declared all opinions addressed, so actor confirmation and second-round negotiation were not required. Human speech/identity/emotion checks and ratings remain pending. [Exact trial record](anna-elsa-actor-v3-captured.md).
+
+The separate [v3 Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024) contains the three original MP4s, their manifest and source statement; the historical Release below remains unchanged. The Pages workflow downloads both archives, verifies eight exact media hashes/counts and adds the newest trial as a fifth tab. No video binaries, original reference images or private replies enter Git. Source attribution and unconfirmed rights status remain explicit.
+
+## Preserved historical viewing and deployment records
+
+Earlier corrected-contract v3 attempt: [record](anna-elsa-actor-v3-shot.md), [page tab](https://zhengads.github.io/MoodCut-dsa4213/#v3-shot). It stopped on emotional writer JSON-object parsing after nine known-cost text calls ($0.00291790); no new video exists. The earlier v3 two-edit failure and historical global/v1 media remain separate and unchanged.
+
+## Earlier v3 attempt: no new video
 
 The separately authorized [actor-v3 real trial](anna-elsa-actor-v3.md) stopped before video preparation on a conflicting/duplicate edit for the same shot. Nine text calls cost $0.00281304, reconciled; video submissions and new clips are zero. [Open the v3 attempt tab](https://zhengads.github.io/MoodCut-dsa4213/#v3) for actual text/status differences. Historical global/v1 tabs below still play the original five files and are not v3 outputs. No paid retry or hand repair occurred. The earlier deployment paragraphs are historical snapshots, not the current PR/branch state.
 

@@ -24,17 +24,18 @@
       <p class="scene">雨天的公交站<br><strong>目标氛围：温暖、亲近</strong></p>
     </div>
     <div class="experiment-tabs" role="tablist" aria-label="选择试跑记录">
-      <button id="tab-v3-shot" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="v3-shot">v3 修复后 · 本次</button>
+      <button id="tab-v3-captured" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="v3-captured">v3 三段出片 · 本次</button>
+      <button id="tab-v3-shot" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-shot">v3 上次 · JSON 停止</button>
       <button id="tab-v3" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3">v3 旧接口 · 历史停止</button>
       <button id="tab-actors" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="actors">演员自审 v1 · 历史</button>
       <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">整段台词统一审查</button>
     </div>
     <p id="experiment-description" class="experiment-description" aria-live="polite">正在载入实验记录…</p>
-    <section id="comparison" role="tabpanel" aria-labelledby="tab-v3-shot" tabindex="0">
+    <section id="comparison" role="tabpanel" aria-labelledby="tab-v3-captured" tabindex="0">
       <div id="players" class="players" aria-label="三条件视频与台词"></div>
     </section>
     <p id="page-error" class="error" role="alert" hidden></p>
-    <noscript><p class="error">请启用 JavaScript 以切换对比视频。也可以在 <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024">Release</a> 下载全部原片。</p></noscript>
+    <noscript><p class="error">请启用 JavaScript 以切换对比视频。也可以在 <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024">本次 v3 Release</a> 下载三段原片。</p></noscript>
     <section class="readout" aria-labelledby="readout-title">
       <div>
         <h2 id="readout-title">这次实际发生了什么</h2>
@@ -52,19 +53,20 @@
           <div><dt>文本与视频实付</dt><dd id="cost">—</dd></div>
           <div><dt>每段</dt><dd id="duration">—</dd></div>
         </dl>
-        <a id="source-record" href="https://github.com/zhengads/MoodCut-dsa4213/pull/48">阅读试跑单与完整输出</a>
+        <a id="source-record" href="https://github.com/zhengads/MoodCut-dsa4213/pull/52">阅读试跑单与完整输出</a>
       </aside>
     </section>
     <div class="boundary">
-      <strong>两次 v3 试跑均在视频提交前因硬性错误停止。</strong>
-      其他页签仍是历史 global/v1 原片；不把旧片当作 v3 结果。页面台词来自实际计划，不是已核实的语音转录。人工评分仍为空，软件执行和观看差别不证明方法更好。
+      <strong>本次是三段新的 v3 原片；前两次失败仍单独保留。</strong>
+      历史 global/v1 原片另有页签，不当作 v3 结果。页面台词来自实际计划，不是已核实的语音转录。编剧申报采纳不等于演员最终认可；人工评分仍为空，出片和观看差别不证明方法更好。
     </div>
   </main>
   <footer>
     <p>角色参考来源：showlab/MovieAgent 固定版本的 FrozenII Anna / Elsa。图片及角色使用权仍未核清，署名不等于授权。</p>
     <nav aria-label="来源与核对">
-      <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/SOURCE.md">来源说明</a>
-      <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024">原片存档</a>
+      <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/SOURCE.md">来源说明</a>
+      <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024">本次 v3 原片</a>
+      <a href="https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024">历史原片</a>
       <a href="media.sha256">原片 SHA-256</a>
     </nav>
   </footer>
