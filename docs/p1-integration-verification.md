@@ -1,5 +1,7 @@
 # P1 Integration Verification Report
 
+Current integration note (2026-10-24): PR #48 has merged into main. References below to its draft/unmerged state describe this report's earlier verification baseline, not current repository status. The separate bounded-negotiation increment uses explicit `actor_self_review_v3`; its offline implementation/evidence is tracked in [the current method](ACTOR_REVIEW_METHOD.md). It does not retag historical paid artifacts or establish human acceptance.
+
 **Project:** MoodCut - DSA4213
 **Module:** MC-01 / P1 Foundation and Integration
 **Related Issue:** #8

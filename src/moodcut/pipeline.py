@@ -17,7 +17,7 @@ from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2,
+from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3,
                        validate_review_protocol, validate_actor_review_result)
 from .validation import validate_plan, validate_scene
 
@@ -245,6 +245,9 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             if review_protocol in ACTOR_PROTOCOLS:
                 for name in ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status"):
                     record[name] = deepcopy(reviewed.get(name))
+                if review_protocol == ACTOR_REVIEW_V3:
+                    for name in ("negotiation_status", "negotiation_round_count", "confirmation_issue_ids", "disputed_issue_ids"):
+                        record[name] = deepcopy(reviewed.get(name))
             record["errors"].extend(reviewed["errors"])
             if any("BudgetError:" in error for error in reviewed["errors"]):
                 record["failure_kind"] = "budget"
@@ -532,7 +535,7 @@ def _load_generated_block(path, project_root):
             expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
-            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol == ACTOR_REVIEW_V2 else ())
+            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (ACTOR_REVIEW_V2, ACTOR_REVIEW_V3) else ())
             need(all(c.get("stage") in actor_stages for c in row.get("call_records", [])),
                  "actor source contains a legacy review call")
         else:
@@ -574,6 +577,16 @@ def _load_generated_block(path, project_root):
                 errors = validate_actor_review_result(scene, initial, manifest, reviewed,
                                                       mode=condition, project_root=project_root)
                 need(not errors, "; ".join(errors))
+                if review_protocol == ACTOR_REVIEW_V3:
+                    need(all(row.get(name) == reviewed.get(name) for name in
+                             ("negotiation_status", "negotiation_round_count", "confirmation_issue_ids", "disputed_issue_ids")),
+                         "saved actor negotiation summary mismatch")
+                    stages = ["actor_critique"] * len(scene["characters"])
+                    for round_record in reviewed["negotiation_rounds"]:
+                        stages.append("actor_revise")
+                        stages.extend(["actor_confirm"] * len(round_record["actor_confirmations"]))
+                    need([c.get("stage") for c in row.get("call_records", [])] == stages,
+                         "actor negotiation call sequence mismatch")
                 if review_protocol == ACTOR_REVIEW_V2:
                     stages = ["actor_critique"] * len(scene["characters"])
                     if reviewed["report"]["issues"]:
