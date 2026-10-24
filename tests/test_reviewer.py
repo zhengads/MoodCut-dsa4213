@@ -672,12 +672,84 @@ def bounded_software_case(mode="moodcut", omitted=("a", "b"), first="maintain_ob
             issue = f"actor-{('a', 'b').index(actor)+1}:local-1"
             response["decisions"] = [{"issue_id": issue, "decision": final, "reason": "Software-only final actor view."}]
             responses.append(response)
+    def by_shot(writer):
+        value = {"dialogue_by_shot": {e["shot_id"]: deepcopy(e["set"]["dialogue"]) for e in writer["patch"]["edits"]},
+                 "feedback_disposition": deepcopy(writer["feedback_disposition"])}
+        if "objection_responses" in writer:
+            value["objection_responses"] = deepcopy(writer["objection_responses"])
+        return value
+    responses = [by_shot(r) if "patch" in r else r for r in responses]
+    case = (*case[:4], by_shot(case[4]))
     return case, responses
 
 
 def call_bounded(case, client, mode="moodcut"):
     return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
         review_protocol=ACTOR_REVIEW_V3, project_root=Path(__file__).resolve().parents[1])
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_writer_returns_one_dialogue_per_shot_for_both_actor_issues(mode):
+    case = actor_software_case(mode)
+    writer = {"dialogue_by_shot": {case[1]["shots"][0]["shot_id"]:
+        deepcopy(case[4]["patch"]["edits"][0]["set"]["dialogue"])},
+        "feedback_disposition": deepcopy(case[4]["feedback_disposition"])}
+    client = FakeClient(case[3] + [writer])
+    result = call_bounded(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    assert result["writer_response"] == writer
+    assert len(result["patch"]["edits"]) == 1
+    assert result["patch"]["edits"][0]["set"]["dialogue"] == writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]]
+    assert len(result["feedback_disposition"]["addressed_issue_ids"]) == 2 and len(client.calls) == 3
+    assert validate_actor_review_result(*case[:3], result, mode=mode) == []
+
+
+@pytest.mark.parametrize("bad", ["legacy_edits", "unknown_shot", "feedback_free_shot", "array", "alternatives", "wrong_speaker", "missing_line", "false_addressed", "extra_field"])
+def test_v3_shot_writer_fails_closed_without_guessing_or_merging(bad):
+    case, replies = bounded_software_case(omitted=(), first="accept_candidate")
+    writer = replies[2]
+    sid = case[1]["shots"][0]["shot_id"]
+    if bad == "legacy_edits": writer = deepcopy(actor_software_case()[4]); writer["patch"]["edits"].append(deepcopy(writer["patch"]["edits"][0])); replies[2] = writer
+    elif bad == "unknown_shot": writer["dialogue_by_shot"]["not-a-shot"] = deepcopy(writer["dialogue_by_shot"][sid])
+    elif bad == "feedback_free_shot": writer["dialogue_by_shot"][case[1]["shots"][1]["shot_id"]] = deepcopy(case[1]["shots"][1]["dialogue"])
+    elif bad == "array": writer["dialogue_by_shot"] = [writer["dialogue_by_shot"]]
+    elif bad == "alternatives": writer["dialogue_by_shot"][sid] = [writer["dialogue_by_shot"][sid], writer["dialogue_by_shot"][sid]]
+    elif bad == "wrong_speaker": writer["dialogue_by_shot"][sid][1]["character_id"] = "a"
+    elif bad == "missing_line": writer["dialogue_by_shot"][sid].pop()
+    elif bad == "false_addressed": writer["dialogue_by_shot"] = {}
+    else: writer["duration_s"] = 99
+    client = FakeClient(replies)
+    result = call_bounded(case, client)
+    assert result["status"] == "review_failed" and result["plan"] == case[1] and len(client.calls) == 3
+    assert result["negotiation_rounds"][0]["writer_response"] == writer
+
+
+def test_v3_duplicate_json_shot_keys_are_rejected_before_conversion():
+    from moodcut.client import _strict_json
+    with pytest.raises(ValueError, match="duplicate JSON key"):
+        _strict_json('{"dialogue_by_shot":{"S":[],"S":[]},"feedback_disposition":{}}')
+
+
+def test_v3_saved_raw_shot_dialogue_and_derived_patch_must_agree():
+    case, replies = bounded_software_case()
+    result = call_bounded(case, FakeClient(replies))
+    changed = deepcopy(result)
+    sid = case[1]["shots"][0]["shot_id"]
+    changed["negotiation_rounds"][0]["writer_response"]["dialogue_by_shot"] = {sid: deepcopy(case[1]["shots"][0]["dialogue"])}
+    assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
+    changed = deepcopy(result); changed["writer_output_contract"] = "issue_patch_v1"
+    assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
+
+
+def test_v3_old_writer_contract_prompt_identity_remains_available():
+    import hashlib
+    root = Path(__file__).resolve().parents[1] / "src/moodcut/prompts"
+    old = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3, writer_output_contract="issue_patch_v1")
+    new = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3)
+    assert old["revise"] == hashlib.sha256((root / "review_actor_revise.txt").read_text(encoding="utf-8").encode()).hexdigest()
+    assert old["negotiate"] == hashlib.sha256((root / "review_actor_negotiate.txt").read_text(encoding="utf-8").encode()).hexdigest()
+    assert old["revise"] != new["revise"] and old["negotiate"] != new["negotiate"]
+    assert all(old[k] == new[k] for k in ("generic", "moodcut", "confirm"))
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
@@ -738,17 +810,17 @@ def test_v3_second_writer_cannot_repeat_its_veto_or_bypass_constraints(bad):
     case, responses = bounded_software_case(omitted=("b",))
     writer = responses[4]
     if bad == "no_response": writer["objection_responses"] = {}
-    elif bad == "same_dialogue": writer["patch"]["edits"][0]["set"]["dialogue"][1] = deepcopy(case[1]["shots"][0]["dialogue"][1])
+    elif bad == "same_dialogue": writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][1] = deepcopy(case[1]["shots"][0]["dialogue"][1])
     elif bad == "omit_again":
         writer["feedback_disposition"] = deepcopy(case[4]["feedback_disposition"])
-        writer["patch"] = deepcopy(case[4]["patch"])
+        writer["dialogue_by_shot"] = deepcopy(case[4]["dialogue_by_shot"])
     elif bad == "drop_prior":
         writer["feedback_disposition"]["addressed_issue_ids"].remove("actor-1:local-1")
         writer["feedback_disposition"]["unaddressed_issue_ids"] = ["actor-1:local-1"]
         writer["feedback_disposition"]["unaddressed_reasons"] = {"actor-1:local-1": "Software-only rejected prior change"}
-        writer["patch"]["edits"][0]["set"]["dialogue"][0] = deepcopy(case[1]["shots"][0]["dialogue"][0])
-    elif bad == "non_dialogue": writer["patch"]["edits"][0]["set"]["duration_s"] = 99
-    else: writer["patch"]["edits"][0]["set"]["dialogue"][1]["character_id"] = "a"
+        writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][0] = deepcopy(case[1]["shots"][0]["dialogue"][0])
+    elif bad == "non_dialogue": writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]] = {"duration_s": 99}
+    else: writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][1]["character_id"] = "a"
     client = FakeClient(responses)
     result = call_bounded(case, client)
     assert result["status"] == "review_failed" and result["plan"] == case[1]

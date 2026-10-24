@@ -18,7 +18,7 @@ from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
 from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3,
-                       validate_review_protocol, validate_actor_review_result)
+                       validate_review_protocol, validate_actor_review_result, SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT)
 from .validation import validate_plan, validate_scene
 
 def resolve_render_dependencies(*, project_root=".", font_path=None, config_path="configs/render.json"):
@@ -124,8 +124,9 @@ def _model_settings(client):
             "temperature": getattr(client, "temperature", None)}
 
 
-def _review_hashes(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW):
-    return get_review_prompt_hashes(output_mode=output_mode, review_protocol=review_protocol)
+def _review_hashes(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW, writer_output_contract=None):
+    options = {} if writer_output_contract is None else {"writer_output_contract": writer_output_contract}
+    return get_review_prompt_hashes(output_mode=output_mode, review_protocol=review_protocol, **options)
 
 
 def _assignment(scene, replicate, condition):
@@ -185,6 +186,8 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
         record["text_model_settings"] = _model_settings(client)
     if review_protocol in ACTOR_PROTOCOLS:
         record["review_protocol"] = review_protocol
+    if review_protocol == ACTOR_REVIEW_V3:
+        record["writer_output_contract"] = SHOT_WRITER_CONTRACT
     if generated:
         record.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                       shared_generation_sha256=None, video_model_id=generation_settings.get("model"),
@@ -464,6 +467,8 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
         block["text_model_settings"] = deepcopy(settings)
     if review_protocol in ACTOR_PROTOCOLS:
         block["review_protocol"] = review_protocol
+    if review_protocol == ACTOR_REVIEW_V3:
+        block["writer_output_contract"] = SHOT_WRITER_CONTRACT
     if generated:
         block.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                      shared_generation_sha256=shared, generation_settings=generation_settings,
@@ -532,7 +537,12 @@ def _load_generated_block(path, project_root):
                          for c in row.get("call_records", [])), "review call model differs from role policy")
         need(row.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "review protocol mismatch")
         if review_protocol in ACTOR_PROTOCOLS:
-            expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol)
+            writer_options = {}
+            if review_protocol == ACTOR_REVIEW_V3:
+                contract = block.get("writer_output_contract", LEGACY_WRITER_CONTRACT)
+                need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == contract, "writer output contract mismatch")
+                writer_options["writer_output_contract"] = contract
+            expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol, **writer_options)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
             actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (ACTOR_REVIEW_V2, ACTOR_REVIEW_V3) else ())
@@ -578,6 +588,8 @@ def _load_generated_block(path, project_root):
                                                       mode=condition, project_root=project_root)
                 need(not errors, "; ".join(errors))
                 if review_protocol == ACTOR_REVIEW_V3:
+                    need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == reviewed.get("writer_output_contract", LEGACY_WRITER_CONTRACT),
+                         "saved writer output contract mismatch")
                     need(all(row.get(name) == reviewed.get(name) for name in
                              ("negotiation_status", "negotiation_round_count", "confirmation_issue_ids", "disputed_issue_ids")),
                          "saved actor negotiation summary mismatch")
