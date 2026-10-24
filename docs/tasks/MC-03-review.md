@@ -1,5 +1,7 @@
 # MC-03 通用审查、情绪审查与局部修订
 
+The offline `actor_self_review_v2` change returns all omitted opinions to their corresponding actor. Each affected actor sees its own original report, actual candidate and writer reasons once; accepted omissions stay recorded as unaddressed, while objections/missing/invalid/failed replies block request preparation. Raw decisions and the writer candidate survive for human resolution. No automatic rewrite loop or full-script endorsement is added. See [method](../ACTOR_REVIEW_METHOD.md); old real results remain untouched and their [videos are shared](../pilots/anna-elsa-videos.md). PR #48 remains unmerged.
+
 The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) records both generic actors returning no issues, both emotional actors raising one opinion, and one unified writer changing Anna while retaining Elsa's opinion with an explanation that misidentifies the speaker. Exact output is preserved without developer repair or retries. Real videos are available for human acceptance; no final actor approval or quality conclusion is inferred. The offline implementation record below is preserved as history.
 
 ### Actor self-review increment (2026-10-24)

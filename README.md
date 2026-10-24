@@ -1,14 +1,16 @@
 # MoodCut
 
+视频效果入口：[Anna/Elsa 历史实验视频与台词对照](docs/pilots/anna-elsa-videos.md)。五段原始 MP4 已上传到本仓库 Release，覆盖两次实验的六条条件记录；新演员通用组与 baseline 共享一段。组员可下载原片，视频不塞入 Git 历史；PR 内嵌在线播放尚未完成，另行处理，不阻塞演员确认机制提交。
+
 动画选材入口：[本地动画素材库](assets/library/README.md)含MovieAgent固定版本四部动画的25个角色、75张参考图及来源/许可状态。运行`python scripts/prepare_references.py --animation-assets`显式下载，加`--check`离线复核；原图不提交Git，署名不等于已取得图片使用或再分发许可。
 
 DSA4213 课程项目：面向情绪表达的分镜审查与局部修订。
 
 给定故事、两个角色参考图与目标氛围，规划 Agent 生成共同初稿；新演员协议由两个演员分别审查自己的台词，再交同一编剧统一修订。baseline 保留初稿，generic_review 使用一般自审，moodcut 使用情绪导向自审。成片方向是以参考图保持人物形象，由视频生成模型产生场景、动作和声音；review 只修改台词。
 
-新结构须显式选择 `review_protocol="actor_self_review_v1"`，详见[演员自审方法](docs/ACTOR_REVIEW_METHOD.md)。[新演员结构真实试跑](docs/pilots/anna-elsa-actor.md)已完成：8次文本调用、两个独立HeyGen视频覆盖三条件，总费用$0.50248398；通用组无意见、与baseline复用，情绪组修改Anna并保留Elsa一条未采纳意见及有问题的编剧解释，供人工听看验收。编剧必须保留两人的全部反馈及未采纳理由，不能删除演员贡献或宣称双方认可；合规且有分歧的稿子可进入待验收视频。旧默认 `global_v1` 继续兼容历史流程；[PR #48 原始真实成片](docs/pilots/anna-elsa-agent.md)属于旧全局审查结构，原始结果不改写。
+当前修复显式选择 `review_protocol="actor_self_review_v2"`，详见[演员自审方法](docs/ACTOR_REVIEW_METHOD.md)：未采纳意见及编剧理由必须交回对应演员确认；演员仍反对、回复缺失或调用失败时，停止请求准备，保留候选稿与双方原话，不自动增加修订轮次。两种审查共用该机制，最多13次文本调用，原费用门禁保持。此版本只做离线验收，尚无真实 v2 视频。默认 `global_v1` 与历史 `actor_self_review_v1` 继续兼容。[演员 v1 真实试跑](docs/pilots/anna-elsa-actor.md)的8次文本调用、两段视频/三条件和$0.50248398账目均保留；其中Elsa意见未落实的问题不改写成已经解决。
 
-默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。全局审查和新演员结构均已有真实视频技术试跑；中文对白、人物一致性和情绪效果仍需人工听看，不由技术跑通认定。
+默认 `smoke/run/render` 生成静态 animatic，用于检查文本流程，不代表生成式成片。`run --output-mode generated` 已接通三条件脚本的实际离线请求编译器；旧 `scripts/generate_video.py` 保留开发对的OpenRouter视频适配。全局审查和演员 v1 结构已有真实视频技术试跑；中文对白、人物一致性和情绪效果仍需人工听看，不由技术跑通认定。
 
 研究问题：情绪专项反馈能否比通用审查更准确地传达目标氛围，同时保持剧情清楚和表达自然？效果需要独立评价，软件流程完成本身不证明提升。
 
@@ -241,7 +243,7 @@ python -m moodcut qualify-generated-records --records runs/video-inspection/reco
 
 生成模式要求共同场景/动作/镜头只规划一次，各条件只改台词；公共边界及规划/审查/请求编译和本地检查材料已支持显式generated，离线资格报告见CONTRACTS 6.14，盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。固定 seed 不保证画面相同，规划不是本对照单独检验的变量。当前不调用付费 API，不自行启动实验；接口和验收边界见 [CONTRACTS 第6节](docs/CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
 
-生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿。旧全局审查接口见6.11；新双演员自审须显式传入 `review_protocol="actor_self_review_v1"`，见[CONTRACTS 6.18](docs/CONTRACTS.md#618-actor-self-review-protocol)。实际P2/P3/P4加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic。离线媒体检查、资格、盲评接线与真实任务执行入口已实现，新演员方法已有开发试跑视频，人工效果验收尚未完成。
+生成式规划调用`make_plan_with_trace(scene, manifest, client, project_root=..., output_mode="generated")`，详见[CONTRACTS 6.10](docs/CONTRACTS.md#610-生成式共同规划适配)。它按显式1.1输入的镜头/总长范围规划，沿用director→scene→shot和共享初稿。旧全局审查见6.11，演员v1见6.18，新确认门禁须显式传 `review_protocol="actor_self_review_v2"`，见[CONTRACTS 6.19](docs/CONTRACTS.md#619-actor-confirmation-of-omitted-feedback)。实际P2/P3/P4加FakeClient可准备三条件脚本和请求；当前CLI plan/review仍默认animatic。离线媒体检查、资格、盲评与真实任务入口已实现，v2尚未真实调用或完成人工效果验收。
 
 本地回执与账目使用`assemble-generated-records --preparation ... --evidence ... --pricing-config ... --output ...`，准确格式见[CONTRACTS 6.9](docs/CONTRACTS.md#69-本地生成回执与费用记录装配)。它只读已有文件，保留失败/未知费用和旧回执计数缺失；报价不当消费，规划及复用只计一次。媒体文件完成后可用qualify-generated-records核对离线资格（6.14），人工听看仍待完成；盲评导出/评分须走6.15重检入口，不以旧导出绕过来源及副本核对。
 

@@ -15,21 +15,24 @@ MAX_OUTPUT_TOKENS = 2048
 TRACE_LOGGER = logging.getLogger("moodcut.review.trace")
 GLOBAL_REVIEW = "global_v1"
 ACTOR_REVIEW = "actor_self_review_v1"
+ACTOR_REVIEW_V2 = "actor_self_review_v2"
+ACTOR_PROTOCOLS = (ACTOR_REVIEW, ACTOR_REVIEW_V2)
 
 
 def validate_review_protocol(review_protocol, output_mode):
-    if review_protocol not in (GLOBAL_REVIEW, ACTOR_REVIEW):
+    if review_protocol not in (GLOBAL_REVIEW, *ACTOR_PROTOCOLS):
         raise ValueError("Unknown review protocol")
-    if review_protocol == ACTOR_REVIEW and output_mode != "generated":
+    if review_protocol in ACTOR_PROTOCOLS and output_mode != "generated":
         raise ValueError("Actor self-review requires explicit generated mode")
 
 
 def _review_prompts(*, output_mode="animatic", review_protocol=GLOBAL_REVIEW):
     allowed_patch_fields(output_mode=output_mode)
     validate_review_protocol(review_protocol, output_mode)
-    if review_protocol == ACTOR_REVIEW:
+    if review_protocol in ACTOR_PROTOCOLS:
+        names = ("generic", "moodcut", "revise") + (("confirm",) if review_protocol == ACTOR_REVIEW_V2 else ())
         return {name: files("moodcut").joinpath("prompts", f"review_actor_{name}.txt").read_text(encoding="utf-8")
-                for name in ("generic", "moodcut", "revise")}
+                for name in names}
     prefix = "review_generated" if output_mode == "generated" else "review"
     return {name: files("moodcut").joinpath("prompts", f"{prefix}_{name}.txt").read_text(encoding="utf-8")
             for name in ("generic", "moodcut", "revise", "verify")}
@@ -102,10 +105,57 @@ def _disposition_errors(report, disposition):
     return errors
 
 
-def validate_actor_review_result(scene, initial, manifest, result, *, mode, project_root=None):
+def _actor_confirmation_errors(scene, initial, result, mode, *, partial=False):
+    """Check only the owning actor can consent to an omitted, candidate-bound issue."""
+    omitted = result["feedback_disposition"]["unaddressed_issue_ids"]
+    issues = [i for i in result["report"]["issues"] if i["issue_id"] in omitted]
+    actors = [a for a in scene["characters"] if any(i["actor_id"] == a["id"] for i in issues)]
+    records = result.get("actor_confirmations")
+    if (not isinstance(records, list) or len(records) > len(actors)
+            or not partial and len(records) != len(actors)):
+        return ["Exactly one omission confirmation per affected actor is required"], []
+    errors, disputed = [], []
+    for actor, record in zip(actors, records):
+        if not isinstance(record, dict) or set(record) != {"actor_id", "response"} or record["actor_id"] != actor["id"]:
+            errors.append("Actor omission confirmation order/owner mismatch")
+            continue
+        response = record["response"]
+        if not isinstance(response, dict) or set(response) != {
+                "schema_version", "scene_id", "mode", "actor_id", "initial_plan_sha256", "candidate_plan_sha256", "decisions"}:
+            errors.append("Actor omission confirmation has invalid fields")
+            continue
+        if (response["schema_version"] != "1.0" or response["scene_id"] != scene["scene_id"]
+                or response["mode"] != mode or response["actor_id"] != actor["id"]
+                or response["initial_plan_sha256"] != json_hash(initial)
+                or response["candidate_plan_sha256"] != json_hash(result["writer_candidate_plan"])):
+            errors.append("Actor omission confirmation identity/candidate mismatch")
+            continue
+        decisions = response["decisions"]
+        if not isinstance(decisions, list):
+            errors.append("Actor omission decisions must be an array")
+            continue
+        ids = []
+        for decision in decisions:
+            if (not isinstance(decision, dict) or set(decision) != {"issue_id", "decision", "reason"}
+                    or not isinstance(decision["issue_id"], str)
+                    or decision["decision"] not in ("accept_omission", "maintain_objection")
+                    or not isinstance(decision["reason"], str) or not decision["reason"].strip()):
+                errors.append("Each actor omission decision requires an issue, decision and reason")
+                continue
+            ids.append(decision["issue_id"])
+            if decision["decision"] == "maintain_objection":
+                disputed.append(decision["issue_id"])
+        expected = {i["issue_id"] for i in issues if i["actor_id"] == actor["id"]}
+        if len(set(ids)) != len(ids) or set(ids) != expected:
+            errors.append("Actor omission decisions must cover exactly its own unaddressed issues")
+    return errors, disputed
+
+
+def validate_actor_review_result(scene, initial, manifest, result, *, mode, project_root=None,
+                                require_confirmation=True):
     """Recheck a saved actor result without model calls or changing its artifacts."""
     from .patches import apply_patch
-    if not isinstance(result, dict) or result.get("review_protocol") != ACTOR_REVIEW:
+    if not isinstance(result, dict) or result.get("review_protocol") not in ACTOR_PROTOCOLS:
         return ["Actor review protocol is missing"]
     report, errors = _merge_actor_reports(scene, initial, mode, result.get("actor_reports"))
     if errors:
@@ -137,6 +187,19 @@ def validate_actor_review_result(scene, initial, manifest, result, *, mode, proj
                          "has_unaddressed" if disposition.get("unaddressed_issue_ids") else "writer_addressed")
     if result.get("actor_feedback_status") != expected_feedback:
         errors.append("Actor feedback status differs from the recorded disposition")
+    if result["review_protocol"] == ACTOR_REVIEW_V2:
+        if result.get("writer_candidate_plan") != applied["plan"]:
+            errors.append("Actor confirmation must bind the actual writer candidate")
+            return errors
+        if require_confirmation:
+            confirmation_errors, disputed = _actor_confirmation_errors(scene, initial, result, mode)
+            errors.extend(confirmation_errors)
+            expected_confirmation = ("not_needed" if not disposition["unaddressed_issue_ids"] else
+                                     "disputed" if disputed else "accepted")
+            if result.get("actor_confirmation_status") != expected_confirmation:
+                errors.append("Actor confirmation status differs from saved decisions")
+            if disputed:
+                errors.append("Actor maintains objection to omission; human resolution is required")
     if applied["status"] == "unchanged" and isinstance(disposition, dict) and disposition.get("addressed_issue_ids"):
         errors.append("Unchanged dialogue cannot claim addressed feedback")
     final = result.get("plan", {})
@@ -247,7 +310,7 @@ def validate_verification(report: dict, verification: dict) -> list[str]:
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
                       client: LLMClient, *, mode: str, project_root=None, output_mode="animatic",
                       review_protocol=GLOBAL_REVIEW) -> dict:
-    """Return ReviewResult; make at most three calls through the supplied client.
+    """Return ReviewResult; v1 uses <=3 calls, v2 <=5 with omission confirmation.
 
     Attach an INFO handler to moodcut.review.trace to persist request/response
     diagnostics. The client exposes parsed JSON, not provider raw HTTP text.
@@ -266,11 +329,14 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         "status": "review_failed",
         "errors": [],
     }
-    if review_protocol == ACTOR_REVIEW:
-        result.update(review_protocol=ACTOR_REVIEW, actor_reports=[], writer_response=None,
+    if review_protocol in ACTOR_PROTOCOLS:
+        result.update(review_protocol=review_protocol, actor_reports=[], writer_response=None,
                       verification_kind="programmatic_only", actor_endorsement="not_requested",
                       actor_feedback_status="incomplete",
                       feedback_disposition={"addressed_issue_ids": [], "unaddressed_issue_ids": [], "unaddressed_reasons": {}})
+    if review_protocol == ACTOR_REVIEW_V2:
+        result.update(actor_confirmations=[], actor_confirmation_status="not_needed",
+                      writer_candidate_plan=deepcopy(original))
     calls = 0
     stage = "preflight"
 
@@ -317,7 +383,7 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             context["output_mode"] = output_mode
         prompts = _review_prompts(output_mode=output_mode, review_protocol=review_protocol)
         prompt = "generic" if mode == "generic_review" else "moodcut"
-        if review_protocol == ACTOR_REVIEW:
+        if review_protocol in ACTOR_PROTOCOLS:
             for actor in scene["characters"]:
                 actor_context = {**deepcopy(context), "actor": deepcopy(actor),
                                  "own_dialogue": _actor_lines(original, actor["id"])}
@@ -346,7 +412,7 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             return result
         revision_context = {**context, "report": result["report"],
                             "issues_by_shot": _issues_by_shot(original, result["report"])}
-        if review_protocol == ACTOR_REVIEW:
+        if review_protocol in ACTOR_PROTOCOLS:
             revision_context["actor_reports"] = deepcopy(result["actor_reports"])
             writer = request("actor_revise", "revise", revision_context)
             result["writer_response"] = writer
@@ -378,12 +444,43 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
             except ValueError as exc:
                 result.update(status="rejected", plan=deepcopy(original), errors=[str(exc)])
                 return result
-        if review_protocol == ACTOR_REVIEW:
+        if review_protocol in ACTOR_PROTOCOLS:
             result.update(applied)
+            if review_protocol == ACTOR_REVIEW_V2:
+                result["writer_candidate_plan"] = deepcopy(applied["plan"])
             errors = validate_actor_review_result(scene, original, manifest, result, mode=mode,
-                                                  project_root=project_root)
+                                                  project_root=project_root, require_confirmation=False)
             if errors:
                 result.update(status="review_failed", plan=deepcopy(original), errors=errors)
+                return result
+            if review_protocol == ACTOR_REVIEW_V2:
+                omitted = result["feedback_disposition"]["unaddressed_issue_ids"]
+                if omitted:
+                    result["actor_confirmation_status"] = "pending"
+                for actor in scene["characters"]:
+                    own = [i for i in result["report"]["issues"]
+                           if i["issue_id"] in omitted and i["actor_id"] == actor["id"]]
+                    if not own:
+                        continue
+                    payload = {"scene": deepcopy(scene), "mode": mode, "actor": deepcopy(actor),
+                        "initial_plan": deepcopy(original), "revised_plan": deepcopy(applied["plan"]),
+                        "initial_plan_sha256": json_hash(original), "candidate_plan_sha256": json_hash(applied["plan"]),
+                        "actor_report": deepcopy(next(r["response"] for r in result["actor_reports"] if r["actor_id"] == actor["id"])),
+                        "unaddressed_issues": [dict(deepcopy(i), writer_reason=result["feedback_disposition"]["unaddressed_reasons"][i["issue_id"]]) for i in own],
+                        "own_original_dialogue": _actor_lines(original, actor["id"]),
+                        "own_revised_dialogue": _actor_lines(applied["plan"], actor["id"])}
+                    response = request("actor_confirm", "confirm", payload)
+                    result["actor_confirmations"].append({"actor_id": actor["id"], "response": response})
+                    errors, _ = _actor_confirmation_errors(scene, original, result, mode, partial=True)
+                    if errors:
+                        result.update(status="review_failed", plan=deepcopy(original), errors=errors,
+                                      actor_confirmation_status="failed")
+                        return result
+                _, disputed = _actor_confirmation_errors(scene, original, result, mode)
+                result["actor_confirmation_status"] = "not_needed" if not omitted else "disputed" if disputed else "accepted"
+                errors = validate_actor_review_result(scene, original, manifest, result, mode=mode, project_root=project_root)
+                if errors:
+                    result.update(status="review_failed", plan=deepcopy(original), errors=errors)
             return result
         result["verification"] = request("verify", "verify",
                                          {**context, "revised_plan": applied["plan"],
@@ -395,6 +492,8 @@ def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
         result.update(applied)
         return result
     except Exception as exc:
+        if review_protocol == ACTOR_REVIEW_V2 and stage == "actor_confirm":
+            result["actor_confirmation_status"] = "failed"
         result["plan"] = deepcopy(original)
         result["status"] = "review_failed"
         result["errors"] = [f"{stage}: {type(exc).__name__}: {exc}"]

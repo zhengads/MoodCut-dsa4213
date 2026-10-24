@@ -1,5 +1,7 @@
 # MC-01 公共契约、客户端与集成
 
+The offline `actor_self_review_v2` increment in PR #48 routes `actor_confirm` to review, binds owner/issue/candidate decisions at source/request boundaries and refuses incomplete or disputed consent. Both review conditions share the mechanism and budget rules. Historical v1/global results are unchanged; [team video links](../pilots/anna-elsa-videos.md) now point to exact repository release attachments. No new paid run or merge is authorized by this increment.
+
 The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) completed eight text calls and two distinct videos covering three conditions for $0.50248398, with exact key reconciliation. Generic retained/reused baseline; moodcut retained one unaddressed actor opinion with a problematic explanation. Human acceptance is pending, historical results are intact, and PR #48 stays unmerged. The offline implementation record below remains its original scope.
 
 ### Actor protocol integration (2026-10-24)

@@ -376,7 +376,7 @@ class RoleRoutedClient(LLMClient):
     def role_for_stage(stage):
         if stage in ("director", "scene", "shot", "actor_revise"):
             return "planning"
-        if stage in ("critique", "revise", "verify", "actor_critique"):
+        if stage in ("critique", "revise", "verify", "actor_critique", "actor_confirm"):
             return "review"
         raise ValueError("Unknown text stage; no model selected")
 

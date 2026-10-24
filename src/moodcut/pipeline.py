@@ -17,7 +17,7 @@ from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_REVIEW,
+from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2,
                        validate_review_protocol, validate_actor_review_result)
 from .validation import validate_plan, validate_scene
 
@@ -183,7 +183,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
               "run_status": "failed", "failure_kind": None, "video_path": None, "errors": []}
     if isinstance(client, RoleRoutedClient):
         record["text_model_settings"] = _model_settings(client)
-    if review_protocol == ACTOR_REVIEW:
+    if review_protocol in ACTOR_PROTOCOLS:
         record["review_protocol"] = review_protocol
     if generated:
         record.update(schema_version=CONTRACT_VERSION, output_mode="generated",
@@ -231,7 +231,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             logger.setLevel(logging.INFO)
             try:
                 review_options = dict(mode_options)
-                if review_protocol == ACTOR_REVIEW:
+                if review_protocol in ACTOR_PROTOCOLS:
                     review_options["review_protocol"] = review_protocol
                 reviewed = review_and_revise(deepcopy(scene), deepcopy(initial_plan), deepcopy(manifest),
                                              client, mode=condition, project_root=project_root, **review_options)
@@ -242,8 +242,8 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             write_json(output / "review.json", reviewed)
             final = reviewed["plan"]
             record["review_status"] = reviewed["status"]
-            if review_protocol == ACTOR_REVIEW:
-                for name in ("actor_feedback_status", "actor_endorsement", "feedback_disposition"):
+            if review_protocol in ACTOR_PROTOCOLS:
+                for name in ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status"):
                     record[name] = deepcopy(reviewed.get(name))
             record["errors"].extend(reviewed["errors"])
             if any("BudgetError:" in error for error in reviewed["errors"]):
@@ -352,7 +352,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     if generated:
         identity.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                         generation_settings=deepcopy(generation_settings), template_sha256=template_sha256)
-    if review_protocol == ACTOR_REVIEW:
+    if review_protocol in ACTOR_PROTOCOLS:
         identity["review_protocol"] = review_protocol
         identity["review_prompt_hashes"] = _review_hashes(output_mode=output_mode, review_protocol=review_protocol)
     cache_key = json_hash(identity)
@@ -459,7 +459,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
              and all(r["run_status"] == ("prepared" if generated else "completed") for r in runs) else "failed"}
     if isinstance(client, RoleRoutedClient):
         block["text_model_settings"] = deepcopy(settings)
-    if review_protocol == ACTOR_REVIEW:
+    if review_protocol in ACTOR_PROTOCOLS:
         block["review_protocol"] = review_protocol
     if generated:
         block.update(schema_version=CONTRACT_VERSION, output_mode="generated",
@@ -528,14 +528,15 @@ def _load_generated_block(path, project_root):
                  and all(c.get("model_id") == policy["roles"][RoleRoutedClient.role_for_stage(c.get("stage"))].get("model_id")
                          for c in row.get("call_records", [])), "review call model differs from role policy")
         need(row.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "review protocol mismatch")
-        if review_protocol == ACTOR_REVIEW:
+        if review_protocol in ACTOR_PROTOCOLS:
             expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
-            need(all(c.get("stage") in ("actor_critique", "actor_revise") for c in row.get("call_records", [])),
+            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol == ACTOR_REVIEW_V2 else ())
+            need(all(c.get("stage") in actor_stages for c in row.get("call_records", [])),
                  "actor source contains a legacy review call")
         else:
-            need(all(c.get("stage") not in ("actor_critique", "actor_revise") for c in row.get("call_records", [])),
+            need(all(c.get("stage") not in ("actor_critique", "actor_revise", "actor_confirm") for c in row.get("call_records", [])),
                  "legacy source contains actor review calls")
         run_id = row.get("run_id")
         need(isinstance(run_id, str) and bool(run_id.strip()) and run_id not in run_ids, "run IDs must be nonempty and unique")
@@ -566,13 +567,20 @@ def _load_generated_block(path, project_root):
             need(isinstance(reviewed, dict) and reviewed.get("status") == status
                  and json_hash(reviewed.get("plan")) == json_hash(final), "saved review/final script mismatch")
             need(reviewed.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "saved review protocol mismatch")
-            if review_protocol == ACTOR_REVIEW:
+            if review_protocol in ACTOR_PROTOCOLS:
                 need(all(row.get(name) == reviewed.get(name) for name in
-                         ("actor_feedback_status", "actor_endorsement", "feedback_disposition")),
+                         ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status")),
                      "saved actor feedback summary mismatch")
                 errors = validate_actor_review_result(scene, initial, manifest, reviewed,
                                                       mode=condition, project_root=project_root)
                 need(not errors, "; ".join(errors))
+                if review_protocol == ACTOR_REVIEW_V2:
+                    stages = ["actor_critique"] * len(scene["characters"])
+                    if reviewed["report"]["issues"]:
+                        stages.append("actor_revise")
+                    stages.extend(["actor_confirm"] * len(reviewed["actor_confirmations"]))
+                    need([c.get("stage") for c in row.get("call_records", [])] == stages,
+                         "actor confirmation call sequence mismatch")
         plans[condition] = final
     return path, block, dict(scene=scene, initial=initial, plans=plans, manifest=manifest,
                             settings=settings, template_sha256=template)

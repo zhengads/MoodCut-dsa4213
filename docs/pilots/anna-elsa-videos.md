@@ -1,0 +1,20 @@
+# Anna/Elsa videos for team review
+
+The [repository's experimental video Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024) contains five different original MP4 files, covering six condition entries from the two historical PR #48 pilots. Files are release attachments, not Git blobs. All five remote asset SHA-256 digests and sizes match the original local provider files, totaling 5,336,098 video bytes. The links below download the original MP4 files for listening/viewing. They are not in-page GitHub players. Inline playback remains a separate delivery task and does not block the actor-confirmation code increment.
+
+These are **global_v1 and actor_self_review_v1 videos**. The later `actor_self_review_v2` omission-confirmation change has offline software acceptance only; no video was generated for v2 or for this upload. Original pilot records, model outputs, receipts and media are unchanged.
+
+| Historical structure | Condition | Planned Anna / Elsa lines | Original MP4 |
+| --- | --- | --- | --- |
+| Global critique/revise/verify | baseline | 艾莎，这是你的伞。 / 谢谢你，安娜。 | [Download original](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/global-v1-baseline.mp4) |
+| Global critique/revise/verify | generic_review | 艾莎，你的伞。 / 谢啦，安娜。 | [Download original](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/global-v1-generic_review.mp4) |
+| Global critique/revise/verify | moodcut | 艾莎，你的伞，还给你。 / 嗯，辛苦你了。 | [Download original](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/global-v1-moodcut.mp4) |
+| Two independent actors, unified writer | baseline | 艾莎，这是你的伞。 / 谢谢你，安娜。 | [Download original](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/actor-v1-baseline-and-generic.mp4) |
+| Two independent actors, unified writer | generic_review | Same initial lines; both actors returned no issues | [Same baseline file](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/actor-v1-baseline-and-generic.mp4) |
+| Two independent actors, unified writer | moodcut | 艾莎，伞还你啦。 / 谢谢你，安娜。 | [Download original](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/actor-v1-moodcut.mp4) |
+
+The table gives planned dialogue for comparison, not a verified transcript of what the provider actually said. Listen for the supplied lines, speakers, pacing, naturalness and warmth, and inspect the generated action/identity. No human scores have been filled. These are development examples, not blinded rating materials or evidence that one method is better; fixed seeds do not remove generated-video randomness.
+
+In the actor-v1 emotional condition, both actors raised an opinion. The writer changed Anna and left Elsa unchanged, giving a reason that misidentifies the speaker and does not establish why a shorter alternative exceeds the duration. That output is preserved in the [actual actor pilot](anna-elsa-actor.md) and [exact JSON](anna-elsa-actor.results.json). The [earlier global pilot](anna-elsa-agent.md) and [its JSON](anna-elsa-agent.results.json) remain separate. Neither set of videos demonstrates the later v2 confirmation gate.
+
+The Release [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/manifest.json) records each filename, protocol, condition mapping, size and SHA-256. Its [source statement](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/SOURCE.md) preserves attribution: showlab/MovieAgent commit `d84041bed8bc8be460664528d9e9924cdde384ba`, FrozenII Anna/Elsa `best.png`. Underlying character/image rights remain unconfirmed; attribution and provider acceptance are not rights clearance. Original reference images, credentials and private runtime files are excluded. No new paid API or generation was needed to publish these exact historical files.
