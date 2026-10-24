@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261024_v2_s04_exit_closing",
+  "tone": "tense",
+  "story": "白天，普通通道的出口内侧，两人已站定，出口即将关闭。Nezha和Aobing是相互信任、需要一起离开通道的同伴。出口即将关闭，Nezha提示留给他们的时间已经很少，Aobing催促两人马上离开。镜头结束时停留在准备行动的这一刻，不展示冲刺、门关闭或逃脱结果。 开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，允许故事明确给出的环境声，但没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出亲密、敌对、紧张这些氛围标签。参考图只确定角色身份与服装，不必须复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。 本场景补充边界：不增加反派、追兵、伤病、倒计时文字、额外广播或其他说话者。 不跑动、跳跃、关门、施法或展示逃脱结果；不指责同伴造成延误。",
+  "characters": [
+    {
+      "id": "nezha2_nezha",
+      "name": "Nezha / 哪吒"
+    },
+    {
+      "id": "nezha2_aobing",
+      "name": "Aobing / 敖丙"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Nezha提示出口即将关闭，时间所剩无几。"
+    },
+    {
+      "id": "b2",
+      "description": "Aobing催促两人立即离开。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_nezha2_nezha_primary",
+    "movieagent_nezha2_aobing_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_revision_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Version 2 selected fictional brief with explicit intimate, hostile or tense context. Existing film images supply appearance only; no original-film dialogue or Agent-generated planning/review answer.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design.json",
+    "design_story_id": "s04_exit_closing",
+    "design_version": "2.0",
+    "supersedes_input_commit": "dff08742caf662cba81f1853cfbfd184d92ee84c",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

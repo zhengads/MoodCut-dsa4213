@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_despicableme4_lucy_primary",
+      "character_id": "despicableme4_lucy",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "width": 1246,
+      "height": 1484,
+      "sha256": "aaeeb1ea278d2499c0bb78323db74db1c1a8fba288ab45cc6bf80c41399054ae",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Lucy/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_gru_primary",
+      "character_id": "despicableme4_gru",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Gru/best.png",
+      "width": 1372,
+      "height": 1032,
+      "sha256": "7074b8ab33781ce3ac0250a7bd0892f41b064f84051abc76a1c6c6a94817e3ab",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Gru/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

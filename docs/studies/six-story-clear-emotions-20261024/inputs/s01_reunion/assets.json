@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_frozenii_anna_primary",
+      "character_id": "frozenii_anna",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Anna/best.png",
+      "width": 420,
+      "height": 1000,
+      "sha256": "6086a3d86af1b14cd0ff281fc494a94e5b41d5593b0493a4af06fa067a9394dd",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Anna/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_frozenii_kristoff_primary",
+      "character_id": "frozenii_kristoff",
+      "path": "assets/raw/movieagent/dataset/FrozenII/character_list/Kristoff/best.png",
+      "width": 770,
+      "height": 1102,
+      "sha256": "9d1859ebd2eb505b17e177491bc1ce5abec237498724ace523a74bc9c01d6e8f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/FrozenII/character_list/Kristoff/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

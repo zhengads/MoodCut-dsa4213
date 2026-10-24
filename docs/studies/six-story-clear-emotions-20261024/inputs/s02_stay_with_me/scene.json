@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261024_v2_s02_stay_with_me",
+  "tone": "affectionate",
+  "story": "白天，安静的客厅，两人已并排坐好。Lucy和Gru是相互信任的成年伴侣。Lucy此刻心情低落，主动请求Gru留下来陪自己，Gru答应并表达愿意支持她。两人始终留在原处，不追问或补写她低落的原因。 开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，允许故事明确给出的环境声，但没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出亲密、敌对、紧张这些氛围标签。参考图只确定角色身份与服装，不必须复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。 本场景补充边界：不补写失业、疾病、丧失、背叛或心理诊断。 不要求哭泣、身体接触、递物或其他新增动作。",
+  "characters": [
+    {
+      "id": "despicableme4_lucy",
+      "name": "Lucy / 露西"
+    },
+    {
+      "id": "despicableme4_gru",
+      "name": "Gru / 格鲁"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Lucy向Gru请求留下陪伴自己。"
+    },
+    {
+      "id": "b2",
+      "description": "Gru答应留下并表达对Lucy的支持。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_despicableme4_lucy_primary",
+    "movieagent_despicableme4_gru_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_revision_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Version 2 selected fictional brief with explicit intimate, hostile or tense context. Existing film images supply appearance only; no original-film dialogue or Agent-generated planning/review answer.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design.json",
+    "design_story_id": "s02_stay_with_me",
+    "design_version": "2.0",
+    "supersedes_input_commit": "dff08742caf662cba81f1853cfbfd184d92ee84c",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

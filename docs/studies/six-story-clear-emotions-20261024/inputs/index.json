@@ -1,0 +1,149 @@
+{
+  "kind": "local_story_input_index_not_execution_config",
+  "version": "2.0",
+  "created_on": "2026-10-24",
+  "design_path": "docs/studies/six-story-clear-emotions-20261024/design.json",
+  "design_sha256": "889b53fe531569811b4b8b9336db1c87ea58635ad4f100fa1bfe8e844fd049e0",
+  "status": "selected_inputs_for_next_small_scale_study",
+  "input_scope_approved": true,
+  "fixed_story_and_tone_assignment": true,
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "new_model_calls": 0,
+  "new_spending_usd": "0",
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "selected_tones": [
+    "affectionate",
+    "hostile",
+    "tense"
+  ],
+  "tone_labels": {
+    "affectionate": "亲密",
+    "hostile": "敌对",
+    "tense": "紧张"
+  },
+  "supersedes_study": "docs/studies/six-story-20261024",
+  "stories": [
+    {
+      "story_id": "s01_reunion",
+      "title": "久别重逢",
+      "tone": "affectionate",
+      "tone_label": "亲密",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_anna",
+        "frozenii_kristoff"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_anna_primary",
+        "movieagent_frozenii_kristoff_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s01_reunion/scene.json",
+      "scene_sha256": "ecc6f9f1bc3f0aca177330bdeeee3657816e567778167bcb790747d4c5b5b5a1",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s01_reunion/assets.json",
+      "assets_sha256": "987bbf15b201d9d8ab7c221b08298dde8faa031abbf564251859e248f7b98a18"
+    },
+    {
+      "story_id": "s02_stay_with_me",
+      "title": "低落时的陪伴",
+      "tone": "affectionate",
+      "tone_label": "亲密",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_lucy",
+        "despicableme4_gru"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_lucy_primary",
+        "movieagent_despicableme4_gru_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s02_stay_with_me/scene.json",
+      "scene_sha256": "2d0915776c900bc8277b85c10eccb3b0e56fa7cc32ef6c35c86fce53448783e9",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s02_stay_with_me/assets.json",
+      "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8"
+    },
+    {
+      "story_id": "s03_footsteps_outside",
+      "title": "门外的脚步",
+      "tone": "tense",
+      "tone_label": "紧张",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_elsa",
+        "frozenii_mattias"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_elsa_primary",
+        "movieagent_frozenii_mattias_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s03_footsteps_outside/scene.json",
+      "scene_sha256": "58fdc71abc5b7d9cdc9e874ac60695ba35001bd6bf3b91ba164c45b724c41ff3",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s03_footsteps_outside/assets.json",
+      "assets_sha256": "7fbaa42906016f782c499edba5ba14b1c5af3fb819bf060a49b9f3d80bca431f"
+    },
+    {
+      "story_id": "s04_exit_closing",
+      "title": "出口即将关闭",
+      "tone": "tense",
+      "tone_label": "紧张",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_nezha",
+        "nezha2_aobing"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_nezha_primary",
+        "movieagent_nezha2_aobing_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s04_exit_closing/scene.json",
+      "scene_sha256": "99446b7b37afcfe885ff35096a7d3ce2b492f4b3a05bdbd63a11f6e337a8b686",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s04_exit_closing/assets.json",
+      "assets_sha256": "c77e7ee797ee29538772d8306731144f5fada63ccb6844557d39809a79ce384c"
+    },
+    {
+      "story_id": "s05_broken_cooperation",
+      "title": "合作关系破裂",
+      "tone": "hostile",
+      "tone_label": "敌对",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_maxime",
+        "despicableme4_valentina"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_maxime_primary",
+        "movieagent_despicableme4_valentina_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s05_broken_cooperation/scene.json",
+      "scene_sha256": "ae8227b53ac88e225850aeb452908a7f4135603f45c500d2d9d5acffde3cec38",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s05_broken_cooperation/assets.json",
+      "assets_sha256": "01bc8fd79e1c678aedc81fb417ce6855fb52a4b7c3b3e3dcb4e4678efa54a6e2"
+    },
+    {
+      "story_id": "s06_last_place",
+      "title": "争夺最后名额",
+      "tone": "hostile",
+      "tone_label": "敌对",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_lijing",
+        "nezha2_taiyi"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_lijing_primary",
+        "movieagent_nezha2_taiyi_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s06_last_place/scene.json",
+      "scene_sha256": "292dc1fcdd53a6a64336da9df5d3e299a8fe7d230186f50b1cb65998b703baec",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s06_last_place/assets.json",
+      "assets_sha256": "dcd3f04b3575e1aec6cb389352d8b2170457a60de4a4fa8063bc81dbf2a1ab75"
+    }
+  ]
+}

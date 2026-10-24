@@ -27,6 +27,30 @@ def rating(item, tone="suspicious", rater="rater_a", value=3):
 
 
 class PairedEvaluationTests(unittest.TestCase):
+    def test_tense_scores_without_relabeling_legacy_suspicion(self):
+        rows = build_assignments([dict(scene_id="synthetic_tense")], replicates=1,
+                                 tones=["tense"], conditions=["generic_review", "moodcut"])
+        rows += build_assignments([dict(scene_id="synthetic_legacy")], replicates=1,
+                                  tones=["suspicious"], conditions=["baseline"])
+        for index, row in enumerate(rows):
+            row.update(initial_plan_sha256="a" * 64, render_status="rendered",
+                       review_status="unchanged", source_kind="synthetic", item_id=f"item{index}")
+        before = copy.deepcopy(rows)
+        result = summarize(rows, [rating("item0", "uncertain"), rating("item1", "tense"),
+                                  rating("item2", "suspicious")])
+        self.assertAlmostEqual(result["overall"]["equal_clip_means"]["tone_accuracy"], 2 / 3)
+        self.assertEqual(result["overall"]["coverage"]["planned_runs"], 3)
+        self.assertEqual(result["overall"]["coverage"]["uncertain_ratings"], 1)
+        confusion = result["overall"]["confusion_rating_counts"]
+        self.assertEqual(confusion["tense"]["tense"], 1)
+        self.assertEqual(confusion["tense"]["uncertain"], 1)
+        self.assertEqual(confusion["suspicious"]["suspicious"], 1)
+        self.assertEqual(confusion["suspicious"]["tense"], 0)
+        common = result["common_moodcut_generic"]
+        self.assertEqual(common["common_evaluable_blocks"], 1)
+        self.assertEqual(common["mean_moodcut_minus_generic"]["tone_accuracy"], 1)
+        self.assertEqual(rows, before)
+
     def test_assignments_ids_stable_across_condition_order_and_scene_order(self):
         first = build_assignments([dict(scene_id="a"), dict(scene_id="b")], replicates=2,
                                   tones=["suspicious", "hostile"], conditions=["baseline", "moodcut"])
