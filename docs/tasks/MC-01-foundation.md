@@ -1,5 +1,7 @@
 # MC-01 公共契约、客户端与集成
 
+Latest S06 real trial stopped on emotional writer content JSON syntax after nine known-cost text calls ($0.00361854, reconciled). Raw-body/content retention captured the actual extra-data failure at line 1 / column 312; the failed source remains rejected for preparation. No video, retry or manual repair. [Actual record](../pilots/s06-actor-v3.md). Original inputs/history unchanged; PR #52 unmerged, #8/#9 open.
+
 Latest authorized v3 trial completed three actual videos with the existing pipeline and automatic private retention for all nine text replies. Cost $0.75277694 reconciled exactly; no retry/manual dialogue. Both first-round writers declared all feedback addressed, with no actor confirmation or second round. [Actual result](../pilots/anna-elsa-actor-v3-captured.md). Earlier failures are unchanged; human listening/viewing remains pending, PR #52 unmerged, #8/#9 open.
 
 PR #52 offline diagnostics: the existing text client retains private HTTP bytes/model strings before parsing, records envelope/content error kinds and safe positions, and preserves known/unknown accounting. Pipeline and CLI capture automatically; direct library callers select a capture root. Original failed trials and missing historical content remain unchanged. [Contract and acceptance](../pilots/text-response-diagnostics.md). No paid calls; PR unmerged, #8/#9 open.

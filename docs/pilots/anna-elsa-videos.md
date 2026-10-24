@@ -1,5 +1,7 @@
 # Anna/Elsa videos for team review
 
+Latest page addition: [S06 cleanup-assignment attempt](https://zhengads.github.io/MoodCut-dsa4213/#s06), [exact record](s06-actor-v3.md). It stopped on emotional writer JSON syntax before any video submission: nine text calls, $0.00361854 reconciled, raw reply retained. The six-tab page distinguishes this no-video attempt from all eight original Anna/Elsa MP4s below. No new media Release or upload was made for S06; old files and hashes remain unchanged.
+
 ## New actual v3 videos (2026-10-24)
 
 [Play the latest three-condition comparison](https://zhengads.github.io/MoodCut-dsa4213/#v3-captured). Three distinct new HeyGen videos use the corrected v3 writer contract and privately retained raw text replies. Nine text calls and three video submissions cost $0.75277694, reconciled exactly; no retry or handwritten dialogue. Both writers declared all opinions addressed, so actor confirmation and second-round negotiation were not required. Human speech/identity/emotion checks and ratings remain pending. [Exact trial record](anna-elsa-actor-v3-captured.md).

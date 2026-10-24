@@ -3,6 +3,86 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "s06",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "同一场分工争执，比较通用审查与情绪审查。本次在文本阶段停止。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.00361854",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "S06 真实试跑在情绪组编剧 JSON 语法校验时停止：模型返回的对象后多了括号和 reasons 残片。原文已完整保存，错误可复现；没有视频提交，也没有重试。",
+      "observations": [
+        "共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用。通用组返回合法修订；情绪组编剧回复未通过 JSON 校验。",
+        "通用组李靖无意见、太乙 1 条，编剧申报已处理；情绪组两位演员各 1 条，但编剧输出未被接受。",
+        "保存的原始模型文本本地重解析为 Extra data：第 1 行、第 312 列，偏移 311。外层 HTTP 正文中的 content 与留存文本一致，不再猜测历史失败原因。",
+        "系统按硬性错误规则停止，没有截取合法前缀、删除多余尾部、重试、换模型或手写补位；未进入演员确认和第二轮协商。",
+        "9 笔文本费用合计 $0.00361854，逐笔服务端核对且与本次账户增量一致。视频提交和新增视频为 0，备用金未动用。",
+        "这次没有可供听看比较的新视频，不能据此认定通用审查更好。历史 Anna/Elsa 原片和前两次失败保持原样。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "本次共同初稿已保存；情绪组硬性错误导致整块停止，视频未提交。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "不行，得重新分工。"
+            }
+          ],
+          "note": "通用组修订合法，编剧申报采纳太乙的 1 条意见；整块停止，没有新视频。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "JSON 语法失败，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "这里只显示恢复的诊断用初稿，不是通过审查的最终稿。失败原文已保存，没有删尾巴或手写补位。"
+        }
+      ]
+    },
+    {
       "id": "v3-captured",
       "protocol": "actor_self_review_v3",
       "writer_output_contract": "dialogue_by_shot_v1",

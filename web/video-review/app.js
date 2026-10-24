@@ -18,7 +18,7 @@ function pauseAll(except) {
   }
 }
 
-function makeCondition(condition, baseline) {
+function makeCondition(condition, baseline, speakerNames) {
   const card = element("article");
   card.className = "condition";
   card.dataset.condition = condition.id;
@@ -79,7 +79,7 @@ function makeCondition(condition, baseline) {
     } else {
       words.append(element("p", line.text, "spoken"));
     }
-    row.append(element("span", line.character_id === "a" ? "Anna" : "Elsa", "speaker"), words);
+    row.append(element("span", speakerNames[line.character_id] || line.character_id, "speaker"), words);
     dialogue.append(row);
   }
   if (condition.id !== "baseline" && condition.dialogue.every((line, i) => line.text === baseline[i]?.text)) {
@@ -101,12 +101,25 @@ function showExperiment(id) {
   }
   document.querySelector("#comparison").setAttribute("aria-labelledby", "tab-" + currentId);
   document.querySelector("#experiment-description").textContent = experiment.description;
+  document.querySelector("#story-title").textContent = experiment.title || "Anna 与 Elsa 的台词对照";
+  document.querySelector("#story-intro").textContent = experiment.intro || "同一次还伞，看看台词修改落到表演里是什么样子。";
+  document.querySelector("#scene-location").textContent = experiment.scene_location || "雨天的公交站";
+  document.querySelector("#scene-tone").textContent = "目标氛围：" + (experiment.tone_label || "温暖、亲近");
+  const speakerNames = experiment.speaker_names || {a: "Anna", b: "Elsa"};
   const baseline = experiment.conditions[0].dialogue;
-  players.replaceChildren(...experiment.conditions.map(condition => makeCondition(condition, baseline)));
+  players.replaceChildren(...experiment.conditions.map(condition => makeCondition(condition, baseline, speakerNames)));
   document.querySelector("#observations").replaceChildren(...experiment.observations.map(text => element("li", text)));
   document.querySelector("#cost").textContent = "$" + experiment.cost;
   document.querySelector("#duration").textContent = experiment.duration || "请求 5 秒，原片约 5.26 秒";
   document.querySelector("#source-record").href = experiment.record;
+  document.querySelector("#source-credit").textContent = experiment.source_credit || "角色参考来源：showlab/MovieAgent 固定版本的 FrozenII Anna / Elsa。图片及角色使用权仍未核清，署名不等于授权。";
+  document.querySelector("#source-statement").href = experiment.source_statement_url || "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/SOURCE.md";
+  const historicalArchive = "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024";
+  const archives = {global: historicalArchive, actors: historicalArchive,
+    "v3-captured": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024"};
+  const archive = experiment.archive_url || archives[experiment.id];
+  document.querySelector("#current-archive").hidden = !archive;
+  if (archive) document.querySelector("#current-archive").href = archive;
   const unresolved = document.querySelector("#unresolved");
   unresolved.hidden = !experiment.unresolved;
   unresolved.open = false;
@@ -150,7 +163,7 @@ fetch("data.json")
   })
   .then(data => {
     experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "v3-captured");
+    showExperiment(location.hash.slice(1) || "s06");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";
