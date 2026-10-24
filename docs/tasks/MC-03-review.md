@@ -1,5 +1,9 @@
 # MC-03 通用审查、情绪审查与局部修订
 
+### Actor self-review increment (2026-10-24)
+
+The user-authorized cross-module increment stays in PR #48: explicit `actor_self_review_v1`, two independent own-dialogue actor reports and one unified screenwriter patch. DeepSeek supplies both actors in both conditions; Gemini integrates their feedback. All opinions remain visible, ownership and actual changes are checked, unaddressed issues require reasons, and no final actor approval is fabricated. Valid disagreement may proceed to a pending-acceptance video; structural failures stop. See [method and offline evidence](../ACTOR_REVIEW_METHOD.md). This change uses labeled software responses only and preserves all original paid results. The default `global_v1` implementation described below remains compatible; no new paid execution or merge is authorized.
+
 当前任务：[GitHub Issue #23](https://github.com/zhengads/MoodCut-dsa4213/issues/23)。本次审查实现与离线验收已提供；先核对Issue中的PR合并状态，不重复实现已勾选模块。末尾既有交付用于复用与回归。
 
 首个增量建议分支：`fix/issue-23-dialogue-review`。先检查认领和活动 PR；[分支命名与迁移](../BRANCHES.md)。不在 `archive/` 继续开发。

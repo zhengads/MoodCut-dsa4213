@@ -1,5 +1,9 @@
 # MC-01 公共契约、客户端与集成
 
+### Actor protocol integration (2026-10-24)
+
+PR #48 now also contains the explicitly authorized [actor self-review increment](../ACTOR_REVIEW_METHOD.md). `actor_critique` routes to the review role, `actor_revise` to the planning/screenwriting role. The existing budget, clients, compiler and source gates are reused. Source loading rechecks actor ownership, full feedback disposition, the actual dialogue patch, protocol/prompt identity and truthful lack of final actor approval. Mixed review protocols are rejected at comparison boundaries. This increment is offline only; original global-review outputs remain unchanged, #8/#9 stay open and the PR remains unmerged.
+
 ### Role-routed real-Agent pilot (2026-10-24)
 
 The authorized [Anna/Elsa pilot](../pilots/anna-elsa-agent.md) separates Gemini planning from a common DeepSeek model for both review branches, with one $0.10 text ceiling and a $1.00 combined ceiling. Necessary wiring reuses the original clients/pipeline, adds explicit reasoning control and truthful role-policy/call-model records, and stops subsequent calls on failure/unknown cost. See [contract](../CONTRACTS.md#role-routed-text-pilot-2026-10-24). No prompt or evaluation changes, handwritten dialogue fallback, retries or formal sample expansion are authorized. Actual execution evidence is recorded in the linked pilot; #8/#9 stay open.

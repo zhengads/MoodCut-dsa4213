@@ -1,5 +1,9 @@
 # MC-05 配对对照、盲评导出与统计
 
+### Actor-method comparison boundary (2026-10-24)
+
+PR #48 adds an offline-tested [actor self-review protocol](../ACTOR_REVIEW_METHOD.md). Each reviewed condition uses two independent actors and one shared screenwriter; only general versus emotion-oriented self-review criteria differ. Comparison checks reject mixed actor/global protocols and saved-source checks revalidate all actor reports and dispositions. Writer declarations and programmatic traceability are not independent verification, actor endorsement or scores. A valid unresolved draft may reach video acceptance with opinions/reasons retained. No new model/video run or human rating occurred; the historical global-review result below remains unchanged and is not evidence of the new actor method. #8/#9 remain open.
+
 ### Actual Agent animation pilot (2026-10-24)
 
 The [Anna/Elsa real-Agent pilot](../pilots/anna-elsa-agent.md) completed one shared Gemini plan, independent generic/emotional DeepSeek review branches, and three actual HeyGen videos. Both reviews are applied but each retains one unresolved opinion; preserve those model judgments without treating them as independent scores. Actual text/video total is $0.75376126, with all charges known and the reserve untouched. The linked exact JSON records contain the real outputs, per-role model/call IDs, shared/request identities and clip hashes; no handwritten dialogue replaced the outputs. Human listening/viewing checks, ratings and formal inclusion remain pending. #8/#9 stay open. The earlier fixed-dialogue pilot below remains a separate historical technical check.

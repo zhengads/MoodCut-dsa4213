@@ -372,16 +372,20 @@ class RoleRoutedClient(LLMClient):
     def stop(self, reason):
         self._stop_reason = str(reason)
 
+    @staticmethod
+    def role_for_stage(stage):
+        if stage in ("director", "scene", "shot", "actor_revise"):
+            return "planning"
+        if stage in ("critique", "revise", "verify", "actor_critique"):
+            return "review"
+        raise ValueError("Unknown text stage; no model selected")
+
     def complete_json(self, *, stage, system, user, max_output_tokens):
         with self._lock:
             if self.stopped:
                 raise BudgetError("Text pipeline stopped: " + self._stop_reason)
-            if stage in ("director", "scene", "shot"):
-                client = self.planning_client
-            elif stage in ("critique", "revise", "verify"):
-                client = self.review_client
-            else:
-                raise ValueError("Unknown text stage; no model selected")
+            role = self.role_for_stage(stage)
+            client = self.planning_client if role == "planning" else self.review_client
             if (not isinstance(system, str) or not isinstance(user, str)
                     or type(max_output_tokens) is not int or max_output_tokens <= 0):
                 raise ValueError("Invalid text request")

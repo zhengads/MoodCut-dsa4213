@@ -1,5 +1,13 @@
 # MC-03：报告检查、原子补丁与一次审查复查
 
+## Actor self-review protocol (2026-10-24)
+
+The explicit `review_protocol="actor_self_review_v1"` path is implemented for generated mode. Each actor independently critiques only their own indexed original lines with the common review model. After both reports validate, the planning/screenwriting model integrates all feedback into one dialogue-only patch and complete feedback disposition. Both conditions use the same models, limits and rewrite prompt; only general versus emotion-oriented self-review criteria differ. See [method, authority and offline evidence](ACTOR_REVIEW_METHOD.md) and [CONTRACTS 6.18](CONTRACTS.md#618-actor-self-review-protocol).
+
+Both actors report even if the first is silent or has no issues. Empty reports from both skip the writer after two calls; otherwise the ceiling is two critiques plus one rewrite, without a model verification round. Every opinion is preserved with actor ownership and a namespaced ID. The writer must record actual own-line changes for addressed opinions and reasons for every unaddressed opinion. A valid draft with disagreement may prepare video for listening/viewing; missing bookkeeping or illegal changes fail closed. `writer_addressed` is a writer declaration, `verification_kind=programmatic_only`, and `actor_endorsement=not_requested` always: this does not prove semantic fulfillment or actor approval.
+
+No new paid calls or video generation were made for this increment. The original PR #48 paid run and its results remain unchanged and belong to `global_v1`. The sections below describe that compatible default global critique/revise/verify implementation; omitting the new protocol still uses it.
+
 既有基础实现：FAN XUYANG。PR 1 实现 `validate_report(scene, plan, report)` 与契约中的
 `apply_patch(scene, plan, manifest, report, patch)`。PR 2 实现
 `review_and_revise(scene, initial_plan, manifest, client, *, mode)` 和四份审查提示。

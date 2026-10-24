@@ -592,6 +592,11 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
     run_ids, conditions, block_ids, replicates, kinds, models = set(), set(), set(), set(), set(), set()
     selected_scopes = []
+    protocols = [row.get("review_protocol", "global_v1") for row in records if isinstance(row, dict)]
+    review_protocols = {p for p in protocols if isinstance(p, str)}
+    if (len(review_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
+            or not review_protocols <= {"global_v1", "actor_self_review_v1"}):
+        errors.append("records must use one consistent review protocol")
     for index, row in enumerate(records):
         prefix = f"record {index + 1}"
         if not isinstance(row, dict):
