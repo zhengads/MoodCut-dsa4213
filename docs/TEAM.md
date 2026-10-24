@@ -1,5 +1,7 @@
 # MoodCut 模块分工与协作
 
+Current increment (2026-10-24): PR #48 is merged; the new bounded negotiation protocol is explicit `actor_self_review_v3`. Both review conditions share at most two writer/actor-confirmation rounds. Final creative disagreement permits preparation with raw decisions and disputed IDs retained; hard errors still stop. This increment is offline only, preserves historical global/v1/v2 artifacts and keeps #8/#9 open. [Method and acceptance](ACTOR_REVIEW_METHOD.md). Older unmerged/draft references below are historical status snapshots.
+
 项目采用按模块认领、按增量提交的协作方式。P1–P5 是模块分工代号，账号以 GitHub Issue 认领记录为准。成员均可认领、提交、自查和合并自己的任务。
 
 ## 当前状态（2026-10-24）

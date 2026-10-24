@@ -1,5 +1,7 @@
 # P1 Integration Verification Report
 
+Current integration note (2026-10-24): PR #48 has merged into main. Historical real-model evidence remains tied to its executed code revision rather than being automatically attributed to later protocols. The separate bounded-negotiation increment uses explicit `actor_self_review_v3`; its offline implementation/evidence is tracked in [the current method](ACTOR_REVIEW_METHOD.md). It does not retag historical paid artifacts or establish human acceptance.
+
 **Project:** MoodCut - DSA4213
 **Module:** MC-01 / P1 Foundation and Integration
 **Related Issue:** #8
@@ -53,7 +55,7 @@ The actor self-review trial recorded:
 
 The results provide technical integration evidence, but they do not establish emotional superiority or formal experimental eligibility.
 
-PR #48 remains a draft and is not part of the verified main-branch baseline.
+PR #48 has merged into main. Its historical pilot evidence remains tied to the code revision used for that execution.
 
 ## 4. P1 Integration Requirements
 
@@ -77,11 +79,11 @@ The remaining work includes:
 3. Confirm P5 qualification and export boundaries.
 4. Obtain human listening and viewing acceptance.
 5. Preserve unresolved actor feedback and quality limitations.
-6. Review the final integration baseline after PR #48 is merged, if approved.
+6. Verify the merged actor protocols against their respective code baselines, including the newer v3 bounded-negotiation increment.
 
 ## 6. Real-Run Evidence and Accounting Review
 
-### 7.1 Global Review Agent Pilot
+### 6.1 Global Review Agent Pilot
 
 The repository records a real Anna/Elsa agent pilot using Gemini for shared planning and DeepSeek for independent generic and emotion-oriented reviews.
 
@@ -98,7 +100,7 @@ The execution team reported matching provider usage and local media checks.
 
 The review reports retained unresolved issues. The software execution result does not establish human acceptance or emotional improvement.
 
-### 7.2 Actor Self-Review Pilot
+### 6.2 Actor Self-Review Pilot
 
 PR #48 documents the newer actor_self_review_v1 protocol.
 
@@ -125,7 +127,7 @@ The emotional revision changed Anna's dialogue while retaining Elsa's original l
 
 The original model output and disagreement must be preserved rather than silently corrected.
 
-### 7.3 Evidence Limitations
+### 6.3 Evidence Limitations
 
 The information above is derived from the repository's documented execution results.
 
@@ -135,7 +137,7 @@ Accordingly, this report does not claim independent local verification of the re
 
 Human dialogue accuracy, speaker identity, lip synchronization, action quality, emotional expression, and formal comparison eligibility remain pending.
 
-### 7.4 P1 Acceptance Position
+### 6.4 P1 Acceptance Position
 
 The documented real-model runs provide evidence that the shared planning, review orchestration, request execution, legitimate reuse, and accounting paths can operate together.
 
@@ -145,7 +147,7 @@ No additional paid execution is required for this documentation update.
 
 ## 7. P1-to-P5 Qualification Handoff
 
-### 8.1 Qualification Responsibilities
+### 7.1 Qualification Responsibilities
 
 P1 is responsible for preserving the shared source identity,
 condition-specific execution records, provider receipts, reuse
@@ -157,7 +159,7 @@ eligibility and enforcing the evaluation export boundary.
 Software completion must not be treated as human quality
 acceptance or formal experimental approval.
 
-### 8.2 Existing Qualification Interfaces
+### 7.2 Existing Qualification Interfaces
 
 The current main-branch implementation provides:
 
@@ -171,7 +173,7 @@ These interfaces must be reused rather than duplicated.
 The qualification process must preserve the original source
 records and must not initiate paid model calls.
 
-### 8.3 Required Evidence
+### 7.3 Required Evidence
 
 Before independent local qualification, the following evidence
 should be available:
@@ -188,7 +190,7 @@ should be available:
 The original run artifacts have not yet been transferred to
 this development machine.
 
-### 8.4 Legitimate Video Reuse
+### 7.4 Legitimate Video Reuse
 
 The actor self-review pilot reports identical baseline and
 generic_review dialogue and generated requests.
@@ -202,7 +204,7 @@ two distinct provider video generations.
 The reused video must not be counted as an independent
 generation or charged twice.
 
-### 8.5 Failure and Unknown-Cost Handling
+### 7.5 Failure and Unknown-Cost Handling
 
 Failed and interrupted tasks must remain visible in the
 execution records.
@@ -215,7 +217,7 @@ from the planned-run accounting denominator.
 A failed condition must not be presented as a successful
 comparison result.
 
-### 8.6 Qualification and Export Status
+### 7.6 Qualification and Export Status
 
 A software qualification result is not equivalent to
 formal experimental inclusion.
@@ -228,7 +230,7 @@ superior emotional expression.
 No formal inclusion or export approval is asserted by this
 handoff document.
 
-### 8.7 Handoff Conclusion
+### 7.7 Handoff Conclusion
 
 The existing P1 and P5 interfaces support the required
 software qualification workflow.
@@ -237,9 +239,7 @@ The remaining work is to obtain the sanitized real-run
 artifacts, perform independent evidence rechecks, and record
 human acceptance decisions.
 
-The actor self-review changes in PR #48 must be assessed
-against the final approved integration baseline before
-their implementation is treated as part of main.
+PR #48 is merged into main. Historical paid-run evidence must remain associated with its executed code revision. The newer v3 bounded-negotiation increment requires separate integration evidence.
 
 ## 8. Conclusion
 
@@ -252,3 +252,133 @@ Human media acceptance, formal experimental inclusion, and final actor-protocol 
 Issue #8 should remain open until the outstanding acceptance requirements are resolved.
 
 No additional paid model execution is authorized by this report.
+
+## 9. Local Real v2 Integration Verification
+
+### 9.1 Scope and Baseline
+
+On 2026-10-24, an independent local development pilot exercised
+`actor_self_review_v2` using real OpenRouter text-model calls.
+
+The tests used the repository baseline `7ac42ae`, before the
+newer bounded-negotiation increment merged into main.
+
+Planning model: `google/gemini-2.5-flash-lite`.
+Review model: `deepseek/deepseek-v3.2`.
+
+The source kind was `development`, output mode was `generated`,
+and no video generation API was invoked.
+
+These tests are not formal study samples and do not constitute
+real-model verification of `actor_self_review_v3`.
+
+### 9.2 Real Text-Model Runs
+
+| Run | Outcome | Recorded calls | Reported text cost (USD) |
+| --- | --- | ---: | ---: |
+| 01 | Failed: generation settings contained an unsupported `scene_id` field | 3 | 0.00079330 |
+| 02 | Prepared: all three conditions completed; no dialogue revisions | 7 | 0.00216714 |
+| 03 | Failed: Director response rejected by strict JSON validation | 1 | 0.00018300 |
+| **Total** | **Three development attempts** | **11** | **0.00314344** |
+
+The reported costs are derived from local run records, not
+an independent reconciliation with the OpenRouter account ledger.
+
+The team-approved cumulative text budget was USD 0.10.
+The recorded total remained below that authorization.
+
+### 9.3 Successful v2 No-Change Path
+
+Run 02 completed shared Gemini planning with three recorded
+planning calls.
+
+The baseline condition was prepared without review.
+
+Generic Review and MoodCut each performed two independent
+DeepSeek actor feedback calls, one for Lin and one for Bo.
+
+All four actor reports contained empty `issues` arrays.
+Both review conditions returned `unchanged`, with
+`actor_confirmation_status=not_needed`.
+
+The initial plan contained two five-second shots with empty
+dialogue arrays. Consequently, no unified writer revision or
+actor confirmation was triggered.
+
+This verifies the real no-change execution path, not the
+real revision, omission-confirmation, or dispute paths.
+
+### 9.4 Failure Handling
+
+Run 01 completed three text calls before the generation settings
+contract rejected an extra `scene_id` field. The source inputs
+were subsequently corrected in the separate local development
+input directory.
+
+Run 03 recorded one Director call with status `invalid_response`.
+The saved error was:
+
+`Model output must be a finite JSON object without duplicate keys`
+
+The record does not establish which specific JSON constraint
+was violated. No automatic paid retry was performed.
+
+Both failed runs preserved their recorded costs and stopped
+subsequent actor review calls.
+
+### 9.5 Offline Regression Verification
+
+The following local regression command completed successfully:
+
+`python -m pytest tests/test_reviewer.py tests/test_pipeline.py tests/test_cli.py -q --tb=short`
+
+Result: **299 passed, 6 subtests passed in 12.34 seconds**.
+
+The existing tests include actor feedback ownership, unified
+revision, omission acceptance, maintained objections, invalid
+confirmations, failure blocking, and pipeline integration.
+
+These results were obtained before the newer v3 increment
+was synchronized locally and must not be represented as a
+post-merge v3 regression run.
+
+### 9.5.1 Post-Merge Regression Verification
+
+After synchronizing main to commit `c183d3f`, the following
+local regression command completed successfully:
+
+`python -m pytest tests/test_reviewer.py tests/test_pipeline.py tests/test_cli.py tests/test_evaluation_paired.py -q --tb=short`
+
+Result: **418 passed, 72 subtests passed in 222.35 seconds**.
+
+This run includes the newer bounded actor-negotiation
+implementation and paired evaluation integration tests.
+
+These are offline regression results, not evidence of
+real paid `actor_self_review_v3` execution.
+
+### 9.6 Acceptance Boundary and Handoff
+
+Verified in real v2 execution:
+- Real shared planning and independent actor feedback.
+- Three-condition prepared records on the no-change path.
+- Recorded text costs and fail-closed handling.
+- No video generation API calls.
+
+Not verified by these real runs:
+- Writer revision following nonempty actor feedback.
+- Real actor confirmation of omitted feedback.
+- Real maintained-objection handling.
+- Video generation, media quality, and P5 qualification.
+- The newer `actor_self_review_v3` protocol.
+
+Local outputs remain in ignored `runs/` directories.
+They have not been committed as public research evidence.
+
+P1 software integration is substantially verified for the
+tested v2 paths. Final real-model protocol acceptance,
+independent provider accounting reconciliation, and P4/P5
+handoff remain pending.
+
+No additional paid execution is requested or authorized by
+this documentation update.

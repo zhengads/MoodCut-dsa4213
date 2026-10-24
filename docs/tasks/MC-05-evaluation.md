@@ -1,5 +1,11 @@
 # MC-05 配对对照、盲评导出与统计
 
+## Current bounded negotiation increment (2026-10-24)
+
+PR #48 is merged. Explicit `actor_self_review_v3` supersedes strict v2 for the newly approved bounded workflow: both reviewed conditions get at most two writer/confirmation rounds, with final valid disagreement preserved and allowed to prepare video. Hard errors still block. The source loader rechecks both rounds, exact candidate/owner/issue bindings, summaries and routed call order; P5 accepts consistent v3 summaries while retaining qualification/export rechecks and unchanged scores/denominators. No paid run, new video, human score or formal inclusion is authorized. Historical results and v2 behavior remain intact; #8/#9 remain open. See [current method](../ACTOR_REVIEW_METHOD.md).
+
+Earlier entries below describe their original implementation stage; their draft/unmerged references are historical snapshots.
+
 The offline v2 actor-confirmation increment in PR #48 rejects mixed protocols and v2 comparison summaries without valid owner confirmation for omitted feedback. Source rechecks validate the raw candidate-bound decisions, not only a summary status. Disagreement retains the existing failed-review accounting with an explicit `actor_confirmation_status=disputed` detail; no score/denominator is changed. Historical [shared videos](../pilots/anna-elsa-videos.md) are v1 examples for team listening/viewing, not blinded materials or v2 outputs. #8/#9 stay open.
 
 The subsequent separately authorized [actual actor pilot](../pilots/anna-elsa-actor.md) produced three condition entries from two distinct provider videos because generic had no changes and reused baseline. Do not treat the reused video as an independent generation or the writer's disposition as a score. Total $0.50248398 reconciled; one emotional actor opinion remains unaddressed with a questionable explanation. Human listening/viewing, independent ratings and formal inclusion remain pending. Historical global-review outputs are unchanged; #8/#9 remain open and PR #48 unmerged.

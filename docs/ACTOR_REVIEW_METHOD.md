@@ -1,6 +1,43 @@
 # Actor self-review protocols
 
-## Authorized v2 increment: return omitted feedback to its actor
+## Current increment: bounded actor negotiation (v3)
+
+The user approved the following offline change on 2026-10-24. Explicit `review_protocol="actor_self_review_v3"` gives both generic_review and moodcut the same bounded negotiation. Existing global/v1 results and strict v2 behavior remain unchanged; no historical source is retagged. This increment authorizes implementation, offline acceptance and one unmerged PR, not paid model/video calls.
+
+1. Collect both independent actor reports on the common initial dialogue. If neither reports an issue, retain baseline without writer or confirmation calls.
+2. Make one unified writer revision. Return every omitted issue to its corresponding actor, bound to the exact original and candidate plans. Each affected actor gets one grouped confirmation request.
+3. If an actor maintains an objection, make one final writer revision. The writer must respond to every maintained issue in `objection_responses`, actually change a referenced line relative to the previous candidate, mark the issue attempted/addressed and retain previously addressed feedback. Repeating a rejection reason alone fails the structural gate. The second patch is a complete patch against the original plan, not an incremental patch.
+4. Ask the corresponding actors once more about all previously maintained issues, including those now declared addressed, plus any current omissions. A valid final `maintain_objection` permits request preparation with `negotiation_status=disputed`, the exact `disputed_issue_ids` and all original reports/reasons/replies preserved. No third revision or confirmation round occurs.
+
+Both rounds use the same original feedback IDs and dialogue-only restrictions. Line count, speakers/order and every non-dialogue field stay frozen. First-round writer/actor models and role routing are unchanged. Both conditions use the same additional writer and final actor prompts. Each reviewed branch has at most eight calls (two original actor reports, two writer revisions, four confirmations); including three common planning calls, the block ceiling is **19**. Unused calls are skipped, never spent to fill a quota. Existing shared text/video budgets remain the only cost gates; this feature does not increase approved spending.
+
+V3 confirmations use the existing owner/hash/issue-bound response shape with `decision=accept_candidate|maintain_objection`. Acceptance concerns only the supplied issues and exact candidate, not whole-script approval. Every actor payload includes only its own report/earlier decisions, its indexed original/revised dialogue, the full plans and the corresponding writer reasons/responses. The writer receives both raw actors' positions. One actor never reads the other's report or replies.
+
+`negotiation_rounds` preserves both full writer responses, dispositions, patches, candidates and raw actor confirmations. Top-level final fields mirror the last round. Run records expose `negotiation_status=no_issues|complete|disputed|failed`, `negotiation_round_count`, `confirmation_issue_ids` and `disputed_issue_ids` for source/preparation/qualification rechecks. `actor_confirmation_status=disputed` is allowed only after the second valid round. Writer `addressed` is an attempt declaration: it can coexist with final actor disagreement and must not be relabeled independently resolved. `actor_endorsement=not_requested`, `verification=null` and `verification_kind=programmatic_only` remain unchanged.
+
+Invalid/missing responses, wrong ownership/hashes/coverage, illegal patches, a second writer that fails to attempt an objection, API failures, unknown cost or budget errors still stop the block before video submission. Raw attempted rounds are retained on failure. There is no retry, model switch, manual fallback dialogue or forced actor agreement. A final creative disagreement is a viewable draft awaiting human inspection, not a hard API/contract error or an independent quality score. Preparation does not approve formal inclusion; scoring formulas, coverage and failure accounting stay unchanged.
+
+### Implementation and acceptance plan
+
+- Extend the existing reviewer and prompts with explicit v3; preserve v1/v2 prompt identities and outcomes.
+- Recheck every saved round, final summary, exact stage sequence and routed model through the existing source/request loader; reject mixed protocols at comparison boundaries.
+- Exercise both reviewed conditions, accepted/no-feedback paths, final disagreements, hard errors, tampering and the 19-call ceiling with labeled software responses and denied real network access.
+- Replay the historical Anna/Elsa omission as development input; keep added writer/actor responses labeled developer-authored software, not autonomous model outputs. Verify all protected original hashes and legacy preparation compatibility.
+- Update method/contracts/task status, run relevant and complete offline verification, self-review and submit one PR without merging. Do not change existing videos, scores or six-story inputs.
+
+### Offline acceptance evidence (2026-10-24)
+
+Fresh reviewer/patch/client/pipeline regression passed **299 tests and 25 subtests** in 15.24 seconds, including the final correction that invalid original actor feedback is reported as failed rather than no-issues. Both conditions exercise valid final acceptance/disagreement, early exits, required second revisions, actor isolation, owner/hash/issue failures, saved-round/candidate/summary/stage tampering, API errors, unknown costs and budget stopping. The role-routed maximum-path software test uses exactly **19** text slots and prepares all three conditions without real network access.
+
+The actual historical Elsa opinion and first writer response were replayed verbatim as development inputs. Separately labeled software second-writer/actor replies produce two successful 11-slot cases (final disagreement or acceptance), while a wrong-owner final response blocks preparation. No added reply is represented as an autonomous Agent result or used as paid fallback dialogue. Global/v1 and strict-v2 successful preparations still pass read-only recompilation. **363 protected files**, including all 303 original protected files and earlier strict-v2 software artifacts, remain SHA-256 unchanged.
+
+A denied-network integration check used simulated provider receipts and an existing historical MP4 as an explicitly labeled media fixture. Final-disputed v3 passed the existing executor, media assembly, accounting/source rechecks, programmatic qualification, anonymous export of three condition clips and empty-rating summary. Two software submission slots covered the three entries through legitimate same-block reuse. These are not new generated videos or evidence that the fixture speaks the new candidate dialogue; speech/visual checks remain `not_reviewed`, ratings are empty and formal inclusion is unapproved. No historical file, video page, rating formula or six-story input changed.
+
+The broader full offline suite passed **988 tests and 191 subtests** in 535.68 seconds before the final no-issue/failure-label guard and its added regression. The final implementation then passed the 299-test/25-subtest related suite above and a fresh standalone reviewer run of **130 tests and 6 subtests** in 5.62 seconds; do not substitute the earlier full-suite count for a full run of the final head. PR CI verifies the committed head separately.
+
+All new actual HTTP attempts, paid spending and generated videos are **zero**. Eight changed public documents passed privacy/local-link checks (99 existing local Markdown targets), reference-cache verification passed 33/33 with zero downloads, and CLI help/version and diff checks passed. Software acceptance does not establish actual v3 model cooperation or method-quality improvement; a separately authorized real trial remains necessary.
+
+## Historical strict v2 increment: return omitted feedback to its actor
 
 This implementation increment is offline only. The actual v1 pilot and its original records, receipts and media remain byte-identical. New runs explicitly select `actor_self_review_v2`; v1/global sources retain their original protocol and prompt identities.
 

@@ -55,6 +55,10 @@ review_failed/rejected 的交集，用于显示可播放的审查失败/回退�
 
 本轮不调用模型/API/GPU，不运行 VBench 推理，不产生真实视频或人工评分。
 
+## Bounded actor negotiation and evaluation
+
+`actor_self_review_v3` uses the same two-round limit for generic_review and moodcut. A valid final disagreement is a viewable draft carrying `negotiation_status=disputed`, exact disputed IDs and raw actor replies; it is not silently relabeled failed, resolved, endorsed or human-approved. A first-round dispute without the required second attempt, missing/invalid confirmations, illegal patch, API failure, unknown cost or budget failure still blocks preparation. Existing source/media/accounting/anonymous-copy rechecks remain mandatory for qualification and rating import. No score, denominator or formal inclusion rule changes. The existing Pages comparison exposes methods, targets and dialogue changes and remains development viewing material, not a blind rating package. See [method and acceptance](ACTOR_REVIEW_METHOD.md) and CONTRACTS 6.20. This offline increment creates no new video or rating.
+
 ## 配对人工评价
 
 主 CLI 的 evaluate 完全离线，不启动模型。configs/experiment.json 是开发分配示例，包含已有软件夹具；--dry-run 仅列出 scene×tone×replicate×condition，不改变原 SceneInput，也不自动批量生成。实际生成使用 run 命令，一次一个明确输入的 block。configs/pilot.json 保留原 VBench 提议配置，不能作为人工评价的 scene 路径配置。
