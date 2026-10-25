@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "model": "heygen/heygen-video-1",
+  "resolution": "768p",
+  "aspect_ratio": "16:9",
+  "generate_audio": true,
+  "seed": 4213,
+  "style": "A continuous cinematic 3D animated scene. Match the two supplied character identities and clothing. Reference images specify identity and clothing only; do not copy their backgrounds or layouts. Natural continuous motion. No cards, slideshow, labels, subtitles or text overlays.",
+  "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied dialogue with the assigned speakers. Quiet indoor room ambience, no narrator, extra dialogue or music. Finish the lines naturally within the requested duration.",
+  "characters": [
+    {
+      "id": "despicableme4_lucy",
+      "asset_id": "movieagent_despicableme4_lucy_primary",
+      "voice": "Adult female Mandarin voice, medium register, natural measured delivery."
+    },
+    {
+      "id": "despicableme4_gru",
+      "asset_id": "movieagent_despicableme4_gru_primary",
+      "voice": "Distinct adult male Mandarin voice, lower register, natural measured delivery."
+    }
+  ]
+}

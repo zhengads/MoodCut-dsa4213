@@ -4,6 +4,8 @@
 
 本页维护输入要求、评分口径和证据边界。真实试跑记录在 pilots/；人工评分、模型自评、媒体完整性和 VBench 分数分开解释。PR #58 的历史视频审计与图像质量结果仍为独立待合并增量，不据此宣称六故事实验完成。
 
+[S02 / S03 teammate handoff](evaluation-handoffs/s02-s03-20261025/README.md): portable inputs and offline checks, awaiting v4 confirmation and execution scope.
+
 ## 软件流程验证
 
 从仓库根目录运行，先配置 FFmpeg/ffprobe 与字体，使用新输出目录：

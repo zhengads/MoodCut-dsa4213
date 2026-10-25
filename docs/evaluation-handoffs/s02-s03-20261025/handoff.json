@@ -1,0 +1,64 @@
+{
+  "kind": "additional_scene_handoff_not_execution_authorization",
+  "prepared_on": "2026-10-25",
+  "validated_base_commit": "afdd13b53778fd29b15f4a35d6e0d97784e2546f",
+  "validated_protocol": "actor_self_review_v3",
+  "validated_writer_contract": "dialogue_by_shot_json_schema_v2",
+  "target_protocol": "actor_self_review_v4",
+  "v4_runtime_confirmation_required": true,
+  "v4_reference_pr": "https://github.com/zhengads/MoodCut-dsa4213/pull/66",
+  "v4_reference_head_at_handoff": "06e771f697a472c37e7edc525b5dbafc4ed8a52a",
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_proposed": 1,
+  "planned_condition_entries": 6,
+  "stories": [
+    {
+      "story_id": "s02_stay_with_me",
+      "tone": "affectionate",
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s02_stay_with_me/scene.json",
+      "scene_sha256": "2d0915776c900bc8277b85c10eccb3b0e56fa7cc32ef6c35c86fce53448783e9",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s02_stay_with_me/assets.json",
+      "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8",
+      "generation_settings_path": "s02_stay_with_me/generation_settings.json",
+      "generation_settings_sha256": "ee4ed5e947a2c6a8a7b5f641328a22679cfa8f166d796fa62c21261874689603"
+    },
+    {
+      "story_id": "s03_footsteps_outside",
+      "tone": "tense",
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s03_footsteps_outside/scene.json",
+      "scene_sha256": "58fdc71abc5b7d9cdc9e874ac60695ba35001bd6bf3b91ba164c45b724c41ff3",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s03_footsteps_outside/assets.json",
+      "assets_sha256": "7fbaa42906016f782c499edba5ba14b1c5af3fb819bf060a49b9f3d80bca431f",
+      "generation_settings_path": "s03_footsteps_outside/generation_settings.json",
+      "generation_settings_sha256": "e99bf693fcaad4a3a1eab609a327ee926c922d0c9b950c465191aeec5ff4f043"
+    }
+  ],
+  "generation_settings_status": "candidate settings copied from v3 preflight; confirm and freeze for v4 before execution",
+  "text_price_snapshot": {
+    "path": "text-models-price-snapshot.json",
+    "sha256": "dab5788b1f61d47218715877536109376b39ecf68df56b43e0e8add1e3bd5a69",
+    "source_url": "https://openrouter.ai/api/v1/models",
+    "observed_on": "2026-10-25",
+    "recheck_before_execution": true
+  },
+  "historical_v3_budget_proposal": {
+    "per_scene_usd": "0.10",
+    "total_usd": "0.20",
+    "approved": false,
+    "applies_to_v4": false
+  },
+  "offline_evidence": {
+    "scene_checks_passed": 2,
+    "verified_reference_images": 4,
+    "existing_tests_passed": 17,
+    "paid_calls": 0,
+    "spending_usd": 0
+  }
+}
