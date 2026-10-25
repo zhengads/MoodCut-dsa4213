@@ -24,7 +24,7 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 生成模式下，**各组只改台词**；场景、动作、镜头、角色参考、声音及生成设置保持共同输入。固定 seed 不保证不同台词生成的画面完全一致。
 
-**版本边界：main 运行代码仍为 v3**，通用组和 MoodCut 均使用两个 Actor。v4 已在独立开发快照中试跑，运行实现尚未合入；本次仅发布双语介绍与框架图。历史版本及验收记录见[方法说明](docs/ACTOR_REVIEW_METHOD.md)，v4 的实际运行证据见 [S01 记录](docs/pilots/s01-v4-text-video.md)。
+**v4 已可在生成式脚本编排中通过 `review_protocol="actor_self_review_v4"` 显式选择。** global/v1/v2/v3 协议及默认 CLI 行为保持兼容。选择方法与历史版本见[方法说明](docs/ACTOR_REVIEW_METHOD.md)，v4 的实际运行证据见 [S01 记录](docs/pilots/s01-v4-text-video.md)。
 
 ## 当前进展
 
@@ -74,7 +74,7 @@ Start-Process (Resolve-Path runs/demo-01/comparison.html).Path
 | 执行已准备的视频请求 | `execute-generated`：默认离线；真实调用需明确模型、规模和预算 |
 | 检查已有视频、匿名导出、汇总人工评分 | [使用指南](docs/usage.md#检查与评价生成视频) |
 
-**默认 `plan/review/smoke/run` 仍使用原 animatic 流程，不自动启用演员 v3。** v3 需要在生成式脚本编排时显式选择协议；准备脚本、编译请求、生成视频是三个阶段。参数和前置条件见[生成式视频流程](docs/usage.md#生成式视频流程)。
+**默认 `plan/review/smoke/run` 仍使用原 animatic 流程，不自动启用演员 v3/v4。** 需要在生成式脚本编排时显式选择协议；准备脚本、编译请求、生成视频是三个阶段。参数和前置条件见[生成式视频流程](docs/usage.md#生成式视频流程)。
 
 ## 文档导航
 

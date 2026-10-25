@@ -4,8 +4,8 @@
 
 ## 当前状态（2026-10-25）
 
-- 生成式脚本编排、三条件请求编译、任务执行、媒体检查、资格重检和匿名导出已实现。默认 CLI 仍是离线 animatic；演员 v3 需显式选择。
-- 当前演员协议为 `actor_self_review_v3`，新请求使用 `dialogue_by_shot_json_schema_v2`。两组共用协商上限，仅审查准则不同。
+- 生成式脚本编排、三条件请求编译、任务执行、媒体检查、资格重检和匿名导出已实现。默认 CLI 仍是离线 animatic；演员协议需显式选择。
+- 最新显式协议为 `actor_self_review_v4`：通用组 1 个全局 Agent，MoodCut 2 个独立 Actor；两组最多修改两次，每个候选稿均回访。新请求使用 `dialogue_by_shot_json_schema_v2`，旧协议与历史结果保留。
 - S06 v3 已完成三段真实视频，支出 $0.75421676；[原始试跑记录](pilots/s06-actor-v3-index.md)保留具体设置、费用及结果。技术成功不等于人工质量或独立效果验收。
 - [六故事 v2](studies/six-story-clear-emotions-20261024/README.md)是下一轮候选输入，共 18 个条件条目，不是 18 个已完成结果。`configs/experiment.json` 仍为开发夹具。
 - #8、#9 仍开放。评价结果补充见待合并的 [PR #58](https://github.com/zhengads/MoodCut-dsa4213/pull/58)；其历史 Anna/Elsa 结果不能改称 S06 或六故事结果。独立人工评分和正式纳入仍需完成。
