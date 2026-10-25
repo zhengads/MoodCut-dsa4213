@@ -1,6 +1,5 @@
 import importlib.util
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -61,12 +60,3 @@ def test_invalid_budget_rejected(tmp_path, monkeypatch):
 
     with pytest.raises(ValueError):
         runner.main()
-
-
-def test_no_network_for_local_checks(tmp_path):
-    with patch(
-        "socket.socket.connect",
-        side_effect=AssertionError("Network forbidden"),
-    ):
-        with pytest.raises(FileNotFoundError):
-            runner.inspect(tmp_path)

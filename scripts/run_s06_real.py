@@ -4,6 +4,7 @@ No automatic retries. Never overwrites existing run directories.
 Video generation remains delegated to the official MoodCut CLI.
 """
 import argparse
+import hashlib
 import json
 import os
 from decimal import Decimal
@@ -119,7 +120,6 @@ def inspect(folder):
     costs = []
     hashes = []
 
-    import hashlib
 
     for condition in CONDITIONS:
         job = execution / condition / "shot-000"
