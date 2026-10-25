@@ -1,107 +1,107 @@
-# 六个明显情绪情景：亲密、敌对、紧张（v2）
+# Six clear-emotion scenarios: affectionate, hostile and tense (v2)
 
-2026-10-24 按新的剧本要求修订。本轮当前输入采用 **亲密、敌对、紧张各 2 个故事**，仍为 6 个故事、12 个不同角色、每故事一种氛围、3 个条件、1 次重复，共 18 个条件条目。5 秒、单镜头、双方各一句的设计范围不变。本次准备材料与离线测试，没有运行实验或调用模型 API。
+Revised on 2026-10-24 to meet the updated script requirements. Current inputs use **two stories each for affectionate, hostile and tense**: six stories, 12 distinct characters, one tone per story, three conditions and one replicate, totaling 18 condition entries. The five-second, single-shot scope with one line per character remains unchanged. This change prepares materials and offline tests; it runs no experiment or model API calls.
 
-原 [v1 剧本](../six-story-20261024/README.md)及其全部 JSON 输入保留。本版是执行前的任务修订，原因是原情景偏日常，目标情绪不够鲜明；不是根据这六个故事的实验结果换题。原输入合并提交为 `dff08742caf662cba81f1853cfbfd184d92ee84c`。
+The original [v1 scripts](../six-story-20261024/README.md) and all their JSON inputs are preserved. This is a task revision before execution because the original everyday scenarios did not express the target emotions clearly enough, not a task replacement based on results from these six stories. The original input merge commit is `dff08742caf662cba81f1853cfbfd184d92ee84c`.
 
-## 三种氛围的区别
+## Distinguishing the three tones
 
-| 当前氛围 | 输入标签 | 情景核心 | 不混同为什么 |
+| Current tone | Input label | Scenario focus | Distinct from |
 |---|---|---|---|
-| 亲密 | affectionate | 明确的相互想念、依恋和陪伴；本版两对人物是成年伴侣 | 一般的工作帮助或礼貌问候 |
-| 敌对 | hostile | 两人明确站在冲突立场，指责、拒绝合作或不肯退让 | 双方共同承受外部危险的压力 |
-| 紧张 | tense | 互相信任的同伴共同面对未知危险或迫近期限 | 怀疑对方的诚信、身份或动机 |
+| Affectionate | affectionate | Explicit mutual longing, attachment and companionship; both pairs in this version are adult partners | Routine work assistance or polite greetings |
+| Hostile | hostile | Explicitly conflicting positions, accusations, refusal to cooperate or refusal to yield | Shared pressure from external danger |
+| Tense | tense | Trusted companions facing unknown danger or an approaching deadline together | Suspicion of the other person's honesty, identity or motives |
 
-`tense` 是新增的独立标签。系统继续接受旧 `suspicious`，用于读取旧故事与评分；绝不把历史“怀疑”改名成“紧张”。本版只选择表中的三类。当前观看问卷应使用这三类加“无法判断”；评分解析器保留旧类别是为了兼容，不要求本轮多测一种氛围。
+`tense` is a new, separate label. The system still accepts legacy `suspicious` to read older stories and ratings; historical suspicion is never renamed tension. This version selects only the three categories above. The current viewer questionnaire should use these three plus “uncertain.” The rating parser retains the older category for compatibility, not to require an additional tone in this round.
 
-## 六个剧情
+## Six plots
 
-| 编号 | 剧本 | 人物 | 氛围 | 固定交流 |
+| ID | Script | Characters | Tone | Fixed exchange |
 |---|---|---|---|---|
-| S01 | 久别重逢 | 安娜、克里斯托夫 | 亲密 | 安娜表达想念；克里斯托夫回应想念并愿意留下陪伴 |
-| S02 | 低落时的陪伴 | 露西、格鲁 | 亲密 | 露西请求对方留下；格鲁答应并表达支持 |
-| S03 | 门外的脚步 | 艾莎、马蒂亚斯 | 紧张 | 艾莎提醒保持安静；马蒂亚斯回应门外脚步尚未远去 |
-| S04 | 出口即将关闭 | 哪吒、敖丙 | 紧张 | 哪吒提示时间所剩无几；敖丙催促立即离开 |
-| S05 | 合作关系破裂 | 马克西姆、瓦伦蒂娜 | 敌对 | 马克西姆指责失信；瓦伦蒂娜拒绝道歉并终止合作 |
-| S06 | 争夺最后名额 | 李靖、太乙 | 敌对 | 李靖要求对方退出；太乙明确拒绝并表示不会让步 |
+| S01 | Reunion after time apart | Anna, Kristoff | affectionate | Anna expresses missing him; Kristoff reciprocates and offers to stay with her |
+| S02 | Company when feeling low | Lucy, Gru | affectionate | Lucy asks him to stay; Gru agrees and expresses support |
+| S03 | Footsteps outside the door | Elsa, Mattias | tense | Elsa asks for quiet; Mattias replies that the footsteps have not moved away |
+| S04 | The exit is about to close | Nezha, Aobing | tense | Nezha warns that little time remains; Aobing urges them to leave immediately |
+| S05 | A broken collaboration | Maxime, Valentina | hostile | Maxime accuses her of breaking an agreement; Valentina refuses to apologize and ends the collaboration |
+| S06 | Competing for the last place | Lijing, Taiyi | hostile | Lijing demands that Taiyi withdraw; Taiyi explicitly refuses to yield |
 
-### S01：久别重逢 — 亲密
+### S01: Reunion after time apart — affectionate
 
-**关系与起点**：安娜和克里斯托夫是彼此牵挂的成年伴侣，分别一段时间后刚刚重逢；开场已经在安静门厅内面对面站好。
+**Relationship and starting point:** Anna and Kristoff are adult partners who care about each other and have just reunited after time apart. At the start, they are already facing each other in a quiet entrance hall.
 
-**固定剧情**：安娜表达分别期间一直很想念对方；克里斯托夫回应同样的想念，并表示愿意留下陪伴。两人的感情需要相互回应。
+**Fixed plot:** Anna says she missed him during their separation. Kristoff reciprocates and offers to stay with her. The affection must be mutual.
 
-**对白任务**：一句表达想念，一句回应想念和陪伴。具体原句由规划 Agent 生成，本稿不提供台词答案。
+**Dialogue task:** one line expresses longing; the other reciprocates and offers companionship. The planning Agent generates the actual wording; this document supplies no dialogue answers.
 
-**边界**：不编造分别原因、第三者、失踪或伤病，不要求接吻、拥抱、走动或递送礼物。明确关系与交流含义，避免把亲密仅写成礼貌寒暄。
+**Boundaries:** do not invent reasons for the separation, third parties, disappearances, illness or injury. Do not require kissing, hugging, walking or giving gifts. Make the relationship and exchange clear rather than reducing affection to polite small talk.
 
-### S02：低落时的陪伴 — 亲密
+### S02: Company when feeling low — affectionate
 
-**关系与起点**：露西和格鲁是相互信任的成年伴侣，已在客厅并排坐好。露西此刻心情低落，原因未给定。
+**Relationship and starting point:** Lucy and Gru are adult partners who trust each other, already seated side by side in a living room. Lucy feels low; the reason is unspecified.
 
-**固定剧情**：露西主动请求格鲁留下陪自己；格鲁答应，并表达愿意支持她。这一幕的关系基础是能向对方表达需要，也能得到明确回应。
+**Fixed plot:** Lucy asks Gru to stay with her. Gru agrees and expresses support. Their relationship allows her to express a need and receive an explicit response.
 
-**对白任务**：一句提出陪伴需求，一句接住需求并表达支持。
+**Dialogue task:** one line asks for companionship; the other acknowledges the need and offers support.
 
-**边界**：不补出疾病、失业、丧失或背叛，不作心理诊断，不要求哭泣、身体接触或递物。区别于 v1 的工作收尾帮助。
+**Boundaries:** do not add illness, unemployment, loss or betrayal, or make a psychological diagnosis. Do not require crying, physical contact or handing over objects. This differs from the work cleanup help in v1.
 
-### S03：门外的脚步 — 紧张
+### S03: Footsteps outside the door — tense
 
-**关系与起点**：艾莎和马蒂亚斯互相信任，正共同暂避门外尚未确认的危险。两人已站在关着的门内侧；门外仍有脚步环境声。
+**Relationship and starting point:** Elsa and Mattias trust each other and are temporarily sheltering from an unidentified danger outside. Both are already inside a closed door; ambient footsteps remain audible outside.
 
-**固定剧情**：艾莎提醒马蒂亚斯保持安静；马蒂亚斯回应脚步尚未远去，还需要等。危险是否解除与来源身份都不揭晓。
+**Fixed plot:** Elsa reminds Mattias to stay quiet. Mattias replies that the footsteps have not moved away and they must wait. Neither the source of the danger nor whether it has passed is revealed.
 
-**对白任务**：一句在危险下提醒安静，一句回应尚不能放松。可有克制与警觉，不能把同伴写成嫌疑人。
+**Dialogue task:** one line requests quiet under danger; the other indicates they cannot relax yet. Restraint and vigilance are allowed, but the companion must not become a suspect.
 
-**边界**：门不打开，不出现第三人画面、额外说话者、武器或袭击。脚步是本故事明确给出的共同环境声，各条件共享；不为某个审查组单独增加惊吓或音效。
+**Boundaries:** the door stays closed. No third person appears on screen, and no additional speaker, weapon or attack is added. Footsteps are an explicitly shared environmental sound in this story; do not add scares or sound effects to only one review condition.
 
-### S04：出口即将关闭 — 紧张
+### S04: The exit is about to close — tense
 
-**关系与起点**：哪吒和敖丙是相互信任、需要一起离开通道的同伴，已在出口内侧站定。出口即将关闭，时间很少。
+**Relationship and starting point:** Nezha and Aobing are trusted companions who need to leave a passage together. They are already standing just inside an exit that is about to close; little time remains.
 
-**固定剧情**：哪吒提示迫近的期限；敖丙催促两人立即离开。镜头停留在准备行动的时刻，离开是否成功未知。
+**Fixed plot:** Nezha warns of the approaching deadline; Aobing urges them both to leave immediately. The shot ends as they prepare to act; whether they escape remains unknown.
 
-**对白任务**：一句表达时间压力，一句催促立即行动，形成急迫感。
+**Dialogue task:** one line communicates time pressure; the other urges immediate action, creating urgency.
 
-**边界**：不指责谁耽误了时间，不增加追兵、反派、广播、伤病或倒计时文字。不展示冲刺、跳跃、法术、门关闭或逃脱结果。
+**Boundaries:** do not blame either person for the delay or add pursuers, villains, announcements, injuries or countdown text. Do not show sprinting, jumping, magic, the door closing or the outcome of the escape.
 
-### S05：合作关系破裂 — 敌对
+### S05: A broken collaboration — hostile
 
-**关系与起点**：马克西姆和瓦伦蒂娜的合作关系已经破裂，两人已在普通会议室桌边面对面站定。
+**Relationship and starting point:** Maxime and Valentina's collaboration has broken down. Both are already facing each other beside a table in an ordinary meeting room.
 
-**固定剧情**：马克西姆当面指责瓦伦蒂娜不守约定；瓦伦蒂娜拒绝道歉并明确终止合作。双方是对立立场，不是共同排查外部问题。
+**Fixed plot:** Maxime directly accuses Valentina of breaking an agreement. Valentina refuses to apologize and explicitly ends the collaboration. They occupy opposing positions rather than jointly investigating an external problem.
 
-**对白任务**：一句直接指责，一句拒绝和切断合作关系。
+**Dialogue task:** one line makes a direct accusation; the other refuses and cuts off collaboration.
 
-**边界**：指责不等于已证实的事实；不编造具体违约、犯罪、背叛证据或报复。不辱骂、威胁、砸桌、推搡或离场。敌对通过明确的对立与拒绝表现。
+**Boundaries:** an accusation is not an established fact. Do not invent specific breaches, crimes, evidence of betrayal or retaliation. No insults, threats, table slamming, pushing or leaving. Hostility comes from explicit opposition and refusal.
 
-### S06：争夺最后名额 — 敌对
+### S06: Competing for the last place — hostile
 
-**关系与起点**：李靖和太乙争取同一活动的最后一个名额，目标直接冲突；开场已在报名处外面对面站定。
+**Relationship and starting point:** Lijing and Taiyi are competing for the last place in the same activity, with directly conflicting goals. At the start, they are already facing each other outside the registration desk.
 
-**固定剧情**：李靖要求太乙退出；太乙明确拒绝并表示不会让步。名额归属保持未决。
+**Fixed plot:** Lijing demands that Taiyi withdraw; Taiyi explicitly refuses and says he will not yield. Who gets the place remains unresolved.
 
-**对白任务**：一句要求竞争者放弃，一句明确拒绝退让。
+**Dialogue task:** one line demands that the competitor give up; the other explicitly refuses to yield.
 
-**边界**：不引入官职、师徒权力、裁判、名单、惩罚或欺骗，不展示武力、施法和竞争结果。与 S04 区分：这里是彼此阻碍目标，S04 是共同对抗期限。
+**Boundaries:** do not introduce official ranks, master–disciple authority, a judge, lists, punishment or deception. Do not show force, magic or the competition outcome. Unlike S04, their goals obstruct each other here; in S04 they face a deadline together.
 
-## 输入与执行范围
+## Inputs and execution scope
 
-- [design.json](design.json)：明确版本、三类含义、六个故事、角色和剧情边界；不是执行配置。
-- [inputs/index.json](inputs/index.json)：6 对场景／素材路径、标签及字节哈希；`selected_tones` 恰好是 affectionate、hostile、tense。
-- 每故事的 `scene.json` 使用现有 1.1/generated 格式；`assets.json` 仍逐字复制 v1 对应人物的两张原图元数据，12 个角色不重复，不新增选图。
-- `.gitattributes` 固定 JSON 为 LF，保证索引哈希跨 Windows／Linux 检出稳定。
+- [design.json](design.json): version, definitions of the three tones, six stories, roles and plot boundaries; not an execution configuration.
+- [inputs/index.json](inputs/index.json): paths, labels and byte hashes for six scene / asset pairs; `selected_tones` is exactly affectionate, hostile and tense.
+- Each story's `scene.json` uses the existing 1.1/generated format. Its `assets.json` still copies the metadata for the corresponding two original character images verbatim from v1. The 12 characters are distinct; no new image selection is made.
+- `.gitattributes` fixes JSON line endings to LF so index hashes remain stable across Windows and Linux checkouts.
 
-三个条件共享每故事的一次初稿、全部剧情与非台词要求。只有对白可以修订；人物关系、脚步声、期限、动作、表情要求、镜头、时长、参考图和声音设置都不能按方法分别增强。标签支持只扩展结构验证与评分解析，不修改规划／演员／编剧提示词，不填写 Agent 响应或评分。
+The three conditions share one initial plan per story, all plot requirements and all non-dialogue requirements. Only dialogue may be revised. Relationships, footsteps, deadlines, actions, expression requirements, shots, durations, reference images and voice settings must not be enhanced separately for one method. Label support extends only structural validation and rating parsing. It does not change planning / actor / writer prompts or supply Agent responses or ratings.
 
-本次只准备输入及本地工程验证。`execution_enabled=false`、`paid_run_authorized=false`、`formal_inclusion_approved=false`；没有模型调用、生成视频或人工评分。方法版本、具体模型、统一时长可行性、实时报价、预算与评价者安排仍在执行前确定。5 秒两句、建议总计 16–22 个汉字是尚未验证的设计约束，不能声称自然语速已经通过验收。
+This change prepares inputs and local software checks only. `execution_enabled=false`, `paid_run_authorized=false` and `formal_inclusion_approved=false`. No model calls, video generation or human ratings occurred. Method version, specific models, feasibility of the common duration, live pricing, budget and viewer assignments must still be determined before execution. Five seconds for two lines, with a suggested combined length of 16–22 Chinese characters, is an unverified design constraint; natural speech delivery has not passed acceptance.
 
-## 材料与解释限制
+## Materials and interpretation limits
 
-人物图片继续来自[现有素材库](../../../assets/library/README.md)，保持 v1 的 12 张原图、来源、哈希、构图与 `rights_status=unconfirmed`。原有表情、眼镜遮挡、构图和清晰度限制仍然存在；此处不重新挑选更符合目标情绪的图片，也不验证提供商对新配对的接受情况。
+Character images still come from the [existing asset library](../../../assets/library/README.md), preserving the 12 original v1 images, sources, hashes, framing and `rights_status=unconfirmed`. Existing expression, glasses occlusion, framing and clarity limitations remain. Images are not reselected to match the target emotion more closely, and provider acceptance of the new pairs is not verified here.
 
-本版按要求使情景含义更明显。关系和背景本身会提示答案，可能使各方法都容易命中，压缩审查的可见增益；不能将整段视频的情绪识别都归功于台词改写。六故事、人物与氛围仍有混杂，只支持这批输入上、共同初稿条件下的方法比较，不独立估计人物或氛围效应。六故事仍是六个场景单位。
+This version makes scenario meanings clearer as requested. Relationships and background themselves may reveal the answer, making the target easy for every method and reducing the visible gain from review. Tone recognition for the full video must not be attributed entirely to dialogue revision. Story, character and tone remain confounded across the six stories. Comparisons apply only to methods on these inputs with shared initial plans; character or tone effects cannot be estimated independently. Six stories remain six scene units.
 
-评分仍沿用情绪命中、自然度、剧情清楚度、过度表达、uncertain 未命中、clip 等权和完整失败覆盖。解析器新增 tense 混淆矩阵行列，旧 suspicious 的含义和分数不被重写。后续不能按结果胜负换题或只给某方法延长时长。
+Scoring retains tone recognition, naturalness, story clarity, overstatement, uncertain counted as a miss, equal clip weighting and coverage of all failures. The parser adds tense rows and columns to the confusion matrix without rewriting legacy suspicious labels or scores. Do not replace tasks after seeing which method wins or extend duration for only one method.
 
-按历史每个 5 秒视频 $0.25、18 条全部新生成的情景估算，视频部分仍为 $4.50，文本、失败、价格变化和延时另计；这是旧账单推算，不是实时报价或本次预算批准。本轮新增模型调用为 0、消费为 $0。
+Using the historical rate of $0.25 per five-second video, a scenario with all 18 entries newly generated still estimates **$4.50** for video, with text, failures, price changes and longer durations charged separately. This extrapolates old bills; it is neither a live quote nor approval of this batch budget. New model calls and spending for this change are both **0 / $0**.
