@@ -930,7 +930,14 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
         assert (out / call['response_artifact']['body_path']).is_file()
     for row in block['runs']:
         for call in row['call_records']:
-            assert (out / row['condition'] / call['response_artifact']['body_path']).is_file()
+            artifact = call.get('response_artifact')
+            if outcome == 'http_error' and artifact is None:
+                assert call['status'] == 'request_failed'
+                assert call['http_status'] == 503
+                assert call['provider_cost_usd'] is None
+                continue
+            assert isinstance(artifact, dict)
+            assert (out / row['condition'] / artifact['body_path']).is_file()
     if outcome == 'json_error':
         failed=block['runs'][1]['call_records'][-1]
         assert failed['parse_error']['kind']=='syntax_error' and failed['provider_cost_usd']==.001

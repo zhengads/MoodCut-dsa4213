@@ -1,6 +1,7 @@
 # Reference-guided video implementation plan
 
-> Historical offline adapter increment (merged in PR #21). For agentic workers: execute this plan sequentially using the existing executing-plans workflow and repository PR rules. Offline implementation is authorized; paid generation needs a separately accepted model, scale and budget.
+> Historical adapter plan, delivered in PR #21. The tasks and original estimates below are a dated design record, not a new work order or current price quote. Current three-condition operation is in [usage](usage.md); current interfaces are in [CONTRACTS](CONTRACTS.md).
+
 
 **Goal:** Produce short generated scenes with character-reference images and native audio, comparing original dialogue with dialogue-only revisions.
 

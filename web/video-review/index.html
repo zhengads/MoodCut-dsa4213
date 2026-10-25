@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="MoodCut 三条件试跑：查看 S06 和 Anna/Elsa 的真实状态、历史原片、台词修改和失败记录。">
+  <meta name="description" content="MoodCut 已出片对照：S01 v4、S06 与历史样例的视频、台词修改和回访记录。">
   <title>三条件视频与台词对照 · MoodCut</title>
   <link rel="stylesheet" href="site.css">
   <script src="app.js" defer></script>
@@ -24,17 +24,14 @@
       <p class="scene"><span id="scene-location">正在载入场景</span><br><strong id="scene-tone">目标氛围待载入</strong></p>
     </div>
     <div class="experiment-tabs" role="tablist" aria-label="选择试跑记录">
-      <button id="tab-s06-index" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="s06-index">S06 演员索引 · 本次出片</button>
-      <button id="tab-s06-schema" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="s06-schema">S06 Schema · 历史停止</button>
-      <button id="tab-s06" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="s06">S06 JSON 模式 · 历史停止</button>
-      <button id="tab-v3-captured" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-captured">Anna/Elsa v3 · 历史出片</button>
-      <button id="tab-v3-shot" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-shot">v3 上次 · JSON 停止</button>
-      <button id="tab-v3" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3">v3 旧接口 · 历史停止</button>
-      <button id="tab-actors" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="actors">演员自审 v1 · 历史</button>
-      <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">整段台词统一审查</button>
+      <button id="tab-s01-v4" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="s01-v4">S01 · v4 最新对照</button>
+      <button id="tab-s06-index" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="s06-index">S06 · v3</button>
+      <button id="tab-v3-captured" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-captured">还伞 · v3</button>
+      <button id="tab-actors" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="actors">还伞 · v1</button>
+      <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">还伞 · 全局审查</button>
     </div>
     <p id="experiment-description" class="experiment-description" aria-live="polite">正在载入实验记录…</p>
-    <section id="comparison" role="tabpanel" aria-labelledby="tab-s06-index" tabindex="0">
+    <section id="comparison" role="tabpanel" aria-labelledby="tab-s01-v4" tabindex="0">
       <div id="players" class="players" aria-label="三条件视频与台词"></div>
     </section>
     <p id="page-error" class="error" role="alert" hidden></p>
@@ -52,7 +49,7 @@
         <h2>原始记录</h2>
         <dl>
           <div><dt>运行日期</dt><dd id="run-date">—</dd></div>
-          <div><dt>模型设置</dt><dd>Gemini / DeepSeek<br>HeyGen 768p</dd></div>
+          <div><dt>模型设置</dt><dd id="model-settings">见本条目原始记录</dd></div>
           <div><dt>文本与视频实付</dt><dd id="cost">—</dd></div>
           <div><dt>每段</dt><dd id="duration">—</dd></div>
         </dl>
@@ -60,8 +57,8 @@
       </aside>
     </section>
     <div class="boundary">
-      <strong>各页签保留该次真实状态；失败记录不会借用历史视频。</strong>
-      各次已出片实验可单独播放。页面台词来自实际计划，不是已核实的语音转录。编剧申报采纳不等于演员最终认可；人工评分仍为空，出片和观看差别不证明方法更好。
+      <strong>页面只展示已有成片的对照，完整历史仍保留在仓库记录中。</strong>
+      请逐段播放，比较实际声音与画面。页面台词来自请求计划，不是语音转录；Actor 回访不等于独立评价，出片和观看差别不证明方法更好。
     </div>
   </main>
   <footer>

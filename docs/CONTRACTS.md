@@ -1,6 +1,8 @@
 # MoodCut 模块契约
 
-本文件定义模块间的公共接口。第1–4节为已实现的1.0 animatic；第5节为既有开发投影；第6节定义已实现的1.1生成式数据、验证/脚本编排、规划/审查、请求编译、本地记录装配及媒体检查材料。离线资格报告已实现（6.14）；盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。Python 3.11；包路径 `src/moodcut/`；统一使用JSON可序列化dict。
+本文件定义当前公共接口及历史兼容格式。第1–4节为默认1.0 animatic，第5节为旧开发对，第6节为1.1三条件生成与演员协议。Python 3.11，包路径 src/moodcut/，数据为JSON可序列化dict。操作命令见[使用指南](usage.md)，当前进展见[文档入口](README.md)，真实运行与失败见[试跑索引](pilots/README.md)。本文件不重复记录各轮测试和试跑状态。
+
+快速定位：共享身份与数据 6.1–6.6；脚本/请求/记录/媒体 6.7–6.13；资格/导出/统计 6.14–6.16；执行恢复 6.17；演员协议与版本 6.18–6.25。**v4 需显式选择，使用 dialogue_by_shot_json_schema_v2；v3 及更早协议保留历史兼容行为，默认入口不变。**
 
 ## 1. 公共数据
 
@@ -120,15 +122,16 @@ def validate_plan(scene: dict, plan: dict, manifest: dict, *, project_root=None,
 def import_synopsis(path: str) -> dict: ... # {story: str, character_names: list[str]}
 
 # planner.py — P2
-def make_plan(scene: dict, manifest: dict, client: LLMClient, *, project_root=None) -> dict: ...
+def make_plan(scene: dict, manifest: dict, client: LLMClient, *, project_root=None, output_mode="animatic") -> dict: ...
 
 # reviewer.py — P3，mode 必须显式给出
 def review_and_revise(scene: dict, initial_plan: dict, manifest: dict,
-                      client: LLMClient, *, mode: str, project_root=None) -> dict: ... # ReviewResult
+                      client: LLMClient, *, mode: str, project_root=None,
+                      output_mode="animatic", review_protocol="global_v1") -> dict: ... # ReviewResult
 
 # patches.py — P3；纯函数，不调用模型、不改输入对象
 def apply_patch(scene: dict, plan: dict, manifest: dict,
-                report: dict, patch: dict, *, project_root=None) -> dict: ... # {plan,status,errors}
+                report: dict, patch: dict, *, project_root=None, output_mode="animatic") -> dict: ... # {plan,status,errors}
 
 # renderer.py — P4
 def render_plan(plan: dict, manifest: dict, *, project_root: str,
@@ -149,15 +152,16 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict,
                   replicate=1, source_kind="development", output_mode="animatic",
                   generation_settings=None, template_sha256=None,
                   expected_initial_plan_sha256=None,
-                  expected_shared_generation_sha256=None) -> dict: ... # RunRecord
+                  expected_shared_generation_sha256=None, review_protocol="global_v1") -> dict: ... # RunRecord
 
 def run_experiment(scene: dict, manifest: dict, client=None, *, out_dir: str,
                    project_root=".", font_path=None, render=True, replicate=1,
                    cache_dir=None, source_kind="development", output_mode="animatic",
-                   generation_settings=None, template_sha256=None) -> dict: ... # block.json
+                   generation_settings=None, template_sha256=None,
+                   review_protocol="global_v1") -> dict: ... # block.json
 ```
 
-上述 `...` 用于缩写已实现函数的签名。project_root 为 None 时沿用当前目录；CLI/pipeline 显式传项目根目录。FakeClient 使用预置响应队列，record 每次 stage 和上限；队列耗尽、网络企图或非法响应报错。
+上述签名列主要调用参数；`...` 表示省略函数体。生成式/演员扩展见第6节，完整签名以对应Python函数为准。project_root 为 None 时沿用当前目录；CLI/pipeline 显式传项目根目录。FakeClient 使用预置响应队列，record 每次 stage 和上限；队列耗尽、网络企图或非法响应报错。
 
 make_plan 依次使用 director、scene、shot 三个 planning stage，输出上限分别 1024/2048/4096，再转换为 ShotPlan。director 保留输入 beat 顺序；scene 分段完整覆盖原顺序；shot 接受 canonical、shots、plan 或单场景 scenes 封装，不接受多场景静默截断。make_plan_with_trace 同时返回 plan/raw_responses/prompt_hashes；PlanningError 携带失败阶段、错误和已解析原始响应。所有条件共用初稿，不允许 review 模块反过来改变 scene。
 
@@ -165,7 +169,7 @@ run_experiment 只规划一次；可选初稿缓存身份含完整 scene/manifes
 
 planning.json 记录共享规划费用一次；三个 run.json 不重复分摊规划，包含各自 call_records。block.json 汇集 planning 与 runs。usage 中 calls 是逻辑调用数，real_http_calls 是实际 HTTP 尝试数；FakeClient 后者及实际费用为零，未提供的 token 仍为 null。evaluate 汇总的 overall.usage 只含条件用量，block_ledger_accounting.all_phases 在完整 block.json 可用时包含共享规划一次，缺共享账目返回 null。
 
-review_and_revise 两种 mode 都按 critique → revise → verify 执行，最多各一次。critique 得到 report；revise 得到 patch；apply_patch 结构通过才运行 verify。无意见可不发 revise/verify。模型返回 JSON 不合法或 API 失败不自动重试；保留错误。实际用量与提前退出分别报告，不声称实际费用完全相同。
+默认global_v1的 review_and_revise 两种 mode 都按 critique → revise → verify 执行，最多各一次。critique 得到 report；revise 得到 patch；apply_patch 结构通过才运行 verify。无意见可不发 revise/verify。模型返回 JSON 不合法或 API 失败不自动重试；保留错误。实际用量与提前退出分别报告，不声称实际费用完全相同。
 
 ### OpenRouterClient 与调用账目
 
@@ -217,7 +221,7 @@ evaluate --dry-run 仅列任务；--records 接受 block.json、run.json 或记�
 
 `video_client.OpenRouterVideoClient` 是独立异步端点的传输适配器，复用公共 BudgetError/OpenRouterError/严格 JSON；不取代原文本 LLMClient。POST 一次，保存 job ID，GET 轮询/下载；resume 只恢复一个已有任务，不能发 POST。每任务 receipt 保留未知扣费和失败；失去提交响应时不自动补交。最新模型目录/价格由付费 CLI 在提交前核对；估算预算不是平台硬上限或共享账户账本。
 
-拼接要求每镜头同时存在实际视频和音频流、时长与请求一致，保留生成音频。generation.json 的 assembled_requires_manual_inspection 只表示文件拼接通过，不能解释为中文台词正确、动作/情绪通过。语音内容、口型、人物一致性、剧情和情绪需独立人工检查；首次真实调用尚未验收。
+拼接要求每镜头同时存在实际视频和音频流、时长与请求一致，保留生成音频。generation.json 的 assembled_requires_manual_inspection 只表示文件拼接通过，不能解释为中文台词正确、动作/情绪通过。语音内容、口型、人物一致性、剧情和情绪需独立人工检查；开发试跑证据见试跑索引。
 
 `video_client.estimate_video_cost(config, request) -> Decimal` 是客户端预算与请求编译共用的报价入口。支持 Wan 2.7 的每秒价格，以及 Seedance 2.0 Mini 的视频 token 价格；不混用计费单位。Seedance 只允许图像参考、原生声音、16:9 的 480p/720p，使用官方 `宽×高×秒数×24/1024` 输出 token 公式；未知 SKU、价格上涨或超出已核对的规格拒绝提交。切换模型保持素材与台词身份，不自动重试被拒绝的输入；新的真实试跑另行确认预算。
 
@@ -239,9 +243,11 @@ For routed blocks, `model_id` is a `role-policy/<sha256>` identifier, not a prov
 
 The approved Anna/Elsa development pilot and actual results are recorded in [the pilot sheet](pilots/anna-elsa-agent.md). Its budget does not authorize retries, replacement models, handwritten dialogue fallback or formal sample expansion. Those results use the original global-review protocol. The subsequent offline actor protocol in 6.18 routes `actor_critique` to review and `actor_revise` to planning/screenwriting; it does not change or relabel the historical run.
 
-## 6. 下一阶段生成式比较约束（待实现）
+<a id="6-下一阶段生成式比较约束待实现"></a>
 
-本节发布生成模式 **1.1** 的公共数据与接入约定。公共纯函数、验证器、pipeline脚本编排、离线CLI/记录装配及P2/P3/P4规划审查编译/本地检查材料已实现，详见6.7–6.13。P5资格/导出见6.14/6.15，任务执行接线见6.17，真实试跑仍待批准和验收，不能把prepared脚本或请求解释为真实成片，也不能把本地软件媒体检查当成模型质量验收。上文1.0 animatic与历史开发投影保留，不重写既有结果。
+## 6. 生成式比较协议（1.1）
+
+本节定义已实现的1.1公共数据、验证、脚本编排、规划/审查、请求编译、记录装配、媒体检查、资格/导出和执行接口。脚本prepared、请求prepared_offline、媒体完成与人工评价是不同阶段；旧animatic和开发对的来源不能改名后冒充1.1记录。
 
 ### 6.1 当前可导入的公共接口
 
@@ -375,9 +381,11 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
 P4 的 plans 必须精确包含 baseline/generic_review/moodcut 三个键；baseline 等于完整 initial，两个 review 最终脚本经 dialogue-only 检查。返回 `{schema_version:"1.1", output_mode:"generated", kind:"generated_three_condition_bundle", initial_plan_sha256, shared_generation_sha256, settings, conditions:[...]}`，conditions 按 CONDITIONS 排列，每项 `{condition, final_plan_sha256, jobs:[...]}`，job 至少含 shot_id/request/request_sha256/quoted_cost_usd。不把 condition 或审查意见注入模型提示；复用现有异步传输、成本函数和 A/V 拼接。
 
-P5输入检查返回输入/来源不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观分数，也不决定正式失败纳入规则。P1/P5离线资格报告见6.14，盲评导出/评分接线见6.15，后续仍需真实任务；`run --output-mode {animatic,generated}`的离线请求入口已实现，准确用法见6.8，不代表付费执行或盲评接线已完成。
+P5输入检查返回不一致原因，成功为空列表；缺条件、hash不符、失败回退不可静默通过。它不判断主观质量或正式纳入。离线资格见6.14，盲评导出/评分见6.15，付费执行见6.17；6.8只准备请求。
 
-### 6.6 后续接线必须满足的约束
+<a id="66-后续接线必须满足的约束"></a>
+
+### 6.6 共同输入约束
 
 1. **先共同规划，再拆分条件。** 每个 scene/tone/replicate 只产生一次初始台词及共同场景、动作、镜头和时长，冻结后 deepcopy 为 baseline/generic_review/moodcut。P2 的新规划是共享基础，不是本对照的实验变量。
 2. **只允许 dialogue 修改。** 生成模式下两类审查使用相同字段白名单；动作、表情/肢体要求、narration、镜头顺序/数量、时长、素材等全部固定。去掉每镜头 dialogue 后的完整计划必须相同，包含未知扩展字段；越权整体拒绝。旧 animatic 多字段能力以显式模式隔离，不改写历史结果。
@@ -393,7 +401,7 @@ P5输入检查返回输入/来源不一致原因，成功为空列表；缺条�
 
 `pipeline.run_experiment` 在既有编排上增加keyword-only参数 `output_mode="animatic", generation_settings=None, template_sha256=None`。显式generated要求1.1 Scene/Plan及第6.2节完整Settings；template_sha256由P4按实际编译模板内容计算，P1只检查输入身份，不声明已验证模板实现。默认animatic不变，不允许省略模式而暗传生成设置。
 
-生成模式向P2的 `make_plan_with_trace` 和P3的 `review_and_revise` 显式传递 `output_mode="generated"`。依赖尚未支持时记录失败，不捕获未知参数后改用旧调用。当前离线边界测试使用标注清楚的P2/P3替身及FakeClient，不表示真实模块已经完成联调；client=None不会生成旧animatic假稿来冒充1.1计划。
+生成模式向P2 make_plan_with_trace 和P3 review_and_revise 显式传递 output_mode="generated"。依赖不支持时明确失败，不退回旧调用。实际模块已接入；client=None不会生成旧animatic假稿冒充1.1计划。
 
 同一block只有一次规划；缓存有效时不再规划。生成缓存身份另含1.1模式、完整GenerationSettings和模板哈希，并核对保存的计划/共享哈希；损坏缓存保留并失败，不重新调用。编排保存Scene/Manifest/Settings快照，给各条件和审查依赖深拷贝，公共输入不能被审查修改后传染到后续条件。
 
@@ -403,7 +411,7 @@ P5输入检查返回输入/来源不一致原因，成功为空列表；缺条�
 
 此入口只准备脚本，**不编译视频请求、不创建视频任务、不调用animatic renderer**，包括render=True时。通过时block.status和run_status为prepared，generation_status与render_status均为not_started，generation_jobs为空，POST/视频GET为0，video_path为null。失败保留run和账目；共同输入/来源无效时comparison_status为ineligible，通过时仍为not_checked，须等P4/P5后续核对；不宣称eligible或情绪合格。
 
-规划逻辑调用及费用只在planning/block记录；run.review_calls与run.calls只含本条件实际审查调用，generation_posts/video_get_calls为0。沿用客户端账目，已知失败消费保留、未知消费为null，并由原预算门禁阻止后续调用；报价不充作支出。新回归同时覆盖FakeClient及明确标注的HTTP传输替身，所有真实网络连接禁止。本节只完成脚本；离线CLI/请求选择边界见6.8，实际P4编译及本地媒体检查见6.12/6.13，离线资格见6.14；盲评导出/评分接线见6.15；真实任务仍待后续增量。
+规划逻辑调用和费用只在planning/block记录；run.review_calls与run.calls仅含本条件审查，脚本阶段generation_posts/video_get_calls为0。失败消费和未知费用保留，原预算门禁继续生效。后续请求、媒体、资格、导出和执行分别见6.8、6.12–6.17。
 
 ### 6.8 离线生成入口与单镜头选择
 
@@ -430,8 +438,6 @@ def prepare_generated_run(source_block, *, out_dir, project_root=".", shot_id=No
 成功输出四份JSON：bundle.json为筛选后的编译结果；source_inputs.json为完整源Scene/Manifest/initial/plans/settings/template；source_block.json保留原block与历史费用；preparation.json为独立的generated_request_preparation对象，preparation_stage=requests、status=prepared_offline、comparison_status=not_checked、video_path=null，新calls/HTTP/视频POST/GET及消费均为0。它不是完整GeneratedRunRecord，也不当作视频completed或比较eligible；后续#8/#9仍需装配实际任务和资格记录。
 
 preparation中的quoted_cost_usd是选中jobs的本地报价之和（尚未考虑未来同请求复用），不是支出、实时价格或调用授权；本次零消费不覆盖source_block中已知/未知历史消费。pricing_config_sha256记录报价配置身份。入口不做模型目录查询、调用、下载或渲染；首次真实运行仍需单独授权及实时参数/费用预检。输入/编译失败不创建成功准备产物，返回非零，现有结果保留。
-
-原协议边界回归保留明确的P2/P3/P4替身及缺失依赖故障注入。6.12新增实际planner/reviewer/compiler/pipeline加FakeClient的完整和单镜头请求准备测试；所有真实网络连接禁止。旧animatic回归保留。本地媒体检查材料见6.13；离线资格见6.14；盲评导出/评分接线见6.15；真实任务尚未完成，不把离线准备写成成片端到端可运行。
 
 ### 6.9 本地生成回执与费用记录装配
 
@@ -512,7 +518,7 @@ scene、manifest、来源provenance和原始响应均深拷贝；完整源Scene�
 
 规划提示哈希按模式读取。pipeline的缓存身份与planning.prompt_hashes使用同一模式的实际提示，原有planner代码哈希继续参与缓存身份；不能把animatic提示身份记在generated规划上。复用现有一次规划/条件深拷贝，不增加第二套编排。tests/test_planner.py以实际planner和pipeline加FakeClient覆盖既有读信与临时非读信软件输入、短片时长、阶段失败留档、三条件初稿/共享哈希及缓存；临时夹具不是新数据集或模型效果证据。
 
-P2/P3/P4实际代码现已接入pipeline，以FakeClient可保存三条件prepared脚本并离线编译请求（见6.11/6.12），不能解释为成片或eligible比较；本地媒体材料见6.13，离线资格见6.14，真实任务和盲评接线仍待所属任务完成。对照仍只检验同一规划下台词审查的端到端价值，不独立证明规划贡献或更多Agent更优。
+实际P2/P3/P4通过pipeline准备三条件脚本并编译请求。共同规划不是本对照单独检验的变量；对照不能独立证明规划贡献或更多Agent更优。
 
 ### 6.11 台词限定审查与实际最终脚本复查
 
@@ -535,8 +541,6 @@ revise的新增输入字段issues_by_shot为按原计划镜头顺序的`[{shot_i
 
 get_review_prompt_hashes返回按模式选取的实际system文本UTF-8 SHA-256，pipeline的prompt_hashes使用同一入口；原历史记录不重写。与P1的协同只限提示身份接线，不另建编排。tests/test_reviewer.py/test_patches.py使用手写最小软件夹具重建edits[3]重复shot错误：仍拒绝重复edit，同时验证多意见汇集、单edit合法修订及逐ID完整复查。恶意候选故障注入验证完整非台词检查，不能当真实模块联调。
 
-实际P2/P3/P1链路测试只用FakeClient返回软件JSON，不替换planner/reviewer/validator；可得到baseline/generic_review/moodcut的prepared脚本及applied/unchanged、独立调用账目和共同身份，且通过真实P1源block加载检查。P4请求编译进度见6.12；真实视频、#9比较资格和人工效果尚未完成，脚本prepared/Agent意见不当成成片、有效比较或情绪改善证据。数据集、条件和评分口径不变。
-
 ### 6.12 三条件生成请求编译
 
 video_generation.build_generated_video_bundle已按6.5原签名实现，无新增CLI或编排器。输入为显式1.1/generated Scene/initial、精确三键plans、1.0 Manifest、完整GenerationSettings及独立本地pricing_config；不接受开发对或自动升级。复用公共_json_copy、validate_plan、assert_dialogue_only_revision和shared_generation_sha256，验证本地素材字节及四份计划、baseline完整初稿身份、各条件完整非台词一致和共享身份。越权/无效候选直接拒绝，不投影、不修复。
@@ -551,7 +555,7 @@ scene.asset_ids全部图像按原顺序成为input_references，公共URL检查�
 
 P1既有prepare_generated_run重读/核对来源后调用真实编译器，完整编译后再选镜头，保留完整计划和原索引seed。实际planner/reviewer/validator/compiler/pipeline加FakeClient已覆盖读信与公交站还伞10秒软件输入、全镜头/单镜头CLI、源文件不变、哈希/模板/设置/引用篡改拒绝。协议替身测试仍明确标注；新联调不替换业务函数。完全相同请求交给现有assemble_generated_records，以动态图案/正弦音和手写回执验证同块复用及费用一次记账，软件账目不是实际扣费。
 
-编译增量只交付离线请求。现有HTTP/费用传输及assemble_generated_clips保持复用，不新写客户端或拼接器；本地成片来源绑定与观看材料见6.13。离线资格见6.14；盲评导出/评分接线见6.15；三条件真实任务及真实台词/口型/情绪验收仍待完成。prepared_offline仍为零新调用/消费、无视频且comparison=not_checked；固定seed不保证改变台词后生成表现相同。不改实验条件、数据集或评分口径，不授权付费调用。
+编译阶段只交付离线请求：prepared_offline表示零新调用/消费、无视频、comparison=not_checked。后续复用原HTTP客户端、费用和assemble_generated_clips，不另建传输或拼接器。固定seed不保证不同台词生成相同表现；编译不授权付费调用。
 
 ### 6.13 本地成片来源绑定与观看检查材料
 
@@ -578,7 +582,7 @@ preparation及evidence完全沿用6.8/6.9。media_origin必须声明synthetic或
 
 manual_checks.json/CSV按条件/镜头保存请求/片段/成片身份，以及character_action、dialogue_speaker、audio_lipsync、continuity、notes。判断为null/空白，状态not_reviewed；CSV防公式前缀转义不改JSON原ID。页面展示条件、目标、共同方向及“预期台词”，不是ASR或盲评，不含自动质量分数。由实际观看者另存填写，不因A/V存在或抽帧成功填通过。
 
-顶层status为ready_requires_manual_inspection/incomplete/failed；仅全部所选条件材料就绪时CLI返回0，其余返回1。单镜头保留完整计划身份和selected范围，不冒充全片。所有comparison_status仍not_checked或ineligible，永不设eligible；#9资格/正式评分口径不变。以实际P1/P2/P3/P4+FakeClient、动态图案/正弦音及手写回执覆盖绑定、费用去重/未知、缺音轨/时长、字节变化、单镜头/原成片、失败/未提交和安全路径/页面。软件媒体并非模型或效果证据；真实人物、中文台词、口型、连续性、情绪及实际任务仍需另行授权/验收。
+顶层status为ready_requires_manual_inspection/incomplete/failed；仅全部所选条件材料就绪时CLI返回0，否则返回1。单镜头保留完整计划和selected范围。comparison_status保持not_checked/ineligible，不自动设eligible；资格见6.14，真实人物、台词、口型和情绪由人检查。
 
 
 ### 6.14 离线资格核对报告
@@ -602,7 +606,7 @@ P5复用#37的输入与媒体检查。qualification.json包含kind=generated_qua
 
 报告不修改原始comparison_status、source_kind、费用或人工检查表。正式纳入formal_inclusion_approved=false、export_enabled=false、speech_and_visual_quality=not_reviewed；eligible仅指当前所选镜头的软件证据，不说明真实人物/台词/情绪、提供商真实性或正式实验通过。activity的0只指本次新HTTP/POST/GET/消费，不抹去历史未知费用。只使用最终records账目，不把preflight_records的同一历史累计第二次。
 
-输出目录必须新建；eligible时CLI返回0，其他情况返回1并写诊断。资格报告自身不授权导出；当前evaluate的独立重检入口见6.15。生成状态汇总见6.16；真实任务执行、正式协议和人工评价仍待完成。本增量只用现有软件夹具/产物验证，不授权付费API、实验规模或新评分口径。
+输出目录必须新建；eligible时CLI返回0，否则返回1并保留诊断。报告自身不授权导出，必须走6.15独立重检；生成状态见6.16，执行见6.17。软件资格不批准正式实验或主观质量。
 
 ### 6.15 生成式匿名导出和评分接线
 
@@ -623,7 +627,7 @@ PRIVATE/generated_export.json绑定每个完整block的canonical哈希、原本�
 
 评分仍复用原summarize算术：clip等权、uncertain记未命中、M/G仅共同已评分块做差并另报覆盖，空分母为null。condition usage仍不含共同规划；block_ledger_accounting.blocks逐块保留完整原始accounting（含unknown/known_subtotals/incomplete_fields），每块一次，绝不累加preflight。accounting_verified/complete如实标明当前重检状态；不把不一致账目当已核实支出。未生成的新任务和原始空人工表不改。
 
-导出/评分始终formal_inclusion_approved=false、speech_and_visual_quality=not_reviewed。6.14报告export_enabled仍false，须走本节独立重检入口；软件产物和合成CSV算术不是模型或独立人工效果证据。生成状态细分类汇总见6.16；真实任务、正式协议与真实观看者验收仍待后续；本接口不创建client，不调用API/GPU或自动评分。
+导出/评分保持formal_inclusion_approved=false、speech_and_visual_quality=not_reviewed。6.14报告export_enabled仍false，须经本节独立重检。接口不创建client、不调用API/GPU或自动评分；软件媒体和合成CSV不作为独立效果证据。
 
 ### 6.16 生成状态细分汇总
 
@@ -651,7 +655,7 @@ runs_with_empty_job_records只数显式空列表；runs_with_invalid_job_records
 
 ### 6.17 三条件任务执行、恢复与继续
 
-P1新增以下接线，复用原OpenRouterVideoClient、6.9记录计算及6.13检查包；不另建传输、编译器、状态机、账本或评分器。旧run/generated入口仍只准备请求；旧scripts/generate_video.py仍只处理历史开发对。真实试跑尚未授权，协议提议见 [evaluation.md](evaluation.md#三条件试跑协议提议2026-10-23尚未批准运行)。
+execute-generated复用OpenRouterVideoClient、6.9账目及6.13检查包；不另建传输、状态机或账本。run/generated只准备请求，scripts/generate_video.py保留旧开发对。每次真实执行仍需对应模型、范围和预算授权；具体试跑证据见[索引](pilots/README.md)。
 
 ```python
 def execute_generated_run(preparation, *, out_dir, pricing_config, project_root=".",
@@ -730,13 +734,13 @@ Hard errors still stop: missing/invalid response, illegal patch, wrong actor/has
 
 ### 6.21 V3 writer output keyed by shot
 
-New v3 execution uses `writer_output_contract="dialogue_by_shot_v1"` in reviews, all condition rows and block metadata. Both writer rounds return `{dialogue_by_shot,feedback_disposition}`; the second also returns `objection_responses`. `dialogue_by_shot` maps each affected existing shot ID to exactly one complete final ordered dialogue array. Prompt `revision_slots` groups all original issue IDs and original lines once per affected shot. No model-supplied `patch`, `edits`, issue-level alternative arrays or extra fields are accepted. Empty maps/omitted unchanged shots remain subject to all disposition and second-attempt requirements.
+The historical per-shot v3 interface uses `writer_output_contract="dialogue_by_shot_v1"` in reviews, all condition rows and block metadata. Both writer rounds return `{dialogue_by_shot,feedback_disposition}`; the second also returns `objection_responses`. `dialogue_by_shot` maps each affected existing shot ID to exactly one complete final ordered dialogue array. Prompt `revision_slots` groups all original issue IDs and original lines once per affected shot. No model-supplied `patch`, `edits`, issue-level alternative arrays or extra fields are accepted. Empty maps/omitted unchanged shots remain subject to all disposition and second-attempt requirements.
 
 The existing reviewer derives a standard patch in original shot order: at most one edit per map key, first original issue ID for that shot as association, model-selected full dialogue copied verbatim. This does not merge conflicting edits, select actor wording, imply the association issue is addressed, or repair an earlier failed model output. Existing atomic patch/actor ownership/dialogue-only and complete feedback checks remain authoritative. The strict JSON client rejects repeated keys before conversion; unknown or feedback-free shot IDs, malformed arrays/speakers/counts, false addressed claims and illegal fields stop without retry.
 
 `writer_response` remains the exact raw per-shot envelope; `patch` is the separately derived internal object. Saved-review validation recomputes it on every round and checks actual candidate/final identity. Block/rows/reviews must agree on the writer contract; pure comparison rejects mixed contracts even when every record says actor-v3. New revision prompt files/hashes distinguish the new interface and enter existing cache/source identity. No client, score, trial condition, actor confirmation policy, nineteen-call limit or cost authorization changes.
 
-Absent writer-contract metadata in historical v3 means `issue_patch_v1`; its original revision prompt files/hashes and strict patch validation remain available for read-only source compatibility. New execution always selects `dialogue_by_shot_v1`, with no automatic legacy-output fallback. The original failed v3 paid response, its rejection and all original result bytes remain unchanged; it is not converted into a successful run. See [the separate offline correction record](pilots/anna-elsa-v3-shot-contract.md).
+Absent writer-contract metadata in historical v3 means `issue_patch_v1`; its original revision prompt files/hashes and strict patch validation remain available for read-only source compatibility. This historical contract remains readable; current new execution selects the coordinated schema-v2 bundle in 6.24, with no automatic legacy-output fallback. The original failed v3 paid response, its rejection and all original result bytes remain unchanged; it is not converted into a successful run. See [the separate offline correction record](pilots/anna-elsa-v3-shot-contract.md).
 
 ### 6.22 Private text-response retention and JSON diagnostics
 
@@ -754,11 +758,11 @@ The two earlier actual v3 failures retain all original result bytes. The histori
 
 `LLMClient.complete_json`, FakeClient, OpenRouterClient and RoleRoutedClient accept optional `json_schema=None`. Without it, the old `json_object` request is unchanged. An explicit JSON-object schema is copied/JSON-validated before transport and sent as `response_format={type:json_schema,json_schema:{name:moodcut_response,strict:true,schema:...}}`. No tool, plugin, repair or extra model request is added. Existing provider parameter requirements, disabled fallbacks, price limits, strict whole-content parsing and no-retry behavior remain. Unsupported schemas or invalid returned JSON/task data stop; no format downgrade or prefix extraction occurs.
 
-New v3 writers use `writer_output_contract=dialogue_by_shot_json_schema_v1`. Both conditions use the same shape schema in both rounds; the second adds required `objection_responses`. The schema carries types/required fields, not task words or issue decisions; original programmatic ownership/coverage/change/confirmation checks still decide acceptance. Planning/actor requests and other protocols keep their old formats. Separate schema-writer prompt files/hashes enter existing source identity.
+The writer-only schema revision uses `writer_output_contract=dialogue_by_shot_json_schema_v1`; current new execution uses the coordinated schema-v2 bundle in 6.24. Both conditions use the same shape schema in both rounds; the second adds required `objection_responses`. The schema carries types/required fields, not task words or issue decisions; original programmatic ownership/coverage/change/confirmation checks still decide acceptance. In this writer-only revision, actor requests keep their old format; current actor schemas are specified in 6.24. Optional planning schemas are configured independently. Separate schema-writer prompt files/hashes enter existing source identity.
 
 Call records and request traces bind `response_format_type=json_schema` / `json_schema_sha256` when requested; source loading checks the digest against the round's actual schema. Serialized schema bytes are included in both shared and individual input-budget reservations. FakeClient logs the same request identity but remains a software response queue, not a provider schema decoder. API returned costs/unknowns and raw retention remain unchanged.
 
-Historical `dialogue_by_shot_v1` and `issue_patch_v1` preserve their original prompts/validation; new execution selects the schema contract and comparison rejects mixed contracts. Old actual failed results are not repaired. Original-byte negative/positive replay, seven old read-only recompilations and provider-support limitations are described in [S06 offline correction](pilots/s06-structured-writer.md). Provider enforcement has not been paid-tested by this increment; a future live trial still needs separate authorization and normal capability/quote checks.
+Historical `dialogue_by_shot_v1` and `issue_patch_v1` preserve their original prompts/validation; comparison rejects mixed contracts, and current execution selects the coordinated schema-v2 contract in 6.24. Old actual failed results are not repaired. Original-byte negative/positive replay, seven old read-only recompilations and provider-support limitations are described in [S06 offline correction](pilots/s06-structured-writer.md). That correction record describes its offline acceptance; subsequent actual trials are listed in the pilot index. Any new trial still requires its own authorization and capability/quote checks.
 
 
 ### 6.24 Ownership-constrained v3 actor references
@@ -767,13 +771,12 @@ New v3 actor critique requests reuse the existing optional JSON Schema transport
 
 Versioned `review_actor_{generic,moodcut}_schema.txt` prompts remove the fixed `[0]` example. New execution selects `writer_output_contract=dialogue_by_shot_json_schema_v2` for the coordinated prompt/request bundle; writer response shape/rounds remain unchanged. The writer-only schema v1 and earlier contracts retain original prompt hashes and source compatibility. New source loading checks each actor schema digest against the original plan, actor order and condition, and requires the actual actor call count (zero for baseline). Writer schema checks remain active for both schema contracts; comparison rejects mixed versions.
 
-The existing business validator independently rejects wrong references even if a provider ignores the schema. No index translation, result repair, retries, format downgrade, new tool or additional model stage is added. Unsupported schemas, malformed responses, ownership errors and unknown costs stop as before. Original S06 failure bytes/status are immutable, and provider enforcement of the new actor schema is not live-verified. See [offline correction and original-byte replay](pilots/s06-actor-index-constraints.md).
-
+The existing business validator independently rejects wrong references even if a provider ignores the schema. No index translation, result repair, retries, format downgrade, new tool or additional model stage is added. Unsupported schemas, malformed responses, ownership errors and unknown costs stop as before. Original S06 failure bytes/status are immutable. The subsequent [S06 schema-v2 trial](pilots/s06-actor-v3-index.md) produced three videos; it does not guarantee provider enforcement or semantic correctness on all inputs. See [offline correction and original-byte replay](pilots/s06-actor-index-constraints.md).
 
 ### 6.25 Explicit v4 global/Actor review with unconditional revisits
 
-`actor_self_review_v4` is opt-in and generated-only. Generic review binds one `__global_reviewer__` to all dialogue; MoodCut binds the two scene characters independently to their own original full-shot indices. It reuses existing stage names, role routing, shot writer schema, patch validation, cost accounting and two-round storage. New `review_v4_*.txt` hashes distinguish the protocol; old defaults, prompts and saved sources remain valid and unchanged. See [method and resource limits](ACTOR_REVIEW_METHOD.md#offline-v4-increment-global-reviewer-versus-two-actors).
+`actor_self_review_v4` is opt-in and generated-only. Generic review binds one `__global_reviewer__` to all dialogue; MoodCut binds the two scene characters independently to their own original full-shot indices. It reuses existing stage names, role routing, shot writer schema, patch validation, cost accounting and two-round storage. New `review_v4_*.txt` hashes distinguish the protocol; old defaults, prompts and saved sources remain valid and unchanged. See [method and resource limits](ACTOR_REVIEW_METHOD.md#bounded-negotiation-in-v4).
 
 Every submitted writer candidate gets a revisit from all corresponding reviewers, covering every current issue regardless of writer disposition. V4 decisions are `resolved|withdrawn|maintain_objection`, bound to original/candidate hashes, plus required `new_issues` (normally empty). New issues use the existing local issue shape, permitted line ownership, and changed-shot checks; their evidence must describe a direct regression caused by the latest candidate. Replay derives cumulative feedback from preserved initial reports and prior replies; IDs use `actor-N:revisit-R:local-id`. A round-one regression can be repaired in round two, including by restoring original wording. Round-two regressions remain disputed and never create a third revision. `confirmation_issue_ids` includes newly introduced concerns, while decisions cover exactly that reviewer's existing issues.
 
-A maintained objection triggers the final writer; every required objection needs a nonempty response, but reasoned unresolved feedback is valid. Final disagreement remains `negotiation_status=disputed` and `actor_endorsement=not_requested`. No initial issues means no writer/revisit. Saved-result/source loading rechecks reviewer count, ownership, schema identities, actual candidate, frozen fields, both rounds and exact call order. Comparisons cannot mix old/new protocols. Prompt instructions and structural checks do not establish semantic emotional quality; this increment runs offline software acceptance only, without paid calls or formal experiments.
+A maintained objection triggers the final writer; every required objection needs a nonempty response, but reasoned unresolved feedback is valid. Final disagreement remains `negotiation_status=disputed` and `actor_endorsement=not_requested`. No initial issues means no writer/revisit. Saved-result/source loading rechecks reviewer count, ownership, schema identities, actual candidate, frozen fields, both rounds and exact call order. Comparisons cannot mix old/new protocols. Prompt instructions and structural checks do not establish semantic emotional quality; semantic quality and formal inclusion require independent evidence.

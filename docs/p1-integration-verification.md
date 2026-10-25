@@ -1,5 +1,7 @@
 # P1 Integration Verification Report
 
+> Historical integration evidence dated 2026-10-24. Executed versions, original observations and attribution below are preserved; old outstanding-work statements are not current task assignments. See [current status](README.md) and [pilot index](pilots/README.md).
+
 Current integration note (2026-10-24): PR #48 has merged into main. Historical real-model evidence remains tied to its executed code revision rather than being automatically attributed to later protocols. The separate bounded-negotiation increment uses explicit `actor_self_review_v3`; its offline implementation/evidence is tracked in [the current method](ACTOR_REVIEW_METHOD.md). It does not retag historical paid artifacts or establish human acceptance.
 
 **Project:** MoodCut - DSA4213

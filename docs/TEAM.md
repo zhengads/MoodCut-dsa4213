@@ -1,127 +1,39 @@
-# MoodCut 模块分工与协作
+# MoodCut 团队协作
 
-Current increment (2026-10-24): PR #48 is merged; the new bounded negotiation protocol is explicit `actor_self_review_v3`. Both review conditions share at most two writer/actor-confirmation rounds. Final creative disagreement permits preparation with raw decisions and disputed IDs retained; hard errors still stop. This increment is offline only, preserves historical global/v1/v2 artifacts and keeps #8/#9 open. [Method and acceptance](ACTOR_REVIEW_METHOD.md). Older unmerged/draft references below are historical status snapshots.
+[文档入口与当前状态](README.md) · [分支规则](BRANCHES.md) · [AI 开工模板](usage.md#用-ai-开发一个任务)
 
-项目采用按模块认领、按增量提交的协作方式。P1–P5 是模块分工代号，账号以 GitHub Issue 认领记录为准。成员均可认领、提交、自查和合并自己的任务。
+P1–P5 表示模块责任，不是审批等级或固定人员。以 Issue 中的认领和活动 PR 为准，一项增量由一位成员负责；任务卡不代替实际认领，也不自动授权付费运行或合并。
 
-## 当前状态（2026-10-24）
+## 模块与文件边界
 
-GitHub Pages [视频与台词对比页](https://zhengads.github.io/MoodCut-dsa4213/)已从 PR #48 当前开发分支部署，可在页面直接播放五段原片、切换两次实验和查看六条条件记录。线上字节哈希一致、原片支持分段加载，桌面/手机布局和实际播放已核对。视频只在 Pages 产物与原 Release 存档，不入代码 Git 历史；不生成新视频、不调用付费 API，不把历史 v1 结果改称 v2。部署记录见[视频索引](pilots/anna-elsa-videos.md)，PR 继续不合并，#8/#9保持开放。
+| 模块 | Issue / 任务卡 | 维护内容 |
+| --- | --- | --- |
+| P1 基础与集成 | [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8) · [任务卡](tasks/MC-01-foundation.md) | contracts、client、validation、pipeline、CLI、video_client、公共夹具与 CI |
+| P2 输入与规划 | [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22) · [任务卡](tasks/MC-02-planning.md) | importer、planner、planning 提示词、素材清单与准备 |
+| P3 台词审查 | [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23) · [任务卡](tasks/MC-03-review.md) | reviewer、patches、review 提示词及相应测试 |
+| P4 生成与检查 | [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24) · [任务卡](tasks/MC-04-rendering.md) | video_generation、renderer、video_generated 提示词、video 配置与媒体检查 |
+| P5 评价 | [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9) · [任务卡](tasks/MC-05-evaluation.md) | evaluation、评价测试、实验配置与报告 |
 
-PR #48 新增 `actor_self_review_v2`：未采纳意见退回对应演员，独立确认编剧理由；演员反对或确认缺失/失败则停止视频请求准备，保留候选稿和原始反馈，不自动重写或重试。两种审查一致适用，每位相关演员最多追加一次调用，全块上限13次，预算门禁不变。本次仅离线软件验收，v1真实结果/媒体保留。另已将五段历史原始视频上传同仓库Release，并提供[组员观看及台词对照入口](pilots/anna-elsa-videos.md)；远端哈希与原件一致，不把它们当v2新结果。PR不合并，#8/#9继续开放。
+#22/#23/#24 的工程交付已关闭；维护时检查是否已有新 Issue，不重新认领已交付功能。#8/#9 的后续工作涉及实际来源交接、质量检查与评价。具体状态见 Issue。
 
-新演员结构经独立授权完成[Anna/Elsa真实试跑](pilots/anna-elsa-actor.md)：3次共同规划、通用组2次演员反馈且无意见、情绪组2次演员反馈加1次Gemini统一修订，共8次文本调用。通用组与baseline复用相同请求的真实视频，情绪组单独生成；两段不同HeyGen视频覆盖三条件，总费用$0.50248398与key增量一致，备用金未动用。情绪组保留Elsa一条未采纳意见，编剧理由有角色误指等问题，原样记录供人工验收。新结果与下述离线增量、旧全局审查结果分开记录，旧文件不改；PR #48不合并，#8/#9继续开放。
+公共接口和共享夹具由 P1 维护，其他模块直接复用；公共文件或跨模块修改先与受影响成员协调。代码按功能平铺在 `src/moodcut/`，提示词集中于 `prompts/`，配置集中于 `configs/`，测试使用 `tests/fixtures/`。
 
-PR #48 新增[规划 Agent＋双演员各自审查＋统一修订](ACTOR_REVIEW_METHOD.md)的显式 `actor_self_review_v1` 协议。两种审查均由 DeepSeek 分别给两个演员反馈，再由 Gemini 编剧整合；后两组只改变审查准则，不互相继承修订。保留所有反馈、未采纳理由与无最终演员认可的声明；合法分歧可准备待验收视频。此次仅离线软件回放，零付费调用，没有新视频，不修改下述原始真实结果；#8/#9 保持开放，PR 暂不合并。
+## 工作顺序
 
-已完成[Anna/Elsa真实Agent开发试跑](pilots/anna-elsa-agent.md)：Gemini一次共同规划，两个分支用相同DeepSeek模型分别审查/修改/复查，三份合规实际台词均通过HeyGen生成原生音视频。9次文本请求、3次视频提交，总费用$0.75376126，另$0.10备用金未动用，无付费重试或手写补位。两个审查各保留一个未解决意见，人工质量判断与正式样本/独立评分仍未完成；技术跑通不证明方法效果，#8/#9继续开放。动漫素材来源和未核清的授权范围见素材库说明，后续运行仍须按明确范围和预算授权。
+1. 阅读 AGENTS、相关任务卡、公共契约及模块实现，核对 Issue 和活动 PR。
+2. 复用已有增量和分支；新任务从最新 main 开始，按[分支规则](BRANCHES.md)命名。
+3. 明确文件范围和验收问题，使用已有客户端、验证器、编排及评价工具。
+4. 运行相关离线检查，审阅 diff 和实际产物；报告失败、未验证项和费用未知状态。
+5. 每个可验收增量走 PR，自查结论、测试和遗留项写入描述。验收及所需检查通过后，按已有授权合并。
 
-## 此前状态（2026-10-23）
+作者可以自行评审，无需固定评审人；自查记录不等于 GitHub Approve。保留 `.gitmessage` 的姓名与日期格式，不直接 push main，不强推共享分支。同步已推送分支优先 merge，保留共同历史。
 
-已有静态 animatic 五模块、生成视频开发对适配器，以及1.1三条件共同规划、台词审查、请求编译、本地媒体检查与离线资格报告；盲评导出/评分接线已实现（6.15）；真实任务仍未完成。真实文本开发样例已跑过，通用审查遇到重复 edit 被拒绝；一次 Wan 视频提交失败，没有可验收成片。Seedance 仅离线适配。正式故事、样本规模、评价者分配和真实主观评分均未冻结/完成。
+团队日常进度在 Issue 更新已交付项、下一步和阻塞；原约定为每天北京时间 21:00 前更新。阻塞超过半天时附报错、最小复现和尝试过的方案，协调接手。旧课程里程碑见[历史计划](history/README.md)，不作为新的执行授权。
 
-当前工作只做离线工程增量。已有 15 美元共享额度不等于新调用授权；不发起付费 API、重试或正式跑数。真实质量验收需另行确认规模与预算。
+## 对照与费用
 
-生成状态细分汇总见CONTRACTS 6.16。P5在现有总体/分条件结果加入运行/镜头状态轴，保留失败、中断、未提交、未知和原账目；P1以现有装配器/CLI回归配合，无需重复实现状态机。三条件任务执行接线见6.17，模拟回执/现有软件视频验收；#9的待批准试跑提议见evaluation.md，真实试跑及正式人工验收仍未完成。
+三条件共享故事、素材、初稿、场景/动作/镜头和生成设置；生成式审查只能改台词。两组使用相同的模型分工、轮数上限和修改权限，协议差异以[演员方法](ACTOR_REVIEW_METHOD.md)为准，不把旧全局审查的一轮限制套到 v3。
 
-## 当前五人任务
+默认 mock/offline。团队原共享额度为 $15，历史额度不等于可用余额或新调用授权。真实请求需明确模型、规模和预算；未知费用保留 null，规划和合法请求复用不重复计费，失败不静默剔除。
 
-| 模块 | 当前 Issue | 本轮交付 | 任务卡 |
-|---|---|---|---|
-| MC-01 / P1 | [#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8) | 先发布生成模式/共享哈希/记录契约，修复 unchanged，接通三条件与单镜头入口 | [基础](tasks/MC-01-foundation.md) |
-| MC-02 / P2 | [#22](https://github.com/zhengads/MoodCut-dsa4213/issues/22) | 一次规划共同场景/动作/镜头/短片时长和初始台词，去除读信特判 | [规划](tasks/MC-02-planning.md) |
-| MC-03 / P3 | [#23](https://github.com/zhengads/MoodCut-dsa4213/issues/23) | 源头限制只改台词，汇集同镜头意见，复查实际最终脚本 | [修订](tasks/MC-03-review.md) |
-| MC-04 / P4 | [#24](https://github.com/zhengads/MoodCut-dsa4213/issues/24) | 消费共同规划构造请求，保留真实音视频拼接，提供本地检查材料 | [视频](tasks/MC-04-rendering.md) |
-| MC-05 / P5 | [#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9) | 生成记录接入既有三条件盲评/统计，核对比较资格，整理待确认协议 | [评估](tasks/MC-05-evaluation.md) |
-
-每张 Issue 均有已完成项、具体待办、修改范围、依赖和离线验收。一个人认领一项；保留已有认领/贡献记录，待领取的任务不预填账号。MC 编号不是 GitHub Issue 号，旧空白 #12 已删除，审查工作以 #23 为准。
-
-### 交付顺序与文件边界
-
-公共协议和软件夹具见 [CONTRACTS第6节](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。公共身份纯函数、验证器、脚本编排、离线CLI及P2/P3/P4规划/审查/请求编译/本地检查材料已实现；离线资格报告已实现（6.14）；盲评导出/评分接线已实现（6.15）；任务执行接线见6.17（模拟回执验收）；真实试跑仍待批准和验收。依赖PR合入后同步main，用公共实现联调，不复制哈希/白名单/validator/入口；不要重复实现已有P5检查。
-
-pipeline已接生成脚本编排和共享哈希记录，准确参数及产物见CONTRACTS 6.7。原协议替身测试保留，实际P2/P3/P4加FakeClient的离线请求联调见6.12；P5离线资格报告见6.14；盲评导出/评分接线见6.15；任务执行接线见6.17，真实视频试跑仍待批准和验收。脚本prepared不等于视频完成，各成员继续所属文件，不重复实现公共编排。
-
-P2/P3生成式规划及台词限定审查已实现，见CONTRACTS 6.10/6.11；实际planner/reviewer加FakeClient可在既有pipeline保存三条件prepared脚本，核对共同初稿/非台词身份、实际复查与独立调用账目。P4通用编译器已实现（6.12），消费共同scene_direction和shots[].direction/时长/素材，不沿用读信手写配方。已有本地片段检查材料/成片来源绑定见6.13；请求准备不等于成片，软件媒体检查不等于模型质量验收。
-
-P1离线生成入口及单镜头边界已接实际P4编译器，见CONTRACTS 6.8/6.12；缺依赖故障仍明确失败，不用旧开发对或生产fake替代。规划前冻结get_video_template_sha256()，共同模板变化时不改写旧block冒充新输入。其余模块不重复写入口，离线准备不创建视频任务或调用付费API。
-
-本地回执/费用记录装配见CONTRACTS 6.9，复用P1的assemble_generated_records，不另建账目框架。#24提供已有拼接结果及片段/成片哈希绑定，#9做资格复核；旧回执GET缺失为null，报价不当消费，completed只证明所选范围的文件检查通过。实际模块的离线接线与资格报告已实现；盲评导出/评分接线见6.15，必须重新核对来源与实际导出字节；真实任务仍未完成。
-
-本地观看检查入口为scripts/inspect_generated_video.py及P4 inspect_generated_video（6.13），复用P1预检/最终重检、原拼接器和接触表布局。观看页/ffprobe/实际抽帧及空CSV/JSON检查表已提供，明确声明synthetic/provided_local，主观判断不自动填写。最终记录仍不设eligible；preflight与records是同一历史的两个快照，只使用最终records账目，不能重复累加。#22的P4消费联调已随PR #34合入，工程任务已关闭。
-
-1. P1 先交一个接口小 PR，发布显式模式、共享非台词哈希、生成记录/审查字段接口。P2/P3/P4/P5 可以同时读源码、准备回归用例和软件夹具；待契约合入再接实现。
-2. P2 维护 planner/importer 与 planning_*.txt；P3 维护 reviewer/patches 与 review_*.txt；P4 维护 video_generation/媒体检查与 configs/video.json；P5 维护 evaluation 和评估配置/文档。公共 validator、CLI、pipeline、video_client 和 scripts/generate_video.py 归 P1。共享文件改动先在 Issue 协调。
-3. P2 的共同计划分别交 P3 和 P4；P1 接通全部三条件并提供 P5 所需记录。P5 不必等待真实视频，可先用标明来源的软件记录验收适配。
-4. 每个可验收增量一个 PR，Issue 日常更新已交付、PR、下一步和阻塞。先提交 PR，不因任务卡写有合并流程就自动获得合并授权。作者可自查，不要求指定评审人。
-
-### 保证对照可解释
-
-共同场景、动作、表情/肢体要求、镜头、时长、人物参考和声音要求只产生一次；拆成三条件后仅 dialogue 允许变化。P1 强制校验，P2 只做共同规划，P3 只改台词，P4 不为单组增强表演，P5 在导出比较材料前核对共享输入。详细待实现约束见 [CONTRACTS 第6节](CONTRACTS.md#6-下一阶段生成式比较约束待实现)。
-
-这些是下一阶段验收要求，当前代码尚未全链路强制实现。固定 seed 也不能保证修改台词后画面/表情/语音相同；对照只能检验共同设置下的端到端审查效果，不能独立证明动作规划或更多 Agent 的贡献。新增消融条件须另外确认，不能在各模块实现时自行加入。
-
-## 项目目标与边界
-
-研究问题：在相同故事、目标情绪与可用素材下，具体到镜头的情绪反馈和受约束修改，能否比通用审查更准确地传达目标氛围，同时保持剧情和自然度？提升是待检验假设。
-
-现有 animatic 支持 affectionate、suspicious、hostile 三类目标氛围；两个角色、最多六个镜头、60–90 秒。生成式开发示例采用三个 6 秒镜头、前后各 18 秒，不修改原计划或正式实验设置。先检查一个故事的真实成片、声音、台词差异和费用，再决定实验规模。
-
-原 animatic 使用固定图片、字幕、叙述、裁切和停留时长，不能声称其中已生成新动作。生成式输出使用人物图作参考，模型产生新场景、动作和原生声音，需检查实际结果；不包含模型训练、Unity 环境或语音克隆。开发样例必须标注自制或改编来源，不能当作独立盲测证据。
-
-## 复用与自研
-
-| 内容 | 使用方式 |
-|---|---|
-| MovieAgent 梗概和角色输入 | 导入并记录来源；选取少量素材，生成本项目 manifest |
-| MovieAgent 规划流程与提示结构 | 编写符合公共契约的独立文本适配器 |
-| FilmAgent CCV | 参考审查—修订—复查流程，最多一轮 |
-| 公共客户端、结构验证与流程编排 | 自己实现，所有模块使用同一接口 |
-| 情绪反馈、局部补丁、固定素材渲染与评估 | 自己实现并保存可核验的输入输出 |
-
-详细阅读顺序见 [REFERENCES.md](REFERENCES.md)，复用边界见 [upstream-reuse.md](upstream-reuse.md)。规划基线命名为 MovieAgent-inspired planning baseline，不作为原论文完整复现，也不直接比较原论文的视频分数。
-
-## 维护与后续增量
-
-1. 先运行 README 的离线 smoke；需要视频时配置 FFmpeg/字体，再运行 run --mock。
-2. 读取任务卡的“当前交付”与实际实现，Issue 只认领尚未完成的改动；不重新实现已有模块。
-3. 适合并行推进的后续工作：输入故事与素材确认、审查案例检查、视频可读性检查、评价安排与报告、公共集成维护。具体交付以顶部五张 Issue 的未勾选清单为准。
-4. 公共接口变化或实际 bug 用最小可验收 PR 交付；真实 API 和正式实验按模型、规模、预算确认后执行。
-5. 每次 PR 合并后从最新 main 开始下一个增量；未完成的主观评价与真实运行不随工具交付自动关闭。
-
-跨模块或公共接口变更先在 Issue 中与受影响成员协调，范围较大时单独提交接口 PR。代码按功能平铺在 src/moodcut，提示词集中在 src/moodcut/prompts，配置在 configs，测试文件平铺在 tests，共享测试数据放在 tests/fixtures。任务卡按具体文件划分所有权，不独占整个代码或提示词目录。具体签名和路径以 [CONTRACTS.md](CONTRACTS.md) 及任务卡为准。
-
-## PR 自查与合并
-
-任务分支采用 `<type>/issue-<实际GitHub编号>-<英文内容>`，不含工具或成员名。五项任务的建议分支、旧分支归档映射和本地同步方法见 [BRANCHES.md](BRANCHES.md)。归档分支不继续开发，新任务从最新 main 开始；已有同一增量的活动分支/PR 则继续使用。
-
-- 当天提交有实际增量的 Draft PR，24–48 小时交付一个可验收增量；每天 21:00 前更新 Issue 的已交付/PR、下一步和阻塞。
-- 评审可以由作者自行完成，也可以邀请同伴或让 AI 辅助。无需指定固定评审人。
-- 自查当前 diff、任务范围、公共接口、测试结果、示例产物和敏感文件；把结论与遗留问题写进 PR 描述。
-- 验收和所需检查通过、阻塞问题解决后，作者可按仓库规则 squash merge。修改代码后重新检查受影响部分，不沿用旧结论。
-- 自查不等于给自己的 PR 点 Approve；GitHub 不支持作者批准自己的 PR。使用 PR 描述记录评审过程即可。
-- 保留姓名/日期提交格式；不直接 push main、不强推共享分支。同步已推送分支时优先 merge origin/main，避免改写共同历史。
-- 阻塞超过半天，提交报错、最小复现和已尝试方案；成员在 Issue 协商接手。
-
-## 建议里程碑
-
-日期与每日沟通时间采用北京时间，正式课程截止时间由团队核实。
-
-| 日期 | 交付 |
-|---|---|
-| 10/14 | 公共契约、骨架、夹具与离线 CI |
-| 10/15–10/17 | 各模块第一轮 PR；一个样例产生初稿、修订版与 animatic |
-| 10/18–10/20 | 确认费用后的真实 pilot；检查修改是否实际影响成片 |
-| 10/21 | 根据成本和评价能力确定正式规模、模型与评分规则，冻结配置 |
-| 10/22–10/26 | 运行已确认的对照与人工评价，保留失败和全部分母 |
-| 10/27–10/30 | 报告、演示、成功与失败案例、交付检查 |
-
-## 实验与预算
-
-默认 mock/offline。15 美元是团队共享总额度。真实请求须明确本次规模、模型、价格和费用上限；并行跑数前划分额度，费用集中记录。费用未知记 null/unknown，不能记为零。普通 CI 不注入 API key，不运行模型或下载权重。
-
-baseline、generic_review、moodcut 共享 scene/tone/replicate 初稿和素材。两个审查条件使用相同模型、最大轮数、调用槽位、token 上限和修改字段，仅审查准则不同。最多一次 critique→revise→verify；如实报告提前退出及实际调用差异，不因某组失败额外补跑。
-
-该对照测试情绪专项反馈相对通用审查的价值，不能单独证明更多 Agent 更好，也不能证明局部补丁优于整篇重写。
-
-人工评价主要看目标 tone 是否被识别，并单列自然度、剧情清楚程度和过度表达。隐藏方法名和目标 tone，映射表单独保存。Agent 自评分不作为最终结果；开发样例、mock 与正式实验分别标注。样本规模由团队结合 pilot 成本和人工能力确认，失败和缺失不静默移除。
+固定 seed 不保证不同台词生成相同画面。Agent 自评、软件验收、实际媒体完成与独立人工评分分别记录；新实验条件、正式样本和评价规则须另行确认。

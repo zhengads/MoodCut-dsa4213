@@ -3,6 +3,88 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "s01-v4",
+      "title": "安娜与克里斯托夫：久别重逢",
+      "intro": "通用审查保留初稿；MoodCut 调整承诺范围，并完成修改后回访。",
+      "scene_location": "白天，安静的门厅",
+      "tone_label": "亲密、陪伴",
+      "speaker_names": {
+        "frozenii_anna": "安娜",
+        "frozenii_kristoff": "克里斯托夫"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，FrozenII 安娜／克里斯托夫 best.png。保留原权利声明。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s01-v4-20261025/SOURCE.md",
+      "protocol": "actor_self_review_v4",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v2",
+      "cost": "0.504356",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/main/docs/pilots/s01-v4-text-video.md",
+      "duration": "请求 5 秒；原片约 5.26 秒",
+      "run_date": "2026-10-25",
+      "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s01-v4-20261025",
+      "model_label": "Gemini 编剧／DeepSeek 审查；HeyGen 768p",
+      "description": "显式 v4 开发试跑：通用组使用 1 个全局审查 Agent，MoodCut 使用 2 个独立 Actor。两组共用初稿与非台词输入。",
+      "observations": [
+        "通用审查未报告问题，保留“我也是，我会一直陪着你。”；未提交候选稿，因此没有修改或回访。",
+        "MoodCut 的克里斯托夫 Actor 认为“一直”可能超出当前陪伴情景的承诺范围。编剧采纳示例句“我也很想你，现在哪儿也不去了。”，安娜台词未变。",
+        "修改后两位 Actor 均回访：安娜未提出新增问题，克里斯托夫将原意见标为已解决；没有触发第二轮，也没有独立质量评分。",
+        "三个条件入口只对应两段独立生成视频。通用审查复用 baseline，不能当作另一段独立样本。文本 $0.004356＋新增视频 $0.50＝$0.504356。",
+        "固定 seed 未锁定手势和背景细节；请求台词不等于已核实的语音转录，单例不能证明 MoodCut 整体更好。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "真实出片，待听看验收",
+          "video": "media/s01-v4-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "frozenii_anna",
+              "text": "我真的好想你啊。"
+            },
+            {
+              "character_id": "frozenii_kristoff",
+              "text": "我也是，我会一直陪着你。"
+            }
+          ],
+          "note": "未经审查的共同初稿。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用审查",
+          "status": "复用 baseline 原片",
+          "video": "media/s01-v4-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "frozenii_anna",
+              "text": "我真的好想你啊。"
+            },
+            {
+              "character_id": "frozenii_kristoff",
+              "text": "我也是，我会一直陪着你。"
+            }
+          ],
+          "note": "1 个全局审查 Agent 未报告问题；台词及请求与 baseline 相同，复用同一原片。"
+        },
+        {
+          "id": "moodcut",
+          "label": "MoodCut",
+          "status": "真实出片，待听看验收",
+          "video": "media/s01-v4-moodcut.mp4",
+          "dialogue": [
+            {
+              "character_id": "frozenii_anna",
+              "text": "我真的好想你啊。"
+            },
+            {
+              "character_id": "frozenii_kristoff",
+              "text": "我也很想你，现在哪儿也不去了。"
+            }
+          ],
+          "note": "克里斯托夫 Actor 提出承诺范围问题；编剧采纳建议后，两位 Actor 均回访，原意见标为 resolved。"
+        }
+      ]
+    },
+    {
       "id": "s06-index",
       "title": "李靖与太乙：这次谁来收尾",
       "intro": "演员引用约束修复后，原 S06 三条件真实出片；直接听看台词修改的效果。",
@@ -19,7 +101,7 @@
       "cost": "0.75421676",
       "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-index.md",
       "duration": "请求 5 秒；三段原片均约 5.26 秒",
-      "description": "本次复跑原 S06 收尾分工故事。三段真实视频均已生成；JSON、演员台词归属和修订校验通过，原始失败记录仍保留在历史页签。",
+      "description": "本次复跑原 S06 收尾分工故事。三段真实视频均已生成；JSON、演员台词归属和修订校验通过，原始失败记录仍保留在仓库历史记录。",
       "observations": [
         "实际 9 次文本请求、3 次视频提交，三段均为本次独立生成的原片；没有重试、换模型、手写台词或替演员改索引。",
         "两组各有 4 条演员意见，编剧第一轮均申报全部处理；未触发退回确认和第二轮协商，不能把编剧申报当作演员最终认可。",
@@ -592,5 +674,6 @@
         }
       ]
     }
-  ]
+  ],
+  "gallery_policy": "completed_video_cases_only; original failed records retained"
 }

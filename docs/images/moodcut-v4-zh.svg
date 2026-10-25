@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960" role="img" aria-labelledby="title desc">
+  <title id="title">MoodCut v4: Baseline, generic review and emotion-oriented Actor review</title>
+  <desc id="desc">An Agent generates one shared initial script from story, characters and target emotion. Baseline retains the draft. Generic review uses one global reviewer, and MoodCut uses two character Actors. Opposing arrow pairs carry reviewer feedback downward and candidate dialogue upward for revisits.</desc>
+  <defs>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155" />
+    </marker>
+    <marker id="arrow-base" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#356785" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7451a3" />
+    </marker>
+  </defs>
+  <rect width="1440" height="960" fill="white" />
+  <g font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif" fill="#202936">
+    <rect x="40" y="260" width="330" height="510" rx="15" fill="#fafbfc" stroke="#64748b" stroke-width="1.8" />
+    <text x="205.0" y="307" text-anchor="middle" font-size="30" font-weight="650" fill="#64748b">(a) Baseline</text>
+    <rect x="390" y="260" width="400" height="510" rx="15" fill="#f5f9fc" stroke="#356785" stroke-width="1.8" />
+    <text x="590.0" y="307" text-anchor="middle" font-size="30" font-weight="650" fill="#356785">(b) 通用审查</text>
+    <rect x="810" y="260" width="590" height="510" rx="15" fill="#faf7fd" stroke="#7451a3" stroke-width="1.8" />
+    <text x="1105.0" y="300" text-anchor="middle" font-size="30" font-weight="650" fill="#7451a3">(c) MoodCut</text>
+    <path d="M720 195 V230 H205 V260" fill="none" stroke="#64748b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-base)" />
+    <path d="M720 230 H590 V260" fill="none" stroke="#356785" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+    <path d="M720 230 H1105 V260" fill="none" stroke="#7451a3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-purple)" />
+    <text x="1105" y="340" text-anchor="middle" font-size="24" font-weight="600" fill="#7451a3">意图 · 潜台词 · 情绪偏差</text>
+    <rect x="85" y="350" width="240" height="90" rx="10" fill="white" stroke="#64748b" stroke-width="2.2" />
+    <text x="205.0" y="404" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">不审查</text>
+    <rect x="430" y="350" width="300" height="90" rx="10" fill="white" stroke="#356785" stroke-width="2.2" />
+    <text x="580.0" y="404" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">全局审查 Agent</text>
+    <rect x="850" y="350" width="230" height="90" rx="10" fill="white" stroke="#7451a3" stroke-width="2.2" />
+    <text x="965.0" y="404" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">Actor A</text>
+    <rect x="1130" y="350" width="230" height="90" rx="10" fill="white" stroke="#7451a3" stroke-width="2.2" />
+    <text x="1245.0" y="404" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">Actor B</text>
+    <rect x="440" y="520" width="280" height="90" rx="10" fill="white" stroke="#356785" stroke-width="2.2" />
+    <text x="580.0" y="574" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">编剧 Agent</text>
+    <rect x="900" y="520" width="410" height="90" rx="10" fill="white" stroke="#7451a3" stroke-width="2.2" />
+    <text x="1105.0" y="574" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">编剧 Agent</text>
+    <rect x="85" y="690" width="240" height="62" rx="10" fill="white" stroke="#64748b" stroke-width="2.2" />
+    <text x="205.0" y="730.0" text-anchor="middle" font-size="26" font-weight="600" fill="#202936">初稿台词</text>
+    <rect x="460" y="690" width="240" height="62" rx="10" fill="white" stroke="#356785" stroke-width="2.2" />
+    <text x="580.0" y="730.0" text-anchor="middle" font-size="26" font-weight="600" fill="#202936">最终台词</text>
+    <rect x="985" y="690" width="240" height="62" rx="10" fill="white" stroke="#7451a3" stroke-width="2.2" />
+    <text x="1105.0" y="730.0" text-anchor="middle" font-size="26" font-weight="600" fill="#202936">最终台词</text>
+    <path d="M205 440 V690" fill="none" stroke="#64748b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-base)" />
+    <path d="M580 610 V690" fill="none" stroke="#356785" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+    <path d="M1105 610 V690" fill="none" stroke="#7451a3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-purple)" />
+    <rect x="430" y="865" width="580" height="70" rx="10" fill="white" stroke="#334155" stroke-width="2.2" />
+    <text x="720.0" y="909" text-anchor="middle" font-size="28" font-weight="600" fill="#202936">共用视频生成器</text>
+    <path d="M205 752 V815 H630 V865" fill="none" stroke="#64748b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-base)" />
+    <path d="M580 752 V795 H720 V865" fill="none" stroke="#356785" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)" />
+    <path d="M1105 752 V815 H810 V865" fill="none" stroke="#7451a3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-purple)" />
+    <text x="720" y="28" text-anchor="middle" font-size="24" font-weight="400">故事 · 角色 · 目标情绪</text>
+    <rect x="480" y="50" width="480" height="55" rx="10" fill="white" stroke="#334155" stroke-width="2.2" />
+    <text x="720" y="86" text-anchor="middle" font-size="28" font-weight="600">共同规划 Agent</text>
+    <path d="M720 105 V140" fill="none" stroke="#334155" stroke-width="2.6" marker-end="url(#arrow-ink)" />
+    <rect x="570" y="140" width="300" height="55" rx="10" fill="white" stroke="#334155" stroke-width="2.2" />
+    <text x="720" y="176" text-anchor="middle" font-size="26" font-weight="600">共同初稿</text>
+    <path d="M570 440 V520" fill="none" stroke="#356785" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-blue)" />
+    <path d="M590 520 V440" fill="none" stroke="#356785" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-blue)" />
+    <text x="540" y="488" text-anchor="end" font-size="20" font-weight="400" fill="#356785">意见</text>
+    <text x="620" y="488" text-anchor="start" font-size="20" font-weight="400" fill="#356785">回访</text>
+    <path d="M955 440 V520" fill="none" stroke="#7451a3" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-purple)" />
+    <path d="M975 520 V440" fill="none" stroke="#7451a3" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-purple)" />
+    <text x="930" y="488" text-anchor="end" font-size="20" font-weight="400" fill="#7451a3">意见</text>
+    <text x="1000" y="488" text-anchor="start" font-size="20" font-weight="400" fill="#7451a3">回访</text>
+    <path d="M1235 440 V520" fill="none" stroke="#7451a3" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-purple)" />
+    <path d="M1255 520 V440" fill="none" stroke="#7451a3" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-purple)" />
+    <text x="1210" y="488" text-anchor="end" font-size="20" font-weight="400" fill="#7451a3">意见</text>
+    <text x="1280" y="488" text-anchor="start" font-size="20" font-weight="400" fill="#7451a3">回访</text>
+  </g>
+</svg>
