@@ -1,0 +1,556 @@
+{
+ "kind": "vemoclap_atmosphere_mapping_results",
+ "rule_version": "v2",
+ "date": "2026-10-25",
+ "formal_inclusion_approved": false,
+ "device": "cpu",
+ "note": "Diagnostic only. Probabilities are VEMOCLAP softmax outputs on local CPU; no human ratings.",
+ "records": [
+  {
+   "group": "s06_15s_three",
+   "id": "s06_15s_three/baseline",
+   "condition": "baseline",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "cfacfecab0c89438dabb9a28e2d2bbd1bad6da9a070c0ea4430b3be3a4a42ff2",
+   "probabilities": {
+    "anger": 0.67246,
+    "disgust": 0.248874,
+    "fear": 0.004465,
+    "joy": 0.000353,
+    "sadness": 0.048436,
+    "surprise": 0.025412
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s06_15s_7dialogue",
+   "id": "s06_15s_7dialogue/baseline",
+   "condition": "baseline",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "af1a880c4a191f8e82d8105c07a541345b46e1e749f8b4720f5d6df442f25b6e",
+   "probabilities": {
+    "anger": 0.990292,
+    "disgust": 0.00515,
+    "fear": 5.8e-05,
+    "joy": 2.5e-05,
+    "sadness": 0.001319,
+    "surprise": 0.003155
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s06_15s_three",
+   "id": "s06_15s_three/generic_review",
+   "condition": "generic_review",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "04a8301fba3cd2b86a6b09e1ceeb33b274ebc3a5f3844ebaeeb34bde0e048136",
+   "probabilities": {
+    "anger": 0.00962,
+    "disgust": 0.015373,
+    "fear": 0.000184,
+    "joy": 0.010436,
+    "sadness": 0.963902,
+    "surprise": 0.000485
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s06_15s_7dialogue",
+   "id": "s06_15s_7dialogue/generic_review",
+   "condition": "generic_review",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "f13fbb3686c3390e5dd4525d4038ca669ae8aac623c55ee902d1e4a80fbb3784",
+   "probabilities": {
+    "anger": 0.965159,
+    "disgust": 0.014475,
+    "fear": 4.5e-05,
+    "joy": 0.000206,
+    "sadness": 0.006141,
+    "surprise": 0.013975
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s06_15s_three",
+   "id": "s06_15s_three/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "68868f3ff0d9bea2d66169d2f751f7a20c32c8fc62f92b25a16afc0623f48eee",
+   "probabilities": {
+    "anger": 0.085043,
+    "disgust": 0.550194,
+    "fear": 0.025738,
+    "joy": 0.001806,
+    "sadness": 0.321367,
+    "surprise": 0.015853
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s06_15s_7dialogue",
+   "id": "s06_15s_7dialogue/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "hostile",
+   "intended_note": "assumed hostile: Li Jing and Taiyi pair of story S06 (page tone: hostile/confrontation); the video set itself carries no label",
+   "video_sha256": "c1f64d280ad50af8cb11bf95d1aed4ee09b140708b25f46b38b4f3ff3e0ef00f",
+   "probabilities": {
+    "anger": 0.855834,
+    "disgust": 0.089975,
+    "fear": 0.000413,
+    "joy": 0.000402,
+    "sadness": 0.003832,
+    "surprise": 0.049544
+   },
+   "missing_features": []
+  },
+  {
+   "group": "s01_v4",
+   "id": "s01_v4/baseline_and_generic_review",
+   "condition": "baseline_and_generic_review",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "page tone: intimate/companionship (affectionate); baseline and generic_review share one file",
+   "video_sha256": "89f162dbb7322563ce61c9c557d0a53019d1e3110fa16fb05372e7f9f6700ca5",
+   "probabilities": {
+    "anger": 0.010904,
+    "disgust": 0.008537,
+    "fear": 0.004989,
+    "joy": 0.004976,
+    "sadness": 0.133875,
+    "surprise": 0.836719
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ]
+  },
+  {
+   "group": "s01_v4",
+   "id": "s01_v4/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "page tone: intimate/companionship (affectionate)",
+   "video_sha256": "cbb84f73528027eb8b13a6b07eb146b24c3046a25670be0c0d53336ed820c19d",
+   "probabilities": {
+    "anger": 0.022339,
+    "disgust": 0.023201,
+    "fear": 0.003635,
+    "joy": 0.014447,
+    "sadness": 0.48527,
+    "surprise": 0.451108
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ]
+  },
+  {
+   "group": "anna_elsa_v3_captured",
+   "id": "anna_elsa_v3_captured/baseline",
+   "condition": "baseline",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "assumed affectionate: umbrella-return pilot of Anna and Elsa; the page data carries no tone label",
+   "video_sha256": "c4c527b7a9f8bfd3ab7e0cec41bf077d980226d4e147a55d65979a6ed734050c",
+   "probabilities": {
+    "anger": 0.061956,
+    "disgust": 0.008365,
+    "fear": 0.02564,
+    "joy": 0.003571,
+    "sadness": 0.196662,
+    "surprise": 0.703807
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ]
+  },
+  {
+   "group": "anna_elsa_v3_captured",
+   "id": "anna_elsa_v3_captured/generic_review",
+   "condition": "generic_review",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "assumed affectionate: umbrella-return pilot of Anna and Elsa; the page data carries no tone label",
+   "video_sha256": "dba7f08313592ba258f820eb78c6f01d2dd16620e8c05c5c2cedcaba545fcff8",
+   "probabilities": {
+    "anger": 0.012206,
+    "disgust": 0.002274,
+    "fear": 0.004424,
+    "joy": 0.0004,
+    "sadness": 0.015978,
+    "surprise": 0.964718
+   },
+   "missing_features": []
+  },
+  {
+   "group": "anna_elsa_v3_captured",
+   "id": "anna_elsa_v3_captured/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "assumed affectionate: umbrella-return pilot of Anna and Elsa; the page data carries no tone label",
+   "video_sha256": "0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7",
+   "probabilities": {
+    "anger": 0.043397,
+    "disgust": 0.005612,
+    "fear": 0.00744,
+    "joy": 0.000687,
+    "sadness": 0.063568,
+    "surprise": 0.879297
+   },
+   "missing_features": []
+  },
+  {
+   "group": "anna_elsa_actor_v1",
+   "id": "anna_elsa_actor_v1/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "assumed affectionate: umbrella-return pilot of Anna and Elsa; the page data carries no tone label",
+   "video_sha256": "cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8",
+   "probabilities": {
+    "anger": 0.018852,
+    "disgust": 0.002847,
+    "fear": 0.005583,
+    "joy": 0.000115,
+    "sadness": 0.011597,
+    "surprise": 0.961006
+   },
+   "missing_features": []
+  },
+  {
+   "group": "film_calibration",
+   "id": "A2",
+   "condition": "n/a",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.003904,
+    "disgust": 3e-06,
+    "fear": 0.00125,
+    "joy": 2.7e-05,
+    "sadness": 0.994779,
+    "surprise": 3.8e-05
+   },
+   "missing_features": [],
+   "source": "Charade (1963)",
+   "excerpt_range": "4500-4540 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_calibration",
+   "id": "A3",
+   "condition": "n/a",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.010495,
+    "disgust": 0.000254,
+    "fear": 0.56471,
+    "joy": 0.000148,
+    "sadness": 0.424161,
+    "surprise": 0.000231
+   },
+   "missing_features": [],
+   "source": "Charade (1963)",
+   "excerpt_range": "3590-3620 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_calibration",
+   "id": "T1",
+   "condition": "n/a",
+   "intended_atmosphere": "tense",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.140809,
+    "disgust": 3.1e-05,
+    "fear": 0.78497,
+    "joy": 1.5e-05,
+    "sadness": 0.005104,
+    "surprise": 0.069071
+   },
+   "missing_features": [],
+   "source": "Night of the Living Dead (1968)",
+   "excerpt_range": "1250-1290 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_calibration",
+   "id": "T2",
+   "condition": "n/a",
+   "intended_atmosphere": "tense",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.003339,
+    "disgust": 4e-06,
+    "fear": 0.996041,
+    "joy": 7e-06,
+    "sadness": 0.000236,
+    "surprise": 0.000373
+   },
+   "missing_features": [],
+   "source": "Night of the Living Dead (1968)",
+   "excerpt_range": "870-905 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_calibration",
+   "id": "H1",
+   "condition": "n/a",
+   "intended_atmosphere": "hostile",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.889713,
+    "disgust": 4.7e-05,
+    "fear": 0.107307,
+    "joy": 0.000149,
+    "sadness": 0.000528,
+    "surprise": 0.002256
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ],
+   "source": "His Girl Friday (1940)",
+   "excerpt_range": "600-630 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_calibration",
+   "id": "H2",
+   "condition": "n/a",
+   "intended_atmosphere": "hostile",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.687695,
+    "disgust": 0.000148,
+    "fear": 0.309769,
+    "joy": 0.000832,
+    "sadness": 0.001554,
+    "surprise": 1e-06
+   },
+   "missing_features": [],
+   "source": "Night of the Living Dead (1968)",
+   "excerpt_range": "2825-2848 s",
+   "role": "calibration"
+  },
+  {
+   "group": "film_validation",
+   "id": "FA1",
+   "condition": "n/a",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.089988,
+    "disgust": 0.025959,
+    "fear": 0.714047,
+    "joy": 0.02032,
+    "sadness": 0.127765,
+    "surprise": 0.021921
+   },
+   "missing_features": [],
+   "source": "Charade (1963)",
+   "excerpt_range": "5003-5035 s",
+   "role": "validation"
+  },
+  {
+   "group": "film_validation",
+   "id": "FA2",
+   "condition": "n/a",
+   "intended_atmosphere": "affectionate",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.328845,
+    "disgust": 0.000106,
+    "fear": 0.597171,
+    "joy": 0.061453,
+    "sadness": 0.002531,
+    "surprise": 0.009894
+   },
+   "missing_features": [],
+   "source": "Charade (1963)",
+   "excerpt_range": "6715-6755 s",
+   "role": "validation"
+  },
+  {
+   "group": "film_validation",
+   "id": "FH1",
+   "condition": "n/a",
+   "intended_atmosphere": "hostile",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.070019,
+    "disgust": 0.000389,
+    "fear": 0.871664,
+    "joy": 0.017619,
+    "sadness": 0.040272,
+    "surprise": 3.7e-05
+   },
+   "missing_features": [],
+   "source": "Night of the Living Dead (1968)",
+   "excerpt_range": "2545-2590 s",
+   "role": "validation"
+  },
+  {
+   "group": "film_validation",
+   "id": "FH2",
+   "condition": "n/a",
+   "intended_atmosphere": "hostile",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.990238,
+    "disgust": 0.000316,
+    "fear": 0.000254,
+    "joy": 0.000606,
+    "sadness": 0.006427,
+    "surprise": 0.002158
+   },
+   "missing_features": [],
+   "source": "Tears of Steel (2012, CC-BY)",
+   "excerpt_range": "22.8-41.5 s",
+   "role": "validation"
+  },
+  {
+   "group": "film_validation",
+   "id": "FT1",
+   "condition": "n/a",
+   "intended_atmosphere": "tense",
+   "intended_note": "public-domain-marked film excerpt (uploader's mark on archive.org, not verified); not a project video; excerpt not committed",
+   "video_sha256": null,
+   "probabilities": {
+    "anger": 0.210245,
+    "disgust": 0.000209,
+    "fear": 0.786252,
+    "joy": 0.002109,
+    "sadness": 0.001147,
+    "surprise": 3.9e-05
+   },
+   "missing_features": [],
+   "source": "Night of the Living Dead (1968)",
+   "excerpt_range": "2625-2663 s",
+   "role": "validation"
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/anger",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled anger; emotion label, not an atmosphere",
+   "official_label": "anger",
+   "video_sha256": "3ac7ea8a94dddba46b2a5ebabfc319dd8bb1f5c55788bb8903f49ebb5402a269",
+   "probabilities": {
+    "anger": 0.292644,
+    "disgust": 0.000189,
+    "fear": 0.000505,
+    "joy": 0.047946,
+    "sadness": 0.000166,
+    "surprise": 0.658551
+   },
+   "missing_features": []
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/disgust",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled disgust; emotion label, not an atmosphere",
+   "official_label": "disgust",
+   "video_sha256": "96499354694086c5fea6937842f0bda997e49d3fa8df3c009416c2b2d130103a",
+   "probabilities": {
+    "anger": 0.0,
+    "disgust": 0.999998,
+    "fear": 1e-06,
+    "joy": 0.0,
+    "sadness": 0.0,
+    "surprise": 0.0
+   },
+   "missing_features": [
+    "face_emotion"
+   ]
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/fear",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled fear; emotion label, not an atmosphere",
+   "official_label": "fear",
+   "video_sha256": "b08b47898c0df148cad4d130ad76d9bfc14ab1b315aac04a487a26948a4d5a40",
+   "probabilities": {
+    "anger": 2.4e-05,
+    "disgust": 6.4e-05,
+    "fear": 0.999911,
+    "joy": 0.0,
+    "sadness": 1e-06,
+    "surprise": 0.0
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ]
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/joy",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled joy; emotion label, not an atmosphere",
+   "official_label": "joy",
+   "video_sha256": "8c42a70e0c9b330d86e58e43ed5da5462a0f57d0c45421219b5eec23f56852a6",
+   "probabilities": {
+    "anger": 0.001555,
+    "disgust": 0.038788,
+    "fear": 0.001841,
+    "joy": 0.951902,
+    "sadness": 5.3e-05,
+    "surprise": 0.00586
+   },
+   "missing_features": []
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/sadness",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled sadness; emotion label, not an atmosphere",
+   "official_label": "sadness",
+   "video_sha256": "fd5fd6befe8b988468d2e060ff409fcd63719e2e6d95feae8b0b73c8832c99ef",
+   "probabilities": {
+    "anger": 0.001116,
+    "disgust": 0.0,
+    "fear": 0.00094,
+    "joy": 0.000356,
+    "sadness": 0.99758,
+    "surprise": 9e-06
+   },
+   "missing_features": [
+    "ocr_sentiment"
+   ]
+  },
+  {
+   "group": "official_demo_clips",
+   "id": "official/surprise",
+   "condition": "n/a",
+   "intended_atmosphere": null,
+   "intended_note": "upstream demo clip labelled surprise; emotion label, not an atmosphere",
+   "official_label": "surprise",
+   "video_sha256": "c7ffa486208bcb55c3fa81d26998224f46cb89b8ac37fcb6b04df7735e4553d7",
+   "probabilities": {
+    "anger": 0.0,
+    "disgust": 1e-06,
+    "fear": 0.001131,
+    "joy": 1e-06,
+    "sadness": 2e-06,
+    "surprise": 0.998865
+   },
+   "missing_features": []
+  }
+ ]
+}
