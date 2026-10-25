@@ -2,7 +2,7 @@
 
 本文件定义当前公共接口及历史兼容格式。第1–4节为默认1.0 animatic，第5节为旧开发对，第6节为1.1三条件生成与演员协议。Python 3.11，包路径 src/moodcut/，数据为JSON可序列化dict。操作命令见[使用指南](usage.md)，当前进展见[文档入口](README.md)，真实运行与失败见[试跑索引](pilots/README.md)。本文件不重复记录各轮测试和试跑状态。
 
-快速定位：共享身份与数据 6.1–6.6；脚本/请求/记录/媒体 6.7–6.13；资格/导出/统计 6.14–6.16；执行恢复 6.17；演员协议与版本 6.18–6.24。**新演员执行使用 v3 + dialogue_by_shot_json_schema_v2；6.18/6.19/6.21/6.23 同时记录历史兼容行为。**
+快速定位：共享身份与数据 6.1–6.6；脚本/请求/记录/媒体 6.7–6.13；资格/导出/统计 6.14–6.16；执行恢复 6.17；演员协议与版本 6.18–6.25。**v4 需显式选择，使用 dialogue_by_shot_json_schema_v2；v3 及更早协议保留历史兼容行为，默认入口不变。**
 
 ## 1. 公共数据
 
@@ -772,3 +772,11 @@ New v3 actor critique requests reuse the existing optional JSON Schema transport
 Versioned `review_actor_{generic,moodcut}_schema.txt` prompts remove the fixed `[0]` example. New execution selects `writer_output_contract=dialogue_by_shot_json_schema_v2` for the coordinated prompt/request bundle; writer response shape/rounds remain unchanged. The writer-only schema v1 and earlier contracts retain original prompt hashes and source compatibility. New source loading checks each actor schema digest against the original plan, actor order and condition, and requires the actual actor call count (zero for baseline). Writer schema checks remain active for both schema contracts; comparison rejects mixed versions.
 
 The existing business validator independently rejects wrong references even if a provider ignores the schema. No index translation, result repair, retries, format downgrade, new tool or additional model stage is added. Unsupported schemas, malformed responses, ownership errors and unknown costs stop as before. Original S06 failure bytes/status are immutable. The subsequent [S06 schema-v2 trial](pilots/s06-actor-v3-index.md) produced three videos; it does not guarantee provider enforcement or semantic correctness on all inputs. See [offline correction and original-byte replay](pilots/s06-actor-index-constraints.md).
+
+### 6.25 Explicit v4 global/Actor review with unconditional revisits
+
+`actor_self_review_v4` is opt-in and generated-only. Generic review binds one `__global_reviewer__` to all dialogue; MoodCut binds the two scene characters independently to their own original full-shot indices. It reuses existing stage names, role routing, shot writer schema, patch validation, cost accounting and two-round storage. New `review_v4_*.txt` hashes distinguish the protocol; old defaults, prompts and saved sources remain valid and unchanged. See [method and resource limits](ACTOR_REVIEW_METHOD.md#bounded-negotiation-in-v4).
+
+Every submitted writer candidate gets a revisit from all corresponding reviewers, covering every current issue regardless of writer disposition. V4 decisions are `resolved|withdrawn|maintain_objection`, bound to original/candidate hashes, plus required `new_issues` (normally empty). New issues use the existing local issue shape, permitted line ownership, and changed-shot checks; their evidence must describe a direct regression caused by the latest candidate. Replay derives cumulative feedback from preserved initial reports and prior replies; IDs use `actor-N:revisit-R:local-id`. A round-one regression can be repaired in round two, including by restoring original wording. Round-two regressions remain disputed and never create a third revision. `confirmation_issue_ids` includes newly introduced concerns, while decisions cover exactly that reviewer's existing issues.
+
+A maintained objection triggers the final writer; every required objection needs a nonempty response, but reasoned unresolved feedback is valid. Final disagreement remains `negotiation_status=disputed` and `actor_endorsement=not_requested`. No initial issues means no writer/revisit. Saved-result/source loading rechecks reviewer count, ownership, schema identities, actual candidate, frozen fields, both rounds and exact call order. Comparisons cannot mix old/new protocols. Prompt instructions and structural checks do not establish semantic emotional quality; semantic quality and formal inclusion require independent evidence.

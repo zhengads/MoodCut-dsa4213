@@ -17,7 +17,8 @@ from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3,
+from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2,
+                       BOUNDED_PROTOCOLS, get_reviewers,
                        validate_review_protocol, validate_actor_review_result, SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT,
                        get_writer_json_schema, get_actor_json_schema, WRITER_ONLY_SCHEMA_CONTRACT)
 from .validation import validate_plan, validate_scene
@@ -187,7 +188,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
         record["text_model_settings"] = _model_settings(client)
     if review_protocol in ACTOR_PROTOCOLS:
         record["review_protocol"] = review_protocol
-    if review_protocol == ACTOR_REVIEW_V3:
+    if review_protocol in BOUNDED_PROTOCOLS:
         record["writer_output_contract"] = SHOT_WRITER_CONTRACT
     if generated:
         record.update(schema_version=CONTRACT_VERSION, output_mode="generated",
@@ -250,7 +251,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
             if review_protocol in ACTOR_PROTOCOLS:
                 for name in ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status"):
                     record[name] = deepcopy(reviewed.get(name))
-                if review_protocol == ACTOR_REVIEW_V3:
+                if review_protocol in BOUNDED_PROTOCOLS:
                     for name in ("negotiation_status", "negotiation_round_count", "confirmation_issue_ids", "disputed_issue_ids"):
                         record[name] = deepcopy(reviewed.get(name))
             record["errors"].extend(reviewed["errors"])
@@ -470,7 +471,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
         block["text_model_settings"] = deepcopy(settings)
     if review_protocol in ACTOR_PROTOCOLS:
         block["review_protocol"] = review_protocol
-    if review_protocol == ACTOR_REVIEW_V3:
+    if review_protocol in BOUNDED_PROTOCOLS:
         block["writer_output_contract"] = SHOT_WRITER_CONTRACT
     if generated:
         block.update(schema_version=CONTRACT_VERSION, output_mode="generated",
@@ -541,7 +542,7 @@ def _load_generated_block(path, project_root):
         need(row.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "review protocol mismatch")
         if review_protocol in ACTOR_PROTOCOLS:
             writer_options = {}
-            if review_protocol == ACTOR_REVIEW_V3:
+            if review_protocol in BOUNDED_PROTOCOLS:
                 contract = block.get("writer_output_contract", LEGACY_WRITER_CONTRACT)
                 need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == contract, "writer output contract mismatch")
                 writer_options["writer_output_contract"] = contract
@@ -552,15 +553,15 @@ def _load_generated_block(path, project_root):
                         for index, c in enumerate(writers)), "writer JSON Schema request identity mismatch")
                 if contract == SHOT_WRITER_CONTRACT:
                     actors = [c for c in row.get("call_records", []) if c.get("stage") == "actor_critique"]
-                    need(len(actors) == (0 if condition == "baseline" else len(scene["characters"])),
+                    need(len(actors) == (0 if condition == "baseline" else len(get_reviewers(scene, condition, review_protocol))),
                          "actor JSON Schema request count mismatch")
                     need(all(c.get("response_format_type") == "json_schema"
                         and c.get("json_schema_sha256") == json_hash(get_actor_json_schema(scene, initial, actor["id"], condition))
-                        for c, actor in zip(actors, scene["characters"])), "actor JSON Schema request identity mismatch")
+                        for c, actor in zip(actors, get_reviewers(scene, condition, review_protocol))), "actor JSON Schema request identity mismatch")
             expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol, **writer_options)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
-            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (ACTOR_REVIEW_V2, ACTOR_REVIEW_V3) else ())
+            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (ACTOR_REVIEW_V2, *BOUNDED_PROTOCOLS) else ())
             need(all(c.get("stage") in actor_stages for c in row.get("call_records", [])),
                  "actor source contains a legacy review call")
         else:
@@ -602,13 +603,13 @@ def _load_generated_block(path, project_root):
                 errors = validate_actor_review_result(scene, initial, manifest, reviewed,
                                                       mode=condition, project_root=project_root)
                 need(not errors, "; ".join(errors))
-                if review_protocol == ACTOR_REVIEW_V3:
+                if review_protocol in BOUNDED_PROTOCOLS:
                     need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == reviewed.get("writer_output_contract", LEGACY_WRITER_CONTRACT),
                          "saved writer output contract mismatch")
                     need(all(row.get(name) == reviewed.get(name) for name in
                              ("negotiation_status", "negotiation_round_count", "confirmation_issue_ids", "disputed_issue_ids")),
                          "saved actor negotiation summary mismatch")
-                    stages = ["actor_critique"] * len(scene["characters"])
+                    stages = ["actor_critique"] * len(get_reviewers(scene, condition, review_protocol))
                     for round_record in reviewed["negotiation_rounds"]:
                         stages.append("actor_revise")
                         stages.extend(["actor_confirm"] * len(round_record["actor_confirmations"]))

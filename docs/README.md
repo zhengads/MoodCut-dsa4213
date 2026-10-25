@@ -4,8 +4,8 @@ Start with the [project homepage](../README.md) for the research question and qu
 
 ## Current status (2026-10-25)
 
-- Generated script orchestration, three-condition request compilation, task execution, media inspection, qualification rechecks and anonymous export are implemented. The default CLI still produces offline animatics; actor v3 must be selected explicitly.
-- The current actor protocol is `actor_self_review_v3`; new requests use `dialogue_by_shot_json_schema_v2`. Both review conditions share the negotiation limits and differ only in review criteria.
+- Generated script orchestration, three-condition request compilation, task execution, media inspection, qualification rechecks and anonymous export are implemented. The default CLI still produces offline animatics; the actor protocol must be selected explicitly.
+- The latest opt-in protocol is `actor_self_review_v4`: generic review uses one global Agent, while MoodCut uses two independent Actors. Both conditions allow at most two revisions and revisit every candidate. New requests use `dialogue_by_shot_json_schema_v2`; older protocols and historical results remain supported.
 - S06 v3 completed three real videos at a cost of $0.75421676. The [original trial record](pilots/s06-actor-v3-index.md) preserves the settings, costs and results. Technical success does not establish human quality acceptance or independent evidence of effectiveness.
 - The [six-story v2 design](studies/six-story-clear-emotions-20261024/README.md) supplies candidate inputs for the next round: 18 condition entries, not 18 completed results. `configs/experiment.json` remains a development fixture.
 - #8 and #9 remain open. Additional evaluation results are in the pending [PR #58](https://github.com/zhengads/MoodCut-dsa4213/pull/58); its historical Anna/Elsa results must not be relabeled as S06 or six-story results. Independent human ratings and formal inclusion remain outstanding.

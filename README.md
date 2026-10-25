@@ -24,7 +24,7 @@ Both review conditions allow up to two revisions. Every candidate is revisited b
 
 In generated mode, **only dialogue may change**. Scene directions, actions, camera, character references, voices and generation settings remain common inputs. A fixed seed does not guarantee identical visuals after dialogue changes.
 
-**Version boundary: the runtime on main remains v3**, which uses two Actors in each reviewed condition. V4 has been exercised in a separate development snapshot, and its runtime implementation has not been merged. This update publishes the bilingual overview and diagrams only. See the [method history](docs/ACTOR_REVIEW_METHOD.md) and [actual S01 v4 record](docs/pilots/s01-v4-text-video.md).
+**V4 is available through explicit `review_protocol="actor_self_review_v4"` in generated-script orchestration.** The global/v1/v2/v3 protocols and default CLI behavior remain compatible. See [protocol selection and history](docs/ACTOR_REVIEW_METHOD.md) and the [actual S01 v4 record](docs/pilots/s01-v4-text-video.md).
 
 ## Current progress
 
@@ -74,7 +74,7 @@ The output contains a shared draft, three condition records and three static ani
 | Execute prepared video requests | `execute-generated`: offline by default; real calls need an explicit model, scope and budget. |
 | Inspect saved videos, export anonymized media or import ratings | [Usage guide](docs/usage.md#检查与评价生成视频). |
 
-**Default `plan/review/smoke/run` commands still use the original animatic flow and do not enable Actor v3 automatically.** V3 must be selected explicitly during generated-script orchestration. Script preparation, request compilation and video generation are separate stages. See the [generated-video workflow](docs/usage.md#生成式视频流程) for parameters and prerequisites.
+**Default `plan/review/smoke/run` commands still use the original animatic flow and do not enable Actor v3/v4 automatically.** Select a protocol explicitly during generated-script orchestration. Script preparation, request compilation and video generation are separate stages. See the [generated-video workflow](docs/usage.md#生成式视频流程) for parameters and prerequisites.
 
 ## Documentation
 

@@ -595,13 +595,15 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
     protocols = [row.get("review_protocol", "global_v1") for row in records if isinstance(row, dict)]
     review_protocols = {p for p in protocols if isinstance(p, str)}
     if (len(review_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
-            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2", "actor_self_review_v3"}):
+            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2", "actor_self_review_v3", "actor_self_review_v4"}):
         errors.append("records must use one consistent review protocol")
-    if review_protocols == {"actor_self_review_v3"}:
+    if review_protocols in ({"actor_self_review_v3"}, {"actor_self_review_v4"}):
         contracts = [r.get("writer_output_contract", "issue_patch_v1") for r in records if isinstance(r, dict)]
         if (any(not isinstance(c, str) or c not in ("issue_patch_v1", "dialogue_by_shot_v1", "dialogue_by_shot_json_schema_v1", "dialogue_by_shot_json_schema_v2") for c in contracts)
                 or len(set(c for c in contracts if isinstance(c, str))) != 1):
             errors.append("records must use one consistent v3 writer output contract")
+        if review_protocols == {"actor_self_review_v4"} and any(c != "dialogue_by_shot_json_schema_v2" for c in contracts):
+            errors.append("v4 requires the current shot writer contract")
     for index, row in enumerate(records):
         prefix = f"record {index + 1}"
         if not isinstance(row, dict):
@@ -651,7 +653,7 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
             if (expected_confirmation is None or row.get("actor_confirmation_status") != expected_confirmation
                     or row.get("actor_endorsement") != "not_requested"):
                 errors.append(f"{prefix}: actor omissions lack valid corresponding-actor confirmation")
-        if row.get("review_protocol") == "actor_self_review_v3" and condition != "baseline":
+        if row.get("review_protocol") in ("actor_self_review_v3", "actor_self_review_v4") and condition != "baseline":
             disposition = row.get("feedback_disposition")
             omitted = disposition.get("unaddressed_issue_ids") if isinstance(disposition, dict) else None
             targets, disputed = row.get("confirmation_issue_ids"), row.get("disputed_issue_ids")

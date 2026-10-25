@@ -1259,3 +1259,280 @@ def test_v3_actor_requests_bind_each_actor_schema_without_added_calls(mode):
         assert call.get("json_schema_sha256") == json_hash(get_actor_json_schema(case[0], case[1], actor["id"], mode))
         assert '"line_indices":[0]' not in call["system"]
     assert result["actor_reports"] == [{"actor_id": a["id"], "response": r} for a, r in zip(case[0]["characters"], replies[:2])]
+
+
+# Developer-authored v4 software fixtures; these are not model-quality evidence.
+def v4_case(mode="moodcut", *, empty_actor=False, unchanged=False, second=False,
+            final="resolved", no_issues=False):
+    from moodcut.reviewer import GLOBAL_REVIEWER_ID
+    from moodcut.contracts import json_hash
+    case = actor_software_case(mode)
+    reports = deepcopy(case[3])
+    if empty_actor:
+        reports[1]["issues"] = []
+    if mode == "generic_review":
+        issues = [dict(deepcopy(i), issue_id=f"local-{n}")
+                  for n, r in enumerate(reports) for i in r["issues"]]
+        reports = [{**reports[0], "actor_id": GLOBAL_REVIEWER_ID, "issues": issues}]
+    if no_issues:
+        for r in reports:
+            r["issues"] = []
+        return case, reports
+    ids = [(r["actor_id"], f"actor-{n}:" + i["issue_id"])
+           for n, r in enumerate(reports, 1) for i in r["issues"]]
+    candidate = deepcopy(case[1])
+    if not unchanged:
+        for r in reports:
+            for i in r["issues"]:
+                for line in i["line_indices"]:
+                    candidate["shots"][0]["dialogue"][line]["text"] += " Really?"
+    writer = {"dialogue_by_shot": {} if unchanged else {
+        case[1]["shots"][0]["shot_id"]: candidate["shots"][0]["dialogue"]},
+        "feedback_disposition": {"addressed_issue_ids": [] if unchanged else [i for _, i in ids],
+            "unaddressed_issue_ids": [i for _, i in ids] if unchanged else [],
+            "unaddressed_reasons": {i: "Cannot safely change this line." for _, i in ids} if unchanged else {}}}
+    def revisit(r, decision):
+        return {"schema_version": "1.0", "scene_id": case[0]["scene_id"], "mode": mode,
+            "actor_id": r["actor_id"], "initial_plan_sha256": json_hash(case[1]),
+            "candidate_plan_sha256": json_hash(candidate), "new_issues": [], "decisions": [
+                {"issue_id": i, "decision": decision, "reason": "Synthetic candidate-based reason."}
+                for owner, i in ids if owner == r["actor_id"]]}
+    replies = reports + [writer] + [revisit(r, "maintain_objection" if second else final) for r in reports]
+    if second:
+        replies += [{**deepcopy(writer), "objection_responses": {i: "Specific response; no safe further change." for _, i in ids}}]
+        replies += [revisit(r, final) for r in reports]
+    return case, replies
+
+
+def call_v4(case, client, mode="moodcut"):
+    from moodcut.reviewer import ACTOR_REVIEW_V4
+    return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
+        review_protocol=ACTOR_REVIEW_V4, project_root=Path(__file__).resolve().parents[1])
+
+
+@pytest.mark.parametrize("mode,reviewers", [("generic_review", 1), ("moodcut", 2)])
+@pytest.mark.parametrize("second,final", [(False, "resolved"), (False, "withdrawn"),
+                                         (True, "resolved"), (True, "maintain_objection")])
+def test_v4_every_candidate_revisited_with_equal_revision_limit(mode, reviewers, second, final):
+    case, replies = v4_case(mode, second=second, final=final)
+    before = deepcopy(case[:3])
+    client = FakeClient(replies)
+    result = call_v4(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    rounds = 2 if second else 1
+    assert result["negotiation_round_count"] == rounds
+    assert [c["stage"] for c in client.calls] == ["actor_critique"] * reviewers + (
+        ["actor_revise"] + ["actor_confirm"] * reviewers) * rounds
+    assert len(client.calls) <= (5 if mode == "generic_review" else 8)
+    assert result["negotiation_status"] == ("disputed" if final == "maintain_objection" else "complete")
+    assert result["actor_endorsement"] == "not_requested"
+    assert validate_actor_review_result(*case[:3], result, mode=mode) == []
+    assert case[:3] == before
+    for c in client.calls:
+        if c["stage"] != "actor_revise":
+            assert c["max_output_tokens"] == MAX_OUTPUT_TOKENS // reviewers
+        else:
+            payload = json.loads(c["user"])
+            assert "mode" not in payload and "mode" not in payload["report"]
+    # Revisit only supplies this reviewer's own reports/history and writer explanations.
+    for c in client.calls:
+        if c["stage"] == "actor_confirm":
+            payload = json.loads(c["user"])
+            assert "actor_reports" not in payload and "previous_round" not in payload
+            assert all(i["actor_id"] == payload["actor"]["id"] for i in payload["issues_to_confirm"])
+    altered = deepcopy(result)
+    altered["negotiation_rounds"][0]["actor_confirmations"].pop()
+    assert validate_actor_review_result(*case[:3], altered, mode=mode)
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v4_unchanged_candidates_still_revisited_and_may_remain_unresolved(mode):
+    case, replies = v4_case(mode, unchanged=True, second=True, final="maintain_objection")
+    client = FakeClient(replies)
+    result = call_v4(case, client, mode)
+    assert result["status"] == "unchanged", result["errors"]
+    assert result["plan"] == case[1] and result["negotiation_round_count"] == 2
+    assert result["disputed_issue_ids"] and client.remaining == 0
+
+
+def test_v4_actor_without_initial_issues_is_revisited():
+    case, replies = v4_case(empty_actor=True)
+    client = FakeClient(replies)
+    result = call_v4(case, client)
+    assert result["status"] == "applied", result["errors"]
+    assert len(result["actor_confirmations"]) == 2
+    assert result["actor_confirmations"][1]["response"]["decisions"] == []
+
+
+@pytest.mark.parametrize("mode,expected", [("generic_review", 1), ("moodcut", 2)])
+def test_v4_no_issues_stops_before_writer(mode, expected):
+    case, replies = v4_case(mode, no_issues=True)
+    client = FakeClient(replies)
+    result = call_v4(case, client, mode)
+    assert result["status"] == "unchanged", result["errors"]
+    assert result["negotiation_status"] == "no_issues" and len(client.calls) == expected
+    assert validate_actor_review_result(*case[:3], result, mode=mode) == []
+
+
+@pytest.mark.parametrize("bad", ["ownership", "hash", "missing_decision", "missing_second_response", "transport"])
+def test_v4_failure_preserves_attempts_without_retry(bad):
+    case, replies = v4_case(second=True)
+    expected = 1 if bad == "ownership" else 4 if bad in ("hash", "missing_decision") else 6
+    if bad == "ownership": replies[0]["issues"][0]["line_indices"] = [1]
+    elif bad == "hash": replies[3]["candidate_plan_sha256"] = "wrong"
+    elif bad == "missing_decision": replies[3]["decisions"] = []
+    elif bad == "missing_second_response": replies[5]["objection_responses"] = {}
+    else: replies = replies[:5]
+    client = FakeClient(replies)
+    result = call_v4(case, client)
+    assert result["status"] == "review_failed" and result["plan"] == case[1]
+    assert result["errors"] and len(client.calls) == expected
+    if bad != "ownership":
+        assert result["negotiation_rounds"][0]["writer_response"] == replies[2]
+
+
+@pytest.mark.parametrize("final_regression", [False, True])
+def test_v4_partner_context_regression_gets_one_final_response(final_regression):
+    from moodcut.contracts import json_hash
+    case, replies = v4_case(empty_actor=True)
+    regression = dict(deepcopy(case[3][1]["issues"][0]), issue_id="regression-1",
+        evidence="Changed partner dialogue introduced this synthetic context regression.")
+    replies[4]["new_issues"] = [regression]
+    regression_id = "actor-2:revisit-1:regression-1"
+    candidate = deepcopy(case[1])
+    candidate["shots"][0]["dialogue"] = deepcopy(replies[2]["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]])
+    candidate["shots"][0]["dialogue"][1]["text"] += " I see."
+    second = {"dialogue_by_shot": {case[1]["shots"][0]["shot_id"]: candidate["shots"][0]["dialogue"]},
+        "feedback_disposition": {"addressed_issue_ids": ["actor-1:local-1", regression_id],
+            "unaddressed_issue_ids": [], "unaddressed_reasons": {}},
+        "objection_responses": {regression_id: "Address the introduced response mismatch."}}
+    confirms = deepcopy(replies[3:5])
+    for c in confirms:
+        c["candidate_plan_sha256"] = json_hash(candidate)
+        c["new_issues"] = []
+    confirms[1]["decisions"] = [{"issue_id": regression_id, "decision": "resolved", "reason": "Candidate responds coherently."}]
+    if final_regression:
+        confirms[1]["new_issues"] = [dict(regression, issue_id="regression-2")]
+    replies += [second, *confirms]
+    client = FakeClient(replies)
+    result = call_v4(case, client)
+    assert result["status"] == "applied", result["errors"]
+    assert result["negotiation_round_count"] == 2 and len(client.calls) == 8
+    assert result["negotiation_status"] == ("disputed" if final_regression else "complete")
+    assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
+    assert result["actor_reports"][1]["response"]["issues"] == []
+    payload = json.loads(client.calls[5]["user"])
+    assert payload["required_objection_ids"] == [regression_id]
+    assert any(i["issue_id"] == regression_id for i in payload["report"]["issues"])
+
+
+def test_v4_unchanged_shot_cannot_introduce_a_new_regression():
+    case, replies = v4_case(unchanged=True)
+    replies[3]["new_issues"] = deepcopy(case[3][0]["issues"])
+    client = FakeClient(replies)
+    result = call_v4(case, client)
+    assert result["status"] == "review_failed" and len(client.calls) == 4
+    assert any("changed dialogue" in e for e in result["errors"])
+
+
+@pytest.mark.parametrize("final", ["resolved", "maintain_objection"])
+def test_v4_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeypatch, final):
+    import io
+    from unittest.mock import Mock
+    from moodcut import pipeline
+    from moodcut.client import OpenRouterClient, RoleRoutedClient
+    from moodcut.reviewer import ACTOR_REVIEW_V4
+    from moodcut.video_generation import get_video_template_sha256
+    from moodcut.evaluation import validate_generated_comparison
+    monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("Offline test forbids network"))
+    root = Path(__file__).resolve().parents[1]
+    case, generic = v4_case("generic_review", second=True, final=final)
+    _, actors = v4_case(second=True, final=final)
+    scene, initial, manifest = deepcopy(case[:3])
+    for asset in manifest["assets"]:
+        asset["source_url"] = "https://example.invalid/" + asset["asset_id"] + ".png"
+    director = {"scene_id": scene["scene_id"], "tone": scene["tone"],
+        "beat_order": [b["id"] for b in scene["beats"]], "approach": "Software-only replay"}
+    staged = {"scene_id": scene["scene_id"], "scene_direction": initial["scene_direction"],
+        "segments": [{k: s[k] for k in ("beat_ids", "duration_s", "direction")} |
+                     {"description": "Synthetic segment"} for s in initial["shots"]]}
+    def envelope(response):
+        return io.BytesIO(json.dumps({"id": "offline-envelope", "model": "software-response-model",
+            "choices": [{"finish_reason": "stop", "message": {"content": json.dumps(response)}}],
+            "usage": {"prompt_tokens": 100, "completion_tokens": 20, "cost": .001}}).encode())
+    send = Mock(side_effect=[envelope(r) for r in [director, staged, initial, *generic, *actors]])
+    monkeypatch.setattr("moodcut.client.build_opener", Mock(return_value=Mock(open=send)))
+    # Explicit synthetic transport envelopes exercise existing role/cost machinery, never HTTP.
+    clients = [OpenRouterClient(api_key="software-key", model=m, allow_paid=True, max_cost_usd=.1,
+        input_price_per_million=1, output_price_per_million=1) for m in ("test/planning", "test/review")]
+    client = RoleRoutedClient(*clients, max_cost_usd=.1)
+    settings = pipeline.read_json(root / "tests/fixtures/generated_contract.json")["settings"]
+    settings["model"] = pipeline.read_json(root / "configs/video.json")["model"]
+    out = tmp_path / "v4-software-source"
+    block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
+        output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(),
+        review_protocol=ACTOR_REVIEW_V4, source_kind="synthetic")
+    assert block["status"] == "prepared", block
+    assert send.call_count == 16 and [r["review_calls"] for r in block["runs"]] == [0, 5, 8]
+    expected_roles = ["test/planning"] * 3 + ["test/review", "test/planning", "test/review", "test/planning", "test/review"]
+    expected_roles += ["test/review"] * 2 + ["test/planning"] + ["test/review"] * 2 + ["test/planning"] + ["test/review"] * 2
+    assert [json.loads(c.args[0].data)["model"] for c in send.call_args_list] == expected_roles
+    pipeline._load_generated_block(out, root)
+    prepared = pipeline.prepare_generated_run(out, out_dir=tmp_path / "requests", project_root=root,
+        pricing_config=root / "configs/video.json")
+    assert prepared["status"] == "prepared_offline" and send.call_count == 16
+    plans = {r["condition"]: pipeline.read_json(out / r["condition"] / "final.json") for r in block["runs"]}
+    options = dict(scene=scene, initial=initial, plans=plans, manifest=manifest, settings=settings,
+        template_sha256=get_video_template_sha256(), project_root=root)
+    assert validate_generated_comparison(block["runs"], **options) == []
+    mixed = deepcopy(block["runs"]); mixed[0]["review_protocol"] = ACTOR_REVIEW_V3
+    assert any("consistent review protocol" in e for e in validate_generated_comparison(mixed, **options))
+    wrong_contract = deepcopy(block["runs"])
+    for row in wrong_contract:
+        row["writer_output_contract"] = "issue_patch_v1"
+    assert any("v4 requires" in e for e in validate_generated_comparison(wrong_contract, **options))
+    path = out / "generic_review/review.json"
+    saved = pipeline.read_json(path)
+    saved["negotiation_rounds"][0]["actor_confirmations"] = []
+    path.write_text(json.dumps(saved), encoding="utf-8")
+    with pytest.raises(ValueError):
+        pipeline._load_generated_block(out, root)
+
+
+
+def test_v4_regression_can_be_repaired_by_restoring_original_partner_context():
+    from moodcut.contracts import json_hash
+    case, replies = v4_case(empty_actor=True)
+    replies[4]["new_issues"] = [dict(deepcopy(case[3][1]["issues"][0]), issue_id="context-regression")]
+    original_issue = "actor-1:local-1"
+    regression_id = "actor-2:revisit-1:context-regression"
+    second = {"dialogue_by_shot": {}, "feedback_disposition": {
+        "addressed_issue_ids": [regression_id], "unaddressed_issue_ids": [original_issue],
+        "unaddressed_reasons": {original_issue: "Restoring context is safer than keeping the attempted change."}},
+        "objection_responses": {regression_id: "Restore the original partner line to repair its effect on my response."}}
+    confirms = deepcopy(replies[3:5])
+    for c in confirms:
+        c["candidate_plan_sha256"] = json_hash(case[1])
+        c["new_issues"] = []
+    confirms[0]["decisions"][0]["decision"] = "maintain_objection"
+    confirms[1]["decisions"] = [{"issue_id": regression_id, "decision": "resolved", "reason": "Original context restored."}]
+    result = call_v4(case, FakeClient(replies + [second, *confirms]))
+    assert result["status"] == "unchanged", result["errors"]
+    assert result["plan"] == case[1] and result["disputed_issue_ids"] == [original_issue]
+    assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
+
+
+@pytest.mark.parametrize("change", ["missing_new_issues", "missing_reports", "wrong_round", "frozen_direction"])
+def test_v4_saved_result_rejects_missing_fields_and_frozen_changes(change):
+    case, replies = v4_case(second=True)
+    result = call_v4(case, FakeClient(replies))
+    assert result["status"] == "applied", result["errors"]
+    if change == "missing_new_issues":
+        result["negotiation_rounds"][0]["actor_confirmations"][0]["response"].pop("new_issues")
+    elif change == "missing_reports":
+        result.pop("actor_reports")
+    elif change == "wrong_round":
+        result["negotiation_rounds"][0] = None
+    else:
+        result["plan"]["scene_direction"] += " Altered geography."
+    assert validate_actor_review_result(*case[:3], result, mode="moodcut")
