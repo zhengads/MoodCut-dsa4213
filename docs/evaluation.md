@@ -1146,6 +1146,64 @@ agreed formal study protocol. These historical image-quality measurements alone
 do not satisfy those dependencies or evaluate speech, emotion, audio quality,
 temporal consistency or the other VBench dimensions.
 
+## Qualitative case: explicit affection versus contextual naturalness (2026-10-25)
+
+A non-blind team discussion raised a contextual concern about Elsa's moodcut line,
+"谢谢你，安娜。你真好。" ("Thank you, Anna. You are so kind."). Praising Anna's kindness
+may be excessive for the routine return of a borrowed umbrella unless additional
+context motivates it. This is an open naturalness/overstatement concern, not a
+confirmed error: affectionate relationships and delivery could make the line
+plausible. The English account below is an edited paraphrase of feedback, not a
+verbatim independent-rater response.
+
+### Trace to the saved review
+
+The [pinned actor-v3 public record](https://github.com/zhengads/MoodCut-dsa4213/blob/c7e6bd87437bef05dad45805f55c184ad4e1b041/docs/pilots/anna-elsa-actor-v3-captured.results.json)
+contains the following trace for `return-umbrella-shot`, character `b` (Elsa):
+
+1. The baseline line is "谢谢你，安娜。". Elsa's moodcut actor report
+   `actor-2:tone_underwhelming` describes it as insufficiently warm and explicitly
+   proposes adding "你真好" as one possible revision.
+2. `writer_response.dialogue_by_shot` adopts the added phrase, and the writer's
+   `addressed_issue_ids` includes that actor issue. The saved final plan contains
+   the same line. This establishes the phrase's presence in the script before
+   video generation; it does not verify exactly what is audible in the clip.
+3. The saved result is `applied` with `verification_kind=programmatic_only`,
+   `actor_endorsement=not_requested`, `actor_confirmation_status=not_needed` and
+   an empty `actor_confirmations` list. Writer-declared feedback resolution is not
+   an independent judgment that the resulting dialogue is natural.
+
+The corresponding video is `actor-v3-moodcut.mp4`, SHA-256
+`0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7`.
+This trace concerns the historical `actor_self_review_v3` /
+`dialogue_by_shot_v1` run, not the later S06/schema fixes.
+
+### Evaluation interpretation and follow-up
+
+The case suggests a possible trade-off: making the target affection explicit may
+weaken conversational motivation. Treat this as a qualitative hypothesis for
+future independent assessment, not a numeric score, causal finding, universal
+rule against gratitude or evidence that the method generally fails. It is also
+not an explanation for this clip's lower imaging_quality value; that metric does
+not score dialogue meaning.
+
+The discussion had access to conditions, target tone, expected lines and prior
+image-quality scores, with assistant discussion before the feedback was recorded.
+It is not blind or independent. No timestamped transcript, complete technical
+checklist, numeric naturalness/overstatement rating or other-condition judgment
+was supplied. Those fields remain unfilled. The existing independent-rating
+counts and all benchmark scores are unchanged.
+
+Local evidence is `runs/actor-v3-technical-review-20261025/qualitative_concern_001.json`;
+the original blank technical template, public source record, videos and benchmark
+results remain intact. Preserve the case for discussion with the review-module
+owner. Any future prompt revision should be a separately versioned prospective
+change; do not rewrite these historical scripts or replace their evaluation
+results. Independent ratings must still follow the agreed source-qualified
+export and assignment workflow.
+
 ### 简短中文总结
 
 8 段真实视频的 VBench imaging_quality 已全部算完，零失败/超时，耗时约 6 分 33 秒，外部 API 费用 $0。三个协议下 moodcut 的该项分数均低于对应 baseline，已如实保留；这只是画面质量，不能代表情绪效果或整体方法优劣。9 条条件记录中有一段视频复用，完整来源核验和独立人工评分仍待完成。
+
+补充发现：情绪角色建议、编剧采纳了“你真好”，但其场景自然度受到非盲讨论质疑。已保留为待进一步核实的定性案例，不计作独立评分，也未修改原台词或视频。
