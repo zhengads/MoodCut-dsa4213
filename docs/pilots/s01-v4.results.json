@@ -1,0 +1,760 @@
+{
+  "kind": "development_case_from_preserved_actual_records",
+  "story_id": "S01",
+  "scene_id": "study_20261024_v2_s01_reunion",
+  "design_version": "2.0",
+  "review_protocol": "actor_self_review_v4",
+  "writer_output_contract": "dialogue_by_shot_json_schema_v2",
+  "formal_inclusion_approved": false,
+  "executed_version": {
+    "base_commit": "dc8fbaf253668e5e57edad62d940ffa58fe49a24",
+    "local_development_snapshot": true,
+    "v4_runtime_not_merged_by_this_gallery_change": true,
+    "source_hashes": {
+      "src/moodcut/client.py": "0823fb5a1793e571fee8169cfff020ed5303a81b43de982185c9dabb87a79be3",
+      "src/moodcut/contracts.py": "f4fd51fa1437db91794a822c9a6dea8fd4d38f5fe212a771f1ee7c0d6d405d72",
+      "src/moodcut/evaluation.py": "7c8821ae13a7d9f449db005125394d4200b03344c0c0961d7054d7c584b0fa43",
+      "src/moodcut/importer.py": "59f03ce1dfb387704ac73b8401bbdfb7226ce82beb03a34be225c57ccad087f8",
+      "src/moodcut/patches.py": "7ddc20b9f62ac56561ff81570c3ab7e2d4ed2ec66a12f0f02df77403197bef07",
+      "src/moodcut/pipeline.py": "9b39c3a515ed11387ac36db65d899cc5fe8af3e2950ea43cc99d8619e8217a30",
+      "src/moodcut/planner.py": "f56af6aef90248136d0274d8237fa6c78685058fbd59f63cc85dfb00605cde9b",
+      "src/moodcut/renderer.py": "bc57e6cfc47c0081ac1926d035997deae853ebbbfa75719a10300f1c1a91a569",
+      "src/moodcut/reviewer.py": "79c52c4d2f411944f07372ff81e9f6c4fa9b62416c92d32f630dd1bad97fefee",
+      "src/moodcut/validation.py": "0163389407beabc2a99825401cd8082def7852a743d0cbd3bde5e9fe13ed502e",
+      "src/moodcut/video_client.py": "9d7e10d0abf574185e2c8df79b9c9a79f1a34bd64af5847a105b14febde0cc6d",
+      "src/moodcut/video_generation.py": "05b4bca9d373432f50d3d09e2b8634c320d22254911545c6fa0c0799c374e918",
+      "src/moodcut/__init__.py": "4f50c0867dc145915964a128b019aa5f1a44079c3af9e152103b588e2c9c1d07",
+      "src/moodcut/__main__.py": "5305a8970125849f5abe31bb74418c65325a61bd96cb0a5543d61b622021bb56",
+      "src/moodcut/prompts/planning_director.txt": "2ce1683c211939335cbb0e17d200034af190195e3554c3a04ea32ef896b24782",
+      "src/moodcut/prompts/planning_generated_director.txt": "c9b43198be584c1af61ac7d18d5b601d174ceb346bdd15df9d0004ee0be29c51",
+      "src/moodcut/prompts/planning_generated_scene.txt": "1e7a6381385cc102b2fefaed2ae24a8d02f3afad93a5a6fbea17026e83022c7e",
+      "src/moodcut/prompts/planning_generated_shot.txt": "8c019584c220a9f4af6aeef48ded31e45fc055d6bb856e96b6dceec8cdbc256c",
+      "src/moodcut/prompts/planning_scene.txt": "f9a22b0a2e7d0a4beab2160111cb9f68fceae64bc93c26e7914726cf62328ef8",
+      "src/moodcut/prompts/planning_shot.txt": "6c7cf782324c2832f3053fed664bc3fc12045ed681f2e73dc12726e63c5ec8f9",
+      "src/moodcut/prompts/review_actor_confirm.txt": "8a652603127df833f0759f1c00a2662e5bef913b97c2ad76dffd4ccd5df1ae16",
+      "src/moodcut/prompts/review_actor_confirm_bounded.txt": "4dbecd920b17055e6594bd7951a42461d851458d86178ae4c818e2907a80d43c",
+      "src/moodcut/prompts/review_actor_generic.txt": "3218af46291ee46e7569daf097f63d82fb0404bb7e7c4990206289162f24ec93",
+      "src/moodcut/prompts/review_actor_generic_schema.txt": "965ca14d0cb6be1d3a606302a02dc8358e0d48503bfbfdb8c21cccbfd1c3fa83",
+      "src/moodcut/prompts/review_actor_moodcut.txt": "0b9ce97ab1de152e7af2da79532a481380f212024a49d3be7fa6f9d25ca74f76",
+      "src/moodcut/prompts/review_actor_moodcut_schema.txt": "495abc28e1a52a0b1b9b7897870d7c9960a15de6be5952fe6463e964076836b6",
+      "src/moodcut/prompts/review_actor_negotiate.txt": "4f3cfb676d6fce51f72be7e6754ec8bcd2b54ab599e5436ceb4473c6eb69b0d0",
+      "src/moodcut/prompts/review_actor_negotiate_by_shot.txt": "ca763c2996445def7d86a94f7d716e1e9711811257a843a7d073ef09ab74c3e0",
+      "src/moodcut/prompts/review_actor_negotiate_by_shot_schema.txt": "9768e5e8e236405602f3c3cb1d907e0a7a2138bd15e25ba66edd8486dbe38e7f",
+      "src/moodcut/prompts/review_actor_revise.txt": "e0da6691edb8a30982a868ca1a0cfeb7b59cc2ffa6ee07a4396ed35386fdb274",
+      "src/moodcut/prompts/review_actor_revise_by_shot.txt": "ac4a1dbb44e492127e8adbd5d3d48f09bae783098cb121104b32032394fc816d",
+      "src/moodcut/prompts/review_actor_revise_by_shot_schema.txt": "aea1e78f7ea3781730878d7d8376fbc358184593aeed5ccb3c5691e7176a5bf8",
+      "src/moodcut/prompts/review_generated_generic.txt": "0ecb4ed3bdca10cce477b1c955075cd56390969d8ac1c1f633b2e80da08fc53b",
+      "src/moodcut/prompts/review_generated_moodcut.txt": "7e655b31a0f949762395e396c9b161dbca0e1c994284814ad49e66f9739f4219",
+      "src/moodcut/prompts/review_generated_revise.txt": "6ed63f7d6dff8bf0f7413b70c354ff757e3be72c2c87cc0c8be886d7e29b9cd3",
+      "src/moodcut/prompts/review_generated_verify.txt": "3c77a5578a1d9f9d9ecd8b981c95027ba81ff2c8e8f1434c14b0f1d8af5b3e37",
+      "src/moodcut/prompts/review_generic.txt": "118b28af219fa185b4f6b465e6eac305c604fdc315b0777c20aa6656b4a328ff",
+      "src/moodcut/prompts/review_moodcut.txt": "a79be71b7654f62608e9549506e6fe046aca5e50843732fe281cf7521f78595e",
+      "src/moodcut/prompts/review_revise.txt": "e0d8740db239f816efa40ecc8f4ba3bb784baf364379ff085bac2ebb7f7082c6",
+      "src/moodcut/prompts/review_v4_confirm.txt": "922ab8deac4be9579f8583963670927293ed949e03d7f04186285abeb148078b",
+      "src/moodcut/prompts/review_v4_generic.txt": "0fb4247be59c0d0a7fce1dcc6764255d46233e8bcd7244bfa02beef6483463d0",
+      "src/moodcut/prompts/review_v4_moodcut.txt": "5e8d0cd94abdceba015ca2fb331658f78e9b7242e5cd85521634a52ee21d70de",
+      "src/moodcut/prompts/review_v4_negotiate.txt": "e6c2f6894e0ebab1b1faf214724085153de3727370cfc39157574f1f8db739fd",
+      "src/moodcut/prompts/review_v4_revise.txt": "957f1042c579122be60e49330b036d03d104c04ef74dbd3b2737e964b3ed3572",
+      "src/moodcut/prompts/review_verify.txt": "80e11be0c1c0f071d60ae1d57ba831fe60a01ea7339af9e977b5d6b7f4db046a",
+      "src/moodcut/prompts/video_generated.txt": "b3c248f413a57b701af2c753277dbc53fb09affac9c250440e7390fb83a376ba"
+    }
+  },
+  "initial_plan": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "scene_id": "study_20261024_v2_s01_reunion",
+    "tone": "affectionate",
+    "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+    "shots": [
+      {
+        "shot_id": "shot_reunion_01",
+        "beat_ids": [
+          "b1",
+          "b2"
+        ],
+        "duration_s": 5,
+        "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+        "visuals": [
+          {
+            "asset_id": "movieagent_frozenii_anna_primary",
+            "crop": "full"
+          },
+          {
+            "asset_id": "movieagent_frozenii_kristoff_primary",
+            "crop": "full"
+          }
+        ],
+        "dialogue": [
+          {
+            "character_id": "frozenii_anna",
+            "text": "我真的好想你啊。"
+          },
+          {
+            "character_id": "frozenii_kristoff",
+            "text": "我也是，我会一直陪着你。"
+          }
+        ],
+        "narration": ""
+      }
+    ]
+  },
+  "review_results": {
+    "generic_review": {
+      "plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "tone": "affectionate",
+        "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+        "shots": [
+          {
+            "shot_id": "shot_reunion_01",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_frozenii_anna_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_frozenii_kristoff_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "frozenii_anna",
+                "text": "我真的好想你啊。"
+              },
+              {
+                "character_id": "frozenii_kristoff",
+                "text": "我也是，我会一直陪着你。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "report": {
+        "schema_version": "1.0",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "mode": "generic_review",
+        "issues": []
+      },
+      "patch": {
+        "schema_version": "1.0",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "edits": []
+      },
+      "verification": null,
+      "status": "unchanged",
+      "errors": [],
+      "review_protocol": "actor_self_review_v4",
+      "actor_reports": [
+        {
+          "actor_id": "__global_reviewer__",
+          "response": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "mode": "generic_review",
+            "actor_id": "__global_reviewer__",
+            "issues": []
+          }
+        }
+      ],
+      "writer_response": null,
+      "verification_kind": "programmatic_only",
+      "actor_endorsement": "not_requested",
+      "actor_feedback_status": "no_issues",
+      "feedback_disposition": {
+        "addressed_issue_ids": [],
+        "unaddressed_issue_ids": [],
+        "unaddressed_reasons": {}
+      },
+      "actor_confirmations": [],
+      "actor_confirmation_status": "not_needed",
+      "writer_candidate_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "tone": "affectionate",
+        "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+        "shots": [
+          {
+            "shot_id": "shot_reunion_01",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_frozenii_anna_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_frozenii_kristoff_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "frozenii_anna",
+                "text": "我真的好想你啊。"
+              },
+              {
+                "character_id": "frozenii_kristoff",
+                "text": "我也是，我会一直陪着你。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "negotiation_rounds": [],
+      "negotiation_round_count": 0,
+      "negotiation_status": "no_issues",
+      "confirmation_issue_ids": [],
+      "disputed_issue_ids": [],
+      "writer_output_contract": "dialogue_by_shot_json_schema_v2"
+    },
+    "moodcut": {
+      "plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "tone": "affectionate",
+        "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+        "shots": [
+          {
+            "shot_id": "shot_reunion_01",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_frozenii_anna_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_frozenii_kristoff_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "frozenii_anna",
+                "text": "我真的好想你啊。"
+              },
+              {
+                "character_id": "frozenii_kristoff",
+                "text": "我也很想你，现在哪儿也不去了。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "report": {
+        "schema_version": "1.0",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "mode": "moodcut",
+        "issues": [
+          {
+            "issue_id": "actor-2:1",
+            "shot_id": "shot_reunion_01",
+            "line_indices": [
+              1
+            ],
+            "dimension": "tone",
+            "severity": "minor",
+            "evidence": "Character's immediate intent, per beat b2, is to '回应想念并表示愿意留下陪伴Anna' (respond to missing her and express willingness to stay). The line '我也是，我会一直陪着你。' directly matches the intent to reciprocate and promise companionship. However, the subtext of '一直陪着你' (I will always be with you) implies a long-term, possibly permanent commitment. While affectionate, this could be perceived as slightly stronger than the scene's immediate context of a reunion after '分别一段时间' (a period of separation) supports, as the story boundary states '不补出...新的承诺事件' (do not introduce new commitment events). The expressed emotion is appropriately affectionate, but the scale of the promise ('一直') may slightly exceed the supported scope of the current moment.",
+            "suggestion": "To better align with the scene's restrained, immediate reunion context, consider softening the promise to be more about the present moment. For example, '我也很想你，现在哪儿也不去了。' (I've missed you too, I'm not going anywhere now.) This maintains the affectionate tone and intent to stay, but grounds it in the immediate situation rather than implying a sweeping, long-term vow.",
+            "source_issue_id": "1",
+            "actor_id": "frozenii_kristoff"
+          }
+        ]
+      },
+      "patch": {
+        "schema_version": "1.0",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "edits": [
+          {
+            "issue_id": "actor-2:1",
+            "shot_id": "shot_reunion_01",
+            "set": {
+              "dialogue": [
+                {
+                  "character_id": "frozenii_anna",
+                  "text": "我真的好想你啊。"
+                },
+                {
+                  "character_id": "frozenii_kristoff",
+                  "text": "我也很想你，现在哪儿也不去了。"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "verification": null,
+      "status": "applied",
+      "errors": [],
+      "review_protocol": "actor_self_review_v4",
+      "actor_reports": [
+        {
+          "actor_id": "frozenii_anna",
+          "response": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "mode": "moodcut",
+            "actor_id": "frozenii_anna",
+            "issues": []
+          }
+        },
+        {
+          "actor_id": "frozenii_kristoff",
+          "response": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "mode": "moodcut",
+            "actor_id": "frozenii_kristoff",
+            "issues": [
+              {
+                "issue_id": "1",
+                "shot_id": "shot_reunion_01",
+                "line_indices": [
+                  1
+                ],
+                "dimension": "tone",
+                "severity": "minor",
+                "evidence": "Character's immediate intent, per beat b2, is to '回应想念并表示愿意留下陪伴Anna' (respond to missing her and express willingness to stay). The line '我也是，我会一直陪着你。' directly matches the intent to reciprocate and promise companionship. However, the subtext of '一直陪着你' (I will always be with you) implies a long-term, possibly permanent commitment. While affectionate, this could be perceived as slightly stronger than the scene's immediate context of a reunion after '分别一段时间' (a period of separation) supports, as the story boundary states '不补出...新的承诺事件' (do not introduce new commitment events). The expressed emotion is appropriately affectionate, but the scale of the promise ('一直') may slightly exceed the supported scope of the current moment.",
+                "suggestion": "To better align with the scene's restrained, immediate reunion context, consider softening the promise to be more about the present moment. For example, '我也很想你，现在哪儿也不去了。' (I've missed you too, I'm not going anywhere now.) This maintains the affectionate tone and intent to stay, but grounds it in the immediate situation rather than implying a sweeping, long-term vow."
+              }
+            ]
+          }
+        }
+      ],
+      "writer_response": {
+        "dialogue_by_shot": {
+          "shot_reunion_01": [
+            {
+              "character_id": "frozenii_anna",
+              "text": "我真的好想你啊。"
+            },
+            {
+              "character_id": "frozenii_kristoff",
+              "text": "我也很想你，现在哪儿也不去了。"
+            }
+          ]
+        },
+        "feedback_disposition": {
+          "addressed_issue_ids": [
+            "actor-2:1"
+          ],
+          "unaddressed_issue_ids": [],
+          "unaddressed_reasons": {}
+        }
+      },
+      "verification_kind": "programmatic_only",
+      "actor_endorsement": "not_requested",
+      "actor_feedback_status": "writer_addressed",
+      "feedback_disposition": {
+        "addressed_issue_ids": [
+          "actor-2:1"
+        ],
+        "unaddressed_issue_ids": [],
+        "unaddressed_reasons": {}
+      },
+      "actor_confirmations": [
+        {
+          "actor_id": "frozenii_anna",
+          "response": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "mode": "moodcut",
+            "actor_id": "frozenii_anna",
+            "initial_plan_sha256": "ef62e94459384c3cb647fc068d0881869cab94599c8645d96eb4525e618a0f1a",
+            "candidate_plan_sha256": "2488b1b5c0f4594032c812ade50eb3304b84d75b70f04a91590fb432650bb0f2",
+            "decisions": [],
+            "new_issues": []
+          }
+        },
+        {
+          "actor_id": "frozenii_kristoff",
+          "response": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "mode": "moodcut",
+            "actor_id": "frozenii_kristoff",
+            "initial_plan_sha256": "ef62e94459384c3cb647fc068d0881869cab94599c8645d96eb4525e618a0f1a",
+            "candidate_plan_sha256": "2488b1b5c0f4594032c812ade50eb3304b84d75b70f04a91590fb432650bb0f2",
+            "decisions": [
+              {
+                "issue_id": "actor-2:1",
+                "decision": "resolved",
+                "reason": "The candidate line '我也很想你，现在哪儿也不去了。' directly addresses the original concern. It removes the long-term commitment implied by '一直陪着你' (always be with you) and replaces it with a present-focused assurance '现在哪儿也不去了' (I'm not going anywhere now). This aligns with the beat's intent to '回应想念并表示愿意留下陪伴Anna' and respects the story boundary '不补出...新的承诺事件' by grounding the promise in the immediate reunion context. The affectionate tone and subtext of reciprocated longing and willingness to stay are preserved."
+              }
+            ],
+            "new_issues": []
+          }
+        }
+      ],
+      "actor_confirmation_status": "accepted",
+      "writer_candidate_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_v2_s01_reunion",
+        "tone": "affectionate",
+        "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+        "shots": [
+          {
+            "shot_id": "shot_reunion_01",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+            "visuals": [
+              {
+                "asset_id": "movieagent_frozenii_anna_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_frozenii_kristoff_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "frozenii_anna",
+                "text": "我真的好想你啊。"
+              },
+              {
+                "character_id": "frozenii_kristoff",
+                "text": "我也很想你，现在哪儿也不去了。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "negotiation_rounds": [
+        {
+          "writer_response": {
+            "dialogue_by_shot": {
+              "shot_reunion_01": [
+                {
+                  "character_id": "frozenii_anna",
+                  "text": "我真的好想你啊。"
+                },
+                {
+                  "character_id": "frozenii_kristoff",
+                  "text": "我也很想你，现在哪儿也不去了。"
+                }
+              ]
+            },
+            "feedback_disposition": {
+              "addressed_issue_ids": [
+                "actor-2:1"
+              ],
+              "unaddressed_issue_ids": [],
+              "unaddressed_reasons": {}
+            }
+          },
+          "patch": {
+            "schema_version": "1.0",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "edits": [
+              {
+                "issue_id": "actor-2:1",
+                "shot_id": "shot_reunion_01",
+                "set": {
+                  "dialogue": [
+                    {
+                      "character_id": "frozenii_anna",
+                      "text": "我真的好想你啊。"
+                    },
+                    {
+                      "character_id": "frozenii_kristoff",
+                      "text": "我也很想你，现在哪儿也不去了。"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "feedback_disposition": {
+            "addressed_issue_ids": [
+              "actor-2:1"
+            ],
+            "unaddressed_issue_ids": [],
+            "unaddressed_reasons": {}
+          },
+          "writer_candidate_plan": {
+            "schema_version": "1.1",
+            "output_mode": "generated",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "tone": "affectionate",
+            "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+            "shots": [
+              {
+                "shot_id": "shot_reunion_01",
+                "beat_ids": [
+                  "b1",
+                  "b2"
+                ],
+                "duration_s": 5,
+                "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+                "visuals": [
+                  {
+                    "asset_id": "movieagent_frozenii_anna_primary",
+                    "crop": "full"
+                  },
+                  {
+                    "asset_id": "movieagent_frozenii_kristoff_primary",
+                    "crop": "full"
+                  }
+                ],
+                "dialogue": [
+                  {
+                    "character_id": "frozenii_anna",
+                    "text": "我真的好想你啊。"
+                  },
+                  {
+                    "character_id": "frozenii_kristoff",
+                    "text": "我也很想你，现在哪儿也不去了。"
+                  }
+                ],
+                "narration": ""
+              }
+            ]
+          },
+          "plan": {
+            "schema_version": "1.1",
+            "output_mode": "generated",
+            "scene_id": "study_20261024_v2_s01_reunion",
+            "tone": "affectionate",
+            "scene_direction": "A quiet foyer. Anna and Kristoff, adult partners who have been apart, are facing each other. The tone is affectionate. The camera should be a medium shot, focusing on their upper bodies and faces to capture their expressions. Their performance should be natural and heartfelt, conveying deep affection through subtle facial expressions and a calm, loving tone of voice. Ambient sound of a quiet foyer is present. No other sound effects or dialogue are introduced. The shot is a single, continuous take.",
+            "shots": [
+              {
+                "shot_id": "shot_reunion_01",
+                "beat_ids": [
+                  "b1",
+                  "b2"
+                ],
+                "duration_s": 5,
+                "direction": "Medium shot of Anna and Kristoff facing each other in a quiet foyer. Anna speaks first, expressing how much she has missed Kristoff. Kristoff responds with a gentle smile, reciprocating her feelings of longing and assuring her he will stay with her. Their performance should be natural and heartfelt, conveying their deep affection through subtle facial expressions and a calm, loving tone of voice. The shot is a single, continuous take.",
+                "visuals": [
+                  {
+                    "asset_id": "movieagent_frozenii_anna_primary",
+                    "crop": "full"
+                  },
+                  {
+                    "asset_id": "movieagent_frozenii_kristoff_primary",
+                    "crop": "full"
+                  }
+                ],
+                "dialogue": [
+                  {
+                    "character_id": "frozenii_anna",
+                    "text": "我真的好想你啊。"
+                  },
+                  {
+                    "character_id": "frozenii_kristoff",
+                    "text": "我也很想你，现在哪儿也不去了。"
+                  }
+                ],
+                "narration": ""
+              }
+            ]
+          },
+          "status": "applied",
+          "actor_feedback_status": "writer_addressed",
+          "actor_confirmations": [
+            {
+              "actor_id": "frozenii_anna",
+              "response": {
+                "schema_version": "1.0",
+                "scene_id": "study_20261024_v2_s01_reunion",
+                "mode": "moodcut",
+                "actor_id": "frozenii_anna",
+                "initial_plan_sha256": "ef62e94459384c3cb647fc068d0881869cab94599c8645d96eb4525e618a0f1a",
+                "candidate_plan_sha256": "2488b1b5c0f4594032c812ade50eb3304b84d75b70f04a91590fb432650bb0f2",
+                "decisions": [],
+                "new_issues": []
+              }
+            },
+            {
+              "actor_id": "frozenii_kristoff",
+              "response": {
+                "schema_version": "1.0",
+                "scene_id": "study_20261024_v2_s01_reunion",
+                "mode": "moodcut",
+                "actor_id": "frozenii_kristoff",
+                "initial_plan_sha256": "ef62e94459384c3cb647fc068d0881869cab94599c8645d96eb4525e618a0f1a",
+                "candidate_plan_sha256": "2488b1b5c0f4594032c812ade50eb3304b84d75b70f04a91590fb432650bb0f2",
+                "decisions": [
+                  {
+                    "issue_id": "actor-2:1",
+                    "decision": "resolved",
+                    "reason": "The candidate line '我也很想你，现在哪儿也不去了。' directly addresses the original concern. It removes the long-term commitment implied by '一直陪着你' (always be with you) and replaces it with a present-focused assurance '现在哪儿也不去了' (I'm not going anywhere now). This aligns with the beat's intent to '回应想念并表示愿意留下陪伴Anna' and respects the story boundary '不补出...新的承诺事件' by grounding the promise in the immediate reunion context. The affectionate tone and subtext of reciprocated longing and willingness to stay are preserved."
+                  }
+                ],
+                "new_issues": []
+              }
+            }
+          ],
+          "actor_confirmation_status": "accepted",
+          "confirmation_issue_ids": [
+            "actor-2:1"
+          ],
+          "disputed_issue_ids": []
+        }
+      ],
+      "negotiation_round_count": 1,
+      "negotiation_status": "complete",
+      "confirmation_issue_ids": [
+        "actor-2:1"
+      ],
+      "disputed_issue_ids": [],
+      "writer_output_contract": "dialogue_by_shot_json_schema_v2"
+    }
+  },
+  "video_settings": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "model": "heygen/heygen-video-1",
+    "resolution": "768p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "seed": 4213,
+    "style": "A continuous cinematic 3D animated scene. Match the two supplied character identities and clothing. Reference images specify identity and clothing only; do not copy their backgrounds or layouts. Natural continuous motion. No cards, slideshow, labels, subtitles or text overlays.",
+    "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied dialogue with the assigned speakers. Quiet indoor room ambience, no narrator, extra dialogue or music. Finish the lines naturally within the requested duration.",
+    "characters": [
+      {
+        "id": "frozenii_anna",
+        "asset_id": "movieagent_frozenii_anna_primary",
+        "voice": "Adult female Mandarin voice, natural measured delivery."
+      },
+      {
+        "id": "frozenii_kristoff",
+        "asset_id": "movieagent_frozenii_kristoff_primary",
+        "voice": "Adult male Mandarin voice, natural measured delivery."
+      }
+    ]
+  },
+  "videos": [
+    {
+      "condition": "baseline",
+      "sha256": "89f162dbb7322563ce61c9c557d0a53019d1e3110fa16fb05372e7f9f6700ca5",
+      "bytes": 735907,
+      "duration_s": "5.258344",
+      "width": 1344,
+      "height": 768,
+      "frame_rate": "24/1",
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "audio_sample_rate": "32000",
+      "request_sha256": "2c68018832e49d3c7a2c4059afad09bd94081279d2e7137909b465b8cf68bfe2",
+      "filename": "s01-v4-baseline.mp4",
+      "provider_cost_usd": "0.25"
+    },
+    {
+      "condition": "moodcut",
+      "sha256": "cbb84f73528027eb8b13a6b07eb146b24c3046a25670be0c0d53336ed820c19d",
+      "bytes": 705123,
+      "duration_s": "5.258344",
+      "width": 1344,
+      "height": 768,
+      "frame_rate": "24/1",
+      "video_codec": "h264",
+      "audio_codec": "aac",
+      "audio_sample_rate": "32000",
+      "request_sha256": "18e996c860f2da71e521e16d2e1b34121127e02e952e4db924e213782682c6a8",
+      "filename": "s01-v4-moodcut.mp4",
+      "provider_cost_usd": "0.25"
+    }
+  ],
+  "generic_video_reused_from": "baseline",
+  "costs_usd": {
+    "shared_planning": "0.00096760",
+    "generic_review": "0.00053126",
+    "moodcut_review_revision_revisit": "0.00285714",
+    "successful_text_total": "0.00435600",
+    "new_video_total": "0.50",
+    "successful_text_and_video_total": "0.50435600",
+    "earlier_failed_text_attempts": "0.00212910",
+    "all_identified_S01_attempts": "0.50648510"
+  },
+  "actual_calls": {
+    "shared_planning": 3,
+    "generic_review": 1,
+    "moodcut_review": 2,
+    "moodcut_writer": 1,
+    "moodcut_revisit": 2,
+    "video_POST": 2,
+    "new_text_calls_for_video": 0,
+    "image_generation_POST": 0
+  },
+  "prior_attempts": [
+    {
+      "attempt": 1,
+      "stage": "scene",
+      "failure": "Two segments exceeded the one-shot limit.",
+      "cost_usd": "0.0006659"
+    },
+    {
+      "attempt": 2,
+      "stage": "scene",
+      "failure": "Required beat b2 was omitted.",
+      "cost_usd": "0.0006063"
+    },
+    {
+      "attempt": 3,
+      "stage": "request_wrapper",
+      "failure": "Developer-side shared schema-node mutation constrained free text; this is not a method-quality result.",
+      "cost_usd": "0.0008569"
+    }
+  ],
+  "verification": {
+    "request_differences": "Only dialogue JSON differs between the two unique requests.",
+    "three_entries_two_generated_jobs": true,
+    "baseline_generic_request_and_video_identical": true,
+    "all_source_text_artifacts_unchanged": true,
+    "both_owned_receipts_one_POST": true,
+    "all_media_hashes_verified": true,
+    "native_audio_present": true,
+    "provider_requested_duration_s": 5,
+    "raw_encoded_duration_s": "5.258344",
+    "raw_video_dimensions": [
+      1344,
+      768
+    ],
+    "subjective_speech_and_visual_review": "not_scored",
+    "videos_not_retimed_or_redubbed": true,
+    "new_text_calls": 0,
+    "new_image_generation_calls": 0,
+    "video_posts": 2,
+    "automatic_retries": 0
+  },
+  "independent_ratings": null,
+  "limits": [
+    "One unblinded development case.",
+    "Actor revisit is not independent evaluation.",
+    "Only one writer round was exercised.",
+    "Fixed seed does not make gestures or background details identical across changed dialogue.",
+    "Native audio presence does not establish verbatim speech or speaker correctness."
+  ],
+  "release_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s01-v4-20261025",
+  "source_credit": "Character reference source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba, FrozenII/Anna and Kristoff best.png. Existing rights status remains unconfirmed; attribution is not a rights grant. These are locally inspected HeyGen development outputs, not independent evaluation. Generic review reuses the baseline file exactly; only two videos were generated. No original reference images or private receipts are redistributed."
+}

@@ -28,7 +28,7 @@ function makeCondition(condition, baseline, speakerNames) {
   if (condition.video) {
     const video = element("video");
     video.controls = true;
-    video.preload = "auto";
+    video.preload = "metadata";
     video.playsInline = true;
     video.src = condition.video;
     video.setAttribute("aria-label", condition.label + "原始视频，含原生音轨");
@@ -94,6 +94,7 @@ function showExperiment(id) {
   if (!experiment || currentId === experiment.id) return;
   pauseAll();
   currentId = experiment.id;
+  if (id !== currentId) history.replaceState(null, "", "#" + currentId);
   for (const tab of tabs) {
     const selected = tab.dataset.experiment === currentId;
     tab.setAttribute("aria-selected", String(selected));
@@ -112,6 +113,7 @@ function showExperiment(id) {
   document.querySelector("#cost").textContent = "$" + experiment.cost;
   document.querySelector("#run-date").textContent = experiment.run_date || "2026-10-24";
   document.querySelector("#duration").textContent = experiment.duration || "请求 5 秒，原片约 5.26 秒";
+  document.querySelector("#model-settings").textContent = experiment.model_label || "见本条目原始记录";
   document.querySelector("#source-record").href = experiment.record;
   document.querySelector("#source-credit").textContent = experiment.source_credit || "角色参考来源：showlab/MovieAgent 固定版本的 FrozenII Anna / Elsa。图片及角色使用权仍未核清，署名不等于授权。";
   document.querySelector("#source-statement").href = experiment.source_statement_url || "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/SOURCE.md";
@@ -163,8 +165,11 @@ fetch("data.json")
     return response.json();
   })
   .then(data => {
-    experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "s06-index");
+    experiments = data.experiments.filter(experiment =>
+      experiment.conditions.length === 3 && experiment.conditions.every(condition =>
+        typeof condition.video === "string" && condition.video.trim()));
+    if (!experiments.length) throw new Error("No completed video cases");
+    showExperiment(location.hash.slice(1) || "s01-v4");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";
