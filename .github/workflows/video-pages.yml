@@ -40,9 +40,10 @@ jobs:
           cp web/video-review/{index.html,site.css,app.js,data.json,media.sha256} _site/
           gh release download pilot-anna-elsa-20261024 --pattern '*.mp4' --dir _site/media
           gh release download pilot-anna-elsa-v3-20261024 --pattern '*.mp4' --dir _site/media
+          gh release download pilot-s06-v3-index-20261025 --pattern '*.mp4' --dir _site/media
           cd _site
           sha256sum --check media.sha256
-          test "$(find media -maxdepth 1 -name '*.mp4' | wc -l)" -eq 8
+          test "$(find media -maxdepth 1 -name '*.mp4' | wc -l)" -eq 11
           touch .nojekyll
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:

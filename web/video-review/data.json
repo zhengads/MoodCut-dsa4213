@@ -3,6 +3,88 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "s06-index",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "演员引用约束修复后，原 S06 三条件真实出片；直接听看台词修改的效果。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s06-v3-index-20261025/SOURCE.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v2",
+      "cost": "0.75421676",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-index.md",
+      "duration": "请求 5 秒；三段原片均约 5.26 秒",
+      "description": "本次复跑原 S06 收尾分工故事。三段真实视频均已生成；JSON、演员台词归属和修订校验通过，原始失败记录仍保留在历史页签。",
+      "observations": [
+        "实际 9 次文本请求、3 次视频提交，三段均为本次独立生成的原片；没有重试、换模型、手写台词或替演员改索引。",
+        "两组各有 4 条演员意见，编剧第一轮均申报全部处理；未触发退回确认和第二轮协商，不能把编剧申报当作演员最终认可。",
+        "四次演员请求按实际台词归属约束镜头和全局行号；两次编剧请求也使用 Schema。九份响应均为合法 JSON，原始字节已留存并核对。",
+        "文本 $0.00421676，加三段视频 $0.75，总计 $0.75421676；逐笔文本费用和本次账户增量均已核清，$0.10 备用金未动用。",
+        "页面台词来自实际计划，尚未核对是否完整说出、语速与表演是否自然；人工评分仍为空，不据此认定情绪组更好。",
+        "上次演员错引行号和更早的 JSON 尾部失败均保持原样；本页展示的是另一次新试跑。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "Gemini 共同初稿，未经演员审查。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-generic_review.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次活动的收尾，你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？必须重新分工。"
+            }
+          ],
+          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-moodcut.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "剩下的，你收拾。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么要我负责？必须重新分工。"
+            }
+          ],
+          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
+        }
+      ],
+      "run_date": "2026-10-25",
+      "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s06-v3-index-20261025"
+    },
+    {
       "id": "s06-schema",
       "title": "李靖与太乙：这次谁来收尾",
       "intro": "本次使用修复后的结构化编剧请求；情绪组演员行归属校验失败，未出片。",

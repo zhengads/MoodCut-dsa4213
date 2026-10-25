@@ -24,7 +24,8 @@
       <p class="scene"><span id="scene-location">正在载入场景</span><br><strong id="scene-tone">目标氛围待载入</strong></p>
     </div>
     <div class="experiment-tabs" role="tablist" aria-label="选择试跑记录">
-      <button id="tab-s06-schema" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="s06-schema">S06 Schema · 本次停止</button>
+      <button id="tab-s06-index" role="tab" aria-selected="true" aria-controls="comparison" tabindex="0" data-experiment="s06-index">S06 演员索引 · 本次出片</button>
+      <button id="tab-s06-schema" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="s06-schema">S06 Schema · 历史停止</button>
       <button id="tab-s06" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="s06">S06 JSON 模式 · 历史停止</button>
       <button id="tab-v3-captured" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-captured">Anna/Elsa v3 · 历史出片</button>
       <button id="tab-v3-shot" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="v3-shot">v3 上次 · JSON 停止</button>
@@ -33,7 +34,7 @@
       <button id="tab-global" role="tab" aria-selected="false" aria-controls="comparison" tabindex="-1" data-experiment="global">整段台词统一审查</button>
     </div>
     <p id="experiment-description" class="experiment-description" aria-live="polite">正在载入实验记录…</p>
-    <section id="comparison" role="tabpanel" aria-labelledby="tab-s06-schema" tabindex="0">
+    <section id="comparison" role="tabpanel" aria-labelledby="tab-s06-index" tabindex="0">
       <div id="players" class="players" aria-label="三条件视频与台词"></div>
     </section>
     <p id="page-error" class="error" role="alert" hidden></p>
@@ -50,7 +51,7 @@
       <aside class="record" aria-label="实验记录">
         <h2>原始记录</h2>
         <dl>
-          <div><dt>运行日期</dt><dd>2026-10-24</dd></div>
+          <div><dt>运行日期</dt><dd id="run-date">—</dd></div>
           <div><dt>模型设置</dt><dd>Gemini / DeepSeek<br>HeyGen 768p</dd></div>
           <div><dt>文本与视频实付</dt><dd id="cost">—</dd></div>
           <div><dt>每段</dt><dd id="duration">—</dd></div>
@@ -60,7 +61,7 @@
     </section>
     <div class="boundary">
       <strong>各页签保留该次真实状态；失败记录不会借用历史视频。</strong>
-      已出片的 Anna/Elsa 实验可单独播放。页面台词来自实际计划，不是已核实的语音转录。编剧申报采纳不等于演员最终认可；人工评分仍为空，出片和观看差别不证明方法更好。
+      各次已出片实验可单独播放。页面台词来自实际计划，不是已核实的语音转录。编剧申报采纳不等于演员最终认可；人工评分仍为空，出片和观看差别不证明方法更好。
     </div>
   </main>
   <footer>

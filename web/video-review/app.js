@@ -110,6 +110,7 @@ function showExperiment(id) {
   players.replaceChildren(...experiment.conditions.map(condition => makeCondition(condition, baseline, speakerNames)));
   document.querySelector("#observations").replaceChildren(...experiment.observations.map(text => element("li", text)));
   document.querySelector("#cost").textContent = "$" + experiment.cost;
+  document.querySelector("#run-date").textContent = experiment.run_date || "2026-10-24";
   document.querySelector("#duration").textContent = experiment.duration || "请求 5 秒，原片约 5.26 秒";
   document.querySelector("#source-record").href = experiment.record;
   document.querySelector("#source-credit").textContent = experiment.source_credit || "角色参考来源：showlab/MovieAgent 固定版本的 FrozenII Anna / Elsa。图片及角色使用权仍未核清，署名不等于授权。";
@@ -163,7 +164,7 @@ fetch("data.json")
   })
   .then(data => {
     experiments = data.experiments;
-    showExperiment(location.hash.slice(1) || "s06-schema");
+    showExperiment(location.hash.slice(1) || "s06-index");
   })
   .catch(() => {
     document.querySelector("#experiment-description").textContent = "实验记录未能载入。";
