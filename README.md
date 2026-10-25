@@ -1,6 +1,6 @@
 # MoodCut
 
-Latest development pilot: **S06 v3 completed three real videos**, costing **$0.75421676** with the reserve untouched. [Play and compare](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · [trial record](docs/pilots/s06-actor-v3-index.md). Human quality checks remain pending; PR #52 is unmerged and #8/#9 stay open.
+Latest development pilot: **S06 v3 completed three real videos**, costing **$0.75421676** with the reserve untouched. [Play and compare](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · [trial record](docs/pilots/s06-actor-v3-index.md). Human quality checks remain pending; [delivery PR #52](https://github.com/zhengads/MoodCut-dsa4213/pull/52), with #8/#9 still open.
 
 V3 uses one complete dialogue per shot, schema-constrained actor references and private raw-response diagnostics. [Method](docs/ACTOR_REVIEW_METHOD.md) · [ownership constraints](docs/pilots/s06-actor-index-constraints.md) · [JSON diagnostics](docs/pilots/text-response-diagnostics.md). Historical failures and successful clips remain in the [trial records](docs/pilots/) and comparison-page tabs.
 

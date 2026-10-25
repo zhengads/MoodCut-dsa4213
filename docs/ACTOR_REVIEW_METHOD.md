@@ -2,7 +2,7 @@
 
 The current protocol is `actor_self_review_v3`, with request bundle `dialogue_by_shot_json_schema_v2`. Actors use ownership-derived global line indices; writers return one complete dialogue per shot. Raw replies, errors and original reports are retained without answer repair. Interface details: [shot contract](pilots/anna-elsa-v3-shot-contract.md), [writer schema](pilots/s06-structured-writer.md), [actor references](pilots/s06-actor-index-constraints.md), [response diagnostics](pilots/text-response-diagnostics.md).
 
-The latest [S06 development trial](pilots/s06-actor-v3-index.md) completed three real videos for $0.75421676. Each writer declared all four actor opinions addressed in one round; actor confirmation was not needed. Human listening/viewing remains pending. [Play the videos](https://zhengads.github.io/MoodCut-dsa4213/#s06-index). Earlier successes and failures remain intact in the [trial records](pilots/); PR #52 is unmerged and #8/#9 stay open.
+The latest [S06 development trial](pilots/s06-actor-v3-index.md) completed three real videos for $0.75421676. Each writer declared all four actor opinions addressed in one round; actor confirmation was not needed. Human listening/viewing remains pending. [Play the videos](https://zhengads.github.io/MoodCut-dsa4213/#s06-index). Earlier successes and failures remain intact in the [trial records](pilots/); [Delivery PR #52](https://github.com/zhengads/MoodCut-dsa4213/pull/52); #8/#9 stay open.
 
 The sections below describe the original bounded-negotiation design and its dated offline acceptance. Each paid trial has a separate record and authorization; historical versions are not retagged.
 
