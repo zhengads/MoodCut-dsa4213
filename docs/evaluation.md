@@ -1043,6 +1043,109 @@ is `runs/workflow-verification-20261025/verification.json`, stage logs and
 they do not requalify the real pilot media audited above. No full-suite rerun
 is claimed for this documentation-only increment.
 
+## Real pilot imaging_quality results (2026-10-25)
+
+Following explicit approval of the eight-video CPU scope, the existing pinned
+VBench adapter evaluated all eight audited files with cached MUSIQ-SPAQ weights.
+**8 succeeded, 0 failed, 0 missing, 0 timed out.** Total worker elapsed time was
+393.202 seconds (including per-worker setup); each file took 47.795-55.513 seconds,
+within its 300-second timeout. There were no retries, GPU runs, model downloads
+or paid API calls. External API spending was $0. This supersedes the pending
+benchmark status in the earlier audit snapshot; full source qualification and
+independent human ratings remain outstanding.
+
+### Measured scores
+
+Each row is one distinct downloaded file, linked by the exact filename and
+SHA-256 in the audit table above. Actor-v3 denotes the historical
+`actor_self_review_v3` / `dialogue_by_shot_v1` outputs, not the later schema fixes.
+Scores are descriptive development-media measurements; formal inclusion remains
+false. The adapter's method label is a unique protocol/file identifier so its
+summary cannot silently pool different protocols.
+
+| Video ID (MP4 basename) | Mapped condition(s) | Raw mean MUSIQ | imaging_quality (0-1) | Worker seconds |
+| --- | --- | ---: | ---: | ---: |
+| `global-v1-baseline` | baseline | 76.547845840 | 0.765478458405 | 55.513 |
+| `global-v1-generic_review` | generic_review | 76.734780896 | 0.767347808961 | 47.850 |
+| `global-v1-moodcut` | moodcut | 75.797529713 | 0.757975297128 | 47.875 |
+| `actor-v1-baseline-and-generic` | baseline + generic_review | 76.851614368 | 0.768516143676 | 47.821 |
+| `actor-v1-moodcut` | moodcut | 75.617978004 | 0.756179780037 | 47.902 |
+| `actor-v3-baseline` | baseline | 75.800705756 | 0.758007057559 | 49.606 |
+| `actor-v3-generic_review` | generic_review | 76.946241994 | 0.769462419941 | 48.840 |
+| `actor-v3-moodcut` | moodcut | 74.978804250 | 0.749788042499 | 47.795 |
+
+The shared actor-v1 file was scored once. Its baseline and generic_review entries
+refer to that same score, not two independent samples. No pooled cross-protocol
+mean, overall VBench score, significance test or method-effect estimate is
+reported. In each of these three historical protocol groups, the moodcut file
+has a lower imaging_quality value than its baseline file. Preserve that
+observation; it does not establish worse emotional delivery or general method
+performance from one story and one clip per condition.
+
+### Score derivation and reproducibility
+
+- VBench source: `fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490`, clean pinned checkout.
+- Model: cached MUSIQ-SPAQ, SHA-256
+  `358bb6af275e28ea56821d44fb55c6cb83645db11f394d3ad65b2d149965ab50`.
+- CPU, two PyTorch threads, seed 0, `longer` preprocessing, `custom_input` mode.
+  Generation seed 4213 in the metadata is distinct from the evaluator seed.
+- The pinned implementation loads all decoded video frames, resizes inputs whose
+  longer edge exceeds 512 pixels, computes MUSIQ per frame, averages within the
+  video, then divides the raw mean by 100. Audio and prompt text are not scored.
+  The manifest retains the published scene story and explicitly identifies it as
+  different from the unavailable original compiled provider prompt.
+- Environment recorded in the batch checkpoint includes torch 2.5.1+cpu,
+  torchvision 0.20.1+cpu, pyiqa 0.1.13, timm 1.0.12, decord 0.6.0 and
+  transformers 4.37.2. See the earlier setup section for the pinned environment.
+
+Formula: `imaging_quality = mean(frame MUSIQ scores) / 100`. For example,
+`76.5478458404541 / 100 = 0.765478458404541` for global-v1 baseline. This is a
+normalized perceptual-quality score, not a 76.55% accuracy or probability.
+
+The actual invocation used the existing adapter without production-code changes:
+
+```powershell
+$env:PYTHONPATH = 'src'
+$env:HF_HUB_OFFLINE = '1'
+$env:TRANSFORMERS_OFFLINE = '1'
+.venv/Scripts/python -B -m moodcut.evaluation batch --manifest runs/pilot-vbench-plan-20261025/manifest.json --video-root runs/release-audit-20261025 --upstream references/upstream/vbench --cache runs/vbench-cache --output runs/pilot-vbench-results-20261025 --timeout 300
+```
+
+A new invocation must use a fresh output directory. This command records the
+completed execution; it does not approve further or broader compute runs.
+
+### Evidence and verification
+
+Local artifacts remain under ignored `runs/` directories:
+
+- `pilot-vbench-plan-20261025/manifest.json`: eight unique inputs;
+  `condition-map.json`: nine condition entries mapped to the eight video IDs;
+  `plan.json`: original pre-approval plan, with subsequent scope approval recorded
+  separately in `approval.json`. The original plan snapshot is preserved.
+- `pilot-vbench-results-20261025/checkpoint.json`: original input/configuration
+  identity and results; `normalized_results.json` and `summary.csv`: existing
+  adapter outputs. Each summary group contains one unique file.
+- `pilot-vbench-results-20261025/item-*/`: native VBench results and worker logs.
+- `pilot-vbench-results-20261025/public_results.json` and `public_results.csv`:
+  sanitized per-file results with hashes, protocol, condition mapping and timing.
+  Raw local checkpoints/logs can contain machine paths and should not be copied
+  into public PR text.
+
+Post-run checks matched every successful normalized score to its native raw
+score divided by 100 and to the native aggregate. All eight original media hashes
+still match the input manifest and audit. Checkpoint/normalized rows agree;
+summary totals retain all eight files with zero missing/failed entries; all nine
+condition mappings remain present. The exact CPU/thread/timeout configuration
+was checked. No human judgments were generated and no receipt or media was
+rewritten. This documentation-only increment does not claim a new full-suite
+local test run; the earlier offline workflow result remains separate evidence.
+
+The next evaluation dependencies are unchanged: complete original source records
+and receipts for qualification, independent human inspection/ratings, and an
+agreed formal study protocol. These historical image-quality measurements alone
+do not satisfy those dependencies or evaluate speech, emotion, audio quality,
+temporal consistency or the other VBench dimensions.
+
 ### 简短中文总结
 
-已核验公开的 8 段真实视频，文件哈希、音视频轨及完整解码均通过；9 条条件记录中有一段复用，且来自三个不同协议，不能混作独立实验样本。当前尚无这些视频的 VBench 分数或独立人工评分；正式来源核验仍需队友提供完整原始记录与回执。
+8 段真实视频的 VBench imaging_quality 已全部算完，零失败/超时，耗时约 6 分 33 秒，外部 API 费用 $0。三个协议下 moodcut 的该项分数均低于对应 baseline，已如实保留；这只是画面质量，不能代表情绪效果或整体方法优劣。9 条条件记录中有一段视频复用，完整来源核验和独立人工评分仍待完成。
