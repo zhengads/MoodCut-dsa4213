@@ -15,11 +15,31 @@ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
 https://www.gnu.org/licenses/gpl-3.0.html and docs/licenses/vemoclap-LICENSE.md.
 """
 import argparse
+import functools
+import gc
 import importlib.metadata
 import json
 import os
 from pathlib import Path
+import pickle
 import sys
+import types
+
+
+class _PortableUnpickler(pickle.Unpickler):
+    """Read upstream Linux path metadata with the current platform's Path."""
+
+    def find_class(self, module, name):
+        if module == "pathlib" and name in ("PosixPath", "WindowsPath"):
+            return Path
+        return super().find_class(module, name)
+
+
+def _load_metadata(torch, path):
+    portable_pickle = types.SimpleNamespace(
+        __name__="pickle", Unpickler=_PortableUnpickler,
+        load=pickle.load, loads=pickle.loads)
+    return torch.load(path, map_location="cpu", weights_only=False, pickle_module=portable_pickle)
 
 
 def _deny_network(event, args):
@@ -34,6 +54,10 @@ def predict(upstream, video):
                       MPLBACKEND="Agg")
     sys.addaudithook(_deny_network)
     import torch
+    import clip
+    cache = Path(os.environ["MOODCUT_VEMOCLAP_CACHE"])
+    # OpenAI CLIP otherwise ignores TORCH_HOME and downloads to the user's home.
+    clip.load = functools.partial(clip.load, download_root=str(cache / "clip"))
     # Third-party constructors use this method and their own module-level DEVICE.
     torch.cuda.is_available = lambda: False
     torch.set_num_threads(2)
@@ -43,9 +67,8 @@ def predict(upstream, video):
     import models_ as models
     import utils
 
-    config = torch.load(upstream / "weights/classifier/model_config.pt",
-                        map_location="cpu", weights_only=False)
-    stats = torch.load(upstream / "stats.pt", map_location="cpu", weights_only=False)
+    config = _load_metadata(torch, upstream / "weights/classifier/model_config.pt")
+    stats = _load_metadata(torch, upstream / "stats.pt")
     classifier = models.AttentionClassifier(feature_dims=config["feature_dims"],
                                            d_model=config["d_model"],
                                            d_output=config["n_labels"], dropout=config["dropout"])
@@ -95,6 +118,7 @@ def predict(upstream, video):
                 raise ValueError("Nonfinite feature values: " + name)
             features[name] = tensor.unsqueeze(0)
             del extractor
+            gc.collect()
         logits = classifier(features).squeeze()
         if logits.shape != (6,) or not torch.isfinite(logits).all():
             raise ValueError("Expected six finite classifier logits")

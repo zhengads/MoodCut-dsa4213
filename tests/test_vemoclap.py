@@ -1,5 +1,6 @@
 """Offline adapter tests. Worker probabilities are synthetic software fixtures."""
 import json
+import io
 import math
 import os
 from pathlib import Path
@@ -56,6 +57,9 @@ def case(tmp_path, monkeypatch):
         "import json,os,sys\n"
         "assert os.environ['CUDA_VISIBLE_DEVICES'] == ''\n"
         "assert os.environ['HF_HUB_OFFLINE'] == '1'\n"
+        "assert os.environ['HF_HOME'].startswith(os.environ['MOODCUT_VEMOCLAP_CACHE'])\n"
+        "assert os.environ['TEMP'].startswith(os.environ['MOODCUT_VEMOCLAP_CACHE'])\n"
+        "assert os.environ['MODEL_CACHE_DIR'].startswith(os.environ['MOODCUT_VEMOCLAP_CACHE'])\n"
         "assert 'EXAMPLE_API_KEY' not in os.environ\n"
         "result=" + repr(dict(probabilities=PROBABILITIES, missing_features=[], packages={})) + "\n"
         "with open(sys.argv[sys.argv.index('--output')+1], 'x', encoding='utf-8') as f:\n"
@@ -188,6 +192,13 @@ def test_offline_network_guard():
     for event in ("socket.connect", "socket.getaddrinfo", "socket.sendto"):
         with pytest.raises(RuntimeError, match="offline"):
             _deny_network(event, ())
+
+
+def test_linux_path_metadata_is_portable():
+    from moodcut.vemoclap_worker import _PortableUnpickler
+    # A serialized pathlib.PosixPath from an upstream Linux training run.
+    data = b"cpathlib\nPosixPath\n(Vtraining/checkpoint\ntR."
+    assert _PortableUnpickler(io.BytesIO(data)).load() == Path("training/checkpoint")
 
 
 def test_real_ffmpeg_video_preflight(tmp_path):

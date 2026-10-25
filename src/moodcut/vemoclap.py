@@ -100,7 +100,7 @@ def check_environment(upstream, python):
 
 
 def evaluate_video(*, video_path, upstream_dir, output_dir, source_kind,
-                   python_executable=sys.executable, run=False, timeout_s=600):
+                   python_executable=sys.executable, run=False, timeout_s=600, cache_dir=None):
     """Check or explicitly infer one local clip in a fresh CPU-only worker.
 
     Does not load/alter a RunRecord, establish eligibility, or generate ratings.
@@ -132,6 +132,21 @@ def evaluate_video(*, video_path, upstream_dir, output_dir, source_kind,
             report["status"] = "checked_not_run"
         else:
             env = os.environ.copy()
+            cache = Path(cache_dir or env.get("MOODCUT_VEMOCLAP_CACHE")
+                         or out.parent / "vemoclap-cache").resolve()
+            for name in ("tmp", "hf", "torch", "surya", "clip", "matplotlib", "pycache",
+                         "xdg", "appdata", "localappdata", "numba"):
+                (cache / name).mkdir(parents=True, exist_ok=True)
+            model_manifest = cache / "model-revisions.json"
+            report["model_cache_manifest_sha256"] = (
+                file_sha256(model_manifest) if model_manifest.is_file() else None)
+            env.update(MOODCUT_VEMOCLAP_CACHE=str(cache), HF_HOME=str(cache / "hf"),
+                       HF_HUB_CACHE=str(cache / "hf/hub"), TORCH_HOME=str(cache / "torch"),
+                       MODEL_CACHE_DIR=str(cache / "surya"), XDG_CACHE_HOME=str(cache / "xdg"),
+                       MPLCONFIGDIR=str(cache / "matplotlib"), NUMBA_CACHE_DIR=str(cache / "numba"),
+                       PYTHONPYCACHEPREFIX=str(cache / "pycache"), TEMP=str(cache / "tmp"),
+                       TMP=str(cache / "tmp"), APPDATA=str(cache / "appdata"),
+                       LOCALAPPDATA=str(cache / "localappdata"))
             env.update(CUDA_VISIBLE_DEVICES="", TORCH_DEVICE="cpu", HF_HUB_OFFLINE="1",
                        TRANSFORMERS_OFFLINE="1", HF_HUB_DISABLE_TELEMETRY="1",
                        MPLBACKEND="Agg", PYTHONDONTWRITEBYTECODE="1")
@@ -171,6 +186,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, help="New result directory")
     parser.add_argument("--source-kind", required=True, choices=("synthetic", "provided_local"))
     parser.add_argument("--python", default=sys.executable, help="Separate VEMOCLAP Python interpreter")
+    parser.add_argument("--cache-dir", help="Model/cache/temp root; defaults beside output, never user home")
     parser.add_argument("--timeout", type=float, default=600, help="Worker timeout in seconds")
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--run", action="store_true", help="Explicitly run local CPU inference, offline")
@@ -179,7 +195,8 @@ def main(argv=None):
     try:
         result = evaluate_video(video_path=args.video, upstream_dir=args.upstream,
                                 output_dir=args.output, source_kind=args.source_kind,
-                                python_executable=args.python, run=args.run, timeout_s=args.timeout)
+                                python_executable=args.python, run=args.run, timeout_s=args.timeout,
+                                cache_dir=args.cache_dir)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
     print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
