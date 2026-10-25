@@ -142,3 +142,10 @@ README 提供环境变量、configs/model.json 和 `check-client` 的命令。�
 configs/experiment.json 是现有软件夹具的开发分配示例，configs/pilot.json 保留原 VBench 配置。两者用途不同，均不自动授权正式实验。
 
 模块边界与后续分工见 TEAM.md 和 docs/tasks；公共接口见 CONTRACTS.md；上游来源与复用范围见 REFERENCES.md、upstream-reuse.md。所有增量走 PR，自查当前 diff、相关测试与产物，不自动合并。
+
+
+## Scoped v4 review update (2026-10-25)
+
+Reuse the existing bounded reviewer, shot writer, patch checks and saved-result validation. Add an explicitly selected `actor_self_review_v4`: one global reviewer for generic review, two independent character Actors for MoodCut, with intent/subtext/emotional-gap instructions. Keep every historical protocol, prompt and result unchanged. Both branches permit at most two writer candidates; every candidate is revisited by all reviewers, including writer-addressed feedback and Actors without initial issues. A maintained objection triggers round two; reasoned unresolved feedback is allowed. Final disagreement stays visible and is not endorsement.
+
+Validation: synthetic FakeClient regressions for reviewer counts, unconditional revisits, bounded rounds, ownership, frozen fields, failures and saved-result replay; run the existing offline suite. No paid API, video generation or formal experiment is authorized.

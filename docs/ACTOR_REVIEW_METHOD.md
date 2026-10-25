@@ -1,12 +1,28 @@
 # Actor self-review protocols
 
-The current protocol is `actor_self_review_v3`, with request bundle `dialogue_by_shot_json_schema_v2`. Actors use ownership-derived global line indices; writers return one complete dialogue per shot. Raw replies, errors and original reports are retained without answer repair. Interface details: [shot contract](pilots/anna-elsa-v3-shot-contract.md), [writer schema](pilots/s06-structured-writer.md), [actor references](pilots/s06-actor-index-constraints.md), [response diagnostics](pilots/text-response-diagnostics.md).
+The latest live-tested protocol is `actor_self_review_v3`, with request bundle `dialogue_by_shot_json_schema_v2`. Actors use ownership-derived global line indices; writers return one complete dialogue per shot. Raw replies, errors and original reports are retained without answer repair. Interface details: [shot contract](pilots/anna-elsa-v3-shot-contract.md), [writer schema](pilots/s06-structured-writer.md), [actor references](pilots/s06-actor-index-constraints.md), [response diagnostics](pilots/text-response-diagnostics.md).
 
 The latest [S06 development trial](pilots/s06-actor-v3-index.md) completed three real videos for $0.75421676. Each writer declared all four actor opinions addressed in one round; actor confirmation was not needed. Human listening/viewing remains pending. [Play the videos](https://zhengads.github.io/MoodCut-dsa4213/#s06-index). Earlier successes and failures remain intact in the [trial records](pilots/); [Delivery PR #52](https://github.com/zhengads/MoodCut-dsa4213/pull/52); #8/#9 stay open.
 
 The sections below describe the original bounded-negotiation design and its dated offline acceptance. Each paid trial has a separate record and authorization; historical versions are not retagged.
 
-## Current increment: bounded actor negotiation (v3)
+## Offline v4 increment: global reviewer versus two Actors
+
+Explicit `review_protocol="actor_self_review_v4"` selects the new protocol in `review_and_revise` or `pipeline.run_experiment`, with `output_mode="generated"`. Defaults and all historical protocol/prompt identities remain unchanged. No live trial is authorized by this increment.
+
+- `generic_review`: one ordinary global Agent checks both characters together for coherence, character credibility, naturalness, target-tone fit and feasibility.
+- `moodcut`: two independent Actors check their own lines for supported intent, perceived subtext and emotional-expression gaps. Each sees full scene context but only their own report/history and relevant writer explanations.
+- Both branches use identical first/final writer prompts and the existing shot schema. Writer payloads omit condition labels. All non-dialogue fields, line count and speaker order stay frozen.
+- No initial issues means no writer. Otherwise, every candidate is revisited by every reviewer, including writer-addressed issues, unchanged candidates and Actors without initial issues. Decisions distinguish `resolved`, `withdrawn` and `maintain_objection`; withdrawal is not evidence of improvement.
+- A maintained issue or directly introduced regression triggers the second and final revision. The writer responds to each objection but may record a specific reason a safe repair is impossible. Final revisits always run; remaining disagreements are preserved without endorsement or a third attempt.
+- New revisit issues must concern the bound reviewer's permitted lines and a shot whose dialogue changed in the latest candidate. Evidence must connect the change to a regression; this mechanical restriction cannot prove the semantic causal claim. Initial raw reports remain immutable; revisit IDs are namespaced separately.
+- Maximum review calls: generic 5, MoodCut 8; including common planning, the three-condition maximum is 16 text calls. Each review/revisit stage has a total output cap of 2,048 tokens: global 2,048, each Actor 1,024. Each writer cap remains 2,048. This matches revision opportunities and output caps, not total input tokens, latency or monetary cost; existing accounting records those separately.
+
+The legacy `actor_reports`, `actor_confirmations` and `actor_*` stage names are reused for transport and accounting. In generic v4 they contain one explicitly bound `__global_reviewer__`, not two role-playing Actors. New prompt files are `review_v4_*.txt`; old prompt bytes and historical results are untouched. Offline synthetic replies verify program behavior only, not emotion quality or method superiority.
+
+Offline acceptance (2026-10-25): the network-blocked full suite passed **1,092 tests and 195 subtests** in 413.45 seconds. That run began before the final saved-result/restored-context boundary additions. The final `python -m pytest tests/test_reviewer.py -q` then passed **180 tests and 6 subtests** in 9.81 seconds, including global/Actor counts, all-candidate revisits, 5/8-call limits, two-round regressions, writer role routing, source replay, contract mixing, errors and frozen fields. No final full-suite rerun is claimed. Reference-cache verification passed **33/33**, with zero downloads; protected tracked prompts/configuration/pilot/study content remained unchanged (93 files, accounting for Git checkout newline conversion). Original checkout/results were not written. Actual paid API calls, spending and formal experiments: **zero**.
+
+## Historical bounded actor negotiation (v3)
 
 The user approved the following offline change on 2026-10-24. Explicit `review_protocol="actor_self_review_v3"` gives both generic_review and moodcut the same bounded negotiation. Existing global/v1 results and strict v2 behavior remain unchanged; no historical source is retagged. This increment authorizes implementation, offline acceptance and one unmerged PR, not paid model/video calls.
 
