@@ -3,6 +3,456 @@
   "formal_inclusion_approved": false,
   "experiments": [
     {
+      "id": "s06-index",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "演员引用约束修复后，原 S06 三条件真实出片；直接听看台词修改的效果。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s06-v3-index-20261025/SOURCE.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v2",
+      "cost": "0.75421676",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-index.md",
+      "duration": "请求 5 秒；三段原片均约 5.26 秒",
+      "description": "本次复跑原 S06 收尾分工故事。三段真实视频均已生成；JSON、演员台词归属和修订校验通过，原始失败记录仍保留在历史页签。",
+      "observations": [
+        "实际 9 次文本请求、3 次视频提交，三段均为本次独立生成的原片；没有重试、换模型、手写台词或替演员改索引。",
+        "两组各有 4 条演员意见，编剧第一轮均申报全部处理；未触发退回确认和第二轮协商，不能把编剧申报当作演员最终认可。",
+        "四次演员请求按实际台词归属约束镜头和全局行号；两次编剧请求也使用 Schema。九份响应均为合法 JSON，原始字节已留存并核对。",
+        "文本 $0.00421676，加三段视频 $0.75，总计 $0.75421676；逐笔文本费用和本次账户增量均已核清，$0.10 备用金未动用。",
+        "页面台词来自实际计划，尚未核对是否完整说出、语速与表演是否自然；人工评分仍为空，不据此认定情绪组更好。",
+        "上次演员错引行号和更早的 JSON 尾部失败均保持原样；本页展示的是另一次新试跑。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "Gemini 共同初稿，未经演员审查。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-generic_review.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次活动的收尾，你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？必须重新分工。"
+            }
+          ],
+          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "真实出片，待听看验收",
+          "video": "media/s06-v3-index-moodcut.mp4",
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "剩下的，你收拾。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么要我负责？必须重新分工。"
+            }
+          ],
+          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
+        }
+      ],
+      "run_date": "2026-10-25",
+      "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s06-v3-index-20261025"
+    },
+    {
+      "id": "s06-schema",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "本次使用修复后的结构化编剧请求；情绪组演员行归属校验失败，未出片。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+      "cost": "0.00336748",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "修复后的 v3 再跑 S06：通用组 Schema 编剧请求成功，但情绪组太乙把自己的台词索引填成 0，指向李靖的台词。系统按硬性错误规则停止，没有视频提交或重试。",
+      "observations": [
+        "真实调用 8 次：共同规划 3 次，通用组演员 2 次加编剧 1 次，情绪组演员 2 次。情绪组未进入编剧、演员确认或第二轮协商。",
+        "通用组编剧实际使用 json_schema，输出和修订均通过；本轮全部 8 份响应都是合法 JSON。一次成功不代表今后所有调用都能保证合规。",
+        "本镜头的全局行索引为 0＝李靖、1＝太乙。输入给太乙的 own_dialogue 明确标注 line_index=1，太乙回复的 line_indices 却为 [0]；角色归属检查因此拒绝。",
+        "没有替演员改索引、重试、换模型或手写补位；没有编译或提交视频，情绪组显示的仍是诊断用初稿。",
+        "8 笔文本费用合计 $0.00336748，逐笔服务端核对且与本次账户增量一致。视频费为 0，$0.10 备用金未动用。",
+        "上次 S06 的 JSON 多余尾部失败单独保留；本次是新的演员引用索引错误。无新视频可供效果比较，不能据此判断通用或情绪审查谁更好。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "共同初稿已保存；情绪组演员行归属错误导致整块停止，视频未提交。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾，该你负责了。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "不行，得重新分工。"
+            }
+          ],
+          "note": "两位通用演员各提 1 条意见，Schema 编剧申报均已处理，修订通过；整块停止，没有新视频。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "演员行归属错误，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "太乙回复引用了李靖的全局行索引，已拒绝。这里是恢复的诊断用初稿，不是通过审查的最终稿，也没有自动改索引。"
+        }
+      ]
+    },
+    {
+      "id": "s06",
+      "title": "李靖与太乙：这次谁来收尾",
+      "intro": "同一场分工争执，比较通用审查与情绪审查。本次在文本阶段停止。",
+      "scene_location": "普通活动室门边",
+      "tone_label": "敌意、对抗",
+      "speaker_names": {
+        "nezha2_lijing": "李靖",
+        "nezha2_taiyi": "太乙"
+      },
+      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
+      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.00361854",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "S06 真实试跑在情绪组编剧 JSON 语法校验时停止：模型返回的对象后多了括号和 reasons 残片。原文已完整保存，错误可复现；没有视频提交，也没有重试。",
+      "observations": [
+        "共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用。通用组返回合法修订；情绪组编剧回复未通过 JSON 校验。",
+        "通用组李靖无意见、太乙 1 条，编剧申报已处理；情绪组两位演员各 1 条，但编剧输出未被接受。",
+        "保存的原始模型文本本地重解析为 Extra data：第 1 行、第 312 列，偏移 311。外层 HTTP 正文中的 content 与留存文本一致，不再猜测历史失败原因。",
+        "系统按硬性错误规则停止，没有截取合法前缀、删除多余尾部、重试、换模型或手写补位；未进入演员确认和第二轮协商。",
+        "9 笔文本费用合计 $0.00361854，逐笔服务端核对且与本次账户增量一致。视频提交和新增视频为 0，备用金未动用。",
+        "这次没有可供听看比较的新视频，不能据此认定通用审查更好。历史 Anna/Elsa 原片和前两次失败保持原样。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "本次共同初稿已保存；情绪组硬性错误导致整块停止，视频未提交。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "不行，得重新分工。"
+            }
+          ],
+          "note": "通用组修订合法，编剧申报采纳太乙的 1 条意见；整块停止，没有新视频。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "JSON 语法失败，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "nezha2_lijing",
+              "text": "这次收尾你来负责。"
+            },
+            {
+              "character_id": "nezha2_taiyi",
+              "text": "凭什么？重新分工。"
+            }
+          ],
+          "note": "这里只显示恢复的诊断用初稿，不是通过审查的最终稿。失败原文已保存，没有删尾巴或手写补位。"
+        }
+      ]
+    },
+    {
+      "id": "v3-captured",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.75277694",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-captured.md",
+      "duration": "请求 5 秒，原片约 5.26 秒",
+      "description": "本次 v3 真实三条件已出片：Gemini 共同规划、两位 DeepSeek 演员独立自审、Gemini 按镜头统一修订，再由 HeyGen 分别生成三段新视频。原始文本响应已私下完整保存。",
+      "observations": [
+        "真实调用：共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用；随后 3 次独立视频提交，得到 3 段不同原片，没有复用旧视频。",
+        "通用组 Anna 无意见、Elsa 有 1 条；情绪组两位演员各有 1 条。两组编剧都申报采纳了全部意见，结构校验通过。",
+        "本次没有未采纳意见，因而没有触发演员确认或第二轮协商。编剧申报已采纳不等于演员最终认可，也不证明语义上完全满足反馈。",
+        "9 份 HTTP 原始响应与模型文本均已私下保存并核对哈希，没有 JSON、留存或结构错误；无付费重试、换模型或手写台词补位。",
+        "文本 $0.00277694，视频 $0.75，总消费 $0.75277694，与本次账户扣款增量一致；$0.10 备用金未动用。",
+        "软件确认三段原片都有音轨、时长约 5.26 秒。台词是否说对、人物是否稳定、语速与温暖感如何，请实际听看；人工评分仍为空，不据此宣称情绪组更好。",
+        "前两次 v3 失败和五段历史 global/v1 原片仍原样保留在其他页签。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-baseline.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "本次共同规划的真实原片；未修改台词。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-generic_review.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你啊，安娜。"
+            }
+          ],
+          "note": "Anna 没有提出意见，Elsa 提出 1 条；编剧申报已采纳，修改 Elsa 台词。未触发演员确认。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "真实视频已生成，待听看验收",
+          "video": "media/actor-v3-moodcut.mp4",
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，你的伞还给你。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。你真好。"
+            }
+          ],
+          "note": "两位演员各提出 1 条意见；编剧申报均已采纳，修改两人的台词。未触发演员确认。"
+        }
+      ]
+    },
+    {
+      "id": "v3-shot",
+      "protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_v1",
+      "cost": "0.00291790",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-shot.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "修复后 v3 的真实试跑：通用组按镜头返回一份完整台词并通过；情绪组编剧回复未通过严格 JSON 对象解析，已按硬性错误规则停止，没有新视频。",
+      "observations": [
+        "真实调用 9 次：共同规划 3 次，两组各 2 位演员加 1 次编剧。通用组把两位演员的 3 条意见整合进同一镜头的一份台词，得到一条内部补丁。",
+        "情绪组编剧回复未通过 JSON 对象解析。现有日志没有保存失败原文，提供商只读内容查询也不可用，因此不能确定是语法、重复键、非有限值还是非对象根节点。",
+        "系统没有猜测或重构失败台词，没有重试、换模型或手写补位。未进入演员确认或第二轮协商；情绪组显示的是诊断用初稿。",
+        "9 条调用费用已逐笔查回执并与本次账户增量对齐：$0.00291790。视频提交、新视频和人工评分均为 0，备用金未动用。",
+        "先前旧接口 v3 的两条 edit 失败仍单独保留。历史页签的原片继续可看，不是本次 v3 的新输出。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，伞我用完啦，还你。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。伞还好用吗？"
+            }
+          ],
+          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "JSON 校验失败，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "恢复初稿供诊断，不是通过审查的最终稿；失败回复原文不可用，未自行重构。"
+        }
+      ]
+    },
+    {
+      "id": "v3",
+      "protocol": "actor_self_review_v3",
+      "cost": "0.00281304",
+      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3.md",
+      "duration": "请求 5 秒；实际未提交视频",
+      "description": "演员协商 v3 真实试跑已停止：情绪组编剧对同一镜头输出两条完整对白 edit，违反单镜头合并修改契约。这是硬性格式错误，不是可保留放行的创作分歧。",
+      "observations": [
+        "实际完成 9 次文本调用：共同规划 3 次、通用组 2 位演员加 1 次编剧、情绪组 2 位演员加 1 次编剧。所有输出均来自真实模型，无手写补位。",
+        "通用组修改了 Anna 的台词，Elsa 保持初稿；情绪组返回的两条 edit 指向同一镜头，且 Elsa 台词不同，不能当作两个互不影响的修改直接拼接。",
+        "系统拒绝整份情绪组补丁并恢复初稿供诊断，没有重试、手工合并或更换模型。未进入演员确认或第二轮协商，不能据此判断 v3 协商效果。",
+        "视频请求、生成视频和人工评分均为 0。实付 $0.00281304，与后续只读核账增量完全一致；$0.10 备用金未动用。",
+        "想看已有成片，可切换到历史页签；那些视频不是此次 v3 输出。"
+      ],
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "共同初稿",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "情绪组发生硬性错误，整块在视频准备前停止；没有挪用历史视频。"
+        },
+        {
+          "id": "generic_review",
+          "label": "通用自审",
+          "status": "文本已保存，视频未提交",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，你的伞还给你。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "情绪组发生硬性错误，整块在视频准备前停止；没有挪用历史视频。"
+        },
+        {
+          "id": "moodcut",
+          "label": "情绪自审",
+          "status": "修订格式错误，整块停止",
+          "video": null,
+          "dialogue": [
+            {
+              "character_id": "a",
+              "text": "艾莎，这是你的伞。"
+            },
+            {
+              "character_id": "b",
+              "text": "谢谢你，安娜。"
+            }
+          ],
+          "note": "恢复的初稿，仅供诊断；两条原始冲突 edit 见完整记录。没有可播放新片。"
+        }
+      ]
+    },
+    {
       "id": "actors",
       "protocol": "actor_self_review_v1",
       "cost": "0.50248398",

@@ -161,7 +161,7 @@ def _client(args, root, scene, manifest, *, planning=False, initial_plan=None, c
 
 
 def _plan(args, root):
-    from .client import FakeClient
+    from .client import FakeClient, capture_text_responses
     from .pipeline import usage_totals, write_json
     from .planner import PlanningError, make_plan_with_trace
     output = _path(root, args.output)
@@ -175,7 +175,8 @@ def _plan(args, root):
     client = _client(args, root, scene, manifest, planning=True)
     status = 0
     try:
-        result = make_plan_with_trace(scene, manifest, client, project_root=root)
+        with capture_text_responses(output.parent):
+            result = make_plan_with_trace(scene, manifest, client, project_root=root)
         write_json(output, result["plan"])
         write_json(trace, {"source_kind": "synthetic" if isinstance(client, FakeClient) else "development",
                            "mock": isinstance(client, FakeClient), **result})
@@ -193,7 +194,7 @@ def _plan(args, root):
 
 
 def _review(args, root):
-    from .client import FakeClient
+    from .client import FakeClient, capture_text_responses
     from .pipeline import read_json, usage_totals, write_json
     from .reviewer import review_and_revise
     from .validation import validate_plan
@@ -216,7 +217,8 @@ def _review(args, root):
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     try:
-        result = review_and_revise(scene, plan, manifest, client, mode=args.mode, project_root=root)
+        with capture_text_responses(output.parent):
+            result = review_and_revise(scene, plan, manifest, client, mode=args.mode, project_root=root)
         write_json(output, result)
     finally:
         logger.removeHandler(handler)

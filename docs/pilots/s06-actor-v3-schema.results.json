@@ -1,0 +1,1275 @@
+{
+  "kind": "actual_s06_schema_writer_trial_stopped_on_actor_line_ownership",
+  "executed_code_commit": "c4d61630f41d49a54061ffd1a8c5efb07b8c6b1b",
+  "review_protocol": "actor_self_review_v3",
+  "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+  "source_kind": "development",
+  "mock": false,
+  "formal_inclusion_approved": false,
+  "status": "failed",
+  "stop_stage": "moodcut second actor_critique ownership validation",
+  "hard_error": "Actor issue must reference only that actor's original dialogue lines",
+  "failure_detail": {
+    "kind": "actor_dialogue_ownership",
+    "actor_id": "nezha2_taiyi",
+    "supplied_global_line_indices": [
+      1
+    ],
+    "returned_line_indices": [
+      0
+    ],
+    "referenced_actor_id": "nezha2_lijing",
+    "own_dialogue_supplied": [
+      {
+        "shot_id": "shot_1",
+        "line_index": 1,
+        "text": "凭什么？重新分工。"
+      }
+    ],
+    "original_actor_response": {
+      "schema_version": "1.0",
+      "scene_id": "study_20261024_s06_cleanup_assignment",
+      "mode": "moodcut",
+      "actor_id": "nezha2_taiyi",
+      "issues": [
+        {
+          "issue_id": "tone_consistency_1",
+          "shot_id": "shot_1",
+          "line_indices": [
+            0
+          ],
+          "dimension": "tone",
+          "severity": "minor",
+          "evidence": "我的台词'凭什么？重新分工。'虽然表达了拒绝和要求，但'凭什么？'是一个常见的反问，在'敌对'的氛围下显得过于通用，缺乏针对Lijing提议的具体、尖锐的对抗性。",
+          "suggestion": "可以改为更直接、更具对抗性的拒绝，例如：'不行，必须重新分。'"
+        }
+      ]
+    }
+  },
+  "scene": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "scene_id": "study_20261024_s06_cleanup_assignment",
+    "tone": "hostile",
+    "story": "白天，普通活动室门边；两人均已站定。活动结束后，Lijing向Taiyi提出由Taiyi负责这次收尾，Taiyi拒绝这一安排并要求重新分工。两人都没有开始收尾，分工仍未达成一致。他们是此次活动的共同参与者，不设定师徒、官职或其他权力关系。 两名角色开场均已在场，只用自然的普通话完成一次简短交流。两人各说一句，共两句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头；动作只服务于给定事件，不添加第三人、旁白、字幕、文字卡、额外情节、魔法、打斗或复杂物品操作。不直接说出目标氛围标签，不引用电影原台词，不依赖观众知道原电影剧情。角色图只用于身份和服装参考；参考图中的表情、姿态、背景及道具不是本场景必须复制的内容。 本场景补充边界：不新增过去的欠账、受伤、惩罚或道德罪责。 不增加第三人、法术、饮酒、搬运或争斗。",
+    "characters": [
+      {
+        "id": "nezha2_lijing",
+        "name": "Lijing / 李靖"
+      },
+      {
+        "id": "nezha2_taiyi",
+        "name": "Taiyi / 太乙"
+      }
+    ],
+    "beats": [
+      {
+        "id": "b1",
+        "description": "Lijing提出由Taiyi负责这次收尾。"
+      },
+      {
+        "id": "b2",
+        "description": "Taiyi拒绝该安排并要求重新分工。"
+      }
+    ],
+    "asset_ids": [
+      "movieagent_nezha2_lijing_primary",
+      "movieagent_nezha2_taiyi_primary"
+    ],
+    "min_duration_s": 5,
+    "max_duration_s": 5,
+    "min_shot_duration_s": 5,
+    "max_shot_duration_s": 5,
+    "max_shots": 1,
+    "provenance": {
+      "kind": "assistant_authored_selected_input_not_executed",
+      "source_url": null,
+      "revision": null,
+      "adaptation": "New fictional scene brief authored in this conversation; existing MovieAgent images supply character appearance only. Not the source film plot, API-generated planning/review output or independent external evidence.",
+      "design_path": "docs/studies/six-story-20261024/design.json",
+      "design_story_id": "s06_cleanup_assignment",
+      "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "formal_inclusion_approved": false,
+      "input_scope_approved": true
+    }
+  },
+  "assets": {
+    "schema_version": "1.0",
+    "assets": [
+      {
+        "asset_id": "movieagent_nezha2_lijing_primary",
+        "character_id": "nezha2_lijing",
+        "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Lijing/best.png",
+        "width": 1430,
+        "height": 858,
+        "sha256": "1d76acc9ae754ee7c03cc2d43d63355965885fa7cc2c59ad5b98e68193e34921",
+        "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Lijing/best.png",
+        "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+        "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+        "allowed_crops": [
+          "full"
+        ]
+      },
+      {
+        "asset_id": "movieagent_nezha2_taiyi_primary",
+        "character_id": "nezha2_taiyi",
+        "path": "assets/raw/movieagent/dataset/NeZha2/character_list/Taiyi/best.png",
+        "width": 620,
+        "height": 556,
+        "sha256": "ec12b5b39235984f1443e5da224d5b177c662ddb463dc83f3bdde8389b4aa75a",
+        "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/NeZha2/character_list/Taiyi/best.png",
+        "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+        "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+        "allowed_crops": [
+          "full"
+        ]
+      }
+    ]
+  },
+  "generation_settings": {
+    "schema_version": "1.1",
+    "output_mode": "generated",
+    "model": "heygen/heygen-video-1",
+    "resolution": "768p",
+    "aspect_ratio": "16:9",
+    "generate_audio": true,
+    "seed": 4213,
+    "style": "A continuous cinematic 3D animated scene. Match the two supplied character identities and clothing. Reference images specify identity and clothing only; do not copy their backgrounds or layouts. Natural continuous motion. No cards, slideshow, labels, subtitles or text overlays.",
+    "sound": "Native synchronized Mandarin Chinese dialogue. Speak only the supplied dialogue with the assigned speakers. Quiet indoor room ambience, no narrator, extra dialogue or music. Finish the lines naturally within the requested duration.",
+    "characters": [
+      {
+        "id": "nezha2_lijing",
+        "asset_id": "movieagent_nezha2_lijing_primary",
+        "voice": "Adult male Mandarin voice, medium-low register, natural measured delivery."
+      },
+      {
+        "id": "nezha2_taiyi",
+        "asset_id": "movieagent_nezha2_taiyi_primary",
+        "voice": "Distinct adult male Mandarin voice, slightly higher and fuller register, natural measured delivery."
+      }
+    ]
+  },
+  "text_model_settings": {
+    "model_id": "role-policy/30db591df7f6dc35d645c4a79d82287fc37e33c43baaefa658dbeadf4dc146ed",
+    "roles": {
+      "planning": {
+        "model_id": "google/gemini-2.5-flash-lite",
+        "temperature": 0.0,
+        "reasoning_enabled": false
+      },
+      "review": {
+        "model_id": "deepseek/deepseek-v3.2",
+        "temperature": 0.0,
+        "reasoning_enabled": false
+      }
+    }
+  },
+  "initial_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+  "shared_generation_sha256": "fdb67195096d196bb4426254a7b7478b7f51278ec0c364f60374191f20e732c5",
+  "template_sha256": "fd02ec3b8b13f962bd5d9ce25cbd49f1b29eefe09cf39866900fabe0c12e4479",
+  "planning": {
+    "status": "completed",
+    "raw_responses": {
+      "director": {
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "tone": "hostile",
+        "beat_order": [
+          "b1",
+          "b2"
+        ],
+        "approach": "The scene opens in a common activity room, near the door. Both Lijing and Taiyi are already standing, facing each other. The camera is framed to capture both characters from the waist up, emphasizing their confrontation. Lijing, with a stern expression, initiates the conflict by assigning the cleanup task to Taiyi. Taiyi, visibly annoyed, rejects the assignment and demands a redistribution of tasks. Their body language should convey tension and unwillingness to compromise. The dialogue is delivered in natural Mandarin, with each character speaking one sentence, totaling 16-22 characters, spoken at a moderate pace. The overall shot is a single, continuous take lasting 5 seconds, focusing on the unresolved dispute."
+      },
+      "scene": {
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+        "segments": [
+          {
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "description": "Lijing提出由Taiyi负责这次收尾，Taiyi拒绝该安排并要求重新分工。",
+            "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+            "duration_s": 5
+          }
+        ]
+      },
+      "shot": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "tone": "hostile",
+        "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+        "shots": [
+          {
+            "shot_id": "shot_1",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+            "visuals": [
+              {
+                "asset_id": "movieagent_nezha2_lijing_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_nezha2_taiyi_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "nezha2_lijing",
+                "text": "这次收尾你来负责。"
+              },
+              {
+                "character_id": "nezha2_taiyi",
+                "text": "凭什么？重新分工。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      }
+    },
+    "call_records": [
+      {
+        "stage": "director",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792855673-ucSr6qFAXOFFSwWmCwf6",
+        "max_output_tokens": 1024,
+        "estimated_input_tokens": 5626,
+        "reserved_cost_usd": 0.0009722,
+        "input_tokens": 1696,
+        "output_tokens": 210,
+        "estimated_cost_usd": 0.0002536,
+        "provider_cost_usd": 0.0002536,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 1.7970000000022992,
+        "parse_error": null,
+        "response_artifact": {
+          "body_path": "PRIVATE/text-responses/2239352fdbd04b3b8fd55f119ab963f0/response.bin",
+          "body_sha256": "41668d21549916df2d62160c2054501280af16844f4ea1d6719b6fa06a0205c4",
+          "body_bytes": 1715,
+          "complete": true,
+          "credential_redacted": false,
+          "content_path": "PRIVATE/text-responses/2239352fdbd04b3b8fd55f119ab963f0/content.txt",
+          "content_sha256": "e66e7e00cf5bcf633e9cd77e7cbe7bda5c2b0d1dd68a5a8106f9626384f6bac8",
+          "content_bytes": 860,
+          "content_encoding": "utf-8/surrogatepass",
+          "content_credential_redacted": false
+        },
+        "retention_error": null
+      },
+      {
+        "stage": "scene",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792855675-FohtS8q8DfmpcQJwvPAC",
+        "max_output_tokens": 2048,
+        "estimated_input_tokens": 6829,
+        "reserved_cost_usd": 0.0015021,
+        "input_tokens": 1968,
+        "output_tokens": 198,
+        "estimated_cost_usd": 0.000276,
+        "provider_cost_usd": 0.000276,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 1.6090000000003783,
+        "parse_error": null,
+        "response_artifact": {
+          "body_path": "PRIVATE/text-responses/0fe076f8ef2c40fb91b5451fcc01cc17/response.bin",
+          "body_sha256": "09e29f896796f4e9b825253f78b2cfc0bf3b8bc3fcfa85f237e76e75f0816343",
+          "body_bytes": 1502,
+          "complete": true,
+          "credential_redacted": false,
+          "content_path": "PRIVATE/text-responses/0fe076f8ef2c40fb91b5451fcc01cc17/content.txt",
+          "content_sha256": "c2edfcf481f66898055930f44f75c79b3760a02ca6565b49fd1326c7398f85c6",
+          "content_bytes": 648,
+          "content_encoding": "utf-8/surrogatepass",
+          "content_credential_redacted": false
+        },
+        "retention_error": null
+      },
+      {
+        "stage": "shot",
+        "model_id": "google/gemini-2.5-flash-lite",
+        "response_model": "google/gemini-2.5-flash-lite",
+        "generation_id": "gen-1792855677-8AXu9pAaWuakEBWMvdBJ",
+        "max_output_tokens": 4096,
+        "estimated_input_tokens": 7995,
+        "reserved_cost_usd": 0.0024379,
+        "input_tokens": 2283,
+        "output_tokens": 321,
+        "estimated_cost_usd": 0.0003567,
+        "provider_cost_usd": 0.0003567,
+        "status": "success",
+        "http_status": null,
+        "elapsed_s": 2.077999999997701,
+        "parse_error": null,
+        "response_artifact": {
+          "body_path": "PRIVATE/text-responses/d59f8d64e7f74b41a8c4a6039e32aec2/response.bin",
+          "body_sha256": "f2b1106738744df2267b473db43836dc4758f223bdd854b0c45f1d8c053d7290",
+          "body_bytes": 1864,
+          "complete": true,
+          "credential_redacted": false,
+          "content_path": "PRIVATE/text-responses/d59f8d64e7f74b41a8c4a6039e32aec2/content.txt",
+          "content_sha256": "34e2e8867beabeda292ad8412901d4349a765e14bbe8c8ae0de6865ef8aa214e",
+          "content_bytes": 956,
+          "content_encoding": "utf-8/surrogatepass",
+          "content_credential_redacted": false
+        },
+        "retention_error": null
+      }
+    ],
+    "provider_cost_usd": 0.0008863
+  },
+  "conditions": [
+    {
+      "condition": "baseline",
+      "initial_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+      "final_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+      "shared_generation_sha256": "fdb67195096d196bb4426254a7b7478b7f51278ec0c364f60374191f20e732c5",
+      "review_status": "not_applicable",
+      "run_status": "prepared",
+      "failure_kind": null,
+      "errors": [],
+      "review_protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+      "call_records": [],
+      "provider_cost_usd": 0,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "tone": "hostile",
+        "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+        "shots": [
+          {
+            "shot_id": "shot_1",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+            "visuals": [
+              {
+                "asset_id": "movieagent_nezha2_lijing_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_nezha2_taiyi_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "nezha2_lijing",
+                "text": "这次收尾你来负责。"
+              },
+              {
+                "character_id": "nezha2_taiyi",
+                "text": "凭什么？重新分工。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": null
+    },
+    {
+      "condition": "generic_review",
+      "initial_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+      "final_plan_sha256": "750679e248d210299b847fc637141e4c7a845b7db3959c8ed1256f0317feabb8",
+      "shared_generation_sha256": "fdb67195096d196bb4426254a7b7478b7f51278ec0c364f60374191f20e732c5",
+      "review_status": "applied",
+      "run_status": "prepared",
+      "failure_kind": null,
+      "errors": [],
+      "review_protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+      "call_records": [
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792855679-GtEpLf7TiZssWuiD75FZ",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 6938,
+          "reserved_cost_usd": 0.00258212,
+          "input_tokens": 1894,
+          "output_tokens": 205,
+          "estimated_cost_usd": 0.00057034,
+          "provider_cost_usd": 0.00057034,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 5.60899999999674,
+          "parse_error": null,
+          "response_artifact": {
+            "body_path": "PRIVATE/text-responses/980cc8a606754107a425bf8f0dc974be/response.bin",
+            "body_sha256": "54dc72d52016bac48c4a1a30111425b57e789006015f4c692929da6280ef6a77",
+            "body_bytes": 1692,
+            "complete": true,
+            "credential_redacted": false,
+            "content_path": "PRIVATE/text-responses/980cc8a606754107a425bf8f0dc974be/content.txt",
+            "content_sha256": "fd4f790a280074b2ce3fbc1ebaceb8e123144d11672162d3c807856a31df748d",
+            "content_bytes": 801,
+            "content_encoding": "utf-8/surrogatepass",
+            "content_credential_redacted": false
+          },
+          "retention_error": null
+        },
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792855684-nzXUnFmNKol7MJc1gEFu",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 6936,
+          "reserved_cost_usd": 0.0025816,
+          "input_tokens": 1894,
+          "output_tokens": 231,
+          "estimated_cost_usd": 0.00058022,
+          "provider_cost_usd": 0.00035558,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 6.985000000000582,
+          "parse_error": null,
+          "response_artifact": {
+            "body_path": "PRIVATE/text-responses/f7bf160f86a242be98014155ebca9223/response.bin",
+            "body_sha256": "3de16113a213bce51f31ec1a36936b09e9f0b96f527216cc3a9a4165e2364ece",
+            "body_bytes": 1718,
+            "complete": true,
+            "credential_redacted": false,
+            "content_path": "PRIVATE/text-responses/f7bf160f86a242be98014155ebca9223/content.txt",
+            "content_sha256": "6f95bffc3684f568f37bc61295b9873c4623ea9d8316f73176eb276e542cbaf1",
+            "content_bytes": 813,
+            "content_encoding": "utf-8/surrogatepass",
+            "content_credential_redacted": false
+          },
+          "retention_error": null
+        },
+        {
+          "stage": "actor_revise",
+          "model_id": "google/gemini-2.5-flash-lite",
+          "response_model": "google/gemini-2.5-flash-lite",
+          "generation_id": "gen-1792855691-r2S7T7uk6ZIh1dR5X7Hk",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 13302,
+          "reserved_cost_usd": 0.0021494,
+          "input_tokens": 3665,
+          "output_tokens": 117,
+          "estimated_cost_usd": 0.0004133,
+          "provider_cost_usd": 0.0004133,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 1.5940000000009604,
+          "parse_error": null,
+          "response_artifact": {
+            "body_path": "PRIVATE/text-responses/7b0cdd1efdff4fba8e4e5f15ee115884/response.bin",
+            "body_sha256": "f46bac52bffe0de3bb6f457fe2d6cbd060718374f22b86174f95cb00548556f2",
+            "body_bytes": 1208,
+            "complete": true,
+            "credential_redacted": false,
+            "content_path": "PRIVATE/text-responses/7b0cdd1efdff4fba8e4e5f15ee115884/content.txt",
+            "content_sha256": "3e52733fb4d4fa760a44c4bf47ed2486ec8d0cf5aeda19931f146ba84cc54bb9",
+            "content_bytes": 346,
+            "content_encoding": "utf-8/surrogatepass",
+            "content_credential_redacted": false
+          },
+          "retention_error": null,
+          "response_format_type": "json_schema",
+          "json_schema_sha256": "fa94b904b6b9bfed72ae86a097c48de7e2235335771a789b44283c53a15453f7"
+        }
+      ],
+      "provider_cost_usd": 0.00133922,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "tone": "hostile",
+        "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+        "shots": [
+          {
+            "shot_id": "shot_1",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+            "visuals": [
+              {
+                "asset_id": "movieagent_nezha2_lijing_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_nezha2_taiyi_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "nezha2_lijing",
+                "text": "这次收尾，该你负责了。"
+              },
+              {
+                "character_id": "nezha2_taiyi",
+                "text": "不行，得重新分工。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": null,
+      "review_result": {
+        "plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "tone": "hostile",
+          "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+          "shots": [
+            {
+              "shot_id": "shot_1",
+              "beat_ids": [
+                "b1",
+                "b2"
+              ],
+              "duration_s": 5,
+              "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_nezha2_lijing_primary",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_nezha2_taiyi_primary",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "nezha2_lijing",
+                  "text": "这次收尾，该你负责了。"
+                },
+                {
+                  "character_id": "nezha2_taiyi",
+                  "text": "不行，得重新分工。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "report": {
+          "schema_version": "1.0",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "mode": "generic_review",
+          "issues": [
+            {
+              "issue_id": "actor-1:tone_consistency",
+              "shot_id": "shot_1",
+              "line_indices": [
+                0
+              ],
+              "dimension": "tone",
+              "severity": "minor",
+              "evidence": "The line '这次收尾你来负责。' is a direct command. While it fits the 'hostile' tone by being confrontational, it could be slightly more argumentative or challenging to better match the scene's description of a tense standoff where no power hierarchy exists.",
+              "suggestion": "Consider adding a slight challenge or justification to the demand, e.g., '这次收尾，该你负责了。'",
+              "source_issue_id": "tone_consistency",
+              "actor_id": "nezha2_lijing"
+            },
+            {
+              "issue_id": "actor-2:taiyi_tone_1",
+              "shot_id": "shot_1",
+              "line_indices": [
+                1
+              ],
+              "dimension": "tone",
+              "severity": "minor",
+              "evidence": "我的台词'凭什么？重新分工。'直接表达了拒绝和要求，符合'hostile'氛围，但'凭什么？'这个反问在中文语境中带有强烈的挑衅和不屑，可能将紧张感推得略高，与'共同参与者，不设定权力关系'的平等前提稍有冲突，显得更像下属对上级的质问。",
+              "suggestion": "将'凭什么？'调整为更体现平等争执的措辞，例如'不行，得重新分工。'或'我不同意，重新分工。'",
+              "source_issue_id": "taiyi_tone_1",
+              "actor_id": "nezha2_taiyi"
+            }
+          ]
+        },
+        "patch": {
+          "schema_version": "1.0",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "edits": [
+            {
+              "issue_id": "actor-1:tone_consistency",
+              "shot_id": "shot_1",
+              "set": {
+                "dialogue": [
+                  {
+                    "character_id": "nezha2_lijing",
+                    "text": "这次收尾，该你负责了。"
+                  },
+                  {
+                    "character_id": "nezha2_taiyi",
+                    "text": "不行，得重新分工。"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "verification": null,
+        "status": "applied",
+        "errors": [],
+        "review_protocol": "actor_self_review_v3",
+        "actor_reports": [
+          {
+            "actor_id": "nezha2_lijing",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "mode": "generic_review",
+              "actor_id": "nezha2_lijing",
+              "issues": [
+                {
+                  "issue_id": "tone_consistency",
+                  "shot_id": "shot_1",
+                  "line_indices": [
+                    0
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "The line '这次收尾你来负责。' is a direct command. While it fits the 'hostile' tone by being confrontational, it could be slightly more argumentative or challenging to better match the scene's description of a tense standoff where no power hierarchy exists.",
+                  "suggestion": "Consider adding a slight challenge or justification to the demand, e.g., '这次收尾，该你负责了。'"
+                }
+              ]
+            }
+          },
+          {
+            "actor_id": "nezha2_taiyi",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "mode": "generic_review",
+              "actor_id": "nezha2_taiyi",
+              "issues": [
+                {
+                  "issue_id": "taiyi_tone_1",
+                  "shot_id": "shot_1",
+                  "line_indices": [
+                    1
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "我的台词'凭什么？重新分工。'直接表达了拒绝和要求，符合'hostile'氛围，但'凭什么？'这个反问在中文语境中带有强烈的挑衅和不屑，可能将紧张感推得略高，与'共同参与者，不设定权力关系'的平等前提稍有冲突，显得更像下属对上级的质问。",
+                  "suggestion": "将'凭什么？'调整为更体现平等争执的措辞，例如'不行，得重新分工。'或'我不同意，重新分工。'"
+                }
+              ]
+            }
+          }
+        ],
+        "writer_response": {
+          "dialogue_by_shot": {
+            "shot_1": [
+              {
+                "character_id": "nezha2_lijing",
+                "text": "这次收尾，该你负责了。"
+              },
+              {
+                "character_id": "nezha2_taiyi",
+                "text": "不行，得重新分工。"
+              }
+            ]
+          },
+          "feedback_disposition": {
+            "addressed_issue_ids": [
+              "actor-1:tone_consistency",
+              "actor-2:taiyi_tone_1"
+            ],
+            "unaddressed_issue_ids": [],
+            "unaddressed_reasons": {}
+          }
+        },
+        "verification_kind": "programmatic_only",
+        "actor_endorsement": "not_requested",
+        "actor_feedback_status": "writer_addressed",
+        "feedback_disposition": {
+          "addressed_issue_ids": [
+            "actor-1:tone_consistency",
+            "actor-2:taiyi_tone_1"
+          ],
+          "unaddressed_issue_ids": [],
+          "unaddressed_reasons": {}
+        },
+        "actor_confirmations": [],
+        "actor_confirmation_status": "not_needed",
+        "writer_candidate_plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "tone": "hostile",
+          "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+          "shots": [
+            {
+              "shot_id": "shot_1",
+              "beat_ids": [
+                "b1",
+                "b2"
+              ],
+              "duration_s": 5,
+              "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_nezha2_lijing_primary",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_nezha2_taiyi_primary",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "nezha2_lijing",
+                  "text": "这次收尾，该你负责了。"
+                },
+                {
+                  "character_id": "nezha2_taiyi",
+                  "text": "不行，得重新分工。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "negotiation_rounds": [
+          {
+            "writer_response": {
+              "dialogue_by_shot": {
+                "shot_1": [
+                  {
+                    "character_id": "nezha2_lijing",
+                    "text": "这次收尾，该你负责了。"
+                  },
+                  {
+                    "character_id": "nezha2_taiyi",
+                    "text": "不行，得重新分工。"
+                  }
+                ]
+              },
+              "feedback_disposition": {
+                "addressed_issue_ids": [
+                  "actor-1:tone_consistency",
+                  "actor-2:taiyi_tone_1"
+                ],
+                "unaddressed_issue_ids": [],
+                "unaddressed_reasons": {}
+              }
+            },
+            "patch": {
+              "schema_version": "1.0",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "edits": [
+                {
+                  "issue_id": "actor-1:tone_consistency",
+                  "shot_id": "shot_1",
+                  "set": {
+                    "dialogue": [
+                      {
+                        "character_id": "nezha2_lijing",
+                        "text": "这次收尾，该你负责了。"
+                      },
+                      {
+                        "character_id": "nezha2_taiyi",
+                        "text": "不行，得重新分工。"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "feedback_disposition": {
+              "addressed_issue_ids": [
+                "actor-1:tone_consistency",
+                "actor-2:taiyi_tone_1"
+              ],
+              "unaddressed_issue_ids": [],
+              "unaddressed_reasons": {}
+            },
+            "writer_candidate_plan": {
+              "schema_version": "1.1",
+              "output_mode": "generated",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "tone": "hostile",
+              "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+              "shots": [
+                {
+                  "shot_id": "shot_1",
+                  "beat_ids": [
+                    "b1",
+                    "b2"
+                  ],
+                  "duration_s": 5,
+                  "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+                  "visuals": [
+                    {
+                      "asset_id": "movieagent_nezha2_lijing_primary",
+                      "crop": "full"
+                    },
+                    {
+                      "asset_id": "movieagent_nezha2_taiyi_primary",
+                      "crop": "full"
+                    }
+                  ],
+                  "dialogue": [
+                    {
+                      "character_id": "nezha2_lijing",
+                      "text": "这次收尾，该你负责了。"
+                    },
+                    {
+                      "character_id": "nezha2_taiyi",
+                      "text": "不行，得重新分工。"
+                    }
+                  ],
+                  "narration": ""
+                }
+              ]
+            },
+            "plan": {
+              "schema_version": "1.1",
+              "output_mode": "generated",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "tone": "hostile",
+              "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+              "shots": [
+                {
+                  "shot_id": "shot_1",
+                  "beat_ids": [
+                    "b1",
+                    "b2"
+                  ],
+                  "duration_s": 5,
+                  "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+                  "visuals": [
+                    {
+                      "asset_id": "movieagent_nezha2_lijing_primary",
+                      "crop": "full"
+                    },
+                    {
+                      "asset_id": "movieagent_nezha2_taiyi_primary",
+                      "crop": "full"
+                    }
+                  ],
+                  "dialogue": [
+                    {
+                      "character_id": "nezha2_lijing",
+                      "text": "这次收尾，该你负责了。"
+                    },
+                    {
+                      "character_id": "nezha2_taiyi",
+                      "text": "不行，得重新分工。"
+                    }
+                  ],
+                  "narration": ""
+                }
+              ]
+            },
+            "status": "applied",
+            "actor_feedback_status": "writer_addressed",
+            "actor_confirmations": [],
+            "actor_confirmation_status": "not_needed",
+            "confirmation_issue_ids": [],
+            "disputed_issue_ids": []
+          }
+        ],
+        "negotiation_round_count": 1,
+        "negotiation_status": "complete",
+        "confirmation_issue_ids": [],
+        "disputed_issue_ids": [],
+        "writer_output_contract": "dialogue_by_shot_json_schema_v1"
+      }
+    },
+    {
+      "condition": "moodcut",
+      "initial_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+      "final_plan_sha256": "285a98e79f98b3093b72bb095bbbd7f848156e3af8e91f3ad2e34a998c24a025",
+      "shared_generation_sha256": "fdb67195096d196bb4426254a7b7478b7f51278ec0c364f60374191f20e732c5",
+      "review_status": "review_failed",
+      "run_status": "failed",
+      "failure_kind": "review",
+      "errors": [
+        "Actor issue must reference only that actor's original dialogue lines",
+        "ValueError: Generated source review must be applied or unchanged; failed fallback is invalid"
+      ],
+      "review_protocol": "actor_self_review_v3",
+      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
+      "call_records": [
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792855693-aU4cHIwcldQtqZGu7B0Q",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 7057,
+          "reserved_cost_usd": 0.00261306,
+          "input_tokens": 1914,
+          "output_tokens": 193,
+          "estimated_cost_usd": 0.00057098,
+          "provider_cost_usd": 0.00057098,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 5.78099999999904,
+          "parse_error": null,
+          "response_artifact": {
+            "body_path": "PRIVATE/text-responses/449e5b9f4a39485faa264f2c981d42e9/response.bin",
+            "body_sha256": "6c8b2a6b0dfe737903a5f60f8b102273d128543b675f60a4a1634336bc218f98",
+            "body_bytes": 1577,
+            "complete": true,
+            "credential_redacted": false,
+            "content_path": "PRIVATE/text-responses/449e5b9f4a39485faa264f2c981d42e9/content.txt",
+            "content_sha256": "c093f785c65162279503f1667af3b5a776fed1a75372c6cfcc454193561d722d",
+            "content_bytes": 685,
+            "content_encoding": "utf-8/surrogatepass",
+            "content_credential_redacted": false
+          },
+          "retention_error": null
+        },
+        {
+          "stage": "actor_critique",
+          "model_id": "deepseek/deepseek-v3.2",
+          "response_model": "deepseek/deepseek-v3.2",
+          "generation_id": "gen-1792855699-InR1IGTPWaIenhaDcF83",
+          "max_output_tokens": 2048,
+          "estimated_input_tokens": 7055,
+          "reserved_cost_usd": 0.00261254,
+          "input_tokens": 1914,
+          "output_tokens": 193,
+          "estimated_cost_usd": 0.00057098,
+          "provider_cost_usd": 0.00057098,
+          "status": "success",
+          "http_status": null,
+          "elapsed_s": 9.25,
+          "parse_error": null,
+          "response_artifact": {
+            "body_path": "PRIVATE/text-responses/5bef434a4d464c5896630e5a3c92f7e6/response.bin",
+            "body_sha256": "a4415141edb945db4ad46cc9db4028eaa6b5dfc2b71f75b091d118e01ebbf04f",
+            "body_bytes": 1570,
+            "complete": true,
+            "credential_redacted": false,
+            "content_path": "PRIVATE/text-responses/5bef434a4d464c5896630e5a3c92f7e6/content.txt",
+            "content_sha256": "08bdb421d6c1b69c3be400be1fc72cf32056aba114e46e43733d24e7e02f13eb",
+            "content_bytes": 667,
+            "content_encoding": "utf-8/surrogatepass",
+            "content_credential_redacted": false
+          },
+          "retention_error": null
+        }
+      ],
+      "provider_cost_usd": 0.00114196,
+      "final_plan": {
+        "schema_version": "1.1",
+        "output_mode": "generated",
+        "scene_id": "study_20261024_s06_cleanup_assignment",
+        "tone": "hostile",
+        "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+        "shots": [
+          {
+            "shot_id": "shot_1",
+            "beat_ids": [
+              "b1",
+              "b2"
+            ],
+            "duration_s": 5,
+            "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+            "visuals": [
+              {
+                "asset_id": "movieagent_nezha2_lijing_primary",
+                "crop": "full"
+              },
+              {
+                "asset_id": "movieagent_nezha2_taiyi_primary",
+                "crop": "full"
+              }
+            ],
+            "dialogue": [
+              {
+                "character_id": "nezha2_lijing",
+                "text": "这次收尾你来负责。"
+              },
+              {
+                "character_id": "nezha2_taiyi",
+                "text": "凭什么？重新分工。"
+              }
+            ],
+            "narration": ""
+          }
+        ]
+      },
+      "video": null,
+      "review_result": {
+        "plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "tone": "hostile",
+          "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+          "shots": [
+            {
+              "shot_id": "shot_1",
+              "beat_ids": [
+                "b1",
+                "b2"
+              ],
+              "duration_s": 5,
+              "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_nezha2_lijing_primary",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_nezha2_taiyi_primary",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "nezha2_lijing",
+                  "text": "这次收尾你来负责。"
+                },
+                {
+                  "character_id": "nezha2_taiyi",
+                  "text": "凭什么？重新分工。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "report": {
+          "schema_version": "1.0",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "mode": "moodcut",
+          "issues": []
+        },
+        "patch": {
+          "schema_version": "1.0",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "edits": []
+        },
+        "verification": null,
+        "status": "review_failed",
+        "errors": [
+          "Actor issue must reference only that actor's original dialogue lines"
+        ],
+        "review_protocol": "actor_self_review_v3",
+        "actor_reports": [
+          {
+            "actor_id": "nezha2_lijing",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "mode": "moodcut",
+              "actor_id": "nezha2_lijing",
+              "issues": [
+                {
+                  "issue_id": "tone_flatness",
+                  "shot_id": "shot_1",
+                  "line_indices": [
+                    0
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "The line '这次收尾你来负责。' is a direct, unadorned command. While it conveys an assignment, it lacks the interpersonal friction or sharpness implied by the 'hostile' scene tone. It sounds more like a neutral instruction than a contentious demand that would provoke immediate refusal.",
+                  "suggestion": "这次收尾，必须你来负责。"
+                }
+              ]
+            }
+          },
+          {
+            "actor_id": "nezha2_taiyi",
+            "response": {
+              "schema_version": "1.0",
+              "scene_id": "study_20261024_s06_cleanup_assignment",
+              "mode": "moodcut",
+              "actor_id": "nezha2_taiyi",
+              "issues": [
+                {
+                  "issue_id": "tone_consistency_1",
+                  "shot_id": "shot_1",
+                  "line_indices": [
+                    0
+                  ],
+                  "dimension": "tone",
+                  "severity": "minor",
+                  "evidence": "我的台词'凭什么？重新分工。'虽然表达了拒绝和要求，但'凭什么？'是一个常见的反问，在'敌对'的氛围下显得过于通用，缺乏针对Lijing提议的具体、尖锐的对抗性。",
+                  "suggestion": "可以改为更直接、更具对抗性的拒绝，例如：'不行，必须重新分。'"
+                }
+              ]
+            }
+          }
+        ],
+        "writer_response": null,
+        "verification_kind": "programmatic_only",
+        "actor_endorsement": "not_requested",
+        "actor_feedback_status": "incomplete",
+        "feedback_disposition": {
+          "addressed_issue_ids": [],
+          "unaddressed_issue_ids": [],
+          "unaddressed_reasons": {}
+        },
+        "actor_confirmations": [],
+        "actor_confirmation_status": "not_needed",
+        "writer_candidate_plan": {
+          "schema_version": "1.1",
+          "output_mode": "generated",
+          "scene_id": "study_20261024_s06_cleanup_assignment",
+          "tone": "hostile",
+          "scene_direction": "白天，普通活动室门边；Lijing和Taiyi均已站定，面对面。两人均已站定，表情不悦，肢体语言显示出紧张和不愿妥协。",
+          "shots": [
+            {
+              "shot_id": "shot_1",
+              "beat_ids": [
+                "b1",
+                "b2"
+              ],
+              "duration_s": 5,
+              "direction": "中景镜头，Lijing和Taiyi的腰部以上。Lijing语气强硬地提出由Taiyi负责收尾，Taiyi则面露不悦，拒绝并要求重新分工。两人对话简短，语速适中，总计16-22字。镜头保持稳定，时长5秒。",
+              "visuals": [
+                {
+                  "asset_id": "movieagent_nezha2_lijing_primary",
+                  "crop": "full"
+                },
+                {
+                  "asset_id": "movieagent_nezha2_taiyi_primary",
+                  "crop": "full"
+                }
+              ],
+              "dialogue": [
+                {
+                  "character_id": "nezha2_lijing",
+                  "text": "这次收尾你来负责。"
+                },
+                {
+                  "character_id": "nezha2_taiyi",
+                  "text": "凭什么？重新分工。"
+                }
+              ],
+              "narration": ""
+            }
+          ]
+        },
+        "negotiation_rounds": [],
+        "negotiation_round_count": 0,
+        "negotiation_status": "failed",
+        "confirmation_issue_ids": [],
+        "disputed_issue_ids": [],
+        "writer_output_contract": "dialogue_by_shot_json_schema_v1"
+      }
+    }
+  ],
+  "actual_text_posts": 8,
+  "actual_video_posts": 0,
+  "text_cost_usd": 0.00336748,
+  "video_cost_usd": "0",
+  "total_cost_usd": "0.00336748",
+  "key_usage_delta_usd": "0.00336748",
+  "provider_costs_match_account_delta": true,
+  "text_generation_cost_checks": [
+    {
+      "generation_id": "gen-1792855673-ucSr6qFAXOFFSwWmCwf6",
+      "stage": "director",
+      "recorded_cost_usd": 0.0002536,
+      "server_total_cost_usd": 0.0002536,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP"
+    },
+    {
+      "generation_id": "gen-1792855675-FohtS8q8DfmpcQJwvPAC",
+      "stage": "scene",
+      "recorded_cost_usd": 0.000276,
+      "server_total_cost_usd": 0.000276,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP"
+    },
+    {
+      "generation_id": "gen-1792855677-8AXu9pAaWuakEBWMvdBJ",
+      "stage": "shot",
+      "recorded_cost_usd": 0.0003567,
+      "server_total_cost_usd": 0.0003567,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP"
+    },
+    {
+      "generation_id": "gen-1792855679-GtEpLf7TiZssWuiD75FZ",
+      "stage": "actor_critique",
+      "recorded_cost_usd": 0.00057034,
+      "server_total_cost_usd": 0.00057034,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop"
+    },
+    {
+      "generation_id": "gen-1792855684-nzXUnFmNKol7MJc1gEFu",
+      "stage": "actor_critique",
+      "recorded_cost_usd": 0.00035558,
+      "server_total_cost_usd": 0.00035558,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop"
+    },
+    {
+      "generation_id": "gen-1792855691-r2S7T7uk6ZIh1dR5X7Hk",
+      "stage": "actor_revise",
+      "recorded_cost_usd": 0.0004133,
+      "server_total_cost_usd": 0.0004133,
+      "finish_reason": "stop",
+      "native_finish_reason": "STOP"
+    },
+    {
+      "generation_id": "gen-1792855693-aU4cHIwcldQtqZGu7B0Q",
+      "stage": "actor_critique",
+      "recorded_cost_usd": 0.00057098,
+      "server_total_cost_usd": 0.00057098,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop"
+    },
+    {
+      "generation_id": "gen-1792855699-InR1IGTPWaIenhaDcF83",
+      "stage": "actor_critique",
+      "recorded_cost_usd": 0.00057098,
+      "server_total_cost_usd": 0.00057098,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop"
+    }
+  ],
+  "schema_writer_calls": 1,
+  "schema_writer_call_validated": true,
+  "private_text_responses_retained": 8,
+  "private_response_hashes_verified": true,
+  "budget_usd": {
+    "text_ceiling": "0.10",
+    "combined_ceiling": "1.00",
+    "unspendable_reserve": "0.10",
+    "reserve_spent": "0"
+  },
+  "paid_retries": 0,
+  "handwritten_dialogue_fallback": false,
+  "actor_indices_manually_repaired": false,
+  "failed_source_preparation_rejected": true,
+  "source_rejection": "Generated preparation: source must be a prepared 1.1/generated script block",
+  "preserved_historical_files": 1038,
+  "rights_status": "unconfirmed",
+  "manual_quality_checks": "not possible: no new video; no human ratings filled",
+  "developer_observations": [
+    "All eight returned completions are valid JSON; raw content/body hashes and diagnostics were preserved.",
+    "The generic writer used native json_schema, returned valid per-shot dialogue and declared both actor opinions addressed. One successful constrained request does not prove future enforcement.",
+    "Emotional Taiyi quoted its own refusal in evidence, but line_indices=[0] points to Lijing in the full shot. The input explicitly supplied own_dialogue.line_index=1. Validation stopped before emotional writer.",
+    "No actor index was translated or corrected. No actor confirmation, second round, video compilation/submission, retry or handwritten fallback occurred.",
+    "The earlier S06 extra-data failure remains unchanged and separate. This run stopped on a different binding error; no video-quality comparison is possible."
+  ]
+}

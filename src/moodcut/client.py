@@ -3,6 +3,8 @@
 from abc import ABC, abstractmethod
 from collections import deque
 from copy import deepcopy
+from contextlib import contextmanager
+from contextvars import ContextVar
 import json
 import hashlib
 import math
@@ -13,6 +15,20 @@ from threading import Lock
 from time import monotonic
 from urllib.error import HTTPError
 from urllib.request import HTTPRedirectHandler, Request, build_opener
+from uuid import uuid4
+
+from .contracts import json_hash, _json_copy
+
+
+def _response_format(json_schema):
+    if json_schema is None:
+        return {"type": "json_object"}
+    if not isinstance(json_schema, dict) or json_schema.get("type") != "object":
+        raise ValueError("json_schema must describe a JSON object")
+    # Copy/validate before any HTTP attempt; no schema or answer repair.
+    schema = _json_copy(json_schema)
+    return {"type": "json_schema", "json_schema": {
+        "name": "moodcut_response", "strict": True, "schema": schema}}
 
 
 class LLMClient(ABC):
@@ -26,6 +42,7 @@ class LLMClient(ABC):
         system: str,
         user: str,
         max_output_tokens: int,
+        json_schema: dict | None = None,
     ) -> dict:
         """Return a JSON-compatible dictionary."""
         raise NotImplementedError
@@ -48,6 +65,7 @@ class FakeClient(LLMClient):
         system: str,
         user: str,
         max_output_tokens: int,
+        json_schema: dict | None = None,
     ) -> dict:
 
         if not isinstance(stage, str) or not stage.strip():
@@ -62,12 +80,16 @@ class FakeClient(LLMClient):
         if type(max_output_tokens) is not int or max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be a positive integer")
 
+        format_spec = _response_format(json_schema)
         self.calls.append({
             "stage": stage,
             "system": system,
             "user": user,
             "max_output_tokens": max_output_tokens,
         })
+        if json_schema is not None:
+            self.calls[-1].update(response_format_type=format_spec["type"],
+                                 json_schema_sha256=json_hash(json_schema))
 
         if not self._responses:
             raise RuntimeError(
@@ -108,19 +130,64 @@ class _NoRedirect(HTTPRedirectHandler):
         return None
 
 
+class _StrictJSONError(ValueError):
+    def __init__(self, kind, message):
+        super().__init__(message)
+        self.kind = kind
+
+
 def _strict_json(text):
     def object_pairs(pairs):
         obj = {}
         for key, value in pairs:
             if key in obj:
-                raise ValueError("duplicate JSON key")
+                raise _StrictJSONError("duplicate_key", "duplicate JSON key")
             obj[key] = value
         return obj
 
     def reject_constant(value):
-        raise ValueError("non-finite JSON value")
+        raise _StrictJSONError("non_finite", "non-finite JSON value")
 
-    return json.loads(text, object_pairs_hook=object_pairs, parse_constant=reject_constant)
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            reject_constant(value)
+        return number
+
+    return json.loads(text, object_pairs_hook=object_pairs, parse_constant=reject_constant,
+                      parse_float=finite_float)
+
+
+_RESPONSE_ROOT = ContextVar("moodcut_text_response_root", default=None)
+
+
+@contextmanager
+def capture_text_responses(directory):
+    """Bind a private artifact root for this execution context, including routed roles."""
+    token = _RESPONSE_ROOT.set(Path(directory).resolve())
+    try:
+        yield
+    finally:
+        _RESPONSE_ROOT.reset(token)
+
+
+def _json_diagnostic(record, layer, exc):
+    if isinstance(exc, json.JSONDecodeError):
+        detail = {"kind": "syntax_error", "line": exc.lineno, "column": exc.colno, "position": exc.pos}
+    elif isinstance(exc, _StrictJSONError):
+        detail = {"kind": exc.kind}
+    elif isinstance(exc, UnicodeDecodeError):
+        detail = {"kind": "invalid_utf8", "byte_offset": exc.start}
+    elif isinstance(exc, RecursionError):
+        detail = {"kind": "excessive_nesting"}
+    else:
+        detail = {"kind": "parser_error"}
+    record["parse_error"] = {"layer": layer, **detail}
+    if layer == "content":
+        record["failure_kind"] = {"syntax_error": "invalid_json_syntax",
+            "duplicate_key": "duplicate_json_key", "non_finite": "non_finite_number",
+            "non_object": "non_object_json"}.get(detail["kind"], "invalid_json_value")
+    return OpenRouterError(f"OpenRouter {layer} JSON error: {detail['kind']}; no retry performed")
 
 
 def _number(value, field, *, positive=False):
@@ -252,7 +319,8 @@ class OpenRouterClient(LLMClient):
 
     def __init__(self, *, api_key, model, input_price_per_million,
                  output_price_per_million, allow_paid=False, max_cost_usd=None,
-                 timeout_s=60, temperature=0, reasoning_enabled=None, json_schema_stages=None):
+                 timeout_s=60, temperature=0, reasoning_enabled=None, response_dir=None,
+                 json_schema_stages=None):
         if not isinstance(api_key, str) or not api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required")
         if any(c in api_key for c in "\r\n"):
@@ -288,6 +356,64 @@ class OpenRouterClient(LLMClient):
         self._spent = Decimal(0)
         self._unknown_charge = False
         self._lock = Lock()
+        self._response_root = Path(response_dir).resolve() if response_dir is not None else None
+
+    def _redact_response(self, data):
+        # Never retain request headers. Defensively remove an echoed credential too.
+        for secret in (self._api_key.encode("utf-8"), json.dumps(self._api_key)[1:-1].encode("utf-8")):
+            data = data.replace(secret, b"[REDACTED]")
+        return data
+
+    def _retain_body(self, raw, record):
+        root = _RESPONSE_ROOT.get() or self._response_root
+        if root is None:
+            return
+        relative = Path("PRIVATE") / "text-responses" / uuid4().hex
+        saved = self._redact_response(raw)
+        try:
+            directory = root / relative
+            directory.mkdir(parents=True, exist_ok=False, mode=0o700)
+            with (directory / "response.bin").open("xb") as stream:
+                stream.write(saved)
+            record["response_artifact"] = {
+                "body_path": (relative / "response.bin").as_posix(),
+                "body_sha256": hashlib.sha256(saved).hexdigest(), "body_bytes": len(saved),
+                "complete": len(raw) <= self.MAX_RESPONSE_BYTES, "credential_redacted": saved != raw}
+        except OSError:
+            record["retention_error"] = "body_write_failed"
+
+    def _retain_content(self, content, record):
+        artifact = record["response_artifact"]
+        if artifact is None:
+            return
+        root = _RESPONSE_ROOT.get() or self._response_root
+        raw = content.encode("utf-8", errors="surrogatepass")
+        saved = self._redact_response(raw)
+        path = Path(artifact["body_path"]).with_name("content.txt")
+        try:
+            with (root / path).open("xb") as stream:
+                stream.write(saved)
+            artifact.update(content_path=path.as_posix(), content_sha256=hashlib.sha256(saved).hexdigest(),
+                            content_bytes=len(saved), content_encoding="utf-8/surrogatepass",
+                            content_credential_redacted=saved != raw)
+        except OSError:
+            record["retention_error"] = "content_write_failed"
+
+    def _retain_diagnostic(self, record):
+        artifact = record["response_artifact"]
+        if artifact is None:
+            return
+        root = _RESPONSE_ROOT.get() or self._response_root
+        path = root / Path(artifact["body_path"]).with_name("diagnostic.json")
+        try:
+            with path.open("x", encoding="utf-8") as stream:
+                json.dump(record, stream, ensure_ascii=True, allow_nan=False, indent=2)
+        except OSError:
+            record["retention_error"] = "diagnostic_write_failed"
+            if record["status"] == "success":
+                record["status"] = "retention_failed"
+                record["error"] = "Text response diagnostic could not be saved; no retry performed"
+                raise OpenRouterError(record["error"]) from None
 
     @classmethod
     def from_env(cls, config_path="configs/model.json", *, allow_paid=False,
@@ -312,7 +438,7 @@ class OpenRouterClient(LLMClient):
         """Actual summed provider cost, or None if any attempt's cost is unknown."""
         return None if self._unknown_charge else float(self._spent)
 
-    def complete_json(self, *, stage, system, user, max_output_tokens):
+    def complete_json(self, *, stage, system, user, max_output_tokens, json_schema=None):
         if not self.allow_paid:
             raise PermissionError("Live OpenRouter calls require explicit allow_paid=True")
         if not isinstance(stage, str) or not stage.strip():
@@ -321,19 +447,28 @@ class OpenRouterClient(LLMClient):
             raise TypeError("system and user must be strings")
         if type(max_output_tokens) is not int or max_output_tokens <= 0:
             raise ValueError("max_output_tokens must be a positive integer")
+        format_spec = self._request_format(stage, json_schema)
         # Serializes reservations and responses when a single client is shared.
         with self._lock:
-            return self._complete(stage, system, user, max_output_tokens)
+            return self._complete(stage, system, user, max_output_tokens, format_spec)
 
-    def _reservation(self, system, user, max_output_tokens):
+    def _request_format(self, stage, json_schema):
+        if json_schema is None and stage in self.json_schema_stages:
+            return _planning_json_schema(stage)
+        return _response_format(json_schema)
+
+    def _reservation(self, system, user, max_output_tokens, json_schema=None):
         estimated_input = len(system.encode("utf-8")) + len(user.encode("utf-8")) + 64
+        if json_schema is not None:
+            estimated_input += len(json.dumps(json_schema, ensure_ascii=False, allow_nan=False).encode("utf-8"))
         return estimated_input, (estimated_input * self._input_price +
                 max_output_tokens * self._output_price) / Decimal(1_000_000)
 
-    def _complete(self, stage, system, user, max_output_tokens):
+    def _complete(self, stage, system, user, max_output_tokens, format_spec):
         if self._unknown_charge:
             raise BudgetError("Previous request cost is unknown; reconcile it before further calls")
-        estimated_input, reservation = self._reservation(system, user, max_output_tokens)
+        schema = format_spec.get("json_schema", {}).get("schema")
+        estimated_input, reservation = self._reservation(system, user, max_output_tokens, schema)
         if self._spent + reservation > self._max_cost:
             raise BudgetError("Estimated request cost exceeds the remaining client budget")
         payload = {
@@ -342,11 +477,7 @@ class OpenRouterClient(LLMClient):
                          {"role": "user", "content": user}],
             "stream": False, "max_tokens": max_output_tokens,
             "temperature": self.temperature,
-            "response_format": (
-                _planning_json_schema(stage)
-                if stage in self.json_schema_stages
-                else {"type": "json_object"}
-            ),
+            "response_format": format_spec,
             "provider": {"allow_fallbacks": False, "require_parameters": True,
                          "max_price": {"prompt": float(self._input_price),
                                        "completion": float(self._output_price), "request": 0}},
@@ -363,7 +494,10 @@ class OpenRouterClient(LLMClient):
                   "reserved_cost_usd": float(reservation), "input_tokens": None,
                   "output_tokens": None, "estimated_cost_usd": None,
                   "provider_cost_usd": None, "status": "request_failed",
-                  "http_status": None, "elapsed_s": None}
+                  "http_status": None, "elapsed_s": None, "parse_error": None,
+                  "response_artifact": None, "retention_error": None}
+        if schema is not None:
+            record.update(response_format_type="json_schema", json_schema_sha256=json_hash(schema))
         self.calls.append(record)
         start = monotonic()
         envelope = None
@@ -374,26 +508,37 @@ class OpenRouterClient(LLMClient):
             except HTTPError as exc:
                 record["http_status"] = exc.code
                 try:
-                    envelope = _strict_json(exc.read(self.MAX_RESPONSE_BYTES).decode("utf-8"))
-                except (ValueError, OSError):
-                    pass
+                    raw = exc.read(self.MAX_RESPONSE_BYTES + 1)
+                    self._retain_body(raw, record)
+                    if len(raw) <= self.MAX_RESPONSE_BYTES:
+                        try:
+                            envelope = _strict_json(raw.decode("utf-8"))
+                        except (ValueError, UnicodeError, RecursionError) as error:
+                            _json_diagnostic(record, "envelope", error)
+                except OSError:
+                    record["retention_error"] = "http_error_body_unavailable"
                 finally:
                     exc.close()
                 raise OpenRouterError(f"OpenRouter HTTP {exc.code}; no retry performed") from None
+            self._retain_body(raw, record)  # Persist bytes before either JSON parser runs.
             if len(raw) > self.MAX_RESPONSE_BYTES:
                 raise OpenRouterError("OpenRouter response exceeds the client size limit")
             record["status"] = "invalid_response"
             try:
                 envelope = _strict_json(raw.decode("utf-8"))
-            except (ValueError, UnicodeError):
-                raise OpenRouterError("OpenRouter returned an invalid JSON envelope") from None
-            if not isinstance(envelope, dict) or envelope.get("error") is not None:
+            except (ValueError, UnicodeError, RecursionError) as exc:
+                raise _json_diagnostic(record, "envelope", exc) from None
+            if not isinstance(envelope, dict):
+                raise _json_diagnostic(record, "envelope", _StrictJSONError("non_object", "response root is not an object"))
+            if envelope.get("error") is not None:
                 raise OpenRouterError("OpenRouter returned an error or invalid response envelope")
             choices = envelope.get("choices")
             if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
                 raise OpenRouterError("OpenRouter returned no unique completion")
             choice = choices[0]
             message = choice.get("message")
+            if isinstance(message, dict) and isinstance(message.get("content"), str):
+                self._retain_content(message["content"], record)
             if choice.get("finish_reason") != "stop" or choice.get("error") is not None:
                 raise OpenRouterError("OpenRouter completion was incomplete or refused")
             if (not isinstance(message, dict) or message.get("refusal")
@@ -401,27 +546,16 @@ class OpenRouterClient(LLMClient):
                 raise OpenRouterError("OpenRouter completion has no JSON text content")
             try:
                 result = _strict_json(message["content"])
-                json.dumps(result, allow_nan=False)
+                try:
+                    json.dumps(result, allow_nan=False)
+                except ValueError:
+                    raise _StrictJSONError("non_finite", "model JSON contains a non-finite number") from None
                 if not isinstance(result, dict):
-                    raise ValueError("not an object")
+                    raise _StrictJSONError("non_object", "model JSON root is not an object")
             except (ValueError, TypeError, OverflowError, RecursionError) as exc:
-                if isinstance(exc, ValueError) and str(exc) == "duplicate JSON key":
-                    failure_kind = "duplicate_json_key"
-                elif isinstance(exc, ValueError) and str(exc) == "non-finite JSON value":
-                    failure_kind = "non_finite_number"
-                elif isinstance(exc, ValueError) and str(exc) == "not an object":
-                    failure_kind = "non_object_json"
-                elif isinstance(exc, ValueError) and str(exc).startswith("Out of range float values"):
-                    failure_kind = "non_finite_number"
-                elif isinstance(exc, (OverflowError, RecursionError, TypeError)):
-                    failure_kind = "invalid_json_value"
-                else:
-                    failure_kind = "invalid_json_syntax"
-
-                record["failure_kind"] = failure_kind
-                raise OpenRouterError(
-                    "Model output failed strict JSON validation: " + failure_kind
-                ) from None
+                raise _json_diagnostic(record, "content", exc) from None
+            if record["retention_error"] is not None:
+                raise OpenRouterError("Text response could not be retained; no retry performed")
             record["status"] = "success"
             return result
         except OpenRouterError as exc:
@@ -433,6 +567,7 @@ class OpenRouterClient(LLMClient):
         finally:
             self._record_usage(envelope, record)
             record["elapsed_s"] = monotonic() - start
+            self._retain_diagnostic(record)
 
     def _record_usage(self, envelope, record):
         if isinstance(envelope, dict):
@@ -521,7 +656,7 @@ class RoleRoutedClient(LLMClient):
             return "review"
         raise ValueError("Unknown text stage; no model selected")
 
-    def complete_json(self, *, stage, system, user, max_output_tokens):
+    def complete_json(self, *, stage, system, user, max_output_tokens, json_schema=None):
         with self._lock:
             if self.stopped:
                 raise BudgetError("Text pipeline stopped: " + self._stop_reason)
@@ -530,15 +665,18 @@ class RoleRoutedClient(LLMClient):
             if (not isinstance(system, str) or not isinstance(user, str)
                     or type(max_output_tokens) is not int or max_output_tokens <= 0):
                 raise ValueError("Invalid text request")
+            format_spec = client._request_format(stage, json_schema)
+            schema = format_spec.get("json_schema", {}).get("schema")
             cost = self.spent_usd
-            _, reservation = client._reservation(system, user, max_output_tokens)
+            _, reservation = client._reservation(system, user, max_output_tokens, schema)
             if cost is None or Decimal(str(cost)) + reservation > self._max_cost:
                 self.stop("Shared text cost is unknown or its budget is exhausted")
                 raise BudgetError(self._stop_reason)
             before = len(client.calls)
             try:
+                options = {} if json_schema is None else {"json_schema": json_schema}
                 result = client.complete_json(stage=stage, system=system, user=user,
-                                              max_output_tokens=max_output_tokens)
+                                              max_output_tokens=max_output_tokens, **options)
                 cost = self.spent_usd
                 if cost is None or Decimal(str(cost)) > self._max_cost:
                     raise BudgetError("Returned text cost is unknown or exceeds the shared budget")

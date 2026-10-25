@@ -1,19 +1,31 @@
-# Historical video comparison page
+# Development video comparison page
 
-Live URL: <https://zhengads.github.io/MoodCut-dsa4213/>. This directory contains a dependency-free static page, with three native video players, two historical experiment tabs and line changes relative to each experiment's initial plan. It does not invoke models, generate media, collect ratings or change experiment records.
+Live URL: <https://zhengads.github.io/MoodCut-dsa4213/#s06-index>. Eight tabs separate the latest successful S06 actor-reference trial, two historical S06 failures, the successful Anna/Elsa v3 trial, two earlier stopped v3 attempts, historical actor-v1 and historical global review. Native players appear only for actual media; failed attempts never borrow an old clip.
 
-## Sources and presentation boundary
+## Sources and boundaries
 
-`data.json` is presentation metadata derived from the preserved `docs/pilots/anna-elsa-agent.results.json` and `anna-elsa-actor.results.json` at commit `a466b1bc000889e30af0254126f7c0ec41def436`. It records planned dialogue rather than verified speech transcripts. Five exact provider videos cover six condition entries; actor-v1 generic shares the same video as baseline. V2 confirmation has only offline acceptance and no new video in this page. Original unresolved opinions, fees and rights limitations remain visible; this is not a blind evaluation or a method-quality claim.
+The [latest S06 actor-reference trial](../../docs/pilots/s06-actor-v3-index.md) completed three distinct real videos after nine text calls and three video submissions. Total spending was $0.75421676, reconciled to the account increment; the reserve was untouched, with no retry or handwritten answer/index repair. Both branches recorded four actor opinions and each first writer declared all addressed, so no actor confirmation or second round occurred. All nine raw replies were retained and validated; human listening/viewing remains pending.
 
-The existing `pilot-anna-elsa-20261024` repository Release owns the immutable input files and source attribution. `media.sha256` pins all five MP4s. The source images, credentials, private logs and binary videos are excluded from this directory and from the code branch's Git history.
+The [historical S06 schema trial](../../docs/pilots/s06-actor-v3-schema.md) stopped on emotional Taiyi's global line ownership after eight valid-JSON calls costing $0.00336748. Original actor index `[0]` remains unchanged despite input own index `1`; no emotional writer or video followed. The [earlier S06 JSON trial](../../docs/pilots/s06-actor-v3.md) stopped on emotional writer syntax after nine text calls costing $0.00361854. Its captured extra-data error remains at line 1 / column 312. Both failed entries retain three explicit no-submission states and their original planned or diagnostic dialogue.
 
-## Deployment without merging PR #48
+The [successful Anna/Elsa v3 trial](../../docs/pilots/anna-elsa-actor-v3-captured.md) retains three distinct original videos from nine text calls and three video submissions, totaling $0.75277694. Both first-round writers declared all opinions addressed; actor confirmation was not needed. Speech accuracy, identity, pacing and emotional expression remain for human listening/viewing.
 
-`.github/workflows/video-pages.yml` runs when this directory or that workflow changes on `feat/issue-8-agent-animation-pilot` or `main`. Manual dispatch is also declared for later use. Only these two branches are allowed to deploy to the repository's `github-pages` environment. Pages uses workflow deployment, not a source branch build; PR #48 remains unmerged.
+All seven historical experiment objects remain unchanged. The [per-shot JSON failure](../../docs/pilots/anna-elsa-actor-v3-shot.md) still has missing invalid text and an unknown exact subtype. The [original conflicting-edit failure](../../docs/pilots/anna-elsa-actor-v3.md) still stops before video. Five historical global/v1 MP4s cover six condition entries, including actor-v1 baseline/generic reuse. None is relabeled v3; strict v2 retains offline evidence only.
 
-The job copies only the five named page files, downloads the five historical MP4 release attachments into the temporary artifact's `media/` directory, verifies their pinned SHA-256 and file count, and uploads/deploys that static artifact with pinned official GitHub Pages actions. No generation client, experiment entry point, paid API or additional account is used. Videos are hosted alongside the page so native players request media from the same origin rather than navigating to Release downloads. The generated artifact contains only regular static files and is not committed back to Git.
+Planned dialogue is not a verified speech transcript. Writer-declared addressed status is not actor endorsement or semantic verification. This page reveals methods and targets and is development viewing material, not blinded evaluation or proof of emotional improvement. Source attribution and unconfirmed image/character rights remain explicit.
+
+## Original media and deployment
+
+Three fixed Release archives provide all **11 MP4s**, each with source statements and byte manifests:
+
+- `pilot-anna-elsa-20261024`: five historical global/v1 clips.
+- `pilot-anna-elsa-v3-20261024`: three Anna/Elsa v3 clips.
+- `pilot-s06-v3-index-20261025`: three S06 actor-reference v3 clips.
+
+`media.sha256` retains the eight historical hashes and adds the three S06 hashes. Original reference images, credentials, private logs and binary videos are excluded from code Git history.
+
+The pinned Pages workflow deploys from main and the existing pilot branches under the configured environment policy. It copies the static page files, downloads all three Release archives into a temporary artifact, verifies the 11 exact hashes/file count and deploys. Deployment calls no model and uploads no reference image.
 
 ## Verification
 
-Verify all six displayed dialogue pairs and file hashes against the preserved result JSON and Release before publishing. Browser checks cover desktop/mobile layout, all five media sources playing, experiment switching, keyboard navigation, no autoplay and pausing other clips when one plays. After deployment, recheck the live page and all five hosted MP4 bytes. Keep the original pilot records and media unchanged; add future experiments explicitly rather than relabeling these historical clips.
+Compare dialogue, status, date and cost fields with the linked preserved result JSON. Check that `data.json` and the HTML expose eight matching tab IDs, the latest default is `s06-index`, and all 11 entries in `media.sha256` match the original Release files and hosted bytes/MIME. Verify the three S06 players and three Anna/Elsa v3 players; each historical failed entry must retain its three empty states. Recheck correct speakers, targets, source links, tab navigation, responsive layout and actual playback. Preserve the seven historical experiment objects and eight historical media hashes. These engineering checks do not fill human ratings or approve formal inclusion.

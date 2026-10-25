@@ -151,7 +151,33 @@ def test_plan_openrouter_transport_stub_records_usage_without_network(tmp_path, 
     assert len(requests) == 3 and calls["calls"] == 3
     assert calls["provider_cost_usd"] == pytest.approx(0.0003)
     assert all(request["model"] == "test/model" for request in requests)
+    for call in calls["call_records"]:
+        artifact = call["response_artifact"]
+        assert (tmp_path / artifact["body_path"]).is_file()
+        assert (tmp_path / artifact["content_path"]).is_file()
+        assert call["parse_error"] is None and call["retention_error"] is None
     assert "test-only-never-real" not in "".join(p.read_text(encoding="utf-8") for p in tmp_path.glob("*.json"))
+
+
+@pytest.mark.parametrize("command", ["plan", "review"])
+def test_cli_json_failure_keeps_private_response_and_known_charge(tmp_path, monkeypatch, command):
+    from unittest.mock import Mock
+
+    send = Mock(return_value=io.BytesIO(json.dumps({
+        "id": "software-invalid-json", "choices": [{"finish_reason": "stop",
+        "message": {"content": '{"broken":'}}], "usage": {"cost": 0.0001}}).encode()))
+    monkeypatch.setattr(client_module, "build_opener", Mock(return_value=Mock(open=send)))
+    client = client_module.OpenRouterClient(api_key="software-only-key", model="software/model",
+        input_price_per_million=1, output_price_per_million=1, allow_paid=True, max_cost_usd=0.1)
+    monkeypatch.setattr("moodcut.__main__._client", lambda *a, **k: client)
+    output = tmp_path / "failed.json"
+    extra = [] if command == "plan" else ["--plan", "tests/fixtures/plan.json", "--mode", "moodcut"]
+    assert main([command, *input_args(), *extra, "--output", str(output)]) == 1
+    calls = read_json(output.with_suffix(".calls.json"))
+    failed = calls["call_records"][0]
+    assert send.call_count == 1 and calls["provider_cost_usd"] == 0.0001
+    assert failed["parse_error"]["kind"] == "syntax_error"
+    assert (tmp_path / failed["response_artifact"]["content_path"]).read_text() == '{"broken":'
 
 
 def test_import_synopsis_command(tmp_path):

@@ -672,12 +672,110 @@ def bounded_software_case(mode="moodcut", omitted=("a", "b"), first="maintain_ob
             issue = f"actor-{('a', 'b').index(actor)+1}:local-1"
             response["decisions"] = [{"issue_id": issue, "decision": final, "reason": "Software-only final actor view."}]
             responses.append(response)
+    def by_shot(writer):
+        value = {"dialogue_by_shot": {e["shot_id"]: deepcopy(e["set"]["dialogue"]) for e in writer["patch"]["edits"]},
+                 "feedback_disposition": deepcopy(writer["feedback_disposition"])}
+        if "objection_responses" in writer:
+            value["objection_responses"] = deepcopy(writer["objection_responses"])
+        return value
+    responses = [by_shot(r) if "patch" in r else r for r in responses]
+    case = (*case[:4], by_shot(case[4]))
     return case, responses
 
 
 def call_bounded(case, client, mode="moodcut"):
     return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
         review_protocol=ACTOR_REVIEW_V3, project_root=Path(__file__).resolve().parents[1])
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_writer_returns_one_dialogue_per_shot_for_both_actor_issues(mode):
+    case = actor_software_case(mode)
+    writer = {"dialogue_by_shot": {case[1]["shots"][0]["shot_id"]:
+        deepcopy(case[4]["patch"]["edits"][0]["set"]["dialogue"])},
+        "feedback_disposition": deepcopy(case[4]["feedback_disposition"])}
+    client = FakeClient(case[3] + [writer])
+    result = call_bounded(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    assert result["writer_response"] == writer
+    assert len(result["patch"]["edits"]) == 1
+    assert result["patch"]["edits"][0]["set"]["dialogue"] == writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]]
+    assert len(result["feedback_disposition"]["addressed_issue_ids"]) == 2 and len(client.calls) == 3
+    assert validate_actor_review_result(*case[:3], result, mode=mode) == []
+
+
+@pytest.mark.parametrize("bad", ["legacy_edits", "unknown_shot", "feedback_free_shot", "array", "alternatives", "wrong_speaker", "missing_line", "false_addressed", "extra_field"])
+def test_v3_shot_writer_fails_closed_without_guessing_or_merging(bad):
+    case, replies = bounded_software_case(omitted=(), first="accept_candidate")
+    writer = replies[2]
+    sid = case[1]["shots"][0]["shot_id"]
+    if bad == "legacy_edits": writer = deepcopy(actor_software_case()[4]); writer["patch"]["edits"].append(deepcopy(writer["patch"]["edits"][0])); replies[2] = writer
+    elif bad == "unknown_shot": writer["dialogue_by_shot"]["not-a-shot"] = deepcopy(writer["dialogue_by_shot"][sid])
+    elif bad == "feedback_free_shot": writer["dialogue_by_shot"][case[1]["shots"][1]["shot_id"]] = deepcopy(case[1]["shots"][1]["dialogue"])
+    elif bad == "array": writer["dialogue_by_shot"] = [writer["dialogue_by_shot"]]
+    elif bad == "alternatives": writer["dialogue_by_shot"][sid] = [writer["dialogue_by_shot"][sid], writer["dialogue_by_shot"][sid]]
+    elif bad == "wrong_speaker": writer["dialogue_by_shot"][sid][1]["character_id"] = "a"
+    elif bad == "missing_line": writer["dialogue_by_shot"][sid].pop()
+    elif bad == "false_addressed": writer["dialogue_by_shot"] = {}
+    else: writer["duration_s"] = 99
+    client = FakeClient(replies)
+    result = call_bounded(case, client)
+    assert result["status"] == "review_failed" and result["plan"] == case[1] and len(client.calls) == 3
+    assert result["negotiation_rounds"][0]["writer_response"] == writer
+
+
+def test_v3_duplicate_json_shot_keys_are_rejected_before_conversion():
+    from moodcut.client import _strict_json
+    with pytest.raises(ValueError, match="duplicate JSON key"):
+        _strict_json('{"dialogue_by_shot":{"S":[],"S":[]},"feedback_disposition":{}}')
+
+
+def test_v3_saved_raw_shot_dialogue_and_derived_patch_must_agree():
+    case, replies = bounded_software_case()
+    result = call_bounded(case, FakeClient(replies))
+    changed = deepcopy(result)
+    sid = case[1]["shots"][0]["shot_id"]
+    changed["negotiation_rounds"][0]["writer_response"]["dialogue_by_shot"] = {sid: deepcopy(case[1]["shots"][0]["dialogue"])}
+    assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
+    changed = deepcopy(result); changed["writer_output_contract"] = "issue_patch_v1"
+    assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
+
+
+def test_v3_old_writer_contract_prompt_identity_remains_available():
+    import hashlib
+    root = Path(__file__).resolve().parents[1] / "src/moodcut/prompts"
+    old = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3, writer_output_contract="issue_patch_v1")
+    new = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3)
+    assert old["revise"] == hashlib.sha256((root / "review_actor_revise.txt").read_text(encoding="utf-8").encode()).hexdigest()
+    assert old["negotiate"] == hashlib.sha256((root / "review_actor_negotiate.txt").read_text(encoding="utf-8").encode()).hexdigest()
+    assert old["revise"] != new["revise"] and old["negotiate"] != new["negotiate"]
+    assert old["confirm"] == new["confirm"]
+    assert all(old[k] != new[k] for k in ("generic", "moodcut"))
+    writer_only = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3,
+        writer_output_contract="dialogue_by_shot_json_schema_v1")
+    assert all(writer_only[k] == old[k] for k in ("generic", "moodcut", "confirm"))
+    assert all(writer_only[k] == new[k] for k in ("revise", "negotiate", "confirm"))
+    previous = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3,
+        writer_output_contract="dialogue_by_shot_v1")
+    for phase in ("revise", "negotiate"):
+        assert previous[phase] == hashlib.sha256((root / f"review_actor_{phase}_by_shot.txt").read_text(encoding="utf-8").encode()).hexdigest()
+        assert previous[phase] != new[phase]
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_writer_schema_is_used_in_both_rounds_without_new_actor_calls(mode):
+    from moodcut.reviewer import get_writer_json_schema
+    from moodcut.contracts import json_hash
+    case, replies = bounded_software_case(mode)
+    client = FakeClient(replies)
+    result = call_bounded(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    assert result["writer_output_contract"] == "dialogue_by_shot_json_schema_v2"
+    writers = [c for c in client.calls if c["stage"] == "actor_revise"]
+    assert len(writers) == 2 and len(client.calls) == 8
+    assert [c["json_schema_sha256"] for c in writers] == [
+        json_hash(get_writer_json_schema(second_round=second)) for second in (False, True)]
+    assert all(c.get("response_format_type") != "json_schema" for c in client.calls if c["stage"] == "actor_confirm")
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
@@ -738,17 +836,17 @@ def test_v3_second_writer_cannot_repeat_its_veto_or_bypass_constraints(bad):
     case, responses = bounded_software_case(omitted=("b",))
     writer = responses[4]
     if bad == "no_response": writer["objection_responses"] = {}
-    elif bad == "same_dialogue": writer["patch"]["edits"][0]["set"]["dialogue"][1] = deepcopy(case[1]["shots"][0]["dialogue"][1])
+    elif bad == "same_dialogue": writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][1] = deepcopy(case[1]["shots"][0]["dialogue"][1])
     elif bad == "omit_again":
         writer["feedback_disposition"] = deepcopy(case[4]["feedback_disposition"])
-        writer["patch"] = deepcopy(case[4]["patch"])
+        writer["dialogue_by_shot"] = deepcopy(case[4]["dialogue_by_shot"])
     elif bad == "drop_prior":
         writer["feedback_disposition"]["addressed_issue_ids"].remove("actor-1:local-1")
         writer["feedback_disposition"]["unaddressed_issue_ids"] = ["actor-1:local-1"]
         writer["feedback_disposition"]["unaddressed_reasons"] = {"actor-1:local-1": "Software-only rejected prior change"}
-        writer["patch"]["edits"][0]["set"]["dialogue"][0] = deepcopy(case[1]["shots"][0]["dialogue"][0])
-    elif bad == "non_dialogue": writer["patch"]["edits"][0]["set"]["duration_s"] = 99
-    else: writer["patch"]["edits"][0]["set"]["dialogue"][1]["character_id"] = "a"
+        writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][0] = deepcopy(case[1]["shots"][0]["dialogue"][0])
+    elif bad == "non_dialogue": writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]] = {"duration_s": 99}
+    else: writer["dialogue_by_shot"][case[1]["shots"][0]["shot_id"]][1]["character_id"] = "a"
     client = FakeClient(responses)
     result = call_bounded(case, client)
     assert result["status"] == "review_failed" and result["plan"] == case[1]
@@ -789,7 +887,7 @@ def test_v3_saved_source_cannot_hide_rounds_disagreements_or_actual_candidate(ba
     assert validate_actor_review_result(*case[:3], result, mode="moodcut")
 
 
-@pytest.mark.parametrize("outcome", ["disputed", "accepted", "unknown_cost", "over_budget", "http_error"])
+@pytest.mark.parametrize("outcome", ["disputed", "accepted", "unknown_cost", "over_budget", "http_error", "json_error"])
 def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tmp_path, monkeypatch, outcome):
     import io
     from unittest.mock import Mock
@@ -815,7 +913,7 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
         envelopes.append(HTTPError("https://example.invalid", 503, "Software failure", {}, None)
             if outcome == "http_error" and index == 9 else io.BytesIO(json.dumps({
                 "id": "software-only", "model": "software-response", "choices": [
-                    {"finish_reason": "stop", "message": {"content": json.dumps(response)}}],
+                    {"finish_reason": "stop", "message": {"content": '{"broken":' if outcome == "json_error" and index == 9 else json.dumps(response)}}],
                 "usage": {"prompt_tokens": 100, "completion_tokens": 20, "cost": cost}}).encode()))
     send = Mock(side_effect=envelopes)
     monkeypatch.setattr("moodcut.client.build_opener", Mock(return_value=Mock(open=send)))
@@ -828,6 +926,15 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
     block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
         output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(),
         review_protocol=ACTOR_REVIEW_V3)
+    for call in block['planning']['call_records']:
+        assert (out / call['response_artifact']['body_path']).is_file()
+    for row in block['runs']:
+        for call in row['call_records']:
+            assert (out / row['condition'] / call['response_artifact']['body_path']).is_file()
+    if outcome == 'json_error':
+        failed=block['runs'][1]['call_records'][-1]
+        assert failed['parse_error']['kind']=='syntax_error' and failed['provider_cost_usd']==.001
+        assert (out/'generic_review'/failed['response_artifact']['content_path']).read_text()=='{"broken":'
     if outcome not in ("disputed", "accepted"):
         assert block["status"] == "failed" and send.call_count == 10 and client.stopped
         assert block["runs"][1]["negotiation_status"] == "failed"
@@ -852,6 +959,9 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
     options = dict(scene=scene, initial=initial, plans=plans, manifest=manifest, settings=settings,
                    template_sha256=get_video_template_sha256(), project_root=root)
     assert validate_generated_comparison(block["runs"], **options) == []
+    mixed = deepcopy(block["runs"])
+    mixed[0]["writer_output_contract"] = "dialogue_by_shot_v1"
+    assert any("consistent v3 writer" in e for e in validate_generated_comparison(mixed, **options))
     for field, value in (("negotiation_status", "failed"), ("negotiation_round_count", 3),
                          ("confirmation_issue_ids", []), ("actor_confirmation_status", "failed")):
         records = deepcopy(block["runs"])
@@ -883,6 +993,24 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
         run_path.write_text(run_saved, encoding="utf-8")
         block_path.write_text(block_saved, encoding="utf-8")
     pipeline._load_generated_block(out, root)
+    for bad in ("digest", "missing", "actor_digest", "actor_missing", "actor_swap"):
+        saved_block = (out / "block.json").read_text(encoding="utf-8")
+        saved_run = (out / "generic_review/run.json").read_text(encoding="utf-8")
+        modified = json.loads(saved_block)
+        row = modified["runs"][1]
+        stage = "actor_critique" if bad.startswith("actor_") else "actor_revise"
+        call = next(c for c in row["call_records"] if c["stage"] == stage)
+        if bad in ("digest", "actor_digest"): call["json_schema_sha256"] = "0" * 64
+        elif bad == "actor_swap":
+            actors = [c for c in row["call_records"] if c["stage"] == "actor_critique"]
+            actors[0]["json_schema_sha256"], actors[1]["json_schema_sha256"] = actors[1]["json_schema_sha256"], actors[0]["json_schema_sha256"]
+        else: call.pop("response_format_type")
+        (out / "block.json").write_text(json.dumps(modified), encoding="utf-8")
+        (out / "generic_review/run.json").write_text(json.dumps(row), encoding="utf-8")
+        with pytest.raises(ValueError, match="JSON Schema request identity"):
+            pipeline._load_generated_block(out, root)
+        (out / "block.json").write_text(saved_block, encoding="utf-8")
+        (out / "generic_review/run.json").write_text(saved_run, encoding="utf-8")
     assert send.call_count == 19
 
 
@@ -1062,3 +1190,65 @@ def test_v2_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source
     path.write_text(saved,encoding="utf-8")
     pipeline._load_generated_block(out,root)
     assert send.call_count == 11
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_actor_schema_uses_existing_global_ownership_without_repair(mode):
+    from moodcut.reviewer import get_actor_json_schema, _merge_actor_reports
+    root = Path(__file__).resolve().parents[1]
+    raw = json.loads((root / "docs/pilots/s06-actor-v3-schema.results.json").read_text(encoding="utf-8"))
+    scene = raw["scene"]
+    plan = {"scene_id": scene["scene_id"], "shots": [{"shot_id": "shot_1", "dialogue": [
+        {"character_id": "nezha2_lijing", "text": "software line"},
+        {"character_id": "nezha2_taiyi", "text": "software line"}]}]}
+    before = deepcopy(plan)
+    schema = get_actor_json_schema(scene, plan, "nezha2_taiyi", mode)
+    issue = schema["properties"]["issues"]["items"]["anyOf"][0]["properties"]
+    assert issue["shot_id"]["enum"] == ["shot_1"]
+    assert issue["line_indices"]["items"] == {"type": "integer", "enum": [1]}
+    assert schema["properties"]["actor_id"]["enum"] == ["nezha2_taiyi"]
+    assert schema["properties"]["mode"]["enum"] == [mode]
+    assert "enum" not in issue["evidence"] and "enum" not in issue["suggestion"]
+    response = raw["failure_detail"]["original_actor_response"]
+    frozen = deepcopy(response)
+    records = [{"actor_id": scene["characters"][0]["id"], "response": {
+        "schema_version": "1.0", "scene_id": scene["scene_id"], "mode": "moodcut",
+        "actor_id": scene["characters"][0]["id"], "issues": []}},
+        {"actor_id": "nezha2_taiyi", "response": response}]
+    _, errors = _merge_actor_reports(scene, plan, "moodcut", records)
+    assert errors == ["Actor issue must reference only that actor's original dialogue lines"]
+    assert response == frozen and response["issues"][0]["line_indices"] == [0]
+    assert plan == before
+
+
+def test_v3_actor_schema_keeps_shot_index_pairs_and_empty_actor():
+    from moodcut.reviewer import get_actor_json_schema
+    scene = {"scene_id": "software"}
+    plan = {"shots": [
+        {"shot_id": "first", "dialogue": [{"character_id": a, "text": "software"} for a in ["a", "b", "b"]]},
+        {"shot_id": "second", "dialogue": [{"character_id": a, "text": "software"} for a in ["b", "a"]]}]}
+    schema = get_actor_json_schema(scene, plan, "b", "generic_review")
+    choices = schema["properties"]["issues"]["items"]["anyOf"]
+    assert [(c["properties"]["shot_id"]["enum"], c["properties"]["line_indices"]["items"]["enum"]) for c in choices] == [(["first"], [1, 2]), (["second"], [0])]
+    assert all(c["properties"]["line_indices"]["minItems"] == 1 for c in choices)
+    assert get_actor_json_schema(scene, plan, "silent", "moodcut")["properties"]["issues"]["maxItems"] == 0
+    other = get_actor_json_schema(scene, plan, "b", "moodcut")
+    other["properties"]["mode"] = deepcopy(schema["properties"]["mode"])
+    assert other == schema
+
+
+@pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
+def test_v3_actor_requests_bind_each_actor_schema_without_added_calls(mode):
+    from moodcut.reviewer import get_actor_json_schema
+    from moodcut.contracts import json_hash
+    case, replies = bounded_software_case(mode)
+    client = FakeClient(replies)
+    result = call_bounded(case, client, mode)
+    assert result["status"] == "applied", result["errors"]
+    actors = [c for c in client.calls if c["stage"] == "actor_critique"]
+    assert len(actors) == 2 and len(client.calls) == 8
+    for actor, call in zip(case[0]["characters"], actors):
+        assert call.get("response_format_type") == "json_schema"
+        assert call.get("json_schema_sha256") == json_hash(get_actor_json_schema(case[0], case[1], actor["id"], mode))
+        assert '"line_indices":[0]' not in call["system"]
+    assert result["actor_reports"] == [{"actor_id": a["id"], "response": r} for a, r in zip(case[0]["characters"], replies[:2])]
