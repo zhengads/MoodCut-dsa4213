@@ -199,3 +199,40 @@ docs/REFERENCES.md、docs/upstream-reuse.md 和该 Issue 关联的任务卡。
 - [公共接口](CONTRACTS.md)
 - [参考资料与源码阅读路径](REFERENCES.md)
 - [复用范围](upstream-reuse.md)
+
+## S06 真实端到端开发测试
+
+团队使用 `scripts/run_s06_real.py` 进行真实 S06 开发测试。
+
+### 1. 检查输入
+
+    python scripts/run_s06_real.py check --input runs/NEW-S06-RUN
+
+### 2. 执行真实文本测试
+
+需要提前配置 OpenRouter API Key 并获得付费授权。
+
+    python scripts/run_s06_real.py text --input runs/NEW-S06-RUN --text-budget 0.10 --allow-paid
+
+使用 Gemini、DeepSeek 和 actor_self_review_v3。
+输出目录存在时禁止重复提交。
+
+### 3. 编译视频请求
+
+    python -m moodcut run --output-mode generated --source-block runs/NEW-S06-RUN/real-text-01/block.json --pricing-config runs/NEW-S06-RUN/heygen-pricing-live.json --output runs/NEW-S06-RUN/video-requests-live
+
+### 4. 生成真实视频
+
+执行前必须核对当前价格、团队预算和素材使用权限。
+
+    python -m moodcut execute-generated --preparation runs/NEW-S06-RUN/video-requests-live --pricing-config runs/NEW-S06-RUN/heygen-pricing-live.json --media-origin provided_local --output runs/NEW-S06-RUN/video-execution-live --allow-paid --max-cost-usd 0.80
+
+如果执行失败或中断，不要直接重新提交付费请求。
+
+### 5. 检查生成视频
+
+    python scripts/run_s06_real.py inspect --input runs/NEW-S06-RUN
+
+本地预算不等于账户硬限额。
+实际费用以提供商账目为准。
+生成完成不代表视频质量或正式实验验收通过。
