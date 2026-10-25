@@ -4,7 +4,7 @@
 
 MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和目标氛围，共同规划分镜，再比较通用审查与情绪导向审查。研究问题是：情绪专项反馈能否让成片更准确地传达目标氛围，同时保持剧情清楚、表达自然？
 
-[观看视频与台词对比](https://zhengads.github.io/MoodCut-dsa4213/) · [快速开始](#快速开始) · [使用指南](docs/usage.md) · [方法说明](docs/ACTOR_REVIEW_METHOD.md) · [开发协作](#开发协作)
+[观看视频与台词对比](https://zhengads.github.io/MoodCut-dsa4213/) · [快速开始](#快速开始) · [文档索引](docs/README.md) · [使用指南](docs/usage.md) · [方法说明](docs/ACTOR_REVIEW_METHOD.md) · [开发协作](#开发协作)
 
 ## 方法与三组对照
 
