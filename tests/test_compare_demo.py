@@ -62,7 +62,7 @@ def test_unchanged_final_is_reported_as_unchanged(block):
     data["runs"][2]["review_status"] = "unchanged"
     replace_json(folder / "block.json", data)
     output = tool.write_comparison(folder, folder / "comparison.html")
-    assert "没有实际字段变化" in output.read_text(encoding="utf-8")
+    assert "no fields changed" in output.read_text(encoding="utf-8")
 
 
 def test_failed_planning_is_not_disguised_as_zero_changes(tmp_path):
@@ -76,7 +76,7 @@ def test_failed_planning_is_not_disguised_as_zero_changes(tmp_path):
     assert all(item["changes"] is None for item in items)
     output = tool.write_comparison(folder, folder / "comparison.html")
     text = output.read_text(encoding="utf-8")
-    assert "无可比较的最终分镜" in text and "没有实际字段变化" not in text
+    assert "No final storyboard is available for comparison" in text and "no fields changed" not in text
     assert "planning_errors" in text
 
 

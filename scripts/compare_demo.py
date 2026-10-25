@@ -14,8 +14,8 @@ from urllib.parse import quote
 from moodcut.pipeline import CONDITIONS, json_hash, read_json
 
 
-LABELS = {"baseline": "初稿 / baseline", "generic_review": "通用审查 / generic_review",
-          "moodcut": "情绪审查 / moodcut"}
+LABELS = {"baseline": "Initial draft / baseline", "generic_review": "Generic review / generic_review",
+          "moodcut": "Emotion-focused review / moodcut"}
 
 
 def plan_changes(before, after):
@@ -90,7 +90,7 @@ def write_comparison(run_dir, output):
     for item in conditions:
         row, review, changes = item["record"], item["review"], item["changes"]
         name = row["condition"]
-        video = "<p>无已生成视频；请检查运行错误。</p>"
+        video = "<p>No generated video is available; check the run errors.</p>"
         if row.get("render_status") == "rendered" and row.get("video_path"):
             path = Path(row["video_path"]).resolve()
             if not path.is_relative_to(root):
@@ -104,20 +104,20 @@ def write_comparison(run_dir, output):
         if name == "baseline":
             continue
         if changes is None:
-            differences = "<p>无可比较的最终分镜，不能将失败记为没有变化。</p>"
+            differences = "<p>No final storyboard is available for comparison. A failed run must not be reported as unchanged.</p>"
         elif not changes:
-            differences = "<p>最终分镜与初稿一致，没有实际字段变化。</p>"
+            differences = "<p>The final storyboard matches the initial draft; no fields changed.</p>"
         else:
             cells = "".join(f"<tr><td>{escape(str(c['shot_id']))}<br>{escape(c['field'])}</td>"
                             f"<td><pre>{_json(c['before'])}</pre></td>"
                             f"<td><pre>{_json(c['after'])}</pre></td></tr>" for c in changes)
-            differences = ("<table><thead><tr><th>镜头 / 字段</th><th>修改前</th><th>修改后</th>"
+            differences = ("<table><thead><tr><th>Shot / field</th><th>Before</th><th>After</th>"
                            f"</tr></thead><tbody>{cells}</tbody></table>")
         # These are model opinions and verification records, never human scores.
-        details = "<p>无审查记录。</p>" if review is None else (
-            f"<h3>审查意见</h3><pre>{_json(review.get('report'))}</pre>"
-            f"<details><summary>补丁、复查与错误</summary><pre>{_json({k: review.get(k) for k in ('status','patch','verification','errors')})}</pre></details>")
-        sections.append(f"<section><h2>{LABELS[name]}：逐镜头变化</h2>{differences}{details}</section>")
+        details = "<p>No review record is available.</p>" if review is None else (
+            f"<h3>Review feedback</h3><pre>{_json(review.get('report'))}</pre>"
+            f"<details><summary>Patch, verification and errors</summary><pre>{_json({k: review.get(k) for k in ('status','patch','verification','errors')})}</pre></details>")
+        sections.append(f"<section><h2>{LABELS[name]}: Changes by shot</h2>{differences}{details}</section>")
     usage = [block["planning"], *block["runs"]]
     totals = {field: _total(usage, field) for field in
               ("calls", "real_http_calls", "estimated_cost_usd", "provider_cost_usd")}
@@ -125,18 +125,18 @@ def write_comparison(run_dir, output):
             "mock": block.get("mock"), "status": block.get("status"),
             "shared_initial_plan_sha256": block.get("initial_plan_sha256"),
             "all_phases_planning_counted_once": totals, "planning_errors": block["planning"].get("errors")}
-    source = ("离线 mock 软件夹具，不是实际模型结果。" if block.get("mock") is True else
-              "真实客户端记录；实际请求数、费用与失败状态见下方账目。" if block.get("mock") is False else
-              "来源标记缺失，请先核对运行记录。")
-    html = """<!doctype html><html lang="zh-CN"><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>MoodCut 前后对比</title>
+    source = ("Offline mock software fixtures, not actual model results." if block.get("mock") is True else
+              "Real client records; see the accounting below for actual request counts, costs and failures." if block.get("mock") is False else
+              "The source marker is missing; verify the run records first.")
+    html = """<!doctype html><html lang="en"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>MoodCut before-and-after comparison</title>
 <style>body{font-family:system-ui,sans-serif;max-width:1500px;margin:32px auto;padding:0 20px;color:#202020;background:#f7f7f5}
 .videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}article,section{background:white;border:1px solid #ddd;padding:16px;margin:16px 0}
 video{width:100%;background:#202020}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}table{border-collapse:collapse;width:100%;table-layout:fixed}
 th,td{text-align:left;vertical-align:top;border:1px solid #ddd;padding:12px}th:first-child{width:14%}summary{cursor:pointer}
 @media(max-width:900px){.videos{grid-template-columns:1fr}body{margin:16px auto}}</style>
-<h1>MoodCut：初稿与两类审查对比</h1>
-<p>只显示实际视频、字段差异与模型意见。模型复查不是人工评分，字段变化也不等于情绪表达改善。固定图片不会产生新动作。</p>
+<h1>MoodCut: Initial draft and two review conditions</h1>
+<p>This page shows only actual videos, field differences and model feedback. Model verification is not a human rating, and field changes do not establish improved emotional expression. Fixed images do not generate new actions.</p>
 """ + f"<p><strong>{source}</strong></p><pre>{_json(meta)}</pre><div class='videos'>{''.join(cards)}</div>{''.join(sections)}</html>"
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="\n") as handle:

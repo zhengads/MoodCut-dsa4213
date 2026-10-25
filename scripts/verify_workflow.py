@@ -1,7 +1,7 @@
 """One-command offline workflow verification; no provider calls or human scores.
 
-姓名: FANXUYANG
-日期: 2026-10-24
+Name: FANXUYANG
+Date: 2026-10-24
 """
 import argparse
 import json
