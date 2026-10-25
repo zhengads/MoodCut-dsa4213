@@ -1,10 +1,10 @@
-# 参考目录
+# Reference directory
 
-先阅读 [资料索引](../docs/REFERENCES.md) 和 [复用说明](../docs/upstream-reuse.md)。`sources.lock.json` 固定源码提交、论文版本、逐文件大小和 SHA-256；`references.bib` 提供论文引用。
+Start with the [reference index](../docs/REFERENCES.md) and [reuse notes](../docs/upstream-reuse.md). `sources.lock.json` pins source commits, paper versions, file sizes and SHA-256 hashes; `references.bib` provides paper citations.
 
 ```bash
 python scripts/prepare_references.py
 python scripts/prepare_references.py --check
 ```
 
-默认准备核心源码与样例；添加 `--papers` 下载论文 PDF，添加 `--assets` 下载初始角色参考图。下载内容保存在忽略目录，需联网一次。已缓存文件通过验证后可离线阅读。
+By default, the tool prepares the core source files and examples. Add `--papers` to download paper PDFs or `--assets` to download the initial character reference images. Downloads require network access and are stored in ignored directories. Once cached files pass verification, they can be read offline.

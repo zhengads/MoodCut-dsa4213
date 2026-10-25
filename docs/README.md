@@ -1,34 +1,34 @@
-# MoodCut 文档
+# MoodCut documentation
 
-先看[项目首页](../README.md)了解研究问题与快速开始。本目录将当前用法、接口、团队协作和历史证据分开维护。
+Start with the [project homepage](../README.md) for the research question and quick start. This directory maintains separate guides for current usage, interfaces, team collaboration and historical evidence.
 
-## 当前状态（2026-10-25）
+## Current status (2026-10-25)
 
-- 生成式脚本编排、三条件请求编译、任务执行、媒体检查、资格重检和匿名导出已实现。默认 CLI 仍是离线 animatic；演员 v3 需显式选择。
-- 当前演员协议为 `actor_self_review_v3`，新请求使用 `dialogue_by_shot_json_schema_v2`。两组共用协商上限，仅审查准则不同。
-- S06 v3 已完成三段真实视频，支出 $0.75421676；[原始试跑记录](pilots/s06-actor-v3-index.md)保留具体设置、费用及结果。技术成功不等于人工质量或独立效果验收。
-- [六故事 v2](studies/six-story-clear-emotions-20261024/README.md)是下一轮候选输入，共 18 个条件条目，不是 18 个已完成结果。`configs/experiment.json` 仍为开发夹具。
-- #8、#9 仍开放。评价结果补充见待合并的 [PR #58](https://github.com/zhengads/MoodCut-dsa4213/pull/58)；其历史 Anna/Elsa 结果不能改称 S06 或六故事结果。独立人工评分和正式纳入仍需完成。
+- Generated script orchestration, three-condition request compilation, task execution, media inspection, qualification rechecks and anonymous export are implemented. The default CLI still produces offline animatics; actor v3 must be selected explicitly.
+- The current actor protocol is `actor_self_review_v3`; new requests use `dialogue_by_shot_json_schema_v2`. Both review conditions share the negotiation limits and differ only in review criteria.
+- S06 v3 completed three real videos at a cost of $0.75421676. The [original trial record](pilots/s06-actor-v3-index.md) preserves the settings, costs and results. Technical success does not establish human quality acceptance or independent evidence of effectiveness.
+- The [six-story v2 design](studies/six-story-clear-emotions-20261024/README.md) supplies candidate inputs for the next round: 18 condition entries, not 18 completed results. `configs/experiment.json` remains a development fixture.
+- #8 and #9 remain open. Additional evaluation results are in the pending [PR #58](https://github.com/zhengads/MoodCut-dsa4213/pull/58); its historical Anna/Elsa results must not be relabeled as S06 or six-story results. Independent human ratings and formal inclusion remain outstanding.
 
-## 按任务阅读
+## Read by task
 
-| 目的 | 主文档 |
+| Purpose | Main document |
 | --- | --- |
-| 安装、命令、API 配置、素材准备 | [使用指南](usage.md) |
-| 理解三组对照与演员协商 | [演员方法](ACTOR_REVIEW_METHOD.md) |
-| 接入字段、函数、状态和账目 | [公共契约](CONTRACTS.md) |
-| 维护报告验证、原子补丁和旧全局审查 | [审查实现](review.md) |
-| 生成请求、视频检查与静态渲染 | [渲染](rendering.md) |
-| 资格、盲评、人工评分与统计分母 | [评价](evaluation.md) |
-| VBench 安装、单指标调用与续跑 | [VBench 工具](vbench.md) |
-| 模块分工、文件边界与交付流程 | [团队协作](TEAM.md) · [分支规则](BRANCHES.md) |
-| 上游阅读路径与采用范围 | [参考索引](REFERENCES.md) · [复用说明](upstream-reuse.md) |
+| Installation, commands, API configuration and asset preparation | [Usage guide](usage.md) |
+| Three-condition comparison and actor negotiation | [Actor method](ACTOR_REVIEW_METHOD.md) |
+| Integration fields, functions, states and accounting | [Shared contracts](CONTRACTS.md) |
+| Report validation, atomic patches and legacy global review | [Review implementation](review.md) |
+| Generation requests, video inspection and static rendering | [Rendering](rendering.md) |
+| Qualification, blind evaluation, human ratings and statistical denominators | [Evaluation](evaluation.md) |
+| VBench installation, single-metric execution and resume | [VBench tools](vbench.md) |
+| Module responsibilities, file ownership and delivery workflow | [Team collaboration](TEAM.md) · [Branch rules](BRANCHES.md) |
+| Upstream reading paths and scope of reuse | [Reference index](REFERENCES.md) · [Reuse notes](upstream-reuse.md) |
 
-## 证据与历史
+## Evidence and history
 
-- [试跑索引](pilots/README.md)：按协议和实际结果查找成功、失败、费用及原始 JSON。
-- [历史记录索引](history/README.md)：早期实施计划、软件验收与原始文档版本。
-- [P1 集成报告](p1-integration-verification.md)：带日期的集成与真实 v2 证据，不作为当前待办。
-- [六故事 v1](studies/six-story-20261024/README.md)保留原输入与身份；后续设计使用独立的 v2 目录。
+- [Trial index](pilots/README.md): successes, failures, costs and original JSON, organized by protocol and actual outcome.
+- [Historical index](history/README.md): early implementation plans, software acceptance evidence and original document versions.
+- [P1 integration report](p1-integration-verification.md): dated integration and real v2 evidence, rather than a current task list.
+- [Six-story v1](studies/six-story-20261024/README.md) preserves the original inputs and identities; the revised design uses a separate v2 directory.
 
-当前状态只在本页维护；操作放使用指南，公共规则放契约，实验结果进入各自带日期的记录。任务卡列模块责任和仍需处理的事项，不再复制试跑日志。已有结果、失败和原始数据不得为更新叙述而改写。
+Maintain current status on this page, operational instructions in the usage guide, shared rules in the contracts and experimental results in their dated records. Task cards describe module responsibilities and remaining work without duplicating trial logs. Do not rewrite existing results, failures or raw data to update the narrative.

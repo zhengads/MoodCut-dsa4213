@@ -1,133 +1,133 @@
-# 后续小规模实验：六个故事与固定氛围分配 v1
+# Follow-up small study: six stories with fixed tone assignments, v1
 
-本页保留 v1 设计记录。当前实验输入已按新的情景要求改用[亲密／敌对／紧张 v2](../six-story-clear-emotions-20261024/README.md)；本目录原有 JSON 输入保持原样，旧“怀疑”不改名为“紧张”。
+This page preserves the v1 design record. Current study inputs follow the revised [affectionate / hostile / tense v2 design](../six-story-clear-emotions-20261024/README.md). All original JSON inputs in this directory remain unchanged; historical suspicious labels are not renamed tense.
 
-设计及输入范围确认日期：2026-10-24。后续这一轮小规模实验采用 **6 个故事，每个故事固定一种氛围，亲近／怀疑／敌意各 2 个**；每个故事以后比较 baseline、generic_review、moodcut，暂不重复，共 18 个条件条目。故事、角色和氛围分配按本稿固定，本轮不继续增加故事或展开全氛围交叉。本次仅提交输入材料，新增模型 API 调用和消费均为 0。
+Design and input scope confirmed on 2026-10-24. This planned small study uses **6 stories with one fixed tone each: 2 affectionate, 2 suspicious and 2 hostile**. Each story will compare baseline, generic_review and moodcut, without repeats for now, giving 18 condition entries. Stories, characters and tone assignments are fixed by this design; this round does not add stories or cross every story with every tone. This change only supplies inputs, with 0 new model API calls and zero spending.
 
-这里的“剧本”是完整的场景任务、角色分工和固定事件；具体两句对白与共同镜头计划留给规划 Agent 生成，避免把人工写好的台词冒充方法输出。六个故事由助手拟定并经项目使用者选定，属于自拟实验输入；人物图来自项目已有素材库，剧情不来自原电影，也不是独立外部评价数据。
+Here, a “script” means a complete scene task, character roles and fixed events. The planning Agent will generate the two dialogue lines and shared shot plan, so handwritten dialogue is not presented as method output. The six stories were proposed by the assistant and selected by the project user; they are study inputs authored for this project. Character images come from the existing asset library. The plots are not from the original films or an independent external evaluation dataset.
 
-## 分配表
+## Assignment table
 
-| 编号 | 故事 | 人物 | 目标氛围 | 核心事件 |
+| ID | Story | Characters | Target tone | Core events |
 |---|---|---|---|---|
-| S01 | 等到你了 | 安娜、克里斯托夫 | 亲近 affectionate | 询问是否一直等候；说明留下是为了同行 |
-| S02 | 收工搭把手 | 露西、格鲁 | 亲近 affectionate | 提出帮助收尾；接受帮助 |
-| S03 | 集合地点变了 | 艾莎、马蒂亚斯 | 怀疑 suspicious | 询问变更消息来源；说明收到但未核实 |
-| S04 | 你怎么知道我在这 | 哪吒、敖丙 | 怀疑 suspicious | 询问如何知道位置；回答是推测的 |
-| S05 | 工作台先给谁用 | 马克西姆、瓦伦蒂娜 | 敌意 hostile | 要求优先使用；拒绝让出顺序 |
-| S06 | 这次谁来收尾 | 李靖、太乙 | 敌意 hostile | 提出分工；拒绝并要求重新分配 |
+| S01 | You waited for me | Anna, Kristoff | affectionate | Ask whether the other person has been waiting; explain staying to leave together |
+| S02 | Help with wrapping up | Lucy, Gru | affectionate | Offer help with the remaining cleanup; accept the help |
+| S03 | The meeting place changed | Elsa, Mattias | suspicious | Ask where the change notification came from; explain it was received but not verified |
+| S04 | How did you know I was here? | Nezha, Aobing | suspicious | Ask how the other person knew the location; answer that it was a guess |
+| S05 | Who gets the workbench first? | Maxime, Valentina | hostile | Request priority use; refuse to give up the current turn |
+| S06 | Who handles cleanup this time? | Lijing, Taiyi | hostile | Propose a task assignment; refuse and request reassignment |
 
-共使用 **12 个不重复角色、3 部作品**，每对人物来自同一部作品。FrozenII 对应亲近／怀疑，DespicableMe4 对应亲近／敌意，NeZha2 对应怀疑／敌意；每种氛围覆盖两部作品，避免单一作品只充当某一种情绪的全部样本。这并没有消除故事、人物、作品与氛围之间的混杂，不能独立比较哪种氛围更容易或哪部作品效果更好。
+The design uses **12 distinct characters from 3 films**, with each pair drawn from the same film. FrozenII covers affectionate / suspicious, DespicableMe4 covers affectionate / hostile, and NeZha2 covers suspicious / hostile. Each tone spans two films, so no single film supplies all samples for one tone. This does not remove confounding among story, character, film and tone, or allow independent comparisons of which tone is easier or which film performs better.
 
-## 共同输入边界
+## Shared input boundaries
 
-- **时长与动作**：沿用之前估算费用的 5 秒、单镜头范围；开场两人已在场，不要求入场、换景、交接道具或完成复杂动作。这里不新增时长或镜头数。
-- **对白任务**：两人各一句，共两句；总台词建议 16–22 个汉字，姓名可省略，不靠挤快语速完成。该长度是设计建议，不是已经验证的语音上限。两人都需要有台词，让两个演员的审查都有实际对象。
-- **共同计划**：每个故事只规划一次。三个条件共用事件、镜头、动作、时长、人物图、声音和视频设置；审查仅修改台词。这里不写具体运镜、表情或单组强化动作。
-- **人物关系**：只使用本稿明确给出的同行者、同伴或协作者关系。人物形象与服装取自参考图，不自动继承原电影的婚姻、官职、阵营、魔法能力或台词。
-- **不直接泄露标签**：故事正文不直接写情绪词或指定“温柔地说”“愤怒地质问”；目标通过已有 `tone` 字段提供，不让角色念出标签。观众材料继续隐藏条件和目标氛围。
-- **范围**：本稿不要求多故事连续剧情，不评价完整短片叙事或跨镜头连续性。
+- **Duration and actions:** retain the previously costed five-second, single-shot scope. Both characters are already present at the start. No entrance, scene change, prop handoff or complex action is required. This design adds neither duration nor shots.
+- **Dialogue task:** one line per character, two lines total, with a suggested combined length of 16–22 Chinese characters. Names may be omitted; delivery should not rely on rushed speech. This is a design suggestion, not a validated speech limit. Both characters need dialogue for both actors to review.
+- **Shared plan:** plan each story once. All three conditions share events, shots, actions, duration, character images, voices and video settings; review may change dialogue only. This design does not prescribe camera movement, expressions or actions enhanced for one condition.
+- **Character relationships:** use only the traveling-companion, teammate or collaborator relationships specified here. Appearance and clothing come from the reference images; the original films' marriages, official ranks, factions, magical powers and dialogue are not inherited automatically.
+- **No direct label leakage:** story prose does not name the emotion or prescribe delivery such as “say gently” or “ask angrily.” The existing `tone` field supplies the target; characters do not speak the label. Viewer materials continue to hide condition and target tone.
+- **Scope:** no continuous plot across stories is required. The design does not evaluate complete short-film narratives or continuity across shots.
 
-若 5 秒无法自然说清两句，先在旧开发故事上调整统一时长与预算，再冻结这六个输入；不要看完新故事的各条件结果后，只给某个版本加时长、手改台词或替换故事。
+If two lines cannot be spoken naturally within five seconds, adjust the common duration and budget using an older development story before freezing these six inputs. Do not inspect new-story condition results and then extend only one version, hand-edit its dialogue or replace a story.
 
-## S01：等到你了 — 亲近
+## S01: You waited for me — affectionate
 
-**人物与场景**：安娜是先开口的同行者，克里斯托夫是等候的同行者。白天，车站等候区旁，两人已并肩站定。
+**Characters and setting:** Anna is the traveling companion who speaks first; Kristoff is the companion who has been waiting. In daylight, both are already standing side by side near a station waiting area.
 
-**固定剧情**：安娜确认克里斯托夫是否一直在等自己；克里斯托夫说明自己留下来是为了与安娜一起离开。交流结束时两人仍在原处，尚未出发。
+**Fixed plot:** Anna checks whether Kristoff has been waiting for her. Kristoff explains that he stayed so they could leave together. Both remain in place at the end; they have not departed.
 
-**两句对白分别完成什么**：安娜询问等候；克里斯托夫说明留下等候与准备同行。具体用词由 Agent 决定。
+**Tasks for the two lines:** Anna asks about the wait; Kristoff explains staying to wait and preparing to leave together. The Agent chooses the wording.
 
-**氛围目标**：通过日常措辞体现被惦记与陪伴，不把亲近限定为爱情或表白。不能新增迟到原因、争执、拥抱、告白或登车事件。
+**Tone goal:** everyday language should convey being cared for and accompanied, without restricting affection to romance or a declaration of love. Do not add a reason for lateness, an argument, an embrace, a confession or boarding a vehicle.
 
-## S02：收工搭把手 — 亲近
+## S02: Help with wrapping up — affectionate
 
-**人物与场景**：露西和格鲁是共同工作的同伴。白天，普通工作室，两人已站在桌边。
+**Characters and setting:** Lucy and Gru work together as teammates. In daylight, both are already standing beside a table in an ordinary studio.
 
-**固定剧情**：露西提出帮格鲁完成桌边的收尾整理；格鲁接受帮助。只表现这次提议与接受，不必在镜头中实际完成整理。
+**Fixed plot:** Lucy offers to help Gru finish tidying up by the table; Gru accepts. Show only the offer and acceptance; the cleanup need not be completed on screen.
 
-**两句对白分别完成什么**：露西提出具体的帮助；格鲁接受并回应。
+**Tasks for the two lines:** Lucy offers specific help; Gru accepts and responds.
 
-**氛围目标**：通过实用性的关心和接受帮助表达亲近，区别于 S01 的等候与陪伴。不能新增礼物、受伤、危险任务、家庭背景或浪漫关系，也不要求搬箱和交换道具。
+**Tone goal:** practical care and acceptance of help should express affection, distinct from the waiting and companionship in S01. Do not add gifts, injuries, dangerous tasks, family background or a romantic relationship. Carrying boxes and exchanging props are not required.
 
-## S03：集合地点变了 — 怀疑
+## S03: The meeting place changed — suspicious
 
-**人物与场景**：艾莎和马蒂亚斯是活动协作者，没有预设上下级关系。白天，活动大厅外，两人已在走廊停下。
+**Characters and setting:** Elsa and Mattias are event collaborators, with no assumed superior–subordinate relationship. In daylight, both have stopped in a corridor outside an event hall.
 
-**固定剧情**：艾莎询问集合地点变更的消息来源；马蒂亚斯说明自己只是收到通知，还没核实。消息真伪保持未知。
+**Fixed plot:** Elsa asks where the information about the changed meeting place came from. Mattias explains that he only received a notification and has not verified it. Its truth remains unknown.
 
-**两句对白分别完成什么**：艾莎问信息从哪里来；马蒂亚斯说明信息有限且未核实。
+**Tasks for the two lines:** Elsa asks for the information source; Mattias explains that his information is limited and unverified.
 
-**氛围目标**：表现对信息可靠性的试探，保留怀疑与敌意的区别。不能确定谁撒谎、补出阴谋或幕后人物，也不展示手机、可读通知或信件。
+**Tone goal:** probe the reliability of information while keeping suspicion distinct from hostility. Do not establish that anyone is lying or add conspiracies or unseen instigators. Do not show a phone, readable notification or letter.
 
-## S04：你怎么知道我在这 — 怀疑
+## S04: How did you know I was here? — suspicious
 
-**人物与场景**：哪吒和敖丙是本次活动的同伴。白天，普通院子，两人已站定；不表现敖丙入场。
+**Characters and setting:** Nezha and Aobing are companions for this activity. In daylight, both are already standing in an ordinary courtyard; Aobing's entrance is not shown.
 
-**固定剧情**：哪吒询问敖丙如何知道自己在院子里；敖丙回答是推测的。故事不确认解释是否真实，两人仍留在原处。
+**Fixed plot:** Nezha asks how Aobing knew he was in the courtyard; Aobing says it was a guess. The story does not confirm whether the explanation is true. Both remain in place.
 
-**两句对白分别完成什么**：哪吒问对方如何知道位置；敖丙给出“推测”的解释。
+**Tasks for the two lines:** Nezha asks how the location was known; Aobing offers a guess as the explanation.
 
-**氛围目标**：通过信息不对称与回答留下的空间表现怀疑，区别于 S03 的通知来源。不新增跟踪、偷听、背叛、读心、法术或打斗。
+**Tone goal:** information asymmetry and the ambiguity of the answer should convey suspicion, distinct from the notification source in S03. Do not add stalking, eavesdropping, betrayal, mind reading, magic or fighting.
 
-## S05：工作台先给谁用 — 敌意
+## S05: Who gets the workbench first? — hostile
 
-**人物与场景**：马克西姆和瓦伦蒂娜是工作室成员，不使用原电影的反派身份作为设定。白天，两人已在共用工作台边，瓦伦蒂娜当前占用工作台。
+**Characters and setting:** Maxime and Valentina are studio members; their original film villain identities are not part of the premise. In daylight, both are already beside a shared workbench that Valentina currently occupies.
 
-**固定剧情**：马克西姆提出自己现在先使用工作台；瓦伦蒂娜拒绝让出当前顺序。使用安排保持原状，两人没有动手或离开。
+**Fixed plot:** Maxime asks to use the workbench first, now; Valentina refuses to give up her current turn. The arrangement remains unchanged. Neither uses force or leaves.
 
-**两句对白分别完成什么**：马克西姆提出优先使用要求；瓦伦蒂娜拒绝让步。
+**Tasks for the two lines:** Maxime requests priority use; Valentina refuses to yield.
 
-**氛围目标**：在要求与拒绝中体现对抗，避免把音量、脏话和威胁当作唯一方式。不砸桌、推搡、抢夺物品，也不新增犯罪与报复。
+**Tone goal:** express opposition through the demand and refusal, without treating volume, profanity or threats as the only means. Do not add table slamming, pushing, grabbing objects, crime or retaliation.
 
-## S06：这次谁来收尾 — 敌意
+## S06: Who handles cleanup this time? — hostile
 
-**人物与场景**：李靖和太乙是活动共同参与者，没有预设官职或师徒权力。白天，两人已站在普通活动室门边。
+**Characters and setting:** Lijing and Taiyi are fellow participants in an activity, with no assumed official rank or master–disciple authority. In daylight, both are already near the door of an ordinary activity room.
 
-**固定剧情**：李靖提出让太乙负责这次收尾；太乙拒绝并要求重新分工。双方尚未达成一致，也没有开始整理。
+**Fixed plot:** Lijing proposes that Taiyi handle this cleanup. Taiyi refuses and asks to redistribute the work. They have not reached agreement or begun tidying up.
 
-**两句对白分别完成什么**：李靖提出具体责任分配；太乙拒绝并要求重分。
+**Tasks for the two lines:** Lijing assigns a specific responsibility; Taiyi refuses and requests reassignment.
 
-**氛围目标**：通过责任分歧体现对抗，区别于 S05 的资源使用顺序。不编造过去的欠账、惩罚或伤害，不增加饮酒、法术、搬运与争斗。
+**Tone goal:** disagreement over responsibilities should convey opposition, distinct from the resource-use order in S05. Do not invent past debts, punishment or harm, or add drinking, magic, carrying objects or fighting.
 
-## 人物素材选择与已知限制
+## Character asset selection and known limitations
 
-原索引见 [素材库说明](../../../assets/library/README.md)、[人物选择清单](../../../assets/library/movieagent-animation.selection.json)及[完整 AssetManifest](../../../assets/library/movieagent-animation.manifest.json)。本次本地查看了 12 个角色各 3 张、共 36 张候选图，统一采用索引中的 `primary_asset_id`，即原始 `best.png`。这是事先固定的选图规则，不代表它们是中性表情图或已通过视频生成验收。输入清单保留原始身份、来源、尺寸、SHA-256、`full` 构图限制和权利声明；不裁切、修图或新增图片。
+See the original [asset library notes](../../../assets/library/README.md), [character selection manifest](../../../assets/library/movieagent-animation.selection.json) and [complete AssetManifest](../../../assets/library/movieagent-animation.manifest.json). During preparation, all 36 candidate images were viewed locally: three for each of 12 characters. The selection consistently uses the indexed `primary_asset_id`, the original `best.png`. This is a rule fixed in advance, not a claim that the images have neutral expressions or passed video-generation acceptance. Input manifests retain original identities, sources, dimensions, SHA-256 hashes, the `full` framing restriction and rights notes. No images are cropped, retouched or added.
 
-| 故事 | 参考图需要注意的内容 |
+| Story | Reference-image considerations |
 |---|---|
-| S01 | 安娜略显担心；克里斯托夫张口且有桌面背景 |
-| S02 | 露西持杯；格鲁有头顶眼镜；不要求复制这些道具动作 |
-| S03 | 艾莎为明亮近景；马蒂亚斯有明显皱眉 |
-| S04 | 哪吒为笑脸；敖丙为灰底全身展示姿势，人物比例不同 |
-| S05 | 马克西姆有笑容和握拳姿态；瓦伦蒂娜眼镜遮挡眼部、嘴部张开 |
-| S06 | 李靖皱眉；太乙原图清晰度较低 |
+| S01 | Anna looks slightly worried; Kristoff has an open mouth and a tabletop background |
+| S02 | Lucy holds a cup; Gru has glasses on his head; reproducing these prop actions is not required |
+| S03 | Elsa is shown in a bright close-up; Mattias has a pronounced frown |
+| S04 | Nezha is smiling; Aobing is posed full-body against a gray background, with different character proportions |
+| S05 | Maxime is smiling with a clenched fist; Valentina's glasses obscure her eyes and her mouth is open |
+| S06 | Lijing is frowning; Taiyi's original image has lower clarity |
 
-这些差异是需要披露的素材先验，不能把角色表情当成台词方法有效的证据。三条件内固定同一张图，只能控制同故事的方法比较；不能消除不同故事之间的人物先验。除旧 Anna/Elsa 任务外，本稿中的新人物配对尚未验证提供商接受及身份、语音表现。
+These differences are asset priors that must be disclosed; character expressions are not evidence that the dialogue method works. Fixing the same image within each story controls only the within-story method comparison, not character priors across stories. Apart from the older Anna/Elsa task, provider acceptance, identity and speech performance have not been verified for the new pairings in this design.
 
-为控制明显的情绪答案提示，本轮不选《头脑特工队2》的情绪拟人角色；小黄人也不用于这批统一普通话对话任务。保留 12 个不同角色，优先保证每个场景能自然完成相同类型的双人对白。
+To limit obvious emotional answer cues, this round excludes the personified emotions from InsideOut2. Minions are also excluded from these tasks using standard Mandarin dialogue. Keep 12 distinct characters, prioritizing each scene's ability to support the same type of natural two-person exchange.
 
-既有素材的权利状态仍为 `unconfirmed`；本设计保留原声明，不新增图片上传或公开再分发。
+Existing asset rights remain `unconfirmed`. This design preserves the original statements and creates no new image uploads or public redistribution.
 
-## 本地输入与后续使用边界
+## Local inputs and subsequent use
 
-- [design.json](design.json)：本设计的六个故事、分配、人物角色、禁增情节和限制；**不是**执行配置。
-- [inputs/index.json](inputs/index.json)：6 对 `scene.json`／`assets.json` 的路径及文件哈希；只索引本地输入。
-- `inputs/<story-id>/scene.json`：现有 1.1/generated 场景格式，包含明确的 5 秒、单镜头边界和自拟来源声明。
-- `inputs/<story-id>/assets.json`：从已有素材库逐字复制的两张人物图清单，人物 ID 与该场景一致；无需改写全库 manifest。
+- [design.json](design.json): the six stories, assignments, character roles, prohibited additions and limitations; **not** an execution configuration.
+- [inputs/index.json](inputs/index.json): paths and file hashes for six `scene.json` / `assets.json` pairs; indexes local inputs only.
+- `inputs/<story-id>/scene.json`: the existing 1.1/generated scene format, with explicit five-second, single-shot boundaries and a project-authored provenance statement.
+- `inputs/<story-id>/assets.json`: the two character-image entries copied verbatim from the existing library, with character IDs matching the scene; no rewrite of the full library manifest is needed.
 
-本目录的 `.gitattributes` 为 JSON 固定 LF 换行，保证 Windows／Linux 检出后的字节哈希一致；索引核对实际文件字节，不对内容偷偷归一化。
+This directory's `.gitattributes` fixes JSON line endings to LF, keeping byte hashes consistent across Windows and Linux checkouts. The index checks actual file bytes without silently normalizing content.
 
-规划 Agent 只需以后读取对应 `scene.json` 和 `assets.json`；`design_question`、选材观察和方法比较解释保留在设计稿中，不额外注入某一个审查分支。这里没有预生成的台词、共同计划、演员意见、视频请求或评分。
+The planning Agent will only need the corresponding `scene.json` and `assets.json`. The `design_question`, asset observations and method-comparison explanations remain in the design document; they are not injected into one review branch. There are no pregenerated dialogue lines, shared plans, actor opinions, video requests or ratings here.
 
-本地检查使用现有 `moodcut.validation.validate_scene(..., output_mode="generated")` 核对结构和本地图片，另核对 6 个唯一故事、每种氛围各 2 个、12 个唯一角色、输入文件哈希及 18 个条件条目的算术。检查不会调用规划器、创建 API 客户端、编译视频请求或发起网络请求；结构通过也不表示剧情质量、语音时长或成片质量已验收。
+Local checks use the existing `moodcut.validation.validate_scene(..., output_mode="generated")` to validate structure and local images. They also check six unique stories, two per tone, 12 unique characters, input file hashes and the arithmetic of 18 condition entries. These checks do not call the planner, create API clients, compile video requests or access the network. Structural acceptance does not establish plot quality, speech-duration feasibility or video quality.
 
-后续执行前还需确定方法版本、模型／时长与预算、评价者分配及失败和未修改样本处理。actor v2 属于独立的 [PR #48](https://github.com/zhengads/MoodCut-dsa4213/pull/48)，本输入提交不依赖合入该方法实现，也不能将历史 v1 成片当成 v2 结果。六个故事的输入范围已确认，`input_scope_approved=true`；这项确认不批准模型调用，也不将尚未产生的结果纳入正式评价，所以 `execution_enabled`、`paid_run_authorized` 和 `formal_inclusion_approved` 保持 `false`。
+Before execution, determine the method version, models / duration and budget, viewer assignment, and handling of failed and unchanged samples. Actor v2 belongs to the separate [PR #48](https://github.com/zhengads/MoodCut-dsa4213/pull/48). This input change does not depend on that implementation being merged, nor may historical v1 videos be treated as v2 results. The six-story input scope is confirmed with `input_scope_approved=true`; this does not authorize model calls or formally include results that do not yet exist. Accordingly, `execution_enabled`, `paid_run_authorized` and `formal_inclusion_approved` remain `false`.
 
-若在付费执行前因输入错误或统一时长可行性检查而修订，保留版本、原因及原始输入，重新计算索引哈希；付费执行开始后，不根据方法胜负替换故事、人物或氛围。主结果应覆盖全部计划条目，并分别报告失败、未修改、复用和缺失评分；“共同可评”子集不能代表全部尝试。
+If input errors or common-duration feasibility require a revision before paid execution, retain the version, reason and original inputs, and recalculate index hashes. After paid execution begins, do not replace stories, characters or tones based on which method wins. Main results should cover every planned entry and report failures, unchanged outputs, reuse and missing ratings separately. The jointly evaluable subset cannot represent all attempts.
 
-## 费用与解释边界
+## Costs and interpretation
 
-按历史真实账单的每个 5 秒视频 $0.25、全部 18 个条目均新生成计算，视频费情景估算为 **$4.50**，不包含文本、失败、恢复、价格变化或延长时长；当前实时报价和本批批准预算均未设置。完全相同的同块请求可按原规则复用媒体，但预算不提前扣除这部分可能节省。本次新增消费为 **$0**。
+Using the historical bill of $0.25 per five-second video, a scenario with all 18 entries newly generated would cost **$4.50** for video. This excludes text, failures, recovery, price changes and longer durations. Neither a live quote nor an approved batch budget has been set. Identical requests within a block may reuse media under the original rules, but potential savings are not deducted from the budget in advance. New spending for this input change is **$0**.
 
-每故事一种氛围的方案节省生成量，但只支持在这批固定输入上比较三种方法。六个故事是六个场景单位，18 个条目不是 18 个独立故事；也不能据此分离故事、人物与氛围的独立效应。沿用现有独立人工评价的情绪识别、自然度、剧情清楚度和过度表达，不新增评分标准，不根据某条件胜负换题。
+One tone per story reduces generation volume but supports comparison of the three methods only on these fixed inputs. Six stories are six scene units; 18 entries are not 18 independent stories. Story, character and tone effects cannot be separated. Retain the existing independent human measures of tone recognition, naturalness, story clarity and overstatement. Do not add scoring criteria or replace tasks based on which condition wins.
