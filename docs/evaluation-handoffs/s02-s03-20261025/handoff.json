@@ -27,7 +27,7 @@
       "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s02_stay_with_me/assets.json",
       "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8",
       "generation_settings_path": "s02_stay_with_me/generation_settings.json",
-      "generation_settings_sha256": "ee4ed5e947a2c6a8a7b5f641328a22679cfa8f166d796fa62c21261874689603"
+      "generation_settings_sha256": "1b32080497292bb0a7d6a9f9bd9b292829d7f9b96c6bf5a062d1842e089a851f"
     },
     {
       "story_id": "s03_footsteps_outside",
@@ -37,13 +37,13 @@
       "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s03_footsteps_outside/assets.json",
       "assets_sha256": "7fbaa42906016f782c499edba5ba14b1c5af3fb819bf060a49b9f3d80bca431f",
       "generation_settings_path": "s03_footsteps_outside/generation_settings.json",
-      "generation_settings_sha256": "e99bf693fcaad4a3a1eab609a327ee926c922d0c9b950c465191aeec5ff4f043"
+      "generation_settings_sha256": "fbce7c88077f7ffeda9aa49129ec1aa1ded95f9692b0242adc0a13d53278435c"
     }
   ],
   "generation_settings_status": "candidate settings copied from v3 preflight; confirm and freeze for v4 before execution",
   "text_price_snapshot": {
     "path": "text-models-price-snapshot.json",
-    "sha256": "dab5788b1f61d47218715877536109376b39ecf68df56b43e0e8add1e3bd5a69",
+    "sha256": "c01e8dca5a9f49eadaf0acb13b5bdf0ddf258aaa423528e7f36a6a458ac32446",
     "source_url": "https://openrouter.ai/api/v1/models",
     "observed_on": "2026-10-25",
     "recheck_before_execution": true
