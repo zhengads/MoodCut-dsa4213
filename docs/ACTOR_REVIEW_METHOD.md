@@ -1,18 +1,10 @@
 # Actor self-review protocols
 
-Latest real S06 v3 trial: **three distinct videos completed** after actor-reference constraints, with valid raw JSON and owned indices. Nine text calls plus three video submissions cost **$0.75421676**, reconciled exactly; no retry or handwritten repair, reserve untouched. [Play and compare](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · [exact record](pilots/s06-actor-v3-index.md). Both writers declared all four actor opinions addressed in one round; actor confirmation was not needed and human quality checks remain pending. Prior failures stay unchanged; PR #52 unmerged, #8/#9 open.
+The current protocol is `actor_self_review_v3`, with request bundle `dialogue_by_shot_json_schema_v2`. Actors use ownership-derived global line indices; writers return one complete dialogue per shot. Raw replies, errors and original reports are retained without answer repair. Interface details: [shot contract](pilots/anna-elsa-v3-shot-contract.md), [writer schema](pilots/s06-structured-writer.md), [actor references](pilots/s06-actor-index-constraints.md), [response diagnostics](pilots/text-response-diagnostics.md).
 
-Current offline reference correction: new v3 actor requests use identical ownership-derived shot/index schemas in both review groups, without changing any experimental answer. The old writer-only schema bundle remains historical; new execution uses `dialogue_by_shot_json_schema_v2`. [Exact scope and acceptance](pilots/s06-actor-index-constraints.md). No paid rerun, original failures retained, PR #52 unmerged.
+The latest [S06 development trial](pilots/s06-actor-v3-index.md) completed three real videos for $0.75421676. Each writer declared all four actor opinions addressed in one round; actor confirmation was not needed. Human listening/viewing remains pending. [Play the videos](https://zhengads.github.io/MoodCut-dsa4213/#s06-index). Earlier successes and failures remain intact in the [trial records](pilots/); PR #52 is unmerged and #8/#9 stay open.
 
-Latest separately authorized per-shot v3 trial (2026-10-24): [actual result](pilots/anna-elsa-actor-v3-shot.md). Generic returned one valid per-shot dialogue covering three actor opinions; emotional writer content failed strict JSON-object parsing. Nine text requests cost $0.00291790, individually server-verified and matched to this attempt's account delta. No video, confirmation, second round, retry or handwritten fallback. Invalid reply text is not retained/provider-retrievable, so the exact JSON subtype is unknown. Earlier paid and offline records remain intact; PR #52 stays unmerged and #8/#9 open.
-
-## Current offline writer-interface correction
-
-Future v3 writers now return one complete dialogue array per unique shot ID via `writer_output_contract="dialogue_by_shot_v1"`; a deterministic adapter builds one atomic edit per shot without merging competing replies or selecting task wording. Both review conditions and both writer rounds use the same contract. Raw responses, derived patches and contract/prompt identities are rechecked at source boundaries; legacy global/v1/v2 and old-v3 records remain readable under their original identities. See [diagnosis, schema and offline acceptance](pilots/anna-elsa-v3-shot-contract.md). The failed paid trial below and its public/runtime results remain unchanged; no new model/video call or paid retry occurred.
-
-## Actual v3 development trial (2026-10-24)
-
-A separately authorized [real Anna/Elsa v3 trial](pilots/anna-elsa-actor-v3.md) made nine text calls, then stopped on a first emotional writer response containing two conflicting full-dialogue edits for one shot. Cost $0.00281304 reconciled exactly; no confirmations, second writer round, video submission, retry or handwritten repair occurred. This hard contract error is distinct from a valid final creative disagreement. Exact original outputs and historical results are preserved. The earlier implementation/acceptance sections below retain their original offline scope.
+The sections below describe the original bounded-negotiation design and its dated offline acceptance. Each paid trial has a separate record and authorization; historical versions are not retagged.
 
 ## Current increment: bounded actor negotiation (v3)
 
