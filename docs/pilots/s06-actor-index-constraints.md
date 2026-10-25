@@ -54,3 +54,12 @@ Resolution keeps both constructor options (`response_dir` and optional `json_sch
 Of the original 1,115 protected paths, **1,114 retain their original bytes**. The only exception, `docs/studies/six-story-20261024/README.md`, receives main's existing pointer to its newer study design; it exactly matches main's tracked content. The original README remains in the pre-sync commit/history. All original JSON inputs, trial responses, failures, results and media remain unchanged. The refreshed preservation baseline retains 1,115 paths with this single documented upstream change. Post-sync original-byte replay again rejects the same eight-response S06 failure, reproduces the nine-response Anna/Elsa plans and rechecks eight old packages without network.
 
 Post-sync replay records are separately saved under ignored `runs/s06-actor-index-main-offline-20261025/`; the pre-sync records are retained. Fresh post-sync affected-module verification: **615 tests and 94 subtests passed** in 313.77 seconds across client, reviewer, planner, validation, pipeline and evaluation suites. The pre-sync source also passed its full GitHub CI. The synchronized head requires its own full CI result; earlier checks are not inherited.
+
+
+## Synchronization with P5 acceptance increment (#57)
+
+The branch now also integrates main `f45590d` (#57). This adds review-status coverage counters and the existing repeatable offline acceptance command, without changing model settings, actor/writer prompts, ownership constraints or generation inputs. The merge had no content conflict. Original trial files and the documented 1,115-path post-sync preservation baseline remain unchanged.
+
+Fresh combined-source checks: **272 tests and 27 subtests passed** for client, reviewer and paired-evaluation unit cases. Existing `scripts/verify_workflow.py` passed all five steps (mock three-condition rendering, anonymous export, no-rating coverage, assignment dry-run and generated software integration). Original-byte negative/positive replay and all eight old request-package recompilations passed again, with no real network/model requests in the replay and no new paid spending. These software videos are not a new real S06 trial.
+
+Evidence is separately retained under ignored `runs/s06-actor-index-p5-offline-20261025/`. The previous head `c7e6bd8` full GitHub CI passed **1067 tests +191 subtests**; the newly synchronized head requires its own CI. PR #52 stays Draft/unmerged and #8/#9 remain open.

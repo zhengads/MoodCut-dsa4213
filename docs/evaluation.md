@@ -2,6 +2,145 @@
 
 Issue: https://github.com/zhengads/MoodCut-dsa4213/issues/9
 
+## 当前优先：一键验证代码流程
+
+2026-10-24，按用户收敛后的范围，优先验收代码流程，不以历史真实运行包
+交接作为本轮软件验收的前提。安装开发依赖并将 FFmpeg/ffprobe 加入 PATH，
+在仓库根目录运行（输出目录必须新建）：
+
+```powershell
+.venv/Scripts/python scripts/verify_workflow.py --output runs/workflow-check-01
+```
+
+该入口复用原 CLI 和现有集成测试，不重写任何模块。实际 Windows 验收通过：
+
+- 三条件 mock 规划/审查 → 3 段 animatic → 3 段匿名导出 → 无评分覆盖统计。
+- 任务分配 dry-run 通过。
+- generated 跨模块集成 12 项通过（47.27 秒）：请求准备、软件音视频装配、
+  资格、匿名导出、评分算术、来源变化拒绝、失败及未知费用保留。
+
+查看输出的 `verification.json`、各步骤日志和 `generated-tests.xml`。
+`blind/public/` 含匿名视频和空评分表，`blind/PRIVATE/` 不向观看者分发；
+`coverage.json` 为 3 条已渲染、3 条缺评分，主观均值全部 null。
+`generated-software-cases/` 保存生成式集成产物，测试中的视频、回执和评分
+均为软件夹具。本轮没有付费 API 调用，不把此结果声明为真实模型效果验证。
+
+历史真实运行的严格 6.14/6.15 认证保留为独立后续项，不影响上述代码验收；
+现有门禁保持原样。本轮完成人：FANXUYANG；保留原 P5 及各模块作者贡献。
+
+<details>
+<summary>上一轮完整记录认证检查与七项任务核对（历史记录）</summary>
+
+## 最新 main 上的 P5 起步验收（2026-10-24）
+
+本轮基于 main `ba692a7`，继续 `feat/issue-9-evaluation-acceptance`，保留
+chessloverr 的原 P5 实现、团队接线及 FAN XUYANG 的覆盖计数增量。
+七项要求的工程核对如下；“已实现”不代表真实样本已通过资格或方法效果已证实。
+
+| Issue #9 要求 | 当前实现及验收依据 | 真实执行边界 |
+| --- | --- | --- |
+| 三条件输入适配、来源与账目 | P1 `recheck_generated_records` 和 P5 `qualify_generated_records` 消费完整最终 1.1 block；保留原 source_kind、失败、模型、哈希和账目 | 新公开 v3 结果是试跑摘要，不能代替最终 block |
+| 共同初稿、共享身份和导出资格 | `validate_generated_comparison` 加 P1/P4 来源重算；身份、非台词、回执或媒体变化有拒绝回归 | 真实摘要只验证了公开计划及媒体，尚不能独立重算全部共同输入 |
+| 复用导出/评分，匿名和状态分列 | `export_generated_blind_items` / `summarize_generated_records` 复用原复制器/算术；覆盖 applied、unchanged、失败、无渲染及缺评分 | 真实匿名包尚未发布；不使用低层旧接口绕过门禁 |
+| 统计及费用口径 | clip 等权、uncertain 未命中、M/G 共同可评块及覆盖分报；unknown 为 null，规划/合法复用各计一次 | 公开费用算术一致不等于独立认证提供商账单 |
+| 合成软件回归 | `tests/test_evaluation_paired.py` / `tests/test_evaluation.py` 覆盖三条件、身份篡改、失败、unknown、零分母、复用、匿名副本与评分映射 | 测试回执、软件视频和合成评分不是模型效果数据 |
+| 待确认协议 | 本文保留协议表；当前故事候选为 PR #56 的[明显情绪 v2 输入](studies/six-story-clear-emotions-20261024/README.md) | 6 故事/18 条目是当前设计范围；正式冻结、观看者、排除/复用规则和执行预算仍需确认 |
+| 报告边界 | 检验情绪专项台词审查相对通用审查的端到端价值；不归因为更多 Agent、动作规划或面部表情机制；VBench imaging_quality 不衡量情绪 | 人工质量、独立盲评、正式统计和效果结论尚未完成 |
+
+新版 main 已支持独立 `tense` 标签；保留 `suspicious` 兼容历史记录，不将
+二者重命名或混计。旧开发 `configs/experiment.json` 仍是软件示例，不据此启动
+六故事实验。PR #52 的新 writer 合约/提示词尚未合入本轮 main，不将新摘要
+改标为旧协议或强行拼成可比较记录。
+
+### 新真实视频预检和正式资格结果
+
+从 [v3 Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024)
+下载三段原片及 manifest；原模型结果来自
+`feat/issue-8-actor-v3-live` 的 `docs/pilots/anna-elsa-actor-v3-captured.results.json`，
+执行代码为 `7817623`。三段不同原片共 3,326,698 字节，均 1344×768、24fps、
+约 5.258344 秒并含音轨；大小/SHA-256、完整解码、初稿/最终计划哈希及
+非台词一致性检查通过。审查状态为 baseline not_applicable，其余两组 applied。
+
+公开账目分项按 8 位小数核对：文本 $0.00277694、视频 $0.75、合计
+$0.75277694；原浮点尾差及 unknown token/estimated 字段保留，不补零。
+没有访问提供商账户认证这些金额，没有新模型或视频调用。
+
+随后实际运行既有资格函数、匿名导出函数及 README CLI。资格诊断为
+`expected a final 1.1/generated record block`，导出拒绝非完整最终 block；
+这份公开 JSON 的 kind 为 `actual_actor_v3_captured_text_and_video_trial`。
+这说明当前可取得的输入尚不能进入正式接线，不说明原生成执行失败。
+未补造回执、run_id、来源文件或人工评分，未绕过门禁发布匿名材料。
+
+实际程序结果为：真实条件条目 3、不同原片 3，真实匿名导出 0、人工评分 0；
+情绪准确率、自然度、剧情清楚度和过度表达均无可报告数值。
+下一步为定位/交付该次执行的原最终 records 及其引用来源，检查迁移路径和
+writer 合约兼容性后重跑 6.14/6.15。单独的公开摘要不能认证完整来源和费用。
+人工听看及独立评分随后进行；不需要为此次离线核对重新生成视频。
+
+本轮整理与预检：FAN XUYANG。运行证据保存在忽略的 `runs/` 中；不提交
+原视频、参考图片、私人响应或观看者身份。后续小节保留各自历史基线和验收时间。
+
+本轮 Windows / PowerShell 验收：`python -m pytest tests/test_evaluation_paired.py
+tests/test_evaluation.py -q --tb=short -p no:cacheprovider` 为 101 项、92 个子测试
+通过（153.94 秒）；`tests/test_cli.py -k 'evaluate or rating'` 为 4 项通过。
+33 份固定参考校验、evaluate dry-run 和 `git diff --check` 通过。
+上述软件成功与真实摘要资格未通过分别报告，不用软件结果替代真实接入认证。
+
+</details>
+
+## Issue #9 七项待办核对与本次增量（2026-10-24）
+
+本节依据 main `cd76086` 核对 Issue 底部仍标为“下一增量”的七项要求。
+PR #37–#40 和已合并的 #46 已交付大部分工程能力，不重新实现客户端、
+资格检查、匿名导出或评分。下表区分工程证据和仍需真实材料/人工决定的部分；
+不据此关闭 Issue，也不改写其他成员的贡献归属。
+
+| 原待办 | 已有实现与离线验收 | 尚待完成 |
+| --- | --- | --- |
+| 1. 三条件记录、来源与账目 | `validate_generated_comparison`、P1 最终 block 和 6.14 重检保留 source_kind、初稿/最终/共同身份、模型、媒体及费用；只接完整 1.1 三条件，不把旧 dialogue_revision 投影改名 | 真实试跑证据须按原目录关系交接、重检；运行成功不等于正式样本 |
+| 2. 导出前资格与失败分母 | 6.14/6.15 重算来源/共同身份和实际请求；整块通过才复制，其他失败块留在私有诊断和账目 | 正式排除规则仍待团队冻结，不把导出子集视为全部尝试 |
+| 3. 匿名导出、评分与状态分列 | 复用原导出器/汇总器，公开目录只含匿名视频、索引和空表；本次补齐 unchanged、applied、未适用、未知审查状态、可播放的审查失败记录及无渲染视频计数 | 真实听看、语义匿名性检查、观看者分配和评分未由本次完成 |
+| 4. 统计与费用口径 | clip 等权、uncertain 为未命中、M/G 共同 block 差值和覆盖分开；unknown 保留 null，共享规划和合法复用只计一次 | 正式统计计划及重复/复用视频的分析规则待确认 |
+| 5. 合成回归 | 现有回归覆盖三条件、非台词/身份篡改、失败/未提交/未知费用、空评分、零分母、复用和映射标签；本次补审查状态与渲染/评分相互独立的回归 | 软件夹具不是模型效果或独立评分证据 |
+| 6. 待确认协议 | 下方“三条件试跑协议提议”已列输入、规模、设置、预算、停止条件、听看和盲评安排 | 表中的旧技术试跑快照不代表最新授权；正式样本、重复数、评价者安排仍未冻结 |
+| 7. 解释边界 | `interpretation`、generated 资格/导出输出和本文保留研究限制；VBench 仅作视觉质量辅助 | 情绪专项审查优于通用审查仍需独立人工证据；不证明更多 Agent、动作规划或面部表情机制 |
+
+Issue 顶部及开放 PR #48 包含后续真实 Agent/双演员试跑记录，尚未合入本节基线。
+本次不消费其私有运行文件、不合并其实现、不填写主观结果，也不将旧全局审查
+与新演员协议混为同一方法。正式评价应冻结所用方法、代码和提示词身份。
+
+### 新增 coverage 字段
+
+`summarize`、generated 私有导出摘要及评分汇总在 overall 和每个 by_condition
+使用同一组计数：`review_applied_runs`、`review_unchanged_runs`、
+`review_not_applicable_runs`、`review_unknown_status_runs`，与原有
+`review_failed_runs`、`review_rejected_runs` 合计等于 `planned_runs`。
+只按保存的精确状态统计；缺失、未知及旧 `no_changes` 不推断为 unchanged。
+
+`rendered_review_failure_runs` 是 render_status=rendered 且 review_status 为
+review_failed/rejected 的交集，用于显示可播放的审查失败/回退记录；它不认证
+回退内容与原稿相同，也不把这些片段判为有效修订。
+`no_rendered_video_runs = planned_runs - rendered_runs`，包括未开始、未提交、
+失败、中断和未知渲染状态，不直接声称文件物理不存在。它与 missing_ratings
+可能重叠，不能相加当运行总数；rendered 标签也不能代替实际媒体重检。
+
+这些是原始记录诊断，不改变评分、M/G 配对、生成式资格门禁、费用或正式纳入
+规则。没有评分时主观均值仍为 null，没有记录时所有新增计数为 0。
+
+本次增量：FAN XUYANG。原 P5 及团队集成贡献见文末记录，署名保持。
+
+本次离线验收（Windows / PowerShell，FFmpeg/ffprobe 7.1.1 已加入测试进程 PATH）：
+
+- `python -m pytest tests/test_evaluation_paired.py tests/test_evaluation.py -q`：
+  100 项测试、92 个子测试通过，145.05 秒；包含合成音视频、实际资格/导出/评分链路。
+- `python -m pytest tests/test_cli.py -k 'evaluate or rating' -q`：4 项通过。
+- 三条件 `smoke --mock`、对其 block 的 `evaluate` 和 experiment `--dry-run` 通过；
+  实际 smoke 汇总为 2 applied、1 not_applicable、3 no_rendered_video、3 missing_ratings，
+  tone_accuracy 为 null。合成输入与评分不作为真实方法效果。
+- `prepare_references.py --check`：33 份缓存通过、0 下载；`git diff --check` 通过。
+
+本轮不调用模型/API/GPU，不运行 VBench 推理，不产生真实视频或人工评分。
+
 ## Bounded actor negotiation and evaluation
 
 `actor_self_review_v3` uses the same two-round limit for generic_review and moodcut. A valid final disagreement is a viewable draft carrying `negotiation_status=disputed`, exact disputed IDs and raw actor replies; it is not silently relabeled failed, resolved, endorsed or human-approved. A first-round dispute without the required second attempt, missing/invalid confirmations, illegal patch, API failure, unknown cost or budget failure still blocks preparation. Existing source/media/accounting/anonymous-copy rechecks remain mandatory for qualification and rating import. No score, denominator or formal inclusion rule changes. The existing Pages comparison exposes methods, targets and dialogue changes and remains development viewing material, not a blind rating package. See [method and acceptance](ACTOR_REVIEW_METHOD.md) and CONTRACTS 6.20. This offline increment creates no new video or rating.
