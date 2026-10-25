@@ -123,7 +123,7 @@ def test_command_defaults_to_offline_without_key(inputs, tmp_path, monkeypatch):
     monkeypatch.setattr(command, "fetch_video_models", reject_network)
     assert command.main(["--project-root", str(tmp_path), "--run", "runs/source", "--output", "runs/preview"]) == 0
     assert (tmp_path / "runs/preview/bundle.json").is_file()
-    assert "离线请求预览" in (tmp_path / "runs/preview/preview.html").read_text(encoding="utf-8")
+    assert "Offline request preview" in (tmp_path / "runs/preview/preview.html").read_text(encoding="utf-8")
     assert not list((tmp_path / "runs/preview").rglob("*.mp4"))
     with pytest.raises(FileExistsError):
         command.main(["--project-root", str(tmp_path), "--run", "runs/source", "--output", "runs/preview"])
