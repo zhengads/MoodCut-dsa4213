@@ -54,10 +54,21 @@ compiler. That 1.0 example is a team-authored development adaptation using
 MovieAgent character references, not an upstream story or a formal sample.
 This change does not switch the default model or refresh prices.
 
-A conservative shared feasibility gate rejects more than eight dialogue
-characters per requested second; it is not a calibrated speech-speed or quality
-predictor. Unsupported model/duration/price combinations fail through the existing
-quote helper. No lengthening, shortening, extra model call or static fallback occurs.
+A shared rough timing gate preserves all dialogue accepted by the historical
+eight-characters-per-second check. Longer dialogue is estimated using Latin
+words at 2.5 units per second and other letters or numbers at eight per second;
+mixed-script contributions add across all speakers. Contractions count once,
+spaces/punctuation do not count as spoken units, and Latin tokens over 15 letters
+contribute one unit per 15 letters rather than counting as a single short word.
+This avoids treating each English letter as a Chinese character. There is no
+per-line character cap. These are engineering allowances, not calibrated speech
+rates, language detection or a quality score; they do not model every language,
+pause or pronunciation. Human listening must still check complete, natural
+delivery. Original requests, inputs and completed media are never shortened or
+retimed by this gate. A formerly rejected source may pass a new offline
+preparation; retain its original failure and identify the changed compiler code.
+Unsupported model/duration/price combinations still fail through the existing
+quote helper. No extra model call or static fallback occurs.
 
 Consume saved scripts through the existing offline entry, without a new runner:
 

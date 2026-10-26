@@ -374,6 +374,60 @@ def compile_generated(case, **overrides):
         template_sha256=overrides.get("template_sha256", get_video_template_sha256()), pricing_config=pricing)
 
 
+def _english_eight_second_case(monkeypatch, lines):
+    """Synthetic compiler regression, not model output or speech-quality evidence."""
+    scene, initial, plans, manifest, settings, pricing = _generated_case("umbrella", monkeypatch)
+    scene.update(min_duration_s=14, max_duration_s=14, max_shot_duration_s=8)
+    initial["shots"][0]["duration_s"] = 8
+    initial["shots"][0]["dialogue"] = [
+        {"character_id": character["id"], "text": text}
+        for character, text in zip(scene["characters"], lines)
+    ]
+    plans = {condition: deepcopy(initial) for condition in CONDITIONS}
+    return scene, initial, plans, manifest, settings, pricing
+
+
+def test_generated_english_dialogue_is_not_limited_by_letter_count(monkeypatch):
+    lines = ("Stay quiet. I can still hear them.", "They haven't moved. We just have to wait.")
+    assert sum(map(len, lines)) > 8 * 8
+    case = _english_eight_second_case(monkeypatch, lines)
+    original = deepcopy(case)
+    bundle = compile_generated(case)
+    assert case == original
+    for condition in bundle["conditions"]:
+        request = condition["jobs"][0]["request"]
+        assert request["duration"] == 8
+        assert all(line in request["prompt"] for line in lines)
+    assert len({c["jobs"][0]["request_sha256"] for c in bundle["conditions"]}) == 1
+
+
+@pytest.mark.parametrize("lines", [
+    ("We must remain here until the footsteps outside have moved away. " * 10, "Wait."),
+    ("Please stay quiet. We must wait.", "等" * 60),
+    ("a" * 500, "Wait."),
+])
+def test_generated_timing_still_rejects_overlong_or_mixed_dialogue(monkeypatch, lines):
+    case = _english_eight_second_case(monkeypatch, lines)
+    with pytest.raises(ValueError, match="dialogue too long"):
+        compile_generated(case)
+
+
+def test_legacy_pair_uses_the_same_english_timing_gate(inputs):
+    scene, initial, revised, manifest, config = inputs
+    dialogue = [
+        {"character_id": "a", "text": "Stay quiet. I can still hear them."},
+        {"character_id": "b", "text": "They haven't moved. We just have to wait."},
+    ]
+    initial["shots"][0]["dialogue"] = deepcopy(dialogue)
+    revised["shots"][0]["dialogue"] = deepcopy(dialogue)
+    bundle = build_video_bundle(scene, initial, revised, manifest, config, project_root=ROOT)
+    assert all(line["text"] in bundle["conditions"][0]["jobs"][0]["request"]["prompt"]
+               for line in dialogue)
+    revised["shots"][0]["dialogue"][0]["text"] = "We should quietly wait here. " * 30
+    with pytest.raises(ValueError, match="Dialogue too long"):
+        build_video_bundle(scene, initial, revised, manifest, config, project_root=ROOT)
+
+
 @pytest.mark.parametrize("inline", [False, True])
 def test_heygen_compiler_keeps_common_controls_and_only_changes_dialogue(monkeypatch, inline):
     import base64
