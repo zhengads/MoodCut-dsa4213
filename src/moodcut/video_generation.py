@@ -10,9 +10,11 @@ import ipaddress
 import json
 import math
 from pathlib import Path
+import re
 import subprocess
 import shutil
 from string import Template
+import unicodedata
 from urllib.parse import urlsplit
 
 from .contracts import (CONDITIONS, CONTRACT_VERSION, _json_copy,
@@ -21,6 +23,30 @@ from .validation import validate_plan
 from .video_client import HEYGEN_MODEL, estimate_video_cost, video_request_controls
 
 _GENERATED_TEMPLATE = Path(__file__).with_name("prompts") / "video_generated.txt"
+
+_LATIN_WORD = re.compile(r"[A-Za-z]+(?:['’][A-Za-z]+)*")
+
+
+def _dialogue_fits_duration(dialogue, duration_s):
+    """Rough preparation gate, not measured speech timing or a quality score.
+
+    Retain every input accepted by the historical eight-characters/second gate.
+    For longer text, count Latin words at 2.5 units/second and other letters or
+    numbers at eight/second. A Latin token longer than 15 letters contributes
+    multiple units rather than letting an arbitrarily long string count as one
+    word. Contractions count once; punctuation and spaces are not spoken units.
+    Mixed-script contributions add together across all speakers in the shot.
+    These engineering allowances are not validated language-specific rates.
+    """
+    texts = [line["text"] for line in dialogue]
+    if sum(map(len, texts)) <= duration_s * 8:
+        return True
+    text = " ".join(texts)
+    word_units = sum((len(word.group().replace("'", "").replace("’", "")) + 14) // 15
+                     for word in _LATIN_WORD.finditer(text))
+    remaining = _LATIN_WORD.sub("", text)
+    other_units = sum(unicodedata.category(char)[0] in ("L", "N") for char in remaining)
+    return word_units / 2.5 + other_units / 8 <= duration_s
 
 
 def get_video_template_sha256() -> str:
@@ -99,9 +125,7 @@ def build_generated_video_bundle(scene, initial, plans, manifest, settings, *,
     for condition in CONDITIONS:
         jobs = []
         for index, shot in enumerate(plans[condition]["shots"]):
-            # Same conservative feasibility check as the development pair. It is
-            # not a language-specific speech-rate predictor or quality judgment.
-            if sum(len(line["text"]) for line in shot["dialogue"]) > shot["duration_s"] * 8:
+            if not _dialogue_fits_duration(shot["dialogue"], shot["duration_s"]):
                 raise ValueError(f"{condition}/{shot['shot_id']}: dialogue too long for the fixed clip duration")
             context = {**common, "shot": {k: initial["shots"][index][k]
                                          for k in ("direction", "duration_s", "visuals")}}
@@ -203,8 +227,7 @@ def build_video_bundle(scene: dict, initial: dict, revised: dict,
     for label, plan in (("baseline", initial), ("dialogue_revision", projected)):
         jobs = []
         for index, (shot, setting) in enumerate(zip(plan["shots"], settings)):
-            # Conservative preparation check, not a guarantee about generated speech speed.
-            if sum(len(line["text"]) for line in shot["dialogue"]) > setting["duration_s"] * 8:
+            if not _dialogue_fits_duration(shot["dialogue"], setting["duration_s"]):
                 raise ValueError(f"Dialogue too long for clip {shot['shot_id']}; shorten it or explicitly change clip duration")
             spoken = "\n".join(f"{names[line['character_id']]} says exactly: {json.dumps(line['text'], ensure_ascii=False)}"
                                 for line in shot["dialogue"]) or "No spoken dialogue in this shot."
