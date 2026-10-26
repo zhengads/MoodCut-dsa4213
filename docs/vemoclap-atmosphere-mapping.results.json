@@ -4,7 +4,7 @@
  "date": "2026-10-25",
  "formal_inclusion_approved": false,
  "device": "cpu",
- "note": "Diagnostic only. Probabilities are VEMOCLAP softmax outputs on local CPU; no human ratings.",
+ "note": "Diagnostic only. Probabilities are VEMOCLAP softmax outputs on local CPU; no human ratings. S04 records also carry exploratory speech-dimension and text-proxy values; label_check fields are the author's transcript-based reading.",
  "records": [
   {
    "group": "s06_15s_three",
@@ -234,7 +234,10 @@
    "missing_features": [],
    "source": "Charade (1963)",
    "excerpt_range": "4500-4540 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "mismatch",
+   "label_check_note": "转写在谈谁是凶手、指控谋杀（怀疑、拌嘴），不是亲密",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_calibration",
@@ -254,7 +257,10 @@
    "missing_features": [],
    "source": "Charade (1963)",
    "excerpt_range": "3590-3620 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "plausible",
+   "label_check_note": "转写为打趣调情（“你对我来说太老了”“能不能认真点”），大体符合亲密",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_calibration",
@@ -274,7 +280,10 @@
    "missing_features": [],
    "source": "Night of the Living Dead (1968)",
    "excerpt_range": "1250-1290 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "plausible",
+   "label_check_note": "转写为“我也害怕，但我们得一起封住这房子”，符合紧张",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_calibration",
@@ -294,7 +303,10 @@
    "missing_features": [],
    "source": "Night of the Living Dead (1968)",
    "excerpt_range": "870-905 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "plausible_artifact",
+   "label_check_note": "“We've got to get out of here”重复循环（Whisper 伪影），内容符合紧张但转写失真",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_calibration",
@@ -316,7 +328,10 @@
    ],
    "source": "His Girl Friday (1940)",
    "excerpt_range": "600-630 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "plausible",
+   "label_check_note": "Walter 与 Hildy 争吵，符合敌对",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_calibration",
@@ -336,7 +351,10 @@
    "missing_features": [],
    "source": "Night of the Living Dead (1968)",
    "excerpt_range": "2825-2848 s",
-   "role": "calibration"
+   "role": "calibration",
+   "label_check": "plausible",
+   "label_check_note": "Harry 与 Ben 关于地窖的争执，符合敌对",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_validation",
@@ -356,7 +374,10 @@
    "missing_features": [],
    "source": "Charade (1963)",
    "excerpt_range": "5003-5035 s",
-   "role": "validation"
+   "role": "validation",
+   "label_check": "mismatch",
+   "label_check_note": "转写在谈凶案和钱的剧情，不是亲密",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_validation",
@@ -376,7 +397,10 @@
    "missing_features": [],
    "source": "Charade (1963)",
    "excerpt_range": "6715-6755 s",
-   "role": "validation"
+   "role": "validation",
+   "label_check": "plausible",
+   "label_check_note": "转写为“你叫什么名字、结婚证”，调情求婚，大体符合亲密",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_validation",
@@ -396,7 +420,10 @@
    "missing_features": [],
    "source": "Night of the Living Dead (1968)",
    "excerpt_range": "2545-2590 s",
-   "role": "validation"
+   "role": "validation",
+   "label_check": "partial",
+   "label_check_note": "多人争论是否留在楼上，含对威胁的讨论；争论成分符合敌对，但含多人",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_validation",
@@ -416,7 +443,10 @@
    "missing_features": [],
    "source": "Tears of Steel (2012, CC-BY)",
    "excerpt_range": "22.8-41.5 s",
-   "role": "validation"
+   "role": "validation",
+   "label_check": "plausible",
+   "label_check_note": "“You're a jerk”“我们要追随各自的热情”，符合敌对",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "film_validation",
@@ -436,7 +466,10 @@
    "missing_features": [],
    "source": "Night of the Living Dead (1968)",
    "excerpt_range": "2625-2663 s",
-   "role": "validation"
+   "role": "validation",
+   "label_check": "mismatch",
+   "label_check_note": "转写为 Harry 与 Cooper 关于地窖的争执，更像敌对，紧张标签存疑",
+   "label_check_basis": "author reading of the Whisper transcript; excerpt not re-watched"
   },
   {
    "group": "official_demo_clips",
@@ -551,6 +584,102 @@
     "surprise": 0.998865
    },
    "missing_features": []
+  },
+  {
+   "group": "s04_8s",
+   "id": "s04_8s/baseline",
+   "condition": "baseline",
+   "intended_atmosphere": "tense",
+   "intended_note": "S04 exit-closing scene (two trusting companions, deadline); source run recorded in the delivery metadata; no independent ratings yet",
+   "video_sha256": "015e6f0a9e362ff3921cc4a64a1bbd262a86567c5aa47ac282d8bc30d0386c7a",
+   "probabilities": {
+    "anger": 0.956693,
+    "disgust": 0.001467,
+    "fear": 0.00694,
+    "joy": 4.2e-05,
+    "sadness": 0.002122,
+    "surprise": 0.032737
+   },
+   "missing_features": [],
+   "speech_dimension": {
+    "arousal": 0.8784,
+    "dominance": 0.8254,
+    "valence": 0.6476
+   },
+   "text_proxy": {
+    "transcript": "We don't have much time. Let's go! I got it. Don't waste your time!",
+    "groups": {
+     "hostile": 0.0712,
+     "tense": 0.0027,
+     "affectionate": 0.5207
+    },
+    "top_label": "caring",
+    "top_label_p": 0.5207
+   }
+  },
+  {
+   "group": "s04_8s",
+   "id": "s04_8s/generic_review",
+   "condition": "generic_review",
+   "intended_atmosphere": "tense",
+   "intended_note": "S04 exit-closing scene (two trusting companions, deadline); source run recorded in the delivery metadata; no independent ratings yet",
+   "video_sha256": "f3a60c6b50cf0bcce1cb82e0434d4090b994ae4feccd8f536c1f2a60781901b8",
+   "probabilities": {
+    "anger": 0.656054,
+    "disgust": 0.011494,
+    "fear": 0.147048,
+    "joy": 0.000121,
+    "sadness": 0.030401,
+    "surprise": 0.154882
+   },
+   "missing_features": [],
+   "speech_dimension": {
+    "arousal": 0.7685,
+    "dominance": 0.7375,
+    "valence": 0.4792
+   },
+   "text_proxy": {
+    "transcript": "The exit is about to be closed! Hurry, follow me!",
+    "groups": {
+     "hostile": 0.0111,
+     "tense": 0.0107,
+     "affectionate": 0.0193
+    },
+    "top_label": "neutral",
+    "top_label_p": 0.8778
+   }
+  },
+  {
+   "group": "s04_8s",
+   "id": "s04_8s/moodcut",
+   "condition": "moodcut",
+   "intended_atmosphere": "tense",
+   "intended_note": "S04 exit-closing scene (two trusting companions, deadline); source run recorded in the delivery metadata; no independent ratings yet",
+   "video_sha256": "da679a0bb1dafbb98bdf771893bc6cc94ddd9bc7c32d7cac783e5fe7f09dc4b4",
+   "probabilities": {
+    "anger": 0.747592,
+    "disgust": 0.006449,
+    "fear": 0.015932,
+    "joy": 0.000446,
+    "sadness": 0.011683,
+    "surprise": 0.217899
+   },
+   "missing_features": [],
+   "speech_dimension": {
+    "arousal": 0.7913,
+    "dominance": 0.7657,
+    "valence": 0.5021
+   },
+   "text_proxy": {
+    "transcript": "Time is running out, let's go! Got it, let's go!",
+    "groups": {
+     "hostile": 0.0037,
+     "tense": 0.0006,
+     "affectionate": 0.0138
+    },
+    "top_label": "neutral",
+    "top_label_p": 0.6493
+   }
   }
  ]
 }
