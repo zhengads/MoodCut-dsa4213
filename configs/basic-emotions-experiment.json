@@ -1,0 +1,19 @@
+{
+  "status": "s07_s12_offline_assignments_not_approved_for_execution",
+  "scenes": [
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s07_broken_promise/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s08_foul_medicine/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s09_forest_creature/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s10_celebration_saved/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s11_irreplaceable_keepsake/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s12_finished_task/scene.json"
+  ],
+  "replicates": 1,
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "source_kind": "development",
+  "note": "Omitting tones uses each scene's fixed native VEMOCLAP label and yields 18 offline assignments. This config does not authorize model or video calls."
+}

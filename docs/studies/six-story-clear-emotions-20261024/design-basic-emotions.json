@@ -1,0 +1,236 @@
+{
+  "kind": "six_basic_emotion_input_design_not_execution_config",
+  "version": "1.0",
+  "created_on": "2026-10-27",
+  "status": "selected_supplementary_inputs_for_offline_validation",
+  "input_scope_approved": true,
+  "fixed_story_and_emotion_assignment": true,
+  "source_kind": "assistant_authored_user_requested_extension",
+  "source_method": "Fictional S07-S12 briefs authored from the user-approved six-emotion specification; no model-generated dialogue, review response, video, or rating is included.",
+  "extends_design": "docs/studies/six-story-clear-emotions-20261024/design.json",
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "duration_s": 5,
+  "max_shots": 1,
+  "emotion_definitions": {
+    "anger": {
+      "label": "愤怒",
+      "meaning": "Explicit anger or outrage directed at another person's action, distinct from opposition without expressed anger."
+    },
+    "disgust": {
+      "label": "厌恶",
+      "meaning": "Strong revulsion toward an unpleasant substance or smell, distinct from danger or interpersonal anger."
+    },
+    "fear": {
+      "label": "恐惧",
+      "meaning": "Explicit apprehension about a potentially dangerous unknown threat, distinct from quiet vigilance."
+    },
+    "joy": {
+      "label": "喜悦",
+      "meaning": "Shared happiness following positive news, distinct from affection or surprise."
+    },
+    "sadness": {
+      "label": "悲伤",
+      "meaning": "Emotional distress following a meaningful personal loss, distinct from a general request for company."
+    },
+    "surprise": {
+      "label": "惊讶",
+      "meaning": "Immediate disbelief at an unexpected result, distinct from happiness, fear, or urgency."
+    }
+  },
+  "label_policy": "S07-S12 use the six native VEMOCLAP labels exactly. Do not merge or relabel them as affectionate, hostile, tense, or legacy suspicious; S01-S06 labels remain unchanged.",
+  "common_story_constraints": "Both characters are present from the start. Use natural Mandarin in exactly two concise turns, one per character, with a suggested combined length of 16-22 Chinese characters and no rushed delivery. The planning Agent chooses exact wording. Use one five-second shot with only the named characters, no narration, subtitles, title cards, additional speaker, extra event, fight, magic, complex prop handling, or transition. Do not directly say the six emotion-label words. Reference images determine identity and clothing only. Do not copy original poses, expressions, backgrounds, props, film dialogue, or film backstory.",
+  "reference_selection": {
+    "source_design": "docs/studies/six-story-clear-emotions-20261024/design.json",
+    "selection_path": "assets/library/movieagent-animation.selection.json",
+    "manifest_path": "assets/library/movieagent-animation.manifest.json",
+    "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "rule": "Reuse each mapped S01-S06 character pair once; copy the two existing asset records byte-for-byte and select no new images.",
+    "distinct_characters": 12,
+    "films": [
+      "FrozenII",
+      "DespicableMe4",
+      "NeZha2"
+    ],
+    "rights_status": "unconfirmed",
+    "public_redistribution_authorized": false,
+    "commercial_use_cleared": false
+  },
+  "scope_limits": [
+    "Each emotion appears in one story, so emotion, plot, cast, and film remain confounded.",
+    "Compare baseline, generic_review, and moodcut only within the same frozen scenario block.",
+    "All conditions share the initial plan, actions, framing, duration, references, voices, and video settings; review may change dialogue only.",
+    "Five-second delivery and the suggested Mandarin length require common preflight; never extend only one condition.",
+    "Do not replace a scenario after observing method outputs or scores.",
+    "VEMOCLAP probabilities are whole-video emotion predictions, not dialogue-quality or intensity measurements."
+  ],
+  "stories": [
+    {
+      "id": "s07_broken_promise",
+      "title": "Another broken promise",
+      "emotion": "anger",
+      "emotion_label": "愤怒",
+      "film": "DespicableMe4",
+      "cast": [
+        {
+          "character_id": "despicableme4_maxime",
+          "display_name": "Maxime / 马克西姆"
+        },
+        {
+          "character_id": "despicableme4_valentina",
+          "display_name": "Valentina / 瓦伦蒂娜"
+        }
+      ],
+      "story": "白天，普通会议室桌边，Maxime和Valentina已经面对面站定。两人是关系紧张的前合作伙伴。Maxime得知Valentina又一次没有履行承诺，当面表达对她反复失信的强烈不满；Valentina为自己辩解并拒绝接受他的批评。争执没有解决。",
+      "beats": [
+        "Maxime针对Valentina再次未履行承诺表达强烈不满。",
+        "Valentina为自己辩解并拒绝接受批评。"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_maxime_primary",
+        "movieagent_despicableme4_valentina_primary"
+      ],
+      "design_question": "Explicit anger at another broken promise, followed by a defensive response."
+    },
+    {
+      "id": "s08_foul_medicine",
+      "title": "The foul-smelling medicine",
+      "emotion": "disgust",
+      "emotion_label": "厌恶",
+      "film": "NeZha2",
+      "cast": [
+        {
+          "character_id": "nezha2_lijing",
+          "display_name": "Lijing / 李靖"
+        },
+        {
+          "character_id": "nezha2_taiyi",
+          "display_name": "Taiyi / 太乙"
+        }
+      ],
+      "story": "白天，安静房间的桌边，Lijing和Taiyi已经站定。Taiyi带来一小瓶气味极其难闻的药液，瓶子已经放在桌上，气味明显。Lijing对气味表达强烈反感；Taiyi承认这种气味确实令人不适。两人不饮用药液，也不移动瓶子。",
+      "beats": [
+        "Lijing对药液难闻的气味表达强烈反感。",
+        "Taiyi承认这种气味确实令人不适。"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_lijing_primary",
+        "movieagent_nezha2_taiyi_primary"
+      ],
+      "design_question": "Strong revulsion toward an unpleasant medicinal smell, followed by acknowledgement."
+    },
+    {
+      "id": "s09_forest_creature",
+      "title": "Something in the forest",
+      "emotion": "fear",
+      "emotion_label": "恐惧",
+      "film": "FrozenII",
+      "cast": [
+        {
+          "character_id": "frozenii_elsa",
+          "display_name": "Elsa / 艾莎"
+        },
+        {
+          "character_id": "frozenii_mattias",
+          "display_name": "Mattias / 马蒂亚斯"
+        }
+      ],
+      "story": "白天，安静的森林小路上，Elsa和Mattias已经并肩站定，面向附近树木后的未知动静。两人察觉一个身份不明的生物正在接近，不知道它是否危险。Elsa承认自己害怕这个未知生物；Mattias承认危险尚不明确，并表示自己也害怕。生物始终不出现。",
+      "beats": [
+        "Elsa承认自己害怕正在接近的未知生物。",
+        "Mattias回应危险尚不明确，并承认自己也害怕。"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_elsa_primary",
+        "movieagent_frozenii_mattias_primary"
+      ],
+      "design_question": "Shared fear of an unidentified approaching creature that remains unseen."
+    },
+    {
+      "id": "s10_celebration_saved",
+      "title": "The celebration is saved",
+      "emotion": "joy",
+      "emotion_label": "喜悦",
+      "film": "FrozenII",
+      "cast": [
+        {
+          "character_id": "frozenii_anna",
+          "display_name": "Anna / 安娜"
+        },
+        {
+          "character_id": "frozenii_kristoff",
+          "display_name": "Kristoff / 克里斯托夫"
+        }
+      ],
+      "story": "白天，安静的门厅里，Anna和Kristoff已经面对面站定。两人期待已久的庆祝活动此前安排未定，Anna刚得知活动最终可以如期进行。Anna分享这个好消息和自己的开心；Kristoff回应同样的开心与期待。庆祝活动尚未开始。",
+      "beats": [
+        "Anna宣布期待的庆祝活动最终可以进行，并表达开心。",
+        "Kristoff回应同样的开心与期待。"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_anna_primary",
+        "movieagent_frozenii_kristoff_primary"
+      ],
+      "design_question": "Shared happiness after positive news that an anticipated celebration can proceed."
+    },
+    {
+      "id": "s11_irreplaceable_keepsake",
+      "title": "An irreplaceable keepsake",
+      "emotion": "sadness",
+      "emotion_label": "悲伤",
+      "film": "DespicableMe4",
+      "cast": [
+        {
+          "character_id": "despicableme4_lucy",
+          "display_name": "Lucy / 露西"
+        },
+        {
+          "character_id": "despicableme4_gru",
+          "display_name": "Gru / 格鲁"
+        }
+      ],
+      "story": "白天，安静的客厅里，Lucy和Gru已经并排坐好。Lucy得知一件珍视的旧纪念物已经损坏且无法修复，物品放在附近桌上。Lucy表达失去这件重要物品的难过；Gru理解她的失落并安慰她。物品仍然损坏，没有找到解决办法。",
+      "beats": [
+        "Lucy表达纪念物无法修复带来的难过。",
+        "Gru理解Lucy的失落并给予安慰。"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_lucy_primary",
+        "movieagent_despicableme4_gru_primary"
+      ],
+      "design_question": "Sadness over an irreplaceable damaged keepsake, followed by comfort."
+    },
+    {
+      "id": "s12_finished_task",
+      "title": "An unexpectedly finished task",
+      "emotion": "surprise",
+      "emotion_label": "惊讶",
+      "film": "NeZha2",
+      "cast": [
+        {
+          "character_id": "nezha2_nezha",
+          "display_name": "Nezha / 哪吒"
+        },
+        {
+          "character_id": "nezha2_aobing",
+          "display_name": "Aobing / 敖丙"
+        }
+      ],
+      "story": "白天，安静房间的桌边，Nezha和Aobing已经站定。Aobing此前在处理一项困难任务，Nezha原以为还需要很久。Nezha刚发现任务已经完成，对如此快的结果表示难以置信；Aobing确认任务确实完成。完成结果在对白开始前已经成立。",
+      "beats": [
+        "Nezha对Aobing已经完成困难任务表示难以置信。",
+        "Aobing确认任务确实已经完成。"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_nezha_primary",
+        "movieagent_nezha2_aobing_primary"
+      ],
+      "design_question": "Immediate disbelief at an unexpectedly completed difficult task, followed by confirmation."
+    }
+  ]
+}

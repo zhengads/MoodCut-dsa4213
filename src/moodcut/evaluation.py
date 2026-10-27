@@ -6,6 +6,8 @@ import math
 from collections import defaultdict
 from pathlib import Path, PurePosixPath
 
+from .contracts import SUPPORTED_TONES
+
 CUSTOM_DIMENSIONS = (
     "subject_consistency", "background_consistency", "motion_smoothness",
     "dynamic_degree", "aesthetic_quality", "imaging_quality",
@@ -422,7 +424,7 @@ def run_imaging_quality_batch(manifest, *, video_root, upstream_dir, cache_dir,
                          config=config, evaluate_one=evaluate_one, resume=resume)
 
 
-PAIRED_TONES = ("affectionate", "suspicious", "hostile", "tense")
+PAIRED_TONES = SUPPORTED_TONES
 PAIRED_CONDITIONS = ("baseline", "generic_review", "moodcut")
 RATING_FIELDS = ("rater_id", "item_id", "perceived_tone", "confidence",
                  "naturalness", "story_clarity", "overstatement")
@@ -441,12 +443,15 @@ def build_assignments(scenes, *, replicates, tones, conditions):
         raise ValueError("Scenes must be a list")
     if type(replicates) is not int or replicates < 1:
         raise ValueError("replicates must be a positive integer")
-    for values, allowed, label in ((tones, PAIRED_TONES, "tones"),
-                                    (conditions, PAIRED_CONDITIONS, "conditions")):
+    for values, allowed, label in ((conditions, PAIRED_CONDITIONS, "conditions"),):
         if (not isinstance(values, list) or not values
                 or any(not isinstance(v, str) or v not in allowed for v in values)
                 or len(set(values)) != len(values)):
             raise ValueError(f"Choose unique supported {label}")
+    if tones is not None and (not isinstance(tones, list) or not tones
+            or any(not isinstance(v, str) or v not in PAIRED_TONES for v in tones)
+            or len(set(tones)) != len(tones)):
+        raise ValueError("Choose unique supported tones")
     seen, result = set(), []
     for index, scene in enumerate(scenes, 1):
         if not isinstance(scene, dict) or not _text(scene.get("scene_id")):
@@ -455,7 +460,10 @@ def build_assignments(scenes, *, replicates, tones, conditions):
         if scene_id in seen:
             raise ValueError(f"Scene {index}: duplicate scene_id")
         seen.add(scene_id)
-        for tone in tones:
+        scene_tones = tones if tones is not None else [scene.get("tone")]
+        if any(tone not in PAIRED_TONES for tone in scene_tones):
+            raise ValueError(f"Scene {index}: missing or unsupported fixed tone")
+        for tone in scene_tones:
             for replicate in range(1, replicates + 1):
                 identity = json.dumps([scene_id, tone, replicate], ensure_ascii=False,
                                       separators=(",", ":")).encode("utf-8")

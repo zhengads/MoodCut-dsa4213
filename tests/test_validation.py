@@ -227,6 +227,18 @@ def test_tense_and_legacy_suspicious_remain_distinct_supported_tones(
     assert (scene, plan, manifest) == before
 
 
+@pytest.mark.parametrize("tone", ["anger", "disgust", "fear", "joy", "sadness", "surprise"])
+@pytest.mark.parametrize("mode", ["animatic", "generated"])
+def test_native_vemoclap_emotions_are_distinct_supported_tones(
+        tone, mode, valid_data, generated_data):
+    scene, plan, manifest = generated_data if mode == "generated" else valid_data
+    scene["tone"] = plan["tone"] = tone
+    before = deepcopy((scene, plan, manifest))
+    assert validate_scene(scene, manifest, output_mode=mode) == []
+    assert validate_plan(scene, plan, manifest, output_mode=mode) == []
+    assert (scene, plan, manifest) == before
+
+
 def test_modes_are_explicit_and_old_animatic_still_works(valid_data, generated_data):
     scene, plan, manifest = valid_data
     assert validate_scene(scene, manifest) == []

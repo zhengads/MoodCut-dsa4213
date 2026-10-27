@@ -124,9 +124,10 @@ $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
 
 ```powershell
 .venv/Scripts/python -m moodcut evaluate --config configs/experiment.json --dry-run
+.venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run
 ```
 
-`configs/experiment.json` 保留原开发夹具，不是六故事研究配置，也不确定正式样本量。首页的 `runs/demo-01` 完成后，可检查匿名导出和账目：
+`configs/experiment.json` 保留原开发夹具。`configs/basic-emotions-experiment.json` 使用每个 S07–S12 scene 自己的固定情绪标签，离线列出 18 个条件任务；它不生成视频，也不批准正式运行。首页的 `runs/demo-01` 完成后，可检查匿名导出和账目：
 
 ```powershell
 .venv/Scripts/python -m moodcut evaluate --records runs/demo-01/block.json --blind-output runs/blind-demo-01

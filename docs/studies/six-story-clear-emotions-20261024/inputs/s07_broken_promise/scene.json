@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_basic_v1_s07_broken_promise",
+  "tone": "anger",
+  "story": "白天，普通会议室桌边，Maxime和Valentina已经面对面站定。两人是关系紧张的前合作伙伴。Maxime得知Valentina又一次没有履行承诺，当面表达对她反复失信的强烈不满；Valentina为自己辩解并拒绝接受他的批评。争执没有解决。 开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出愤怒、厌恶、恐惧、喜悦、悲伤、惊讶这些情绪标签。参考图只确定角色身份与服装，不复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。 本场景补充边界：不补写具体承诺、违法行为、背叛证据或报复。 不辱骂、威胁、喊叫、砸桌、推搡或离场。",
+  "characters": [
+    {
+      "id": "despicableme4_maxime",
+      "name": "Maxime / 马克西姆"
+    },
+    {
+      "id": "despicableme4_valentina",
+      "name": "Valentina / 瓦伦蒂娜"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Maxime针对Valentina再次未履行承诺表达强烈不满。"
+    },
+    {
+      "id": "b2",
+      "description": "Valentina为自己辩解并拒绝接受批评。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_despicableme4_maxime_primary",
+    "movieagent_despicableme4_valentina_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_basic_emotion_extension_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Supplementary S07-S12 fictional brief targeting one native VEMOCLAP basic-emotion label. Existing film images supply appearance only; no original-film dialogue or Agent-generated planning/review answer.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotions.json",
+    "design_story_id": "s07_broken_promise",
+    "design_version": "1.0",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

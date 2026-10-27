@@ -1,0 +1,153 @@
+{
+  "kind": "local_basic_emotion_input_index_not_execution_config",
+  "version": "1.0",
+  "created_on": "2026-10-27",
+  "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotions.json",
+  "design_sha256": "3566623a6bce24540c1c41f40c334bb1c99847c54d1b3443a0286d0bd70cad43",
+  "status": "selected_supplementary_inputs_for_offline_validation",
+  "input_scope_approved": true,
+  "fixed_story_and_emotion_assignment": true,
+  "execution_enabled": false,
+  "paid_run_authorized": false,
+  "formal_inclusion_approved": false,
+  "conditions": [
+    "baseline",
+    "generic_review",
+    "moodcut"
+  ],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "selected_emotions": [
+    "anger",
+    "disgust",
+    "fear",
+    "joy",
+    "sadness",
+    "surprise"
+  ],
+  "emotion_labels": {
+    "anger": "愤怒",
+    "disgust": "厌恶",
+    "fear": "恐惧",
+    "joy": "喜悦",
+    "sadness": "悲伤",
+    "surprise": "惊讶"
+  },
+  "extends_index": "docs/studies/six-story-clear-emotions-20261024/inputs/index.json",
+  "stories": [
+    {
+      "story_id": "s07_broken_promise",
+      "title": "Another broken promise",
+      "emotion": "anger",
+      "emotion_label": "愤怒",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_maxime",
+        "despicableme4_valentina"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_maxime_primary",
+        "movieagent_despicableme4_valentina_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s07_broken_promise/scene.json",
+      "scene_sha256": "ca7c9b8e5746b84d50d27a1c0099bc87169817cfa8f7eb8ff175c6fab76e901c",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s07_broken_promise/assets.json",
+      "assets_sha256": "01bc8fd79e1c678aedc81fb417ce6855fb52a4b7c3b3e3dcb4e4678efa54a6e2"
+    },
+    {
+      "story_id": "s08_foul_medicine",
+      "title": "The foul-smelling medicine",
+      "emotion": "disgust",
+      "emotion_label": "厌恶",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_lijing",
+        "nezha2_taiyi"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_lijing_primary",
+        "movieagent_nezha2_taiyi_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s08_foul_medicine/scene.json",
+      "scene_sha256": "3e2575b8e5adb7609f5d0ffc69a7c94a3774b2085da73b0bc257207f2c715ea6",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s08_foul_medicine/assets.json",
+      "assets_sha256": "dcd3f04b3575e1aec6cb389352d8b2170457a60de4a4fa8063bc81dbf2a1ab75"
+    },
+    {
+      "story_id": "s09_forest_creature",
+      "title": "Something in the forest",
+      "emotion": "fear",
+      "emotion_label": "恐惧",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_elsa",
+        "frozenii_mattias"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_elsa_primary",
+        "movieagent_frozenii_mattias_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s09_forest_creature/scene.json",
+      "scene_sha256": "55aea8b57f31d90b20d759cd1523ce26482cb71d4939261623dbc73615a475a8",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s09_forest_creature/assets.json",
+      "assets_sha256": "7fbaa42906016f782c499edba5ba14b1c5af3fb819bf060a49b9f3d80bca431f"
+    },
+    {
+      "story_id": "s10_celebration_saved",
+      "title": "The celebration is saved",
+      "emotion": "joy",
+      "emotion_label": "喜悦",
+      "film": "FrozenII",
+      "character_ids": [
+        "frozenii_anna",
+        "frozenii_kristoff"
+      ],
+      "asset_ids": [
+        "movieagent_frozenii_anna_primary",
+        "movieagent_frozenii_kristoff_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s10_celebration_saved/scene.json",
+      "scene_sha256": "e137af2742a54efef3d7de3b2111585564b388692d061a51591c155eeef0ef53",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s10_celebration_saved/assets.json",
+      "assets_sha256": "987bbf15b201d9d8ab7c221b08298dde8faa031abbf564251859e248f7b98a18"
+    },
+    {
+      "story_id": "s11_irreplaceable_keepsake",
+      "title": "An irreplaceable keepsake",
+      "emotion": "sadness",
+      "emotion_label": "悲伤",
+      "film": "DespicableMe4",
+      "character_ids": [
+        "despicableme4_lucy",
+        "despicableme4_gru"
+      ],
+      "asset_ids": [
+        "movieagent_despicableme4_lucy_primary",
+        "movieagent_despicableme4_gru_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s11_irreplaceable_keepsake/scene.json",
+      "scene_sha256": "54bef2f259f76b5a9c758f2706baeb986ca70bf35d9776422ca82aac4c65b25e",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s11_irreplaceable_keepsake/assets.json",
+      "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8"
+    },
+    {
+      "story_id": "s12_finished_task",
+      "title": "An unexpectedly finished task",
+      "emotion": "surprise",
+      "emotion_label": "惊讶",
+      "film": "NeZha2",
+      "character_ids": [
+        "nezha2_nezha",
+        "nezha2_aobing"
+      ],
+      "asset_ids": [
+        "movieagent_nezha2_nezha_primary",
+        "movieagent_nezha2_aobing_primary"
+      ],
+      "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s12_finished_task/scene.json",
+      "scene_sha256": "6f12b4a5a87262f6781b03ab314528d81793f3d8c32434da43c371ab7dfbbcc4",
+      "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s12_finished_task/assets.json",
+      "assets_sha256": "c77e7ee797ee29538772d8306731144f5fada63ccb6844557d39809a79ce384c"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_basic_v1_s10_celebration_saved",
+  "tone": "joy",
+  "story": "白天，安静的门厅里，Anna和Kristoff已经面对面站定。两人期待已久的庆祝活动此前安排未定，Anna刚得知活动最终可以如期进行。Anna分享这个好消息和自己的开心；Kristoff回应同样的开心与期待。庆祝活动尚未开始。 开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出愤怒、厌恶、恐惧、喜悦、悲伤、惊讶这些情绪标签。参考图只确定角色身份与服装，不复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。 本场景补充边界：不增加新人物、礼物、求婚、婚礼、惊喜嘉宾或其他剧情。 不拥抱、接吻、跳舞、跳跃、唱歌或添加庆祝音效。",
+  "characters": [
+    {
+      "id": "frozenii_anna",
+      "name": "Anna / 安娜"
+    },
+    {
+      "id": "frozenii_kristoff",
+      "name": "Kristoff / 克里斯托夫"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Anna宣布期待的庆祝活动最终可以进行，并表达开心。"
+    },
+    {
+      "id": "b2",
+      "description": "Kristoff回应同样的开心与期待。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_frozenii_anna_primary",
+    "movieagent_frozenii_kristoff_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_basic_emotion_extension_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Supplementary S07-S12 fictional brief targeting one native VEMOCLAP basic-emotion label. Existing film images supply appearance only; no original-film dialogue or Agent-generated planning/review answer.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotions.json",
+    "design_story_id": "s10_celebration_saved",
+    "design_version": "1.0",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

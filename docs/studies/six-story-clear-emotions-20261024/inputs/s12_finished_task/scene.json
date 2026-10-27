@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_basic_v1_s12_finished_task",
+  "tone": "surprise",
+  "story": "白天，安静房间的桌边，Nezha和Aobing已经站定。Aobing此前在处理一项困难任务，Nezha原以为还需要很久。Nezha刚发现任务已经完成，对如此快的结果表示难以置信；Aobing确认任务确实完成。完成结果在对白开始前已经成立。 开场两人均已在场。只用自然的普通话完成两句短对白，两人各说一句，总台词建议16至22个汉字，姓名可以省略；具体措辞由规划Agent生成，不能挤快语速。全片为一个5秒镜头。画面内仅有给定两人，没有额外说话者；不增加旁白、字幕、文字卡、第三人画面、额外事件、打斗、魔法、复杂道具操作或转场。不直接念出愤怒、厌恶、恐惧、喜悦、悲伤、惊讶这些情绪标签。参考图只确定角色身份与服装，不复制原图的表情、姿态、背景和道具。不引用电影原台词或依赖原电影前史；人物关系以本场景明确给出的设定为准。 本场景补充边界：不补写具体任务、魔法、秘密协助、比赛、奖励或额外人物。 不展示任务内容、夸张肢体反应、跳跃或对抗。",
+  "characters": [
+    {
+      "id": "nezha2_nezha",
+      "name": "Nezha / 哪吒"
+    },
+    {
+      "id": "nezha2_aobing",
+      "name": "Aobing / 敖丙"
+    }
+  ],
+  "beats": [
+    {
+      "id": "b1",
+      "description": "Nezha对Aobing已经完成困难任务表示难以置信。"
+    },
+    {
+      "id": "b2",
+      "description": "Aobing确认任务确实已经完成。"
+    }
+  ],
+  "asset_ids": [
+    "movieagent_nezha2_nezha_primary",
+    "movieagent_nezha2_aobing_primary"
+  ],
+  "min_duration_s": 5,
+  "max_duration_s": 5,
+  "min_shot_duration_s": 5,
+  "max_shot_duration_s": 5,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_basic_emotion_extension_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "Supplementary S07-S12 fictional brief targeting one native VEMOCLAP basic-emotion label. Existing film images supply appearance only; no original-film dialogue or Agent-generated planning/review answer.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotions.json",
+    "design_story_id": "s12_finished_task",
+    "design_version": "1.0",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}
