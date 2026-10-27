@@ -62,7 +62,7 @@ The [full S01–S18 specification](docs/studies/six-story-clear-emotions-2026102
 | S17 | sadness | Elsa, Mattias | A meaningful loss receives a minimal response |
 | S18 | surprise | Maxime, Valentina | Early completion receives only a mild question |
 
-The [S13–S18 section](docs/studies/six-story-clear-emotions-20261024/README.md#s13s18-authored-review-challenge-scenarios) includes the exact mixed-language drafts and safeguards. S15–S16 use Mandarin; the other four use English. It is an eight-second exploratory development set. The programmatic generated-script pipeline can bind one saved authored draft to the shared initial plan before the three-condition split; paid execution still requires separate model, scope and budget authorization.
+The [S13–S18 section](docs/studies/six-story-clear-emotions-20261024/README.md#s13s18-authored-review-challenge-scenarios) includes the exact mixed-language drafts and safeguards. S13, S15 and S16 use Mandarin; S14, S17 and S18 use English. It is an eight-second exploratory development set. The programmatic generated-script pipeline can bind one saved authored draft to the shared initial plan before the three-condition split; paid execution still requires separate model, scope and budget authorization.
 
 ## Quick start
 

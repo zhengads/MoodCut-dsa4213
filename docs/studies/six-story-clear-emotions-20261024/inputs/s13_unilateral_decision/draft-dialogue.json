@@ -2,12 +2,12 @@
   "schema_version": "1.0",
   "kind": "authored_review_challenge_draft_not_model_output",
   "story_id": "s13_unilateral_decision",
-  "language": "English",
+  "language": "Mandarin Chinese",
   "target_emotion": "anger",
   "duration_s": 8,
   "dialogue": [
-    {"character_id": "despicableme4_lucy", "text": "So you decided without me."},
-    {"character_id": "despicableme4_gru", "text": "I thought it was simpler."}
+    {"character_id": "despicableme4_lucy", "text": "所以你没有问我，就自己决定了。"},
+    {"character_id": "despicableme4_gru", "text": "我只是觉得这样更简单。"}
   ],
   "designed_revision_opportunities": ["Lucy's line identifies the unilateral decision but remains emotionally flat and never makes her anger explicit.", "Gru gives a practical excuse without acknowledging the broken agreement or directly opposing Lucy's complaint."],
   "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."

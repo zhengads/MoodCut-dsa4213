@@ -3,7 +3,7 @@
   "version": "1.0",
   "created_on": "2026-10-27",
   "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotion-challenge.json",
-  "design_sha256": "946eff2e2df8c3f9c134abe4d7e5aac2bc8429391074fe18207e5b9934ce409f",
+  "design_sha256": "d08a2310c027c783f6754e0409a079aa8cccb48d82082db4cc97d7cd5cc90cb3",
   "status": "authored_draft_challenge_inputs_for_offline_validation",
   "input_scope_approved": true,
   "execution_enabled": false,
@@ -21,15 +21,15 @@
       "story_id": "s13_unilateral_decision",
       "title": "A unilateral decision",
       "emotion": "anger",
-      "language": "English",
+      "language": "Mandarin Chinese",
       "character_ids": ["despicableme4_lucy", "despicableme4_gru"],
       "asset_ids": ["movieagent_despicableme4_lucy_primary", "movieagent_despicableme4_gru_primary"],
       "scene_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s13_unilateral_decision/scene.json",
-      "scene_sha256": "e29987ada02e36f61f755b48cd76f9d30e090fa66bee6f6263fe4186a2f7cdeb",
+      "scene_sha256": "eae81d689c0d422f178a5b61e1e8a512ee05be2372b7662c261d3a25870190d4",
       "assets_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s13_unilateral_decision/assets.json",
       "assets_sha256": "56b2295edd49d18dff529585c0d203f1783b442add5b68ad46b67560914becf8",
       "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s13_unilateral_decision/draft-dialogue.json",
-      "draft_dialogue_sha256": "99d315d605ad9294c2a77b3182810373631cfca4370f0e1866d8b1248a26e8fb"
+      "draft_dialogue_sha256": "23c716025b486cc9ebb69753fd4ab7d6b3d94a1b761677b71aadbb8936e615df"
     },
     {
       "story_id": "s14_spoiled_drink",

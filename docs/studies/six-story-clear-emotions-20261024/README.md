@@ -260,7 +260,7 @@ Do not replace scenarios after observing which method performs best, silently ex
 
 ## S13–S18: authored review-challenge scenarios
 
-S13–S18 reuse all 12 existing characters once more and cover the same six native VEMOCLAP labels. Unlike S07–S12, each story includes a deliberately understated two-line authored draft intended to leave identifiable room for dialogue-only review. S15 and S16 use Mandarin Chinese; S13, S14, S17 and S18 use English. All six use one eight-second shot.
+S13–S18 reuse all 12 existing characters once more and cover the same six native VEMOCLAP labels. Unlike S07–S12, each story includes a deliberately understated two-line authored draft intended to leave identifiable room for dialogue-only review. S13, S15 and S16 use Mandarin Chinese; S14, S17 and S18 use English. All six use one eight-second shot.
 
 This is an **exploratory stress-test set**, not an unbiased benchmark. The drafts were authored specifically to invite revision, so later results may demonstrate how the two review protocols behave on weak drafts but cannot by themselves prove that MoodCut is superior. Generic Review or MoodCut may still validly retain a draft; edits must never be forced or inserted manually after outputs are observed.
 
@@ -268,7 +268,7 @@ This is an **exploratory stress-test set**, not an unbiased benchmark. The draft
 
 | ID | Emotion | Characters | Scenario | Shared authored draft |
 |---|---|---|---|---|
-| S13 | anger / 愤怒 | Lucy, Gru | Gru makes an ordinary shared decision unilaterally | “So you decided without me.” / “I thought it was simpler.” |
+| S13 | anger / 愤怒 | Lucy, Gru | Gru makes an ordinary shared decision unilaterally | “所以你没有问我，就自己决定了。” / “我只是觉得这样更简单。” |
 | S14 | disgust / 厌恶 | Anna, Kristoff | A drink on the table has spoiled and smells unpleasant | “That smells unusual.” / “It has been sitting here.” |
 | S15 | fear / 恐惧 | Nezha, Aobing | An unexplained crack is heard beneath an old bridge | “刚才是不是响了一声？” / “这里可能不太稳。” |
 | S16 | joy / 喜悦 | Lijing, Taiyi | Their awaited community-event approval arrives | “申请已经通过了。” / “那就按计划开始吧。” |
