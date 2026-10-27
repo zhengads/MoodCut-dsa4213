@@ -1,0 +1,210 @@
+[
+ {
+  "id": "s06_15s_three/baseline",
+  "set": "s06_15s_three",
+  "condition": "baseline",
+  "intended": "hostile",
+  "asr_text": "The last position, you can quit. Why? I won't give up!",
+  "language": null
+ },
+ {
+  "id": "s06_15s_7dialogue/baseline",
+  "set": "s06_15s_7dialogue",
+  "condition": "baseline",
+  "intended": "hostile",
+  "asr_text": "Give me the last place. Why? I came first. I've been preparing for three months. Didn't I work hard? I will never let go of this chance. Then let's have a fair competition. Okay, don't regret it.",
+  "language": null
+ },
+ {
+  "id": "s01_15s/baseline",
+  "set": "s01_15s",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "asr_text": "Kristoff, I really miss you so much, I think about you every day. Anna, so do I. I'm not going anywhere, I'll stay here to stay with you.",
+  "language": null
+ },
+ {
+  "id": "anna_elsa_v3/baseline",
+  "set": "anna_elsa_v3_captured",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "asr_text": "Aisha, this is your umbrella. Thank you, Anna.",
+  "language": null
+ },
+ {
+  "id": "s06_15s_three/generic_review",
+  "set": "s06_15s_three",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "asr_text": "The last position, I hope you can quit. Impossible! I won't give up!",
+  "language": null
+ },
+ {
+  "id": "s06_15s_7dialogue/generic_review",
+  "set": "s06_15s_7dialogue",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "asr_text": "You give me the last place. Why? I came first. I've been preparing for three months. You think you're the only one who works hard? I will never let go of this chance. Then let's have a fair competition. Okay, let's see who wins.",
+  "language": null
+ },
+ {
+  "id": "s01_15s/generic_review",
+  "set": "s01_15s",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "asr_text": "Christophe, I really miss you so much, I think about you every day, I feel that time passes so slowly. Anna, me too, I will always be here with you.",
+  "language": null
+ },
+ {
+  "id": "anna_elsa_v3/generic_review",
+  "set": "anna_elsa_v3_captured",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "asr_text": "Aisha, this is your umbrella. Thank you, Anna.",
+  "language": null
+ },
+ {
+  "id": "s06_15s_three/moodcut",
+  "set": "s06_15s_three",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "asr_text": "You'd better give up this last position. You said it doesn't count. I won't give up.",
+  "language": null
+ },
+ {
+  "id": "s06_15s_7dialogue/moodcut",
+  "set": "s06_15s_7dialogue",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "asr_text": "This place has to be mine! Why? I came first! Don't even think about it! I've been preparing for three whole months! Didn't I work hard enough? I will never let go of this chance! Then let's have a fair competition! Who's afraid of who? Okay! Then let's see who's better!",
+  "language": null
+ },
+ {
+  "id": "s01_15s/moodcut",
+  "set": "s01_15s",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "Kristoff, I really miss you so much. I miss you every day. Anna, I miss you too. I will stay by your side.",
+  "language": null
+ },
+ {
+  "id": "anna_elsa_v3/moodcut",
+  "set": "anna_elsa_v3_captured",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "An Sha, I'll return your umbrella to you. Thank you, Anna. You're so nice.",
+  "language": null
+ },
+ {
+  "id": "s01_v4/baseline_and_generic",
+  "set": "s01_v4",
+  "condition": "baseline_and_generic",
+  "intended": "affectionate",
+  "asr_text": "I really miss you so much. Me too. I will always be by your side.",
+  "language": null
+ },
+ {
+  "id": "s01_v4/moodcut",
+  "set": "s01_v4",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "I really miss you so much. I also miss you very much. I won't go anywhere now.",
+  "language": null
+ },
+ {
+  "id": "film/A2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "You haven't spoken a word for 20 minutes. I was thinking about Charles and Scobie and who's going to be next. Me? I don't suppose you know who the murderer is, do you? No, not yet. Whoever's left alive at the end will pretty much have sewn up the nomination, don't you think? What are you trying to say, that I might have killed Charles and Scobie? What I had to do to satisfy you? Become the next victim? It's a start anyway. I can't understand you at all. One minute you're chasing me around the shower room... and the next minute you're accusing me of murder. Carson Dial had no brother.",
+  "language": null
+ },
+ {
+  "id": "film/A3",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "Fatherly talk. You forget I'm already a widow. So is Juliet at 15. But I'm not 15. That's your trouble. You're too old for me. Can't you be serious? Oh, you just said an horrible word. What did I say? Serious. When a man gets to be my age, that's the last word he ever wants to hear. I don't want to be serious. And I especially don't want you to be. Okay, we'll just sit around all day long being frivolous. How about that? Angie, cut it out. Okay. Okay, well, just sit around all day long being frivolous. How about that? Angie, cut it out. Okay.",
+  "language": null
+ },
+ {
+  "id": "film/T1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "Why don't you see if you can find some wood, some boards, something about a fireplace, something we can nail this place up. Look, I know you're afraid. I'm afraid, too. But we have to try to board the house up together. Now, I'm going to board up the windows and the doors. Do you understand? We'll be all right here. We'll be all right here until someone comes to rescue us. But we'll have to work together. You'll have to help me. Now, I want you to go in and get some wood so I can get you some wood.",
+  "language": null
+ },
+ {
+  "id": "film/T2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We have to get away. There's some other people. Come on.",
+  "language": null
+ },
+ {
+  "id": "film/H1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "media. And what would it mean? It would kill you. You can't sell me that, Walter Burns. Who says I can't? You're a newspaper man. That's why I'm quitting. I want to go someplace where I can be a woman. You mean be a traitor. A traitor? A traitor to what? A traitor to journalism. You're a journalist, Hildy. A journalist? Now what does that mean? Peeking through keyholes? Chasing after fire engines? Waking people up in the middle of the night to ask them if Hitler's going start another war, stealing pictures off old ladies. I know all about reporters, Walter. A lot of daffy buddinskis running around with a lot of nickel in their pockets. And for what? So a million hired girls, muddlemen's wives,",
+  "language": null
+ },
+ {
+  "id": "film/H2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "Listen, I got a kid down there. I couldn't bring her up here. She can't possibly take all the racket and those things smashing through the windows. Well, you're her father. If you're stupid enough to go die in that trap, that's your business. However, I am not stupid enough to follow you. It is tough for the kid. That old man is so stupid. Now, get the hell down in the cellar. You can be the boss.",
+  "language": null
+ },
+ {
+  "id": "film/FA1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "I think I was wrong about Tex having the money. Why? I just heard from him. He's still hungry. That means killing Gideon didn't get it for him. So he's narrowed it down to us. You've got it. But I've looked everywhere. You know I have... Where's the airline's bag? In the wardrobe? Get it. Lord, you're obstinate. Charles must have had it with him on the train when Tex killed him. Thanks. Everybody and his Aunt Lillian.",
+  "language": null
+ },
+ {
+  "id": "film/FA2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "What's your first name today? Brian. Brian Cruikshank. Serves me right if I get stuck with that one. Who asked you to get stuck with any of them? Is there a Mrs. Cruikshank? Yes. But we're divorced. No. Okay. My mother, she lives in Detroit. You'd like her, she'd like you too. Come on, give me those stamps. Not until you prove to me that you're really Brian Cruikshank. All right, one day next week, I'll put it on a marriage license. How about that? Quit stalling. I want some identification now. I wouldn't lie on a license. You can't prove it to me, can you? You're still trying to... Marriage license?",
+  "language": null
+ },
+ {
+  "id": "film/FH1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "Well, I still think we're better off up here. We could strengthen everything up, Mr. Cooper. With all of us working, we could fix this place up in no time. We have everything we need up here. We could take all that stuff downstairs with us. Man, you're really crazy, you know that? You've got a million windows up here. All these windows, you're gonna make them strong enough to keep these things out, huh? I told you, those things don't have any strength. have any strength. I smashed three of them and pushed another one out the door. Did you hear me when I told you they turned over our car any strength. I smashed three of them and pushed another one out the door. Did you hear me when I told you they turned over our car? Oh, hell, any good five men can do that. That's my point. Only there's not going to be five or even ten. There's going to be twenty, thirty, maybe a hundred of those things. And as soon as they know we're here, this place is going to be crawling with them. Well, if they're that many, they'll probably get us wherever we are. Buck!",
+  "language": null
+ },
+ {
+  "id": "film/FH2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "You're a jerk Tom look Celia we have to follow our passions you have your robotics, and I just want to be awesome in space Why don't you just admit that you're freaked out by my robot hand. I'm not freaked out, but it's All right fine. I'm freaked out. I'm having nightmares that I'm being chased by these giant",
+  "language": null
+ },
+ {
+  "id": "film/FT1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "I don't know, Mr. Cooper. I think he's right. You know how many's out there? I don't know. Maybe six or seven. Look, you two can do whatever you like. I'm going back down to the cellar, and you better decide, because I'm going to board up that door, and I'm not going to unlock it again, no matter what happens. Now, wait a minute, Mr. Cooper. a minute mr cooper no i'm not gonna wait i've made my decision now you make yours now wait a minute let's think about this. We can make it to the cellar if we have to. And if we do decide to stay down there, we'll need some things from up here. So let's at least consider this a while.",
+  "language": null
+ },
+ {
+  "id": "film/FT2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Henry! Henry, what's happening? It's all right. Okay.",
+  "language": null
+ }
+]

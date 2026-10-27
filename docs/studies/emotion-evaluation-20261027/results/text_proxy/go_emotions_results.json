@@ -1,0 +1,1588 @@
+[
+ {
+  "id": "s06_15s_three/baseline",
+  "set": "s06_15s_three",
+  "condition": "baseline",
+  "intended": "hostile",
+  "asr_text": "The last position, you can quit. Why? I won't give up!",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.5763
+   ],
+   [
+    "curiosity",
+    0.2305
+   ],
+   [
+    "approval",
+    0.1497
+   ],
+   [
+    "confusion",
+    0.1141
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0147,
+   "tense": 0.0012,
+   "affectionate": 0.0135
+  },
+  "probs": {
+   "admiration": 0.0041,
+   "amusement": 0.0007,
+   "anger": 0.002,
+   "annoyance": 0.0088,
+   "approval": 0.1497,
+   "caring": 0.0135,
+   "confusion": 0.1141,
+   "curiosity": 0.2305,
+   "desire": 0.003,
+   "disappointment": 0.0024,
+   "disapproval": 0.0147,
+   "disgust": 0.0005,
+   "embarrassment": 0.0002,
+   "excitement": 0.0025,
+   "fear": 0.0012,
+   "gratitude": 0.0004,
+   "grief": 0.0003,
+   "joy": 0.0013,
+   "love": 0.0013,
+   "nervousness": 0.0008,
+   "optimism": 0.0517,
+   "pride": 0.0003,
+   "realization": 0.0128,
+   "relief": 0.0007,
+   "remorse": 0.0003,
+   "sadness": 0.001,
+   "surprise": 0.0026,
+   "neutral": 0.5763
+  }
+ },
+ {
+  "id": "s06_15s_7dialogue/baseline",
+  "set": "s06_15s_7dialogue",
+  "condition": "baseline",
+  "intended": "hostile",
+  "asr_text": "Give me the last place. Why? I came first. I've been preparing for three months. Didn't I work hard? I will never let go of this chance. Then let's have a fair competition. Okay, don't regret it.",
+  "language": null,
+  "top4": [
+   [
+    "remorse",
+    0.4111
+   ],
+   [
+    "approval",
+    0.2922
+   ],
+   [
+    "caring",
+    0.1763
+   ],
+   [
+    "curiosity",
+    0.1539
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0206,
+   "tense": 0.0075,
+   "affectionate": 0.1763
+  },
+  "probs": {
+   "admiration": 0.0134,
+   "amusement": 0.001,
+   "anger": 0.0045,
+   "annoyance": 0.0094,
+   "approval": 0.2922,
+   "caring": 0.1763,
+   "confusion": 0.0395,
+   "curiosity": 0.1539,
+   "desire": 0.0103,
+   "disappointment": 0.0202,
+   "disapproval": 0.0206,
+   "disgust": 0.001,
+   "embarrassment": 0.0086,
+   "excitement": 0.0046,
+   "fear": 0.0031,
+   "gratitude": 0.0052,
+   "grief": 0.0041,
+   "joy": 0.0078,
+   "love": 0.0091,
+   "nervousness": 0.0075,
+   "optimism": 0.0453,
+   "pride": 0.0023,
+   "realization": 0.0282,
+   "relief": 0.0083,
+   "remorse": 0.4111,
+   "sadness": 0.0528,
+   "surprise": 0.0023,
+   "neutral": 0.0653
+  }
+ },
+ {
+  "id": "s01_15s/baseline",
+  "set": "s01_15s",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "asr_text": "Kristoff, I really miss you so much, I think about you every day. Anna, so do I. I'm not going anywhere, I'll stay here to stay with you.",
+  "language": null,
+  "top4": [
+   [
+    "sadness",
+    0.6245
+   ],
+   [
+    "caring",
+    0.2844
+   ],
+   [
+    "love",
+    0.2144
+   ],
+   [
+    "neutral",
+    0.0691
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0117,
+   "tense": 0.009,
+   "affectionate": 0.2844
+  },
+  "probs": {
+   "admiration": 0.0067,
+   "amusement": 0.0019,
+   "anger": 0.0055,
+   "annoyance": 0.0105,
+   "approval": 0.0402,
+   "caring": 0.2844,
+   "confusion": 0.0023,
+   "curiosity": 0.005,
+   "desire": 0.0582,
+   "disappointment": 0.0379,
+   "disapproval": 0.0117,
+   "disgust": 0.0035,
+   "embarrassment": 0.0011,
+   "excitement": 0.0034,
+   "fear": 0.004,
+   "gratitude": 0.0039,
+   "grief": 0.0197,
+   "joy": 0.0098,
+   "love": 0.2144,
+   "nervousness": 0.009,
+   "optimism": 0.0108,
+   "pride": 0.0011,
+   "realization": 0.0109,
+   "relief": 0.005,
+   "remorse": 0.0252,
+   "sadness": 0.6245,
+   "surprise": 0.0011,
+   "neutral": 0.0691
+  }
+ },
+ {
+  "id": "anna_elsa_v3/baseline",
+  "set": "anna_elsa_v3_captured",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "asr_text": "Aisha, this is your umbrella. Thank you, Anna.",
+  "language": null,
+  "top4": [
+   [
+    "gratitude",
+    0.9897
+   ],
+   [
+    "approval",
+    0.013
+   ],
+   [
+    "neutral",
+    0.0082
+   ],
+   [
+    "admiration",
+    0.0062
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0049,
+   "tense": 0.0005,
+   "affectionate": 0.9897
+  },
+  "probs": {
+   "admiration": 0.0062,
+   "amusement": 0.0027,
+   "anger": 0.0012,
+   "annoyance": 0.0049,
+   "approval": 0.013,
+   "caring": 0.0019,
+   "confusion": 0.0022,
+   "curiosity": 0.0015,
+   "desire": 0.001,
+   "disappointment": 0.0015,
+   "disapproval": 0.0024,
+   "disgust": 0.0011,
+   "embarrassment": 0.0006,
+   "excitement": 0.0026,
+   "fear": 0.0005,
+   "gratitude": 0.9897,
+   "grief": 0.0004,
+   "joy": 0.0037,
+   "love": 0.0014,
+   "nervousness": 0.0002,
+   "optimism": 0.0048,
+   "pride": 0.0005,
+   "realization": 0.0056,
+   "relief": 0.002,
+   "remorse": 0.0013,
+   "sadness": 0.0018,
+   "surprise": 0.0016,
+   "neutral": 0.0082
+  }
+ },
+ {
+  "id": "s06_15s_three/generic_review",
+  "set": "s06_15s_three",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "asr_text": "The last position, I hope you can quit. Impossible! I won't give up!",
+  "language": null,
+  "top4": [
+   [
+    "optimism",
+    0.9223
+   ],
+   [
+    "desire",
+    0.1226
+   ],
+   [
+    "approval",
+    0.0625
+   ],
+   [
+    "neutral",
+    0.0565
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0137,
+   "tense": 0.002,
+   "affectionate": 0.0319
+  },
+  "probs": {
+   "admiration": 0.0195,
+   "amusement": 0.0022,
+   "anger": 0.0039,
+   "annoyance": 0.009,
+   "approval": 0.0625,
+   "caring": 0.0319,
+   "confusion": 0.0026,
+   "curiosity": 0.004,
+   "desire": 0.1226,
+   "disappointment": 0.005,
+   "disapproval": 0.0137,
+   "disgust": 0.0014,
+   "embarrassment": 0.0005,
+   "excitement": 0.011,
+   "fear": 0.002,
+   "gratitude": 0.0074,
+   "grief": 0.0006,
+   "joy": 0.0051,
+   "love": 0.0045,
+   "nervousness": 0.0007,
+   "optimism": 0.9223,
+   "pride": 0.0024,
+   "realization": 0.0078,
+   "relief": 0.0013,
+   "remorse": 0.0015,
+   "sadness": 0.0014,
+   "surprise": 0.0046,
+   "neutral": 0.0565
+  }
+ },
+ {
+  "id": "s06_15s_7dialogue/generic_review",
+  "set": "s06_15s_7dialogue",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "asr_text": "You give me the last place. Why? I came first. I've been preparing for three months. You think you're the only one who works hard? I will never let go of this chance. Then let's have a fair competition. Okay, let's see who wins.",
+  "language": null,
+  "top4": [
+   [
+    "curiosity",
+    0.699
+   ],
+   [
+    "neutral",
+    0.1483
+   ],
+   [
+    "approval",
+    0.1287
+   ],
+   [
+    "optimism",
+    0.0588
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0076,
+   "tense": 0.0017,
+   "affectionate": 0.0544
+  },
+  "probs": {
+   "admiration": 0.0544,
+   "amusement": 0.0019,
+   "anger": 0.0023,
+   "annoyance": 0.0076,
+   "approval": 0.1287,
+   "caring": 0.0045,
+   "confusion": 0.055,
+   "curiosity": 0.699,
+   "desire": 0.0087,
+   "disappointment": 0.0038,
+   "disapproval": 0.007,
+   "disgust": 0.0012,
+   "embarrassment": 0.0006,
+   "excitement": 0.0396,
+   "fear": 0.0017,
+   "gratitude": 0.0005,
+   "grief": 0.0004,
+   "joy": 0.0036,
+   "love": 0.0031,
+   "nervousness": 0.001,
+   "optimism": 0.0588,
+   "pride": 0.0006,
+   "realization": 0.009,
+   "relief": 0.0007,
+   "remorse": 0.0005,
+   "sadness": 0.0015,
+   "surprise": 0.0136,
+   "neutral": 0.1483
+  }
+ },
+ {
+  "id": "s01_15s/generic_review",
+  "set": "s01_15s",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "asr_text": "Christophe, I really miss you so much, I think about you every day, I feel that time passes so slowly. Anna, me too, I will always be here with you.",
+  "language": null,
+  "top4": [
+   [
+    "sadness",
+    0.8866
+   ],
+   [
+    "caring",
+    0.0633
+   ],
+   [
+    "love",
+    0.0605
+   ],
+   [
+    "disappointment",
+    0.06
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0099,
+   "tense": 0.0092,
+   "affectionate": 0.0633
+  },
+  "probs": {
+   "admiration": 0.0098,
+   "amusement": 0.0029,
+   "anger": 0.0051,
+   "annoyance": 0.0099,
+   "approval": 0.0198,
+   "caring": 0.0633,
+   "confusion": 0.0032,
+   "curiosity": 0.0069,
+   "desire": 0.0273,
+   "disappointment": 0.06,
+   "disapproval": 0.0066,
+   "disgust": 0.0041,
+   "embarrassment": 0.0018,
+   "excitement": 0.0036,
+   "fear": 0.005,
+   "gratitude": 0.0041,
+   "grief": 0.0472,
+   "joy": 0.0085,
+   "love": 0.0605,
+   "nervousness": 0.0092,
+   "optimism": 0.0064,
+   "pride": 0.0009,
+   "realization": 0.0172,
+   "relief": 0.0038,
+   "remorse": 0.0262,
+   "sadness": 0.8866,
+   "surprise": 0.0029,
+   "neutral": 0.0429
+  }
+ },
+ {
+  "id": "anna_elsa_v3/generic_review",
+  "set": "anna_elsa_v3_captured",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "asr_text": "Aisha, this is your umbrella. Thank you, Anna.",
+  "language": null,
+  "top4": [
+   [
+    "gratitude",
+    0.9897
+   ],
+   [
+    "approval",
+    0.013
+   ],
+   [
+    "neutral",
+    0.0082
+   ],
+   [
+    "admiration",
+    0.0062
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0049,
+   "tense": 0.0005,
+   "affectionate": 0.9897
+  },
+  "probs": {
+   "admiration": 0.0062,
+   "amusement": 0.0027,
+   "anger": 0.0012,
+   "annoyance": 0.0049,
+   "approval": 0.013,
+   "caring": 0.0019,
+   "confusion": 0.0022,
+   "curiosity": 0.0015,
+   "desire": 0.001,
+   "disappointment": 0.0015,
+   "disapproval": 0.0024,
+   "disgust": 0.0011,
+   "embarrassment": 0.0006,
+   "excitement": 0.0026,
+   "fear": 0.0005,
+   "gratitude": 0.9897,
+   "grief": 0.0004,
+   "joy": 0.0037,
+   "love": 0.0014,
+   "nervousness": 0.0002,
+   "optimism": 0.0048,
+   "pride": 0.0005,
+   "realization": 0.0056,
+   "relief": 0.002,
+   "remorse": 0.0013,
+   "sadness": 0.0018,
+   "surprise": 0.0016,
+   "neutral": 0.0082
+  }
+ },
+ {
+  "id": "s06_15s_three/moodcut",
+  "set": "s06_15s_three",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "asr_text": "You'd better give up this last position. You said it doesn't count. I won't give up.",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.485
+   ],
+   [
+    "annoyance",
+    0.2743
+   ],
+   [
+    "disapproval",
+    0.2101
+   ],
+   [
+    "anger",
+    0.0556
+   ]
+  ],
+  "groups": {
+   "hostile": 0.2743,
+   "tense": 0.0006,
+   "affectionate": 0.0234
+  },
+  "probs": {
+   "admiration": 0.0024,
+   "amusement": 0.0009,
+   "anger": 0.0556,
+   "annoyance": 0.2743,
+   "approval": 0.0388,
+   "caring": 0.0234,
+   "confusion": 0.0014,
+   "curiosity": 0.0009,
+   "desire": 0.0023,
+   "disappointment": 0.0222,
+   "disapproval": 0.2101,
+   "disgust": 0.0036,
+   "embarrassment": 0.001,
+   "excitement": 0.0005,
+   "fear": 0.0006,
+   "gratitude": 0.0009,
+   "grief": 0.0005,
+   "joy": 0.0008,
+   "love": 0.0006,
+   "nervousness": 0.0004,
+   "optimism": 0.0148,
+   "pride": 0.0006,
+   "realization": 0.0114,
+   "relief": 0.0008,
+   "remorse": 0.0005,
+   "sadness": 0.0025,
+   "surprise": 0.0005,
+   "neutral": 0.485
+  }
+ },
+ {
+  "id": "s06_15s_7dialogue/moodcut",
+  "set": "s06_15s_7dialogue",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "asr_text": "This place has to be mine! Why? I came first! Don't even think about it! I've been preparing for three whole months! Didn't I work hard enough? I will never let go of this chance! Then let's have a fair competition! Who's afraid of who? Okay! Then let's see who's better!",
+  "language": null,
+  "top4": [
+   [
+    "approval",
+    0.3888
+   ],
+   [
+    "curiosity",
+    0.3059
+   ],
+   [
+    "excitement",
+    0.1558
+   ],
+   [
+    "neutral",
+    0.1407
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0105,
+   "tense": 0.0125,
+   "affectionate": 0.0393
+  },
+  "probs": {
+   "admiration": 0.0393,
+   "amusement": 0.0015,
+   "anger": 0.0029,
+   "annoyance": 0.0075,
+   "approval": 0.3888,
+   "caring": 0.0077,
+   "confusion": 0.0639,
+   "curiosity": 0.3059,
+   "desire": 0.0107,
+   "disappointment": 0.0032,
+   "disapproval": 0.0105,
+   "disgust": 0.0011,
+   "embarrassment": 0.0009,
+   "excitement": 0.1558,
+   "fear": 0.0125,
+   "gratitude": 0.0005,
+   "grief": 0.0006,
+   "joy": 0.0107,
+   "love": 0.0021,
+   "nervousness": 0.0057,
+   "optimism": 0.0705,
+   "pride": 0.0023,
+   "realization": 0.0224,
+   "relief": 0.0029,
+   "remorse": 0.0006,
+   "sadness": 0.0016,
+   "surprise": 0.0184,
+   "neutral": 0.1407
+  }
+ },
+ {
+  "id": "s01_15s/moodcut",
+  "set": "s01_15s",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "Kristoff, I really miss you so much. I miss you every day. Anna, I miss you too. I will stay by your side.",
+  "language": null,
+  "top4": [
+   [
+    "sadness",
+    0.884
+   ],
+   [
+    "love",
+    0.1185
+   ],
+   [
+    "disappointment",
+    0.0656
+   ],
+   [
+    "caring",
+    0.0619
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0127,
+   "tense": 0.0084,
+   "affectionate": 0.1185
+  },
+  "probs": {
+   "admiration": 0.0066,
+   "amusement": 0.0032,
+   "anger": 0.0083,
+   "annoyance": 0.0127,
+   "approval": 0.0164,
+   "caring": 0.0619,
+   "confusion": 0.003,
+   "curiosity": 0.006,
+   "desire": 0.0373,
+   "disappointment": 0.0656,
+   "disapproval": 0.0084,
+   "disgust": 0.0055,
+   "embarrassment": 0.0016,
+   "excitement": 0.0034,
+   "fear": 0.0045,
+   "gratitude": 0.0038,
+   "grief": 0.0387,
+   "joy": 0.0093,
+   "love": 0.1185,
+   "nervousness": 0.0084,
+   "optimism": 0.0068,
+   "pride": 0.0008,
+   "realization": 0.011,
+   "relief": 0.0031,
+   "remorse": 0.0298,
+   "sadness": 0.884,
+   "surprise": 0.0023,
+   "neutral": 0.0361
+  }
+ },
+ {
+  "id": "anna_elsa_v3/moodcut",
+  "set": "anna_elsa_v3_captured",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "An Sha, I'll return your umbrella to you. Thank you, Anna. You're so nice.",
+  "language": null,
+  "top4": [
+   [
+    "gratitude",
+    0.9856
+   ],
+   [
+    "admiration",
+    0.3664
+   ],
+   [
+    "approval",
+    0.02
+   ],
+   [
+    "optimism",
+    0.0095
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0034,
+   "tense": 0.0005,
+   "affectionate": 0.9856
+  },
+  "probs": {
+   "admiration": 0.3664,
+   "amusement": 0.0028,
+   "anger": 0.0012,
+   "annoyance": 0.0034,
+   "approval": 0.02,
+   "caring": 0.0042,
+   "confusion": 0.0024,
+   "curiosity": 0.003,
+   "desire": 0.002,
+   "disappointment": 0.0013,
+   "disapproval": 0.0027,
+   "disgust": 0.001,
+   "embarrassment": 0.0004,
+   "excitement": 0.0058,
+   "fear": 0.0005,
+   "gratitude": 0.9856,
+   "grief": 0.0005,
+   "joy": 0.0079,
+   "love": 0.0032,
+   "nervousness": 0.0002,
+   "optimism": 0.0095,
+   "pride": 0.0018,
+   "realization": 0.0045,
+   "relief": 0.0021,
+   "remorse": 0.0009,
+   "sadness": 0.0016,
+   "surprise": 0.0016,
+   "neutral": 0.0055
+  }
+ },
+ {
+  "id": "s01_v4/baseline_and_generic",
+  "set": "s01_v4",
+  "condition": "baseline_and_generic",
+  "intended": "affectionate",
+  "asr_text": "I really miss you so much. Me too. I will always be by your side.",
+  "language": null,
+  "top4": [
+   [
+    "sadness",
+    0.9199
+   ],
+   [
+    "disappointment",
+    0.0612
+   ],
+   [
+    "grief",
+    0.0571
+   ],
+   [
+    "love",
+    0.0515
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0115,
+   "tense": 0.0064,
+   "affectionate": 0.0515
+  },
+  "probs": {
+   "admiration": 0.012,
+   "amusement": 0.0038,
+   "anger": 0.0089,
+   "annoyance": 0.0115,
+   "approval": 0.0127,
+   "caring": 0.0425,
+   "confusion": 0.0033,
+   "curiosity": 0.0063,
+   "desire": 0.0196,
+   "disappointment": 0.0612,
+   "disapproval": 0.0088,
+   "disgust": 0.0062,
+   "embarrassment": 0.0018,
+   "excitement": 0.0028,
+   "fear": 0.0053,
+   "gratitude": 0.0056,
+   "grief": 0.0571,
+   "joy": 0.0061,
+   "love": 0.0515,
+   "nervousness": 0.0064,
+   "optimism": 0.0055,
+   "pride": 0.0008,
+   "realization": 0.0122,
+   "relief": 0.0027,
+   "remorse": 0.0304,
+   "sadness": 0.9199,
+   "surprise": 0.0029,
+   "neutral": 0.0308
+  }
+ },
+ {
+  "id": "s01_v4/moodcut",
+  "set": "s01_v4",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "asr_text": "I really miss you so much. I also miss you very much. I won't go anywhere now.",
+  "language": null,
+  "top4": [
+   [
+    "sadness",
+    0.9243
+   ],
+   [
+    "disappointment",
+    0.1133
+   ],
+   [
+    "grief",
+    0.0372
+   ],
+   [
+    "neutral",
+    0.0247
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0154,
+   "tense": 0.0055,
+   "affectionate": 0.0206
+  },
+  "probs": {
+   "admiration": 0.0087,
+   "amusement": 0.0031,
+   "anger": 0.0107,
+   "annoyance": 0.0154,
+   "approval": 0.0077,
+   "caring": 0.012,
+   "confusion": 0.0032,
+   "curiosity": 0.0053,
+   "desire": 0.0078,
+   "disappointment": 0.1133,
+   "disapproval": 0.0105,
+   "disgust": 0.0065,
+   "embarrassment": 0.002,
+   "excitement": 0.002,
+   "fear": 0.0048,
+   "gratitude": 0.0029,
+   "grief": 0.0372,
+   "joy": 0.004,
+   "love": 0.0206,
+   "nervousness": 0.0055,
+   "optimism": 0.0031,
+   "pride": 0.0005,
+   "realization": 0.0103,
+   "relief": 0.0016,
+   "remorse": 0.0215,
+   "sadness": 0.9243,
+   "surprise": 0.0034,
+   "neutral": 0.0247
+  }
+ },
+ {
+  "id": "film/A2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "You haven't spoken a word for 20 minutes. I was thinking about Charles and Scobie and who's going to be next. Me? I don't suppose you know who the murderer is, do you? No, not yet. Whoever's left alive at the end will pretty much have sewn up the nomination, don't you think? What are you trying to say, that I might have killed Charles and Scobie? What I had to do to satisfy you? Become the next victim? It's a start anyway. I can't understand you at all. One minute you're chasing me around the shower room... and the next minute you're accusing me of murder. Carson Dial had no brother.",
+  "language": null,
+  "top4": [
+   [
+    "confusion",
+    0.8005
+   ],
+   [
+    "curiosity",
+    0.2243
+   ],
+   [
+    "neutral",
+    0.2091
+   ],
+   [
+    "annoyance",
+    0.1067
+   ]
+  ],
+  "groups": {
+   "hostile": 0.1067,
+   "tense": 0.0087,
+   "affectionate": 0.0021
+  },
+  "probs": {
+   "admiration": 0.0013,
+   "amusement": 0.0014,
+   "anger": 0.0154,
+   "annoyance": 0.1067,
+   "approval": 0.0076,
+   "caring": 0.0021,
+   "confusion": 0.8005,
+   "curiosity": 0.2243,
+   "desire": 0.0015,
+   "disappointment": 0.043,
+   "disapproval": 0.0724,
+   "disgust": 0.0062,
+   "embarrassment": 0.0071,
+   "excitement": 0.0019,
+   "fear": 0.0087,
+   "gratitude": 0.0006,
+   "grief": 0.001,
+   "joy": 0.0012,
+   "love": 0.0011,
+   "nervousness": 0.0053,
+   "optimism": 0.0058,
+   "pride": 0.0002,
+   "realization": 0.0214,
+   "relief": 0.0004,
+   "remorse": 0.0014,
+   "sadness": 0.0062,
+   "surprise": 0.024,
+   "neutral": 0.2091
+  }
+ },
+ {
+  "id": "film/A3",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "Fatherly talk. You forget I'm already a widow. So is Juliet at 15. But I'm not 15. That's your trouble. You're too old for me. Can't you be serious? Oh, you just said an horrible word. What did I say? Serious. When a man gets to be my age, that's the last word he ever wants to hear. I don't want to be serious. And I especially don't want you to be. Okay, we'll just sit around all day long being frivolous. How about that? Angie, cut it out. Okay. Okay, well, just sit around all day long being frivolous. How about that? Angie, cut it out. Okay.",
+  "language": null,
+  "top4": [
+   [
+    "annoyance",
+    0.4546
+   ],
+   [
+    "disapproval",
+    0.2967
+   ],
+   [
+    "neutral",
+    0.1921
+   ],
+   [
+    "confusion",
+    0.0697
+   ]
+  ],
+  "groups": {
+   "hostile": 0.4546,
+   "tense": 0.0348,
+   "affectionate": 0.0047
+  },
+  "probs": {
+   "admiration": 0.0007,
+   "amusement": 0.0023,
+   "anger": 0.0636,
+   "annoyance": 0.4546,
+   "approval": 0.0203,
+   "caring": 0.0047,
+   "confusion": 0.0697,
+   "curiosity": 0.0359,
+   "desire": 0.0015,
+   "disappointment": 0.035,
+   "disapproval": 0.2967,
+   "disgust": 0.031,
+   "embarrassment": 0.0191,
+   "excitement": 0.0021,
+   "fear": 0.0348,
+   "gratitude": 0.0003,
+   "grief": 0.0009,
+   "joy": 0.0015,
+   "love": 0.0003,
+   "nervousness": 0.0108,
+   "optimism": 0.0037,
+   "pride": 0.0004,
+   "realization": 0.0333,
+   "relief": 0.0011,
+   "remorse": 0.0007,
+   "sadness": 0.0061,
+   "surprise": 0.0129,
+   "neutral": 0.1921
+  }
+ },
+ {
+  "id": "film/T1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "Why don't you see if you can find some wood, some boards, something about a fireplace, something we can nail this place up. Look, I know you're afraid. I'm afraid, too. But we have to try to board the house up together. Now, I'm going to board up the windows and the doors. Do you understand? We'll be all right here. We'll be all right here until someone comes to rescue us. But we'll have to work together. You'll have to help me. Now, I want you to go in and get some wood so I can get you some wood.",
+  "language": null,
+  "top4": [
+   [
+    "caring",
+    0.2041
+   ],
+   [
+    "neutral",
+    0.1768
+   ],
+   [
+    "fear",
+    0.1739
+   ],
+   [
+    "optimism",
+    0.1023
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0101,
+   "tense": 0.1739,
+   "affectionate": 0.2041
+  },
+  "probs": {
+   "admiration": 0.0069,
+   "amusement": 0.0009,
+   "anger": 0.0049,
+   "annoyance": 0.0101,
+   "approval": 0.0577,
+   "caring": 0.2041,
+   "confusion": 0.0097,
+   "curiosity": 0.0344,
+   "desire": 0.0921,
+   "disappointment": 0.0042,
+   "disapproval": 0.0072,
+   "disgust": 0.003,
+   "embarrassment": 0.0007,
+   "excitement": 0.0069,
+   "fear": 0.1739,
+   "gratitude": 0.0006,
+   "grief": 0.0015,
+   "joy": 0.0017,
+   "love": 0.0046,
+   "nervousness": 0.0248,
+   "optimism": 0.1023,
+   "pride": 0.001,
+   "realization": 0.0096,
+   "relief": 0.0016,
+   "remorse": 0.0015,
+   "sadness": 0.0067,
+   "surprise": 0.0024,
+   "neutral": 0.1768
+  }
+ },
+ {
+  "id": "film/T2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We've got to get out of here. We have to get away. There's some other people. Come on.",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.6322
+   ],
+   [
+    "annoyance",
+    0.0671
+   ],
+   [
+    "anger",
+    0.0423
+   ],
+   [
+    "desire",
+    0.0399
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0671,
+   "tense": 0.0051,
+   "affectionate": 0.0121
+  },
+  "probs": {
+   "admiration": 0.0008,
+   "amusement": 0.0007,
+   "anger": 0.0423,
+   "annoyance": 0.0671,
+   "approval": 0.018,
+   "caring": 0.0121,
+   "confusion": 0.0017,
+   "curiosity": 0.0021,
+   "desire": 0.0399,
+   "disappointment": 0.0103,
+   "disapproval": 0.017,
+   "disgust": 0.0047,
+   "embarrassment": 0.0008,
+   "excitement": 0.0034,
+   "fear": 0.0051,
+   "gratitude": 0.0002,
+   "grief": 0.0008,
+   "joy": 0.0013,
+   "love": 0.001,
+   "nervousness": 0.0019,
+   "optimism": 0.0041,
+   "pride": 0.0005,
+   "realization": 0.0077,
+   "relief": 0.0008,
+   "remorse": 0.0006,
+   "sadness": 0.0103,
+   "surprise": 0.0011,
+   "neutral": 0.6322
+  }
+ },
+ {
+  "id": "film/H1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "media. And what would it mean? It would kill you. You can't sell me that, Walter Burns. Who says I can't? You're a newspaper man. That's why I'm quitting. I want to go someplace where I can be a woman. You mean be a traitor. A traitor? A traitor to what? A traitor to journalism. You're a journalist, Hildy. A journalist? Now what does that mean? Peeking through keyholes? Chasing after fire engines? Waking people up in the middle of the night to ask them if Hitler's going start another war, stealing pictures off old ladies. I know all about reporters, Walter. A lot of daffy buddinskis running around with a lot of nickel in their pockets. And for what? So a million hired girls, muddlemen's wives,",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.2773
+   ],
+   [
+    "annoyance",
+    0.266
+   ],
+   [
+    "curiosity",
+    0.2437
+   ],
+   [
+    "disapproval",
+    0.1222
+   ]
+  ],
+  "groups": {
+   "hostile": 0.266,
+   "tense": 0.0028,
+   "affectionate": 0.0062
+  },
+  "probs": {
+   "admiration": 0.0011,
+   "amusement": 0.001,
+   "anger": 0.0766,
+   "annoyance": 0.266,
+   "approval": 0.0189,
+   "caring": 0.0062,
+   "confusion": 0.075,
+   "curiosity": 0.2437,
+   "desire": 0.0193,
+   "disappointment": 0.0602,
+   "disapproval": 0.1222,
+   "disgust": 0.0063,
+   "embarrassment": 0.0025,
+   "excitement": 0.0018,
+   "fear": 0.0028,
+   "gratitude": 0.0002,
+   "grief": 0.0009,
+   "joy": 0.001,
+   "love": 0.0011,
+   "nervousness": 0.0025,
+   "optimism": 0.0095,
+   "pride": 0.0002,
+   "realization": 0.007,
+   "relief": 0.0004,
+   "remorse": 0.001,
+   "sadness": 0.0089,
+   "surprise": 0.0029,
+   "neutral": 0.2773
+  }
+ },
+ {
+  "id": "film/H2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "Listen, I got a kid down there. I couldn't bring her up here. She can't possibly take all the racket and those things smashing through the windows. Well, you're her father. If you're stupid enough to go die in that trap, that's your business. However, I am not stupid enough to follow you. It is tough for the kid. That old man is so stupid. Now, get the hell down in the cellar. You can be the boss.",
+  "language": null,
+  "top4": [
+   [
+    "annoyance",
+    0.5577
+   ],
+   [
+    "anger",
+    0.3993
+   ],
+   [
+    "neutral",
+    0.1644
+   ],
+   [
+    "disapproval",
+    0.0729
+   ]
+  ],
+  "groups": {
+   "hostile": 0.5577,
+   "tense": 0.0012,
+   "affectionate": 0.0106
+  },
+  "probs": {
+   "admiration": 0.0026,
+   "amusement": 0.0011,
+   "anger": 0.3993,
+   "annoyance": 0.5577,
+   "approval": 0.0203,
+   "caring": 0.0106,
+   "confusion": 0.0021,
+   "curiosity": 0.0016,
+   "desire": 0.002,
+   "disappointment": 0.0182,
+   "disapproval": 0.0729,
+   "disgust": 0.0152,
+   "embarrassment": 0.0025,
+   "excitement": 0.0008,
+   "fear": 0.0012,
+   "gratitude": 0.0007,
+   "grief": 0.0005,
+   "joy": 0.001,
+   "love": 0.0006,
+   "nervousness": 0.0006,
+   "optimism": 0.0073,
+   "pride": 0.0007,
+   "realization": 0.0079,
+   "relief": 0.0004,
+   "remorse": 0.0006,
+   "sadness": 0.0033,
+   "surprise": 0.0009,
+   "neutral": 0.1644
+  }
+ },
+ {
+  "id": "film/FA1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "I think I was wrong about Tex having the money. Why? I just heard from him. He's still hungry. That means killing Gideon didn't get it for him. So he's narrowed it down to us. You've got it. But I've looked everywhere. You know I have... Where's the airline's bag? In the wardrobe? Get it. Lord, you're obstinate. Charles must have had it with him on the train when Tex killed him. Thanks. Everybody and his Aunt Lillian.",
+  "language": null,
+  "top4": [
+   [
+    "gratitude",
+    0.8085
+   ],
+   [
+    "confusion",
+    0.0901
+   ],
+   [
+    "curiosity",
+    0.0858
+   ],
+   [
+    "neutral",
+    0.0842
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0141,
+   "tense": 0.0009,
+   "affectionate": 0.8085
+  },
+  "probs": {
+   "admiration": 0.0045,
+   "amusement": 0.0008,
+   "anger": 0.0017,
+   "annoyance": 0.0141,
+   "approval": 0.0145,
+   "caring": 0.0021,
+   "confusion": 0.0901,
+   "curiosity": 0.0858,
+   "desire": 0.0008,
+   "disappointment": 0.0067,
+   "disapproval": 0.0064,
+   "disgust": 0.0009,
+   "embarrassment": 0.0016,
+   "excitement": 0.0021,
+   "fear": 0.0007,
+   "gratitude": 0.8085,
+   "grief": 0.0008,
+   "joy": 0.0018,
+   "love": 0.0006,
+   "nervousness": 0.0009,
+   "optimism": 0.0039,
+   "pride": 0.0004,
+   "realization": 0.0229,
+   "relief": 0.0027,
+   "remorse": 0.0022,
+   "sadness": 0.0029,
+   "surprise": 0.0087,
+   "neutral": 0.0842
+  }
+ },
+ {
+  "id": "film/FA2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "asr_text": "What's your first name today? Brian. Brian Cruikshank. Serves me right if I get stuck with that one. Who asked you to get stuck with any of them? Is there a Mrs. Cruikshank? Yes. But we're divorced. No. Okay. My mother, she lives in Detroit. You'd like her, she'd like you too. Come on, give me those stamps. Not until you prove to me that you're really Brian Cruikshank. All right, one day next week, I'll put it on a marriage license. How about that? Quit stalling. I want some identification now. I wouldn't lie on a license. You can't prove it to me, can you? You're still trying to... Marriage license?",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.4368
+   ],
+   [
+    "curiosity",
+    0.3828
+   ],
+   [
+    "confusion",
+    0.1051
+   ],
+   [
+    "disapproval",
+    0.0854
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0854,
+   "tense": 0.0011,
+   "affectionate": 0.0078
+  },
+  "probs": {
+   "admiration": 0.0016,
+   "amusement": 0.0008,
+   "anger": 0.0056,
+   "annoyance": 0.0363,
+   "approval": 0.077,
+   "caring": 0.0078,
+   "confusion": 0.1051,
+   "curiosity": 0.3828,
+   "desire": 0.0052,
+   "disappointment": 0.0076,
+   "disapproval": 0.0854,
+   "disgust": 0.0014,
+   "embarrassment": 0.0008,
+   "excitement": 0.0017,
+   "fear": 0.0011,
+   "gratitude": 0.0003,
+   "grief": 0.0004,
+   "joy": 0.0008,
+   "love": 0.0011,
+   "nervousness": 0.0008,
+   "optimism": 0.0089,
+   "pride": 0.0001,
+   "realization": 0.0092,
+   "relief": 0.0005,
+   "remorse": 0.0005,
+   "sadness": 0.0022,
+   "surprise": 0.0034,
+   "neutral": 0.4368
+  }
+ },
+ {
+  "id": "film/FH1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "Well, I still think we're better off up here. We could strengthen everything up, Mr. Cooper. With all of us working, we could fix this place up in no time. We have everything we need up here. We could take all that stuff downstairs with us. Man, you're really crazy, you know that? You've got a million windows up here. All these windows, you're gonna make them strong enough to keep these things out, huh? I told you, those things don't have any strength. have any strength. I smashed three of them and pushed another one out the door. Did you hear me when I told you they turned over our car any strength. I smashed three of them and pushed another one out the door. Did you hear me when I told you they turned over our car? Oh, hell, any good five men can do that. That's my point. Only there's not going to be five or even ten. There's going to be twenty, thirty, maybe a hundred of those things. And as soon as they know we're here, this place is going to be crawling with them. Well, if they're that many, they'll probably get us wherever we are. Buck!",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.4712
+   ],
+   [
+    "approval",
+    0.1272
+   ],
+   [
+    "annoyance",
+    0.1028
+   ],
+   [
+    "curiosity",
+    0.0698
+   ]
+  ],
+  "groups": {
+   "hostile": 0.1028,
+   "tense": 0.0014,
+   "affectionate": 0.0086
+  },
+  "probs": {
+   "admiration": 0.0086,
+   "amusement": 0.0018,
+   "anger": 0.0087,
+   "annoyance": 0.1028,
+   "approval": 0.1272,
+   "caring": 0.0041,
+   "confusion": 0.0102,
+   "curiosity": 0.0698,
+   "desire": 0.0039,
+   "disappointment": 0.0122,
+   "disapproval": 0.0184,
+   "disgust": 0.002,
+   "embarrassment": 0.0007,
+   "excitement": 0.0069,
+   "fear": 0.0014,
+   "gratitude": 0.0001,
+   "grief": 0.0003,
+   "joy": 0.0012,
+   "love": 0.0002,
+   "nervousness": 0.0008,
+   "optimism": 0.0468,
+   "pride": 0.0005,
+   "realization": 0.0201,
+   "relief": 0.0008,
+   "remorse": 0.0002,
+   "sadness": 0.001,
+   "surprise": 0.0125,
+   "neutral": 0.4712
+  }
+ },
+ {
+  "id": "film/FH2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "asr_text": "You're a jerk Tom look Celia we have to follow our passions you have your robotics, and I just want to be awesome in space Why don't you just admit that you're freaked out by my robot hand. I'm not freaked out, but it's All right fine. I'm freaked out. I'm having nightmares that I'm being chased by these giant",
+  "language": null,
+  "top4": [
+   [
+    "desire",
+    0.5354
+   ],
+   [
+    "excitement",
+    0.0565
+   ],
+   [
+    "approval",
+    0.049
+   ],
+   [
+    "annoyance",
+    0.0468
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0468,
+   "tense": 0.0215,
+   "affectionate": 0.0288
+  },
+  "probs": {
+   "admiration": 0.0288,
+   "amusement": 0.0025,
+   "anger": 0.0102,
+   "annoyance": 0.0468,
+   "approval": 0.049,
+   "caring": 0.0133,
+   "confusion": 0.0063,
+   "curiosity": 0.0349,
+   "desire": 0.5354,
+   "disappointment": 0.015,
+   "disapproval": 0.0092,
+   "disgust": 0.0081,
+   "embarrassment": 0.0012,
+   "excitement": 0.0565,
+   "fear": 0.0215,
+   "gratitude": 0.0008,
+   "grief": 0.0012,
+   "joy": 0.0097,
+   "love": 0.0061,
+   "nervousness": 0.0162,
+   "optimism": 0.033,
+   "pride": 0.002,
+   "realization": 0.0065,
+   "relief": 0.0022,
+   "remorse": 0.0008,
+   "sadness": 0.0063,
+   "surprise": 0.005,
+   "neutral": 0.0464
+  }
+ },
+ {
+  "id": "film/FT1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "I don't know, Mr. Cooper. I think he's right. You know how many's out there? I don't know. Maybe six or seven. Look, you two can do whatever you like. I'm going back down to the cellar, and you better decide, because I'm going to board up that door, and I'm not going to unlock it again, no matter what happens. Now, wait a minute, Mr. Cooper. a minute mr cooper no i'm not gonna wait i've made my decision now you make yours now wait a minute let's think about this. We can make it to the cellar if we have to. And if we do decide to stay down there, we'll need some things from up here. So let's at least consider this a while.",
+  "language": null,
+  "top4": [
+   [
+    "approval",
+    0.6065
+   ],
+   [
+    "neutral",
+    0.2855
+   ],
+   [
+    "confusion",
+    0.1268
+   ],
+   [
+    "optimism",
+    0.0764
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0271,
+   "tense": 0.0011,
+   "affectionate": 0.0068
+  },
+  "probs": {
+   "admiration": 0.0049,
+   "amusement": 0.0011,
+   "anger": 0.0021,
+   "annoyance": 0.0157,
+   "approval": 0.6065,
+   "caring": 0.0068,
+   "confusion": 0.1268,
+   "curiosity": 0.0335,
+   "desire": 0.004,
+   "disappointment": 0.0031,
+   "disapproval": 0.0271,
+   "disgust": 0.0008,
+   "embarrassment": 0.0005,
+   "excitement": 0.0045,
+   "fear": 0.0011,
+   "gratitude": 0.0012,
+   "grief": 0.0003,
+   "joy": 0.0031,
+   "love": 0.0013,
+   "nervousness": 0.001,
+   "optimism": 0.0764,
+   "pride": 0.0007,
+   "realization": 0.0434,
+   "relief": 0.0019,
+   "remorse": 0.0004,
+   "sadness": 0.0006,
+   "surprise": 0.0029,
+   "neutral": 0.2855
+  }
+ },
+ {
+  "id": "film/FT2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "asr_text": "Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Come on, let's get out of here. Henry! Henry, what's happening? It's all right. Okay.",
+  "language": null,
+  "top4": [
+   [
+    "neutral",
+    0.6324
+   ],
+   [
+    "approval",
+    0.1394
+   ],
+   [
+    "curiosity",
+    0.0462
+   ],
+   [
+    "confusion",
+    0.0128
+   ]
+  ],
+  "groups": {
+   "hostile": 0.0126,
+   "tense": 0.0047,
+   "affectionate": 0.0099
+  },
+  "probs": {
+   "admiration": 0.0011,
+   "amusement": 0.0009,
+   "anger": 0.0029,
+   "annoyance": 0.0126,
+   "approval": 0.1394,
+   "caring": 0.0099,
+   "confusion": 0.0128,
+   "curiosity": 0.0462,
+   "desire": 0.0022,
+   "disappointment": 0.0025,
+   "disapproval": 0.0026,
+   "disgust": 0.0009,
+   "embarrassment": 0.0007,
+   "excitement": 0.0082,
+   "fear": 0.0047,
+   "gratitude": 0.0002,
+   "grief": 0.0005,
+   "joy": 0.0027,
+   "love": 0.0008,
+   "nervousness": 0.0035,
+   "optimism": 0.005,
+   "pride": 0.0003,
+   "realization": 0.0127,
+   "relief": 0.0014,
+   "remorse": 0.0004,
+   "sadness": 0.0031,
+   "surprise": 0.0035,
+   "neutral": 0.6324
+  }
+ }
+]

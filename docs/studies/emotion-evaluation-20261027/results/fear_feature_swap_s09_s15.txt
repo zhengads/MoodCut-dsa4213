@@ -1,0 +1,205 @@
+streams: ['asr_sentiment', 'beats', 'clip', 'face_emotion', 'ocr_sentiment']
+
+## A. 把一个视频的某一路特征换成参照视频的同一路特征（行=被改的恐惧视频，列=换入的流）
+
+# S09/_01_Baseline | own: ang= 44.3 dis=  3.1 fea=  7.5 joy=  0.0 sad= 41.0 sur=  4.1
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 29.8 dis=  2.5 fea= 13.5 joy=  0.0 sad= 42.2 sur= 12.1
+    swap beats          ang= 91.7 dis=  0.0 fea=  0.3 joy=  0.0 sad=  0.2 sur=  7.7
+    swap clip           ang=  0.1 dis=  0.0 fea= 99.5 joy=  0.0 sad=  0.4 sur=  0.0
+    swap face_emotion   ang= 16.5 dis=  1.7 fea= 12.4 joy=  0.1 sad= 60.5 sur=  8.8
+    swap ocr_sentiment  ang= 43.2 dis=  3.3 fea=  7.8 joy=  0.0 sad= 41.4 sur=  4.2
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 34.3 dis=  2.7 fea= 11.5 joy=  0.0 sad= 42.6 sur=  8.9
+    swap beats          ang= 13.4 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.0 sur= 86.6
+    swap clip           ang=  0.2 dis=  0.0 fea= 98.3 joy=  0.0 sad=  1.4 sur=  0.0
+    swap face_emotion   ang= 27.0 dis=  1.9 fea=  9.9 joy=  0.0 sad= 55.2 sur=  6.0
+    swap ocr_sentiment  ang= 45.7 dis=  3.1 fea=  7.4 joy=  0.0 sad= 39.9 sur=  3.9
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 48.1 dis=  3.2 fea=  6.3 joy=  0.0 sad= 39.3 sur=  3.1
+    swap beats          ang= 92.7 dis=  0.4 fea=  0.5 joy=  0.0 sad=  2.2 sur=  4.2
+    swap clip           ang= 59.5 dis= 34.9 fea=  4.3 joy=  0.0 sad=  1.2 sur=  0.1
+    swap face_emotion   ang= 42.5 dis=  3.2 fea=  7.4 joy=  0.0 sad= 42.4 sur=  4.5
+    swap ocr_sentiment  ang= 43.6 dis=  3.2 fea=  7.6 joy=  0.0 sad= 41.4 sur=  4.3
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 36.4 dis=  2.8 fea= 10.6 joy=  0.0 sad= 42.5 sur=  7.7
+    swap beats          ang= 83.7 dis=  1.6 fea=  2.2 joy=  0.0 sad=  6.5 sur=  6.0
+    swap clip           ang= 42.0 dis=  7.4 fea=  5.6 joy=  0.0 sad= 43.3 sur=  1.7
+    swap face_emotion   ang= 43.5 dis=  2.9 fea=  7.4 joy=  0.0 sad= 42.0 sur=  4.2
+    swap ocr_sentiment  ang= 43.9 dis=  3.3 fea=  7.6 joy=  0.0 sad= 41.0 sur=  4.2
+
+# S09/_02_Generic_Review | own: ang= 66.3 dis=  1.4 fea=  5.5 joy=  0.0 sad= 25.5 sur=  1.2
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 47.6 dis=  1.3 fea= 14.0 joy=  0.0 sad= 31.6 sur=  5.6
+    swap beats          ang= 97.6 dis=  0.0 fea=  0.3 joy=  0.0 sad=  0.1 sur=  2.0
+    swap clip           ang=  0.2 dis=  0.0 fea= 99.4 joy=  0.0 sad=  0.4 sur=  0.0
+    swap face_emotion   ang= 31.7 dis=  1.2 fea= 12.2 joy=  0.0 sad= 51.3 sur=  3.6
+    swap ocr_sentiment  ang= 64.9 dis=  1.6 fea=  5.8 joy=  0.0 sad= 26.4 sur=  1.3
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 52.6 dis=  1.4 fea= 11.4 joy=  0.0 sad= 30.6 sur=  3.9
+    swap beats          ang= 39.1 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.0 sur= 60.8
+    swap clip           ang=  0.5 dis=  0.0 fea= 97.8 joy=  0.0 sad=  1.6 sur=  0.0
+    swap face_emotion   ang= 46.2 dis=  1.2 fea=  8.7 joy=  0.0 sad= 41.7 sur=  2.2
+    swap ocr_sentiment  ang= 67.1 dis=  1.4 fea=  5.4 joy=  0.0 sad= 24.9 sur=  1.2
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 66.3 dis=  1.4 fea=  5.6 joy=  0.0 sad= 25.4 sur=  1.2
+    swap beats          ang= 96.7 dis=  0.3 fea=  0.4 joy=  0.0 sad=  1.5 sur=  1.0
+    swap clip           ang= 76.9 dis= 19.9 fea=  2.4 joy=  0.0 sad=  0.8 sur=  0.0
+    swap face_emotion   ang= 63.3 dis=  1.7 fea=  5.7 joy=  0.0 sad= 27.8 sur=  1.4
+    swap ocr_sentiment  ang= 65.3 dis=  1.5 fea=  5.6 joy=  0.0 sad= 26.3 sur=  1.3
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 54.8 dis=  1.4 fea= 10.3 joy=  0.0 sad= 30.1 sur=  3.4
+    swap beats          ang= 90.9 dis=  1.0 fea=  1.9 joy=  0.0 sad=  4.7 sur=  1.6
+    swap clip           ang= 60.0 dis=  4.7 fea=  3.4 joy=  0.0 sad= 30.8 sur=  1.1
+    swap face_emotion   ang= 64.2 dis=  1.6 fea=  5.6 joy=  0.0 sad= 27.3 sur=  1.3
+    swap ocr_sentiment  ang= 65.5 dis=  1.6 fea=  5.6 joy=  0.0 sad= 26.0 sur=  1.2
+
+# S09/_03_MoodCut | own: ang= 62.1 dis=  5.1 fea=  8.5 joy=  0.0 sad= 13.5 sur= 10.9
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 40.3 dis=  3.8 fea= 14.1 joy=  0.0 sad= 13.2 sur= 28.5
+    swap beats          ang= 91.5 dis=  0.0 fea=  0.5 joy=  0.0 sad=  0.2 sur=  7.8
+    swap clip           ang=  0.2 dis=  0.0 fea= 99.7 joy=  0.0 sad=  0.2 sur=  0.0
+    swap face_emotion   ang= 27.8 dis=  3.4 fea= 16.7 joy=  0.1 sad= 24.1 sur= 28.0
+    swap ocr_sentiment  ang= 59.7 dis=  5.5 fea=  8.9 joy=  0.0 sad= 14.1 sur= 11.8
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 47.9 dis=  4.3 fea= 12.4 joy=  0.0 sad= 13.7 sur= 21.7
+    swap beats          ang= 13.3 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.0 sur= 86.7
+    swap clip           ang=  0.3 dis=  0.1 fea= 99.0 joy=  0.0 sad=  0.6 sur=  0.0
+    swap face_emotion   ang= 43.9 dis=  3.7 fea= 12.8 joy=  0.0 sad= 21.1 sur= 18.5
+    swap ocr_sentiment  ang= 62.3 dis=  5.0 fea=  8.4 joy=  0.0 sad= 13.4 sur= 10.8
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 67.6 dis=  5.2 fea=  6.8 joy=  0.0 sad= 12.8 sur=  7.6
+    swap beats          ang= 92.6 dis=  0.5 fea=  0.7 joy=  0.0 sad=  2.0 sur=  4.2
+    swap clip           ang= 60.3 dis= 36.7 fea=  2.6 joy=  0.0 sad=  0.3 sur=  0.1
+    swap face_emotion   ang= 60.2 dis=  5.4 fea=  8.4 joy=  0.0 sad= 13.9 sur= 12.1
+    swap ocr_sentiment  ang= 60.1 dis=  5.2 fea=  8.7 joy=  0.0 sad= 14.1 sur= 11.9
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 51.2 dis=  4.5 fea= 11.5 joy=  0.0 sad= 13.8 sur= 19.0
+    swap beats          ang= 83.4 dis=  1.7 fea=  3.0 joy=  0.0 sad=  5.8 sur=  6.0
+    swap clip           ang= 62.2 dis= 11.4 fea=  4.9 joy=  0.0 sad= 17.0 sur=  4.4
+    swap face_emotion   ang= 61.7 dis=  4.9 fea=  8.4 joy=  0.0 sad= 13.8 sur= 11.2
+    swap ocr_sentiment  ang= 60.4 dis=  5.4 fea=  8.7 joy=  0.0 sad= 13.9 sur= 11.6
+
+# S15/01_Baseline | own: ang= 59.5 dis=  4.9 fea=  9.5 joy=  0.1 sad= 19.9 sur=  6.2
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 36.7 dis=  3.6 fea= 18.3 joy=  0.3 sad= 20.3 sur= 20.8
+    swap beats          ang= 93.2 dis=  0.1 fea=  0.8 joy=  0.1 sad=  0.1 sur=  5.7
+    swap clip           ang=  0.2 dis=  0.0 fea= 98.9 joy=  0.0 sad=  0.8 sur=  0.0
+    swap face_emotion   ang= 26.3 dis=  3.3 fea= 18.4 joy=  0.7 sad= 35.3 sur= 16.0
+    swap ocr_sentiment  ang= 61.1 dis=  5.0 fea=  9.5 joy=  0.1 sad= 18.9 sur=  5.4
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 43.2 dis=  4.1 fea= 15.9 joy=  0.2 sad= 21.0 sur= 15.6
+    swap beats          ang= 17.4 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.0 sur= 82.5
+    swap clip           ang=  0.5 dis=  0.0 fea= 96.2 joy=  0.0 sad=  3.3 sur=  0.0
+    swap face_emotion   ang= 41.5 dis=  3.5 fea= 14.0 joy=  0.3 sad= 30.3 sur= 10.4
+    swap ocr_sentiment  ang= 63.6 dis=  4.5 fea=  8.9 joy=  0.1 sad= 17.9 sur=  5.0
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 61.2 dis=  4.9 fea=  8.8 joy=  0.1 sad= 19.6 sur=  5.5
+    swap beats          ang= 93.1 dis=  1.4 fea=  1.2 joy=  0.1 sad=  1.0 sur=  3.2
+    swap clip           ang= 77.4 dis= 18.6 fea=  2.3 joy=  0.0 sad=  1.6 sur=  0.1
+    swap face_emotion   ang= 58.3 dis=  5.3 fea=  9.2 joy=  0.1 sad= 20.3 sur=  6.8
+    swap ocr_sentiment  ang= 61.6 dis=  4.8 fea=  9.2 joy=  0.1 sad= 18.9 sur=  5.5
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 46.1 dis=  4.2 fea= 14.7 joy=  0.2 sad= 21.1 sur= 13.7
+    swap beats          ang= 83.0 dis=  4.9 fea=  4.9 joy=  0.0 sad=  2.7 sur=  4.5
+    swap clip           ang= 45.2 dis=  3.3 fea=  2.5 joy=  0.0 sad= 46.4 sur=  2.7
+    swap face_emotion   ang= 59.6 dis=  4.8 fea=  9.2 joy=  0.1 sad= 20.1 sur=  6.3
+    swap ocr_sentiment  ang= 61.8 dis=  4.9 fea=  9.2 joy=  0.1 sad= 18.6 sur=  5.3
+
+# S15/02_Generic_Review | own: ang= 29.9 dis=  5.1 fea=  4.6 joy=  0.1 sad= 54.5 sur=  5.8
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 17.9 dis=  3.7 fea=  8.2 joy=  0.2 sad= 52.4 sur= 17.5
+    swap beats          ang= 88.5 dis=  0.5 fea=  0.7 joy=  0.2 sad=  0.7 sur=  9.4
+    swap clip           ang=  0.2 dis=  0.0 fea= 99.3 joy=  0.0 sad=  0.5 sur=  0.0
+    swap face_emotion   ang=  9.7 dis=  2.5 fea=  6.4 joy=  0.5 sad= 70.4 sur= 10.6
+    swap ocr_sentiment  ang= 31.6 dis=  5.3 fea=  4.7 joy=  0.1 sad= 53.1 sur=  5.2
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 21.2 dis=  4.1 fea=  7.2 joy=  0.2 sad= 54.2 sur= 13.2
+    swap beats          ang= 10.9 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.1 sur= 89.0
+    swap clip           ang=  0.4 dis=  0.0 fea= 97.8 joy=  0.0 sad=  1.8 sur=  0.0
+    swap face_emotion   ang= 16.9 dis=  2.9 fea=  5.4 joy=  0.3 sad= 67.0 sur=  7.6
+    swap ocr_sentiment  ang= 33.8 dis=  5.0 fea=  4.5 joy=  0.1 sad= 51.7 sur=  4.9
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 31.9 dis=  5.2 fea=  4.2 joy=  0.1 sad= 53.7 sur=  4.9
+    swap beats          ang= 82.0 dis=  4.4 fea=  1.0 joy=  0.1 sad=  7.6 sur=  4.9
+    swap clip           ang= 83.8 dis= 12.0 fea=  2.9 joy=  0.0 sad=  1.1 sur=  0.1
+    swap face_emotion   ang= 29.1 dis=  5.3 fea=  4.4 joy=  0.1 sad= 55.0 sur=  6.2
+    swap ocr_sentiment  ang= 31.9 dis=  5.1 fea=  4.6 joy=  0.1 sad= 53.1 sur=  5.2
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 22.7 dis=  4.3 fea=  6.6 joy=  0.2 sad= 54.7 sur= 11.6
+    swap beats          ang= 60.7 dis= 12.5 fea=  3.2 joy=  0.1 sad= 17.9 sur=  5.6
+    swap clip           ang= 55.1 dis=  2.4 fea=  3.6 joy=  0.0 sad= 34.9 sur=  4.0
+    swap face_emotion   ang= 30.0 dis=  4.8 fea=  4.4 joy=  0.1 sad= 54.9 sur=  5.8
+    swap ocr_sentiment  ang= 32.2 dis=  5.3 fea=  4.6 joy=  0.1 sad= 52.7 sur=  5.1
+
+# S15/03_MoodCut | own: ang= 45.7 dis=  3.5 fea=  8.5 joy=  0.1 sad= 40.7 sur=  1.6
+  from NOTLD-T2(fear 99.6)
+    swap asr_sentiment  ang= 32.4 dis=  2.9 fea= 15.8 joy=  0.3 sad= 43.9 sur=  4.7
+    swap beats          ang= 90.6 dis=  0.2 fea=  1.3 joy=  0.1 sad=  0.2 sur=  7.6
+    swap clip           ang=  0.3 dis=  0.0 fea= 98.6 joy=  0.0 sad=  1.2 sur=  0.0
+    swap face_emotion   ang= 18.7 dis=  2.0 fea= 14.3 joy=  0.7 sad= 60.9 sur=  3.5
+    swap ocr_sentiment  ang= 45.8 dis=  3.6 fea=  8.7 joy=  0.1 sad= 40.3 sur=  1.5
+  from NOTLD-T1(fear 78.5)
+    swap asr_sentiment  ang= 36.6 dis=  3.1 fea= 13.2 joy=  0.2 sad= 43.5 sur=  3.4
+    swap beats          ang= 13.4 dis=  0.0 fea=  0.0 joy=  0.0 sad=  0.0 sur= 86.5
+    swap clip           ang=  0.6 dis=  0.0 fea= 94.9 joy=  0.0 sad=  4.5 sur=  0.0
+    swap face_emotion   ang= 30.2 dis=  2.2 fea= 11.1 joy=  0.3 sad= 53.8 sur=  2.3
+    swap ocr_sentiment  ang= 48.2 dis=  3.3 fea=  8.2 joy=  0.1 sad= 38.7 sur=  1.4
+  from S07-moodcut(anger 95.7)
+    swap asr_sentiment  ang= 49.5 dis=  3.6 fea=  6.9 joy=  0.1 sad= 38.8 sur=  1.1
+    swap beats          ang= 89.4 dis=  1.9 fea=  2.0 joy=  0.1 sad=  2.4 sur=  4.2
+    swap clip           ang= 82.0 dis= 14.1 fea=  2.0 joy=  0.0 sad=  1.9 sur=  0.0
+    swap face_emotion   ang= 46.8 dis=  3.6 fea=  8.1 joy=  0.1 sad= 39.8 sur=  1.7
+    swap ocr_sentiment  ang= 46.2 dis=  3.5 fea=  8.4 joy=  0.1 sad= 40.3 sur=  1.5
+  from MEAN of all 44 project videos
+    swap asr_sentiment  ang= 38.5 dis=  3.2 fea= 12.0 joy=  0.2 sad= 43.1 sur=  2.9
+    swap beats          ang= 74.5 dis=  6.0 fea=  7.6 joy=  0.1 sad=  6.4 sur=  5.5
+    swap clip           ang= 44.3 dis=  2.3 fea=  2.0 joy=  0.0 sad= 50.6 sur=  0.8
+    swap face_emotion   ang= 47.7 dis=  3.2 fea=  8.0 joy=  0.1 sad= 39.4 sur=  1.5
+    swap ocr_sentiment  ang= 46.4 dis=  3.6 fea=  8.4 joy=  0.1 sad= 39.9 sur=  1.5
+
+## B. 反过来：把恐惧视频的某一路特征放进 NOTLD-T2（fear 99.6）里，看哪一路会把 fear 拉下去
+T2 own: ang=  0.3 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S09/_01_Baseline
+    T2 with asr_sentiment  ang=  0.9 dis=  0.0 fea= 99.0 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.8 joy=  0.0 sad=  0.2 sur=  0.0
+    T2 with clip           ang= 34.4 dis=  0.0 fea=  1.5 joy=  0.1 sad=  0.5 sur= 63.5
+    T2 with face_emotion   ang=  1.4 dis=  0.0 fea= 98.5 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.4 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S09/_02_Generic_Review
+    T2 with asr_sentiment  ang=  1.2 dis=  0.0 fea= 98.8 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.8 joy=  0.0 sad=  0.2 sur=  0.0
+    T2 with clip           ang= 55.0 dis=  0.0 fea=  2.8 joy=  0.1 sad=  0.6 sur= 41.5
+    T2 with face_emotion   ang=  1.5 dis=  0.0 fea= 98.4 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.4 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S09/_03_MoodCut
+    T2 with asr_sentiment  ang=  0.9 dis=  0.0 fea= 99.1 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.9 joy=  0.0 sad=  0.1 sur=  0.0
+    T2 with clip           ang= 33.3 dis=  0.0 fea=  2.1 joy=  0.1 sad=  0.4 sur= 64.1
+    T2 with face_emotion   ang=  1.4 dis=  0.0 fea= 98.5 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.4 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S15/01_Baseline
+    T2 with asr_sentiment  ang=  1.0 dis=  0.0 fea= 98.9 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.4 sur=  0.0
+    T2 with clip           ang= 38.8 dis=  0.1 fea=  4.0 joy=  2.4 sad=  0.2 sur= 54.5
+    T2 with face_emotion   ang=  1.4 dis=  0.0 fea= 98.6 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.3 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S15/02_Generic_Review
+    T2 with asr_sentiment  ang=  1.0 dis=  0.0 fea= 98.9 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.7 joy=  0.0 sad=  0.2 sur=  0.0
+    T2 with clip           ang= 29.2 dis=  0.3 fea=  2.5 joy=  4.4 sad=  1.4 sur= 62.3
+    T2 with face_emotion   ang=  1.4 dis=  0.0 fea= 98.6 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.3 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+# S15/03_MoodCut
+    T2 with asr_sentiment  ang=  0.9 dis=  0.0 fea= 99.1 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with beats          ang=  0.0 dis=  0.0 fea= 99.4 joy=  0.0 sad=  0.6 sur=  0.0
+    T2 with clip           ang= 35.5 dis=  0.1 fea=  5.4 joy=  3.1 sad=  0.5 sur= 55.5
+    T2 with face_emotion   ang=  1.3 dis=  0.0 fea= 98.6 joy=  0.0 sad=  0.0 sur=  0.0
+    T2 with ocr_sentiment  ang=  0.3 dis=  0.0 fea= 99.6 joy=  0.0 sad=  0.0 sur=  0.0
+
+## C. 各路特征的统计（均值/标准差；NOTLD-T2 与 S09/S15 对照）
+  asr_sentiment  T2: 0.110/0.019 | S09/_01_Base: 0.109/0.020 | S15/01_Basel: 0.110/0.021
+  beats          T2: 0.417/0.038 | S09/_01_Base: 0.104/0.182 | S15/01_Basel: 0.104/0.182
+  clip           T2: 0.681/0.031 | S09/_01_Base: 0.681/0.027 | S15/01_Basel: 0.682/0.027
+  face_emotion   T2: 0.329/0.255 | S09/_01_Base: 0.527/0.001 | S15/01_Basel: 0.527/0.001
+  ocr_sentiment  T2: 0.103/0.027 | S09/_01_Base: 0.103/0.027 | S15/01_Basel: 0.103/0.027

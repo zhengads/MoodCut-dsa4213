@@ -1,0 +1,1084 @@
+[
+ {
+  "id": "s06_15s_three/baseline",
+  "set": "s06_15s_three",
+  "condition": "baseline",
+  "intended": "hostile",
+  "path": "01_Baseline_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -31.4,
+  "whole": {
+   "arousal": 0.7332,
+   "dominance": 0.7498,
+   "valence": 0.4275
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.6869,
+    "dominance": 0.715,
+    "valence": 0.4713
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.9001,
+    "dominance": 0.8825,
+    "valence": 0.4587
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.6475,
+    "dominance": 0.5836,
+    "valence": 0.5011
+   }
+  ]
+ },
+ {
+  "id": "s06_15s_7dialogue/baseline",
+  "set": "s06_15s_7dialogue",
+  "condition": "baseline",
+  "intended": "hostile",
+  "path": "01_Baseline_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -21.3,
+  "whole": {
+   "arousal": 1.0132,
+   "dominance": 0.9359,
+   "valence": 0.3258
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.9373,
+    "dominance": 0.8607,
+    "valence": 0.4268
+   },
+   {
+    "t": "5-10s",
+    "arousal": 1.0011,
+    "dominance": 0.9231,
+    "valence": 0.3946
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.9601,
+    "dominance": 0.9019,
+    "valence": 0.1949
+   }
+  ]
+ },
+ {
+  "id": "s01_15s/baseline",
+  "set": "s01_15s",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "path": "01_Baseline_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -36.0,
+  "whole": {
+   "arousal": 0.2928,
+   "dominance": 0.4154,
+   "valence": 0.3667
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.2907,
+    "dominance": 0.4191,
+    "valence": 0.3924
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.3534,
+    "dominance": 0.4521,
+    "valence": 0.2194
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.3106,
+    "dominance": 0.4543,
+    "valence": 0.2887
+   }
+  ]
+ },
+ {
+  "id": "anna_elsa_v3/baseline",
+  "set": "anna_elsa_v3_captured",
+  "condition": "baseline",
+  "intended": "affectionate",
+  "path": "actor-v3-baseline.mp4",
+  "duration_s": 5.22,
+  "rms_dbfs": -37.7,
+  "whole": {
+   "arousal": 0.3569,
+   "dominance": 0.4265,
+   "valence": 0.5023
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3562,
+    "dominance": 0.4251,
+    "valence": 0.5063
+   }
+  ]
+ },
+ {
+  "id": "s06_15s_three/generic_review",
+  "set": "s06_15s_three",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "path": "02_Generic_Review_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -34.5,
+  "whole": {
+   "arousal": 0.6705,
+   "dominance": 0.6978,
+   "valence": 0.4433
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.6118,
+    "dominance": 0.6698,
+    "valence": 0.4896
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.7528,
+    "dominance": 0.7379,
+    "valence": 0.4857
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.3824,
+    "dominance": 0.3496,
+    "valence": 0.3652
+   }
+  ]
+ },
+ {
+  "id": "s06_15s_7dialogue/generic_review",
+  "set": "s06_15s_7dialogue",
+  "condition": "generic_review",
+  "intended": "hostile",
+  "path": "02_Generic_Review_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -22.2,
+  "whole": {
+   "arousal": 0.9964,
+   "dominance": 0.9403,
+   "valence": 0.3033
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.9262,
+    "dominance": 0.855,
+    "valence": 0.3559
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.9992,
+    "dominance": 0.9443,
+    "valence": 0.4301
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.9525,
+    "dominance": 0.9137,
+    "valence": 0.1744
+   }
+  ]
+ },
+ {
+  "id": "s01_15s/generic_review",
+  "set": "s01_15s",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "path": "02_Generic_Review_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -33.8,
+  "whole": {
+   "arousal": 0.312,
+   "dominance": 0.4318,
+   "valence": 0.3914
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3419,
+    "dominance": 0.4628,
+    "valence": 0.4023
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.348,
+    "dominance": 0.4513,
+    "valence": 0.2528
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.2849,
+    "dominance": 0.4087,
+    "valence": 0.3114
+   }
+  ]
+ },
+ {
+  "id": "anna_elsa_v3/generic_review",
+  "set": "anna_elsa_v3_captured",
+  "condition": "generic_review",
+  "intended": "affectionate",
+  "path": "actor-v3-generic_review.mp4",
+  "duration_s": 5.22,
+  "rms_dbfs": -32.4,
+  "whole": {
+   "arousal": 0.371,
+   "dominance": 0.4466,
+   "valence": 0.4924
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3785,
+    "dominance": 0.4532,
+    "valence": 0.4979
+   }
+  ]
+ },
+ {
+  "id": "s06_15s_three/moodcut",
+  "set": "s06_15s_three",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "path": "03_MoodCut_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -31.1,
+  "whole": {
+   "arousal": 0.6663,
+   "dominance": 0.6913,
+   "valence": 0.4278
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.4753,
+    "dominance": 0.5374,
+    "valence": 0.5011
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.8663,
+    "dominance": 0.8746,
+    "valence": 0.3127
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.7354,
+    "dominance": 0.7064,
+    "valence": 0.5849
+   }
+  ]
+ },
+ {
+  "id": "s06_15s_7dialogue/moodcut",
+  "set": "s06_15s_7dialogue",
+  "condition": "moodcut",
+  "intended": "hostile",
+  "path": "03_MoodCut_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -20.6,
+  "whole": {
+   "arousal": 0.9974,
+   "dominance": 0.9341,
+   "valence": 0.1547
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.9096,
+    "dominance": 0.8387,
+    "valence": 0.5257
+   },
+   {
+    "t": "5-10s",
+    "arousal": 1.0101,
+    "dominance": 0.9588,
+    "valence": 0.2403
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.9703,
+    "dominance": 0.9083,
+    "valence": 0.1405
+   }
+  ]
+ },
+ {
+  "id": "s01_15s/moodcut",
+  "set": "s01_15s",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "path": "03_MoodCut_15s.mp4",
+  "duration_s": 15.14,
+  "rms_dbfs": -35.9,
+  "whole": {
+   "arousal": 0.3104,
+   "dominance": 0.4258,
+   "valence": 0.3538
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3068,
+    "dominance": 0.4374,
+    "valence": 0.4481
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.2916,
+    "dominance": 0.3538,
+    "valence": 0.2613
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.3612,
+    "dominance": 0.454,
+    "valence": 0.2415
+   }
+  ]
+ },
+ {
+  "id": "anna_elsa_v3/moodcut",
+  "set": "anna_elsa_v3_captured",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "path": "actor-v3-moodcut.mp4",
+  "duration_s": 5.22,
+  "rms_dbfs": -30.3,
+  "whole": {
+   "arousal": 0.4307,
+   "dominance": 0.4767,
+   "valence": 0.4787
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.4531,
+    "dominance": 0.4899,
+    "valence": 0.4647
+   }
+  ]
+ },
+ {
+  "id": "s01_v4/baseline_and_generic",
+  "set": "s01_v4",
+  "condition": "baseline_and_generic",
+  "intended": "affectionate",
+  "path": "s01-v4-baseline.mp4",
+  "duration_s": 5.22,
+  "rms_dbfs": -32.7,
+  "whole": {
+   "arousal": 0.3407,
+   "dominance": 0.4416,
+   "valence": 0.3111
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.341,
+    "dominance": 0.4418,
+    "valence": 0.3129
+   }
+  ]
+ },
+ {
+  "id": "s01_v4/moodcut",
+  "set": "s01_v4",
+  "condition": "moodcut",
+  "intended": "affectionate",
+  "path": "s01-v4-moodcut.mp4",
+  "duration_s": 5.22,
+  "rms_dbfs": -32.3,
+  "whole": {
+   "arousal": 0.375,
+   "dominance": 0.4624,
+   "valence": 0.4238
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3767,
+    "dominance": 0.4614,
+    "valence": 0.4353
+   }
+  ]
+ },
+ {
+  "id": "film/A2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "path": "A2_affect_charade_boat.mp4",
+  "duration_s": 40.01,
+  "rms_dbfs": -32.3,
+  "whole": {
+   "arousal": 0.5028,
+   "dominance": 0.5394,
+   "valence": 0.3188
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.4043,
+    "dominance": 0.4964,
+    "valence": 0.3659
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.4645,
+    "dominance": 0.5111,
+    "valence": 0.3232
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.4631,
+    "dominance": 0.5194,
+    "valence": 0.2558
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.5214,
+    "dominance": 0.5675,
+    "valence": 0.4534
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.4664,
+    "dominance": 0.5474,
+    "valence": 0.4161
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.3989,
+    "dominance": 0.4722,
+    "valence": 0.2594
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.5878,
+    "dominance": 0.639,
+    "valence": 0.2711
+   },
+   {
+    "t": "35-40s",
+    "arousal": 0.2944,
+    "dominance": 0.3744,
+    "valence": 0.2335
+   }
+  ]
+ },
+ {
+  "id": "film/A3",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "path": "A3_affect_charade_phone.mp4",
+  "duration_s": 30.0,
+  "rms_dbfs": -32.7,
+  "whole": {
+   "arousal": 0.4716,
+   "dominance": 0.5116,
+   "valence": 0.4973
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.4991,
+    "dominance": 0.5595,
+    "valence": 0.6014
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.307,
+    "dominance": 0.3648,
+    "valence": 0.3746
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.6084,
+    "dominance": 0.6646,
+    "valence": 0.416
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.4319,
+    "dominance": 0.5433,
+    "valence": 0.3213
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.5511,
+    "dominance": 0.5749,
+    "valence": 0.5546
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.3435,
+    "dominance": 0.3444,
+    "valence": 0.5028
+   }
+  ]
+ },
+ {
+  "id": "film/T1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "path": "T1_tense_notld.mp4",
+  "duration_s": 40.01,
+  "rms_dbfs": -26.5,
+  "whole": {
+   "arousal": 0.6477,
+   "dominance": 0.6567,
+   "valence": 0.6078
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.6926,
+    "dominance": 0.5649,
+    "valence": 0.5114
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.614,
+    "dominance": 0.6048,
+    "valence": 0.5797
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.4762,
+    "dominance": 0.4083,
+    "valence": 0.5369
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.6037,
+    "dominance": 0.5106,
+    "valence": 0.3943
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.186,
+    "dominance": 0.3033,
+    "valence": 0.1722
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.4597,
+    "dominance": 0.55,
+    "valence": 0.5137
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.5476,
+    "dominance": 0.5867,
+    "valence": 0.5615
+   },
+   {
+    "t": "35-40s",
+    "arousal": 0.6477,
+    "dominance": 0.6913,
+    "valence": 0.587
+   }
+  ]
+ },
+ {
+  "id": "film/T2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "tense",
+  "path": "T2_tense_notld.mp4",
+  "duration_s": 34.62,
+  "rms_dbfs": -29.4,
+  "whole": {
+   "arousal": 0.5154,
+   "dominance": 0.4771,
+   "valence": 0.5308
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.3968,
+    "dominance": 0.4084,
+    "valence": 0.4052
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.5059,
+    "dominance": 0.4082,
+    "valence": 0.534
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.2031,
+    "dominance": 0.1384,
+    "valence": 0.2895
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.3444,
+    "dominance": 0.2661,
+    "valence": 0.2778
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.5566,
+    "dominance": 0.4732,
+    "valence": 0.4165
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.3527,
+    "dominance": 0.4012,
+    "valence": 0.2999
+   }
+  ]
+ },
+ {
+  "id": "film/H1",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "path": "H1_hostile_hgf.mp4",
+  "duration_s": 30.02,
+  "rms_dbfs": -33.6,
+  "whole": {
+   "arousal": 0.8602,
+   "dominance": 0.8282,
+   "valence": 0.2879
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.7064,
+    "dominance": 0.6959,
+    "valence": 0.3177
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.7033,
+    "dominance": 0.7353,
+    "valence": 0.3304
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.7736,
+    "dominance": 0.7693,
+    "valence": 0.4622
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.7375,
+    "dominance": 0.7347,
+    "valence": 0.5269
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.8421,
+    "dominance": 0.8235,
+    "valence": 0.191
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.9138,
+    "dominance": 0.8747,
+    "valence": 0.2623
+   }
+  ]
+ },
+ {
+  "id": "film/H2",
+  "set": "film_calibration",
+  "condition": "n/a",
+  "intended": "hostile",
+  "path": "H2_hostile_notld.mp4",
+  "duration_s": 23.01,
+  "rms_dbfs": -24.8,
+  "whole": {
+   "arousal": 0.753,
+   "dominance": 0.7801,
+   "valence": 0.1621
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.7444,
+    "dominance": 0.7051,
+    "valence": 0.1751
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.7722,
+    "dominance": 0.7673,
+    "valence": 0.4043
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.8144,
+    "dominance": 0.8753,
+    "valence": 0.0678
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.4433,
+    "dominance": 0.5776,
+    "valence": 0.153
+   }
+  ]
+ },
+ {
+  "id": "film/FA1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "path": "FA1_affect_charade_room.mp4",
+  "duration_s": 32.02,
+  "rms_dbfs": -33.6,
+  "whole": {
+   "arousal": 0.5469,
+   "dominance": 0.6066,
+   "valence": 0.3521
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.5637,
+    "dominance": 0.6422,
+    "valence": 0.4577
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.46,
+    "dominance": 0.5687,
+    "valence": 0.148
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.4008,
+    "dominance": 0.5108,
+    "valence": 0.4747
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.445,
+    "dominance": 0.5064,
+    "valence": 0.4706
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.4828,
+    "dominance": 0.5334,
+    "valence": 0.354
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.494,
+    "dominance": 0.5577,
+    "valence": 0.4342
+   }
+  ]
+ },
+ {
+  "id": "film/FA2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "affectionate",
+  "path": "FA2_affect_charade_office.mp4",
+  "duration_s": 40.01,
+  "rms_dbfs": -32.3,
+  "whole": {
+   "arousal": 0.6567,
+   "dominance": 0.6735,
+   "valence": 0.5907
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.5792,
+    "dominance": 0.6273,
+    "valence": 0.7363
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.5784,
+    "dominance": 0.581,
+    "valence": 0.3967
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.371,
+    "dominance": 0.4517,
+    "valence": 0.2626
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.4807,
+    "dominance": 0.452,
+    "valence": 0.463
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.6112,
+    "dominance": 0.6619,
+    "valence": 0.5362
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.6578,
+    "dominance": 0.7091,
+    "valence": 0.695
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.8038,
+    "dominance": 0.7971,
+    "valence": 0.5585
+   },
+   {
+    "t": "35-40s",
+    "arousal": 0.5823,
+    "dominance": 0.601,
+    "valence": 0.5019
+   }
+  ]
+ },
+ {
+  "id": "film/FH1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "path": "FH1_hostile_notld_standoff.mp4",
+  "duration_s": 45.0,
+  "rms_dbfs": -24.5,
+  "whole": {
+   "arousal": 0.8184,
+   "dominance": 0.7889,
+   "valence": 0.2703
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.1748,
+    "dominance": 0.3095,
+    "valence": 0.3778
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.7268,
+    "dominance": 0.7223,
+    "valence": 0.5554
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.6667,
+    "dominance": 0.6694,
+    "valence": 0.4004
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.8477,
+    "dominance": 0.8287,
+    "valence": 0.4093
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.7586,
+    "dominance": 0.7519,
+    "valence": 0.3229
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.8093,
+    "dominance": 0.82,
+    "valence": 0.2515
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.7654,
+    "dominance": 0.7593,
+    "valence": 0.3313
+   },
+   {
+    "t": "35-40s",
+    "arousal": 0.7417,
+    "dominance": 0.7614,
+    "valence": 0.2641
+   },
+   {
+    "t": "40-45s",
+    "arousal": 0.6744,
+    "dominance": 0.6887,
+    "valence": 0.4727
+   }
+  ]
+ },
+ {
+  "id": "film/FH2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "hostile",
+  "path": "FH2_hostile_tos_bridge.mp4",
+  "duration_s": 18.72,
+  "rms_dbfs": -20.7,
+  "whole": {
+   "arousal": 0.9703,
+   "dominance": 0.9089,
+   "valence": 0.3209
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.8563,
+    "dominance": 0.8371,
+    "valence": 0.1591
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.949,
+    "dominance": 0.8955,
+    "valence": 0.4649
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.8692,
+    "dominance": 0.8013,
+    "valence": 0.4673
+   }
+  ]
+ },
+ {
+  "id": "film/FT1",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "path": "FT1_tense_notld_door.mp4",
+  "duration_s": 37.62,
+  "rms_dbfs": -24.5,
+  "whole": {
+   "arousal": 0.8008,
+   "dominance": 0.7668,
+   "valence": 0.2973
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.5355,
+    "dominance": 0.532,
+    "valence": 0.3293
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.6043,
+    "dominance": 0.6184,
+    "valence": 0.4779
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.6496,
+    "dominance": 0.6628,
+    "valence": 0.4081
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.8575,
+    "dominance": 0.8322,
+    "valence": 0.0394
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.8859,
+    "dominance": 0.8302,
+    "valence": 0.263
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.8298,
+    "dominance": 0.8197,
+    "valence": 0.4024
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.7671,
+    "dominance": 0.7647,
+    "valence": 0.4695
+   }
+  ]
+ },
+ {
+  "id": "film/FT2",
+  "set": "film_validation",
+  "condition": "n/a",
+  "intended": "tense",
+  "path": "FT2_tense_notld_prep.mp4",
+  "duration_s": 40.01,
+  "rms_dbfs": -24.4,
+  "whole": {
+   "arousal": 0.5431,
+   "dominance": 0.5277,
+   "valence": 0.3647
+  },
+  "windows_5s": [
+   {
+    "t": "0-5s",
+    "arousal": 0.1771,
+    "dominance": 0.1824,
+    "valence": 0.3128
+   },
+   {
+    "t": "5-10s",
+    "arousal": 0.1665,
+    "dominance": 0.2017,
+    "valence": 0.2884
+   },
+   {
+    "t": "10-15s",
+    "arousal": 0.4484,
+    "dominance": 0.4848,
+    "valence": 0.4616
+   },
+   {
+    "t": "15-20s",
+    "arousal": 0.3413,
+    "dominance": 0.3546,
+    "valence": 0.3365
+   },
+   {
+    "t": "20-25s",
+    "arousal": 0.5772,
+    "dominance": 0.5444,
+    "valence": 0.4053
+   },
+   {
+    "t": "25-30s",
+    "arousal": 0.2354,
+    "dominance": 0.277,
+    "valence": 0.448
+   },
+   {
+    "t": "30-35s",
+    "arousal": 0.5499,
+    "dominance": 0.5338,
+    "valence": 0.3896
+   },
+   {
+    "t": "35-40s",
+    "arousal": 0.0888,
+    "dominance": 0.149,
+    "valence": 0.2811
+   }
+  ]
+ }
+]

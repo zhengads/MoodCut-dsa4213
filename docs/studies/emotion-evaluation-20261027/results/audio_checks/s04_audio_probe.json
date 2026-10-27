@@ -1,0 +1,215 @@
+{
+ "01_Baseline_8s": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -45.2,
+   -28.3,
+   -25.3,
+   -35.8,
+   -25.6,
+   -24.1,
+   -25.3,
+   -21.3
+  ],
+  "peak_db": -9.1,
+  "frac_seconds_below_-50dB": 0.0,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.636
+   ],
+   [
+    "Music",
+    0.121
+   ],
+   [
+    "Sigh",
+    0.099
+   ],
+   [
+    "Silence",
+    0.038
+   ],
+   [
+    "Boing",
+    0.034
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.679
+     ],
+     [
+      "Sigh",
+      0.207
+     ],
+     [
+      "Music",
+      0.112
+     ],
+     [
+      "Child speech, kid speaking",
+      0.069
+     ],
+     [
+      "Boing",
+      0.042
+     ]
+    ]
+   }
+  ],
+  "asr_text": "We don't have much time. Let's go! I got it. Don't waste your time!",
+  "asr_language": null,
+  "asr_sentiment_predictions": [
+   "neutral",
+   0.38700947165489197
+  ]
+ },
+ "02_Generic_Review_8s": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -28.0,
+   -26.7,
+   -42.8,
+   -28.3,
+   -36.0,
+   -26.4,
+   -31.5,
+   -29.4
+  ],
+  "peak_db": -11.2,
+  "frac_seconds_below_-50dB": 0.0,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.475
+   ],
+   [
+    "Music",
+    0.216
+   ],
+   [
+    "Vehicle",
+    0.051
+   ],
+   [
+    "Silence",
+    0.026
+   ],
+   [
+    "Car",
+    0.023
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.642
+     ],
+     [
+      "Music",
+      0.158
+     ],
+     [
+      "Sigh",
+      0.068
+     ],
+     [
+      "Boing",
+      0.032
+     ],
+     [
+      "Child speech, kid speaking",
+      0.028
+     ]
+    ]
+   }
+  ],
+  "asr_text": "The exit is about to be closed! Hurry, follow me!",
+  "asr_language": null,
+  "asr_sentiment_predictions": [
+   "neutral",
+   0.7948743104934692
+  ]
+ },
+ "03_MoodCut_8s": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -55.6,
+   -27.0,
+   -24.0,
+   -31.5,
+   -26.4,
+   -27.0,
+   -30.4,
+   -25.7
+  ],
+  "peak_db": -9.8,
+  "frac_seconds_below_-50dB": 0.12,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.677
+   ],
+   [
+    "Sigh",
+    0.141
+   ],
+   [
+    "Music",
+    0.133
+   ],
+   [
+    "Speech synthesizer",
+    0.05
+   ],
+   [
+    "Boing",
+    0.034
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.674
+     ],
+     [
+      "Sigh",
+      0.145
+     ],
+     [
+      "Music",
+      0.114
+     ],
+     [
+      "Speech synthesizer",
+      0.056
+     ],
+     [
+      "Child speech, kid speaking",
+      0.054
+     ]
+    ]
+   }
+  ],
+  "asr_text": "Time is running out, let's go! Got it, let's go!",
+  "asr_language": null,
+  "asr_sentiment_predictions": [
+   "positive",
+   0.804932177066803
+  ]
+ }
+}

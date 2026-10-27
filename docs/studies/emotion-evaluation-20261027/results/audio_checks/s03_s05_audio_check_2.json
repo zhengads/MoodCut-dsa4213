@@ -1,0 +1,522 @@
+{
+ "s03_en/01_Baseline_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -49.5,
+   -46.3,
+   -70.8,
+   -71.5,
+   -39.8,
+   -39.7,
+   -71.4,
+   -70.1
+  ],
+  "peak_db": -20.6,
+  "frac_seconds_below_-50dB": 0.5,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.48
+   ],
+   [
+    "Music",
+    0.138
+   ],
+   [
+    "Sigh",
+    0.134
+   ],
+   [
+    "Whispering",
+    0.119
+   ],
+   [
+    "Inside, small room",
+    0.041
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Music",
+      0.502
+     ],
+     [
+      "Speech",
+      0.398
+     ],
+     [
+      "Whispering",
+      0.151
+     ],
+     [
+      "Inside, small room",
+      0.044
+     ],
+     [
+      "Musical instrument",
+      0.035
+     ]
+    ]
+   }
+  ]
+ },
+ "s03_en/02_Generic_Review_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -45.7,
+   -46.9,
+   -73.8,
+   -40.8,
+   -51.5,
+   -44.3,
+   -73.9,
+   -72.0
+  ],
+  "peak_db": -24.5,
+  "frac_seconds_below_-50dB": 0.5,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.543
+   ],
+   [
+    "Whispering",
+    0.325
+   ],
+   [
+    "Sigh",
+    0.204
+   ],
+   [
+    "Male speech, man speaking",
+    0.038
+   ],
+   [
+    "Inside, small room",
+    0.035
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Whispering",
+      0.792
+     ],
+     [
+      "Speech",
+      0.594
+     ],
+     [
+      "Sigh",
+      0.078
+     ],
+     [
+      "Music",
+      0.069
+     ],
+     [
+      "Inside, small room",
+      0.032
+     ]
+    ]
+   }
+  ]
+ },
+ "s03_en/03_MoodCut_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -42.9,
+   -69.6,
+   -67.0,
+   -38.6,
+   -45.3,
+   -38.7,
+   -68.5,
+   -66.7
+  ],
+  "peak_db": -18.7,
+  "frac_seconds_below_-50dB": 0.5,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.447
+   ],
+   [
+    "Sigh",
+    0.378
+   ],
+   [
+    "Speech synthesizer",
+    0.067
+   ],
+   [
+    "Music",
+    0.052
+   ],
+   [
+    "Male speech, man speaking",
+    0.046
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Sigh",
+      0.401
+     ],
+     [
+      "Speech",
+      0.364
+     ],
+     [
+      "Music",
+      0.145
+     ],
+     [
+      "Silence",
+      0.029
+     ],
+     [
+      "Inside, small room",
+      0.027
+     ]
+    ]
+   }
+  ]
+ },
+ "s03_en_nolimit/01_Baseline_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -48.9,
+   -47.1,
+   -46.0,
+   -39.6,
+   -40.8,
+   -45.6,
+   -76.2,
+   -75.4
+  ],
+  "peak_db": -20.8,
+  "frac_seconds_below_-50dB": 0.25,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.614
+   ],
+   [
+    "Whispering",
+    0.487
+   ],
+   [
+    "Sigh",
+    0.072
+   ],
+   [
+    "Music",
+    0.052
+   ],
+   [
+    "Inside, small room",
+    0.047
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Whispering",
+      0.849
+     ],
+     [
+      "Speech",
+      0.648
+     ],
+     [
+      "Music",
+      0.132
+     ],
+     [
+      "Inside, small room",
+      0.043
+     ],
+     [
+      "Sigh",
+      0.039
+     ]
+    ]
+   }
+  ]
+ },
+ "s03_en_nolimit/03_MoodCut_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -51.1,
+   -47.4,
+   -58.5,
+   -43.5,
+   -39.7,
+   -42.7,
+   -41.0,
+   -43.9
+  ],
+  "peak_db": -19.7,
+  "frac_seconds_below_-50dB": 0.25,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.568
+   ],
+   [
+    "Whispering",
+    0.432
+   ],
+   [
+    "Music",
+    0.071
+   ],
+   [
+    "Sigh",
+    0.066
+   ],
+   [
+    "Inside, small room",
+    0.024
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Whispering",
+      0.832
+     ],
+     [
+      "Speech",
+      0.576
+     ],
+     [
+      "Music",
+      0.142
+     ],
+     [
+      "Sigh",
+      0.025
+     ],
+     [
+      "Inside, small room",
+      0.024
+     ]
+    ]
+   }
+  ]
+ },
+ "s05_en/01_Baseline_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -24.2,
+   -27.8,
+   -31.8,
+   -25.7,
+   -25.9,
+   -30.6,
+   -33.5,
+   -31.0
+  ],
+  "peak_db": -9.4,
+  "frac_seconds_below_-50dB": 0.0,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.553
+   ],
+   [
+    "Speech synthesizer",
+    0.304
+   ],
+   [
+    "Narration, monologue",
+    0.124
+   ],
+   [
+    "Music",
+    0.046
+   ],
+   [
+    "Male speech, man speaking",
+    0.041
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.595
+     ],
+     [
+      "Speech synthesizer",
+      0.339
+     ],
+     [
+      "Narration, monologue",
+      0.133
+     ],
+     [
+      "Male speech, man speaking",
+      0.059
+     ],
+     [
+      "Music",
+      0.056
+     ]
+    ]
+   }
+  ]
+ },
+ "s05_en/02_Generic_Review_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -28.9,
+   -24.2,
+   -30.2,
+   -26.3,
+   -30.4,
+   -33.5,
+   -24.7,
+   -33.7
+  ],
+  "peak_db": -7.9,
+  "frac_seconds_below_-50dB": 0.0,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.548
+   ],
+   [
+    "Speech synthesizer",
+    0.23
+   ],
+   [
+    "Narration, monologue",
+    0.143
+   ],
+   [
+    "Music",
+    0.047
+   ],
+   [
+    "Male speech, man speaking",
+    0.038
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.519
+     ],
+     [
+      "Speech synthesizer",
+      0.318
+     ],
+     [
+      "Narration, monologue",
+      0.16
+     ],
+     [
+      "Male speech, man speaking",
+      0.063
+     ],
+     [
+      "Music",
+      0.039
+     ]
+    ]
+   }
+  ]
+ },
+ "s05_en/03_MoodCut_8s_English": {
+  "duration_s": 8.083344,
+  "sr": 32000,
+  "rms_db_per_s": [
+   -33.8,
+   -30.5,
+   -33.4,
+   -28.6,
+   -37.7,
+   -34.2,
+   -36.4,
+   -70.1
+  ],
+  "peak_db": -12.4,
+  "frac_seconds_below_-50dB": 0.12,
+  "beats_tags_whole": [
+   [
+    "Speech",
+    0.524
+   ],
+   [
+    "Speech synthesizer",
+    0.143
+   ],
+   [
+    "Sigh",
+    0.089
+   ],
+   [
+    "Narration, monologue",
+    0.079
+   ],
+   [
+    "Conversation",
+    0.039
+   ]
+  ],
+  "beats_tags_5s_windows": [
+   {
+    "t": "0-5s",
+    "tags": [
+     [
+      "Speech",
+      0.502
+     ],
+     [
+      "Speech synthesizer",
+      0.227
+     ],
+     [
+      "Narration, monologue",
+      0.073
+     ],
+     [
+      "Sigh",
+      0.066
+     ],
+     [
+      "Music",
+      0.049
+     ]
+    ]
+   }
+  ]
+ }
+}

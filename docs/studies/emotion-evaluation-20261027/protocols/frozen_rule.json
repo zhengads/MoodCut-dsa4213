@@ -1,0 +1,41 @@
+{
+ "rule": {
+  "version": "draft-1",
+  "frozen_before_running_validation_clips": true,
+  "groups": {
+   "hostile": [
+    "anger",
+    "disgust"
+   ],
+   "tense": [
+    "fear"
+   ],
+   "affectionate": [
+    "sadness",
+    "joy"
+   ]
+  },
+  "abstain": {
+   "if": "surprise >= 0.50",
+   "effect": "video not judged; not counted correct or incorrect; reported separately"
+  },
+  "decision": "argmax of the three group scores among non-abstained videos",
+  "pass_criteria": {
+   "min_correct_of_decidable": 5,
+   "max_abstain": 2,
+   "min_correct_per_atmosphere": 1,
+   "validation_clips": 6
+  },
+  "not_allowed_after_freeze": "changing groups, thresholds or criteria after seeing validation results"
+ },
+ "rule_sha256": "e6634c9612ea6599194de409005666933f0bfc5ae701076b23c3482f8c151851",
+ "frozen_at_local": "2026-10-25T22:26:40",
+ "clip_sha256": {
+  "FA1_affect_charade_room.mp4": "4d19c860bb386899710c98cc888ccfd4c6e6183b9e236d7010d911995fe4a621",
+  "FA2_affect_charade_office.mp4": "b4afcfe988dfe2a2825d3016bd61ef6d05df24ee2fa9a985ab6ef378ccbacf8b",
+  "FH1_hostile_notld_standoff.mp4": "160edf4d60e65d3ecd7fc5361a79926806b0b01d34e8df41db1f6de207a182a7",
+  "FH2_hostile_tos_bridge.mp4": "50968aa7cb681d8b6bf178777db744506592c2cc26bfb87a208cfafbda95773c",
+  "FT1_tense_notld_door.mp4": "2c66907c554b876b37543587d34b3d96e69d85404ae7885159bba223ce96dbe5",
+  "FT2_tense_notld_prep.mp4": "9015bc94331eb94e66f4f105d752b9727edaac68a063260f79a93075ae922d62"
+ }
+}
