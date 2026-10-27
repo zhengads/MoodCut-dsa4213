@@ -1,8 +1,8 @@
-# Twelve clear-emotion scenarios: S01–S12
+# Eighteen clear-emotion scenarios: S01–S18
 
 Revised on 2026-10-24 to meet the updated script requirements. Current inputs use **two stories each for affectionate, hostile and tense**: six stories, 12 distinct characters, one tone per story, three conditions and one replicate, totaling 18 condition entries. The five-second, single-shot scope with one line per character remains unchanged.
 
-S01–S06 retain this v2 design. Added on 2026-10-27, S07–S12 extend the same page with one scenario for each VEMOCLAP basic emotion: anger, disgust, fear, joy, sadness and surprise. The supplementary design, generated-mode JSON inputs, asset manifests, hash-bound index and offline evaluation configuration are included; videos, model outputs and evaluation results are not.
+S01–S06 retain this v2 design. Added on 2026-10-27, S07–S12 extend the same page with one scenario for each VEMOCLAP basic emotion: anger, disgust, fear, joy, sadness and surprise. S13–S18 add a second six-emotion set with deliberately understated authored drafts for exploratory review stress testing. The supplementary designs, generated-mode JSON inputs, asset manifests, hash-bound indexes and offline evaluation configurations are included; the authored challenge drafts are not model outputs or independent evidence of method superiority.
 
 The original [v1 scripts](../six-story-20261024/README.md) and all their JSON inputs are preserved. This is a task revision before execution because the original everyday scenarios did not express the target emotions clearly enough, not a task replacement based on results from these six stories. The original input merge commit is `dff08742caf662cba81f1853cfbfd184d92ee84c`.
 
@@ -257,3 +257,40 @@ The primary comparison is therefore between Baseline, Generic Review and MoodCut
 Relationships, settings and props may already provide emotional cues, making some scenarios easier for all methods. Recognition of a target emotion in a generated video cannot be attributed entirely to dialogue revision.
 
 Do not replace scenarios after observing which method performs best, silently exclude failures, or change video duration for only one condition.
+
+## S13–S18: authored review-challenge scenarios
+
+S13–S18 reuse all 12 existing characters once more and cover the same six native VEMOCLAP labels. Unlike S07–S12, each story includes a deliberately understated two-line authored draft intended to leave identifiable room for dialogue-only review. S15 and S16 use Mandarin Chinese; S13, S14, S17 and S18 use English. All six use one eight-second shot.
+
+This is an **exploratory stress-test set**, not an unbiased benchmark. The drafts were authored specifically to invite revision, so later results may demonstrate how the two review protocols behave on weak drafts but cannot by themselves prove that MoodCut is superior. Generic Review or MoodCut may still validly retain a draft; edits must never be forced or inserted manually after outputs are observed.
+
+### Scenario and draft overview
+
+| ID | Emotion | Characters | Scenario | Shared authored draft |
+|---|---|---|---|---|
+| S13 | anger / 愤怒 | Lucy, Gru | Gru makes an ordinary shared decision unilaterally | “So you decided without me.” / “I thought it was simpler.” |
+| S14 | disgust / 厌恶 | Anna, Kristoff | A drink on the table has spoiled and smells unpleasant | “That smells unusual.” / “It has been sitting here.” |
+| S15 | fear / 恐惧 | Nezha, Aobing | An unexplained crack is heard beneath an old bridge | “刚才是不是响了一声？” / “这里可能不太稳。” |
+| S16 | joy / 喜悦 | Lijing, Taiyi | Their awaited community-event approval arrives | “申请已经通过了。” / “那就按计划开始吧。” |
+| S17 | sadness / 悲伤 | Elsa, Mattias | An old tree meaningful to Elsa has been removed | “The old tree is gone.” / “I know.” |
+| S18 | surprise / 惊讶 | Maxime, Valentina | Valentina has finished preparing the room much earlier than expected | “You finished already?” / “This morning.” |
+
+### Intended revision opportunities
+
+- **S13:** clarify Lucy's anger and make Gru's defensive opposition explicit without inventing the decision.
+- **S14:** strengthen revulsion and acknowledgement without illness, drinking or exaggerated gagging.
+- **S15:** move beyond risk description to reciprocal fear without adding collapse, escape or injury.
+- **S16:** express shared happiness and relief without introducing a celebration, reward or new event.
+- **S17:** express personal loss and meaningful comfort without inventing backstory, death or a remedy.
+- **S18:** strengthen immediate disbelief while keeping the completed task ordinary and unspecified.
+
+### Files and execution boundary
+
+- [design-basic-emotion-challenge.json](design-basic-emotion-challenge.json) records the challenge purpose, fixed controls, stories and interpretation limits.
+- [inputs/basic-emotion-challenge-index.json](inputs/basic-emotion-challenge-index.json) binds every scene, copied asset manifest and authored draft by SHA-256.
+- Every S13–S18 directory contains `scene.json`, `assets.json` and `draft-dialogue.json`.
+- [configs/basic-emotions-challenge-experiment.json](../../../configs/basic-emotions-challenge-experiment.json) produces 18 offline scene–emotion–condition assignments and does not call a model.
+
+The evaluation dry-run reads the scene files but does **not** execute or inject `draft-dialogue.json`. For generated-script preparation, the caller explicitly supplies the saved draft through `pipeline.run_experiment(..., authored_dialogue_draft=draft)`. Common planning still determines the scene, action, camera and duration; the adapter then replaces only the single-shot dialogue before all three conditions are copied. The block saves the draft and its hash, and the downstream source loader recomputes the application before request preparation. This makes the shared-draft origin auditable, but does not authorize paid calls or turn this deliberately selected challenge set into an unbiased benchmark.
+
+All non-dialogue inputs remain frozen across conditions: story, beats, cast, actions, framing, duration, reference images, voice settings, ambience, seed and video settings. Only dialogue may change. Do not require either reviewer to edit, do not hand-repair outputs, and do not select or discard scenarios based on which method later scores best.

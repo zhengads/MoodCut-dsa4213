@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_challenge_v1_s17_old_tree_gone",
+  "tone": "sadness",
+  "story": "白天，Elsa和Mattias已经并肩站在安静庭院里。Elsa刚得知庭院中一棵对她具有个人意义的老树已经因自然衰败被移除，原位置现在是空的。Elsa表达失去老树的难过；Mattias理解她的失落并给予安慰。树不会恢复。只用自然英语完成两句对白，两人各说一句，不设逐句或总字数硬限制，但必须能在八秒内自然说完并留出停顿。全片一个8秒镜头。只允许台词在三条件间变化；人物、动作、表情要求、镜头、声音、时长和素材完全共享。不编造老树来源、死亡亲属、事故、责任人或补救方案，不要求哭泣、拥抱、魔法、第三人、旁白、字幕或文字卡。",
+  "characters": [
+    {"id": "frozenii_elsa", "name": "Elsa / 艾莎"},
+    {"id": "frozenii_mattias", "name": "Mattias / 马蒂亚斯"}
+  ],
+  "beats": [
+    {"id": "b1", "description": "Elsa表达老树消失带来的个人失落和悲伤。"},
+    {"id": "b2", "description": "Mattias承认这份失去的重要性并安慰Elsa。"}
+  ],
+  "asset_ids": ["movieagent_frozenii_elsa_primary", "movieagent_frozenii_mattias_primary"],
+  "min_duration_s": 8,
+  "max_duration_s": 8,
+  "min_shot_duration_s": 8,
+  "max_shot_duration_s": 8,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_review_challenge_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "S13-S18 exploratory review-challenge brief with an authored under-expressive draft; not a natural model baseline or independent efficacy result.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotion-challenge.json",
+    "design_story_id": "s17_old_tree_gone",
+    "design_version": "1.0",
+    "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s17_old_tree_gone/draft-dialogue.json",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

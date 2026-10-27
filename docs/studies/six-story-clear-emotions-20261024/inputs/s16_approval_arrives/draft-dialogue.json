@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "kind": "authored_review_challenge_draft_not_model_output",
+  "story_id": "s16_approval_arrives",
+  "language": "Mandarin Chinese",
+  "target_emotion": "joy",
+  "duration_s": 8,
+  "dialogue": [
+    {"character_id": "nezha2_lijing", "text": "申请已经通过了。"},
+    {"character_id": "nezha2_taiyi", "text": "那就按计划开始吧。"}
+  ],
+  "designed_revision_opportunities": ["好消息被平铺直叙，喜悦和如释重负没有表达。", "Taiyi只确认下一步，没有回应共同的开心与期待。"],
+  "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."
+}

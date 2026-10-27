@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_challenge_v1_s18_room_ready",
+  "tone": "surprise",
+  "story": "白天，普通会议室桌边，Maxime和Valentina已经面对面站定。两人原以为整理房间需要更长时间，但Maxime刚发现Valentina已经提前完成了全部整理。Maxime对如此快的完成表示意外和难以置信；Valentina确认房间在上午就已经整理完毕。只用自然英语完成两句对白，两人各说一句，不设逐句或总字数硬限制，但必须能在八秒内自然说完并留出停顿。全片一个8秒镜头。只允许台词在三条件间变化；人物、动作、表情要求、镜头、声音、时长和素材完全共享。不增加秘密帮助、比赛、奖励、冲突、魔法、夸张跳跃、第三人、旁白、字幕或文字卡。",
+  "characters": [
+    {"id": "despicableme4_maxime", "name": "Maxime / 马克西姆"},
+    {"id": "despicableme4_valentina", "name": "Valentina / 瓦伦蒂娜"}
+  ],
+  "beats": [
+    {"id": "b1", "description": "Maxime对Valentina已经提前完成整理表示惊讶和难以置信。"},
+    {"id": "b2", "description": "Valentina确认全部整理在上午就已完成。"}
+  ],
+  "asset_ids": ["movieagent_despicableme4_maxime_primary", "movieagent_despicableme4_valentina_primary"],
+  "min_duration_s": 8,
+  "max_duration_s": 8,
+  "min_shot_duration_s": 8,
+  "max_shot_duration_s": 8,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_review_challenge_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "S13-S18 exploratory review-challenge brief with an authored under-expressive draft; not a natural model baseline or independent efficacy result.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotion-challenge.json",
+    "design_story_id": "s18_room_ready",
+    "design_version": "1.0",
+    "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s18_room_ready/draft-dialogue.json",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

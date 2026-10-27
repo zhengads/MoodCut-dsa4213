@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "kind": "authored_review_challenge_draft_not_model_output",
+  "story_id": "s17_old_tree_gone",
+  "language": "English",
+  "target_emotion": "sadness",
+  "duration_s": 8,
+  "dialogue": [
+    {"character_id": "frozenii_elsa", "text": "The old tree is gone."},
+    {"character_id": "frozenii_mattias", "text": "I know."}
+  ],
+  "designed_revision_opportunities": ["Elsa only states the fact and does not express why the loss hurts her.", "Mattias's minimal acknowledgement provides neither emotional recognition nor comfort."],
+  "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."
+}

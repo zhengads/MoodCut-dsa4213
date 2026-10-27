@@ -9,6 +9,7 @@ Start with the [project homepage](../README.md) for the research question and qu
 - S06 v3 completed three real videos at a cost of $0.75421676. The [original trial record](pilots/s06-actor-v3-index.md) preserves the settings, costs and results. Technical success does not establish human quality acceptance or independent evidence of effectiveness.
 - The [six-story v2 design](studies/six-story-clear-emotions-20261024/README.md) supplies candidate inputs for the next round: 18 condition entries, not 18 completed results. `configs/experiment.json` remains a development fixture.
 - The same study page now continues with the [S07–S12 basic-emotion design](studies/six-story-clear-emotions-20261024/README.md), adding one scenario for each VEMOCLAP class: anger, disgust, fear, joy, sadness and surprise. Generated-mode JSON inputs, native-label validation and an offline 18-assignment evaluation configuration are included; videos and evaluation results are not.
+- S13–S18 add a second six-emotion development set with intentionally understated authored drafts: S15–S16 in Mandarin and the other four in English. This is an exploratory review challenge, not a natural model baseline or an unbiased superiority test. The generated-script programmatic interface can freeze a supplied authored draft after common planning and before the condition split.
 - #8 and #9 remain open. Additional evaluation results are in the pending [PR #58](https://github.com/zhengads/MoodCut-dsa4213/pull/58); its historical Anna/Elsa results must not be relabeled as S06 or six-story results. Independent human ratings and formal inclusion remain outstanding.
 
 ## Read by task
@@ -31,6 +32,6 @@ Start with the [project homepage](../README.md) for the research question and qu
 - [Historical index](history/README.md): early implementation plans, software acceptance evidence and original document versions.
 - [P1 integration report](p1-integration-verification.md): dated integration and real v2 evidence, rather than a current task list.
 - [Six-story v1](studies/six-story-20261024/README.md) preserves the original inputs and identities; the revised design uses a separate v2 directory.
-- [S01–S12 study design](studies/six-story-clear-emotions-20261024/README.md) contains the original six three-tone scenarios followed by six VEMOCLAP-aligned basic-emotion scenarios.
+- [S01–S18 study design](studies/six-story-clear-emotions-20261024/README.md) contains the original six three-tone scenarios, six VEMOCLAP-aligned basic-emotion scenarios, and six authored-draft review challenges. The last set is exploratory and must not be reported as an unbiased method comparison.
 
 Maintain current status on this page, operational instructions in the usage guide, shared rules in the contracts and experimental results in their dated records. Task cards describe module responsibilities and remaining work without duplicating trial logs. Do not rewrite existing results, failures or raw data to update the narrative.

@@ -1,0 +1,15 @@
+{
+  "status": "s13_s18_authored_draft_challenge_offline_assignments_not_approved_for_execution",
+  "scenes": [
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s13_unilateral_decision/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s14_spoiled_drink/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s15_cracking_bridge/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s16_approval_arrives/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s17_old_tree_gone/scene.json",
+    "docs/studies/six-story-clear-emotions-20261024/inputs/s18_room_ready/scene.json"
+  ],
+  "replicates": 1,
+  "conditions": ["baseline", "generic_review", "moodcut"],
+  "source_kind": "development",
+  "note": "This dry-run lists 18 fixed scene-emotion assignments. It does not inject the separate authored drafts, call models, generate videos, or authorize execution."
+}

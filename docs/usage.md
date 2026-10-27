@@ -125,9 +125,10 @@ $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
 ```powershell
 .venv/Scripts/python -m moodcut evaluate --config configs/experiment.json --dry-run
 .venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run
+.venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-challenge-experiment.json --dry-run
 ```
 
-`configs/experiment.json` 保留原开发夹具。`configs/basic-emotions-experiment.json` 使用每个 S07–S12 scene 自己的固定情绪标签，离线列出 18 个条件任务；它不生成视频，也不批准正式运行。首页的 `runs/demo-01` 完成后，可检查匿名导出和账目：
+`configs/experiment.json` 保留原开发夹具。`configs/basic-emotions-experiment.json` 使用每个 S07–S12 scene 自己的固定情绪标签，离线列出 18 个条件任务。`configs/basic-emotions-challenge-experiment.json` 对 S13–S18 做同样的离线分配；evaluate dry-run 仍只列任务，不读取初稿。生成脚本的程序接口可向 `pipeline.run_experiment(..., authored_dialogue_draft=draft)` 显式传入已读取的 `draft-dialogue.json`：规划器先生成共同非台词计划，适配器随后只替换一个镜头的对白，再冻结并分发给三条件。初稿文件、哈希和实际应用关系会保存在block中并在请求准备时重检。这些配置和接口本身都不生成视频，也不批准正式运行。首页的 `runs/demo-01` 完成后，可检查匿名导出和账目：
 
 ```powershell
 .venv/Scripts/python -m moodcut evaluate --records runs/demo-01/block.json --blind-output runs/blind-demo-01

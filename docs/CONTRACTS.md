@@ -413,6 +413,8 @@ P5输入检查返回不一致原因，成功为空列表；缺条件、hash不�
 
 规划逻辑调用和费用只在planning/block记录；run.review_calls与run.calls仅含本条件审查，脚本阶段generation_posts/video_get_calls为0。失败消费和未知费用保留，原预算门禁继续生效。后续请求、媒体、资格、导出和执行分别见6.8、6.12–6.17。
 
+`run_experiment` 另有可选程序参数 `authored_dialogue_draft`，只用于显式generated模式的一镜头人工审查压力测试。共同规划仍先运行并决定全部非台词字段；`apply_authored_dialogue_draft` 随后核对draft kind、story/tone、固定时长、角色顺序和非空台词，只替换该镜头dialogue，再进行正常验证、冻结和三条件deepcopy。默认未传时的既有行为不变，animatic或多镜头输入明确拒绝。根输出保存`draft-dialogue.json`，planning/block记录原planner plan哈希、draft哈希及`authored_shared_dialogue`来源；cache身份包含draft哈希，6.8加载器从原shot响应重新应用并核对实际initial，不能仅信声明。该入口不证明自然baseline或方法优越性，也不增加任何调用或生成授权。
+
 ### 6.8 离线生成入口与单镜头选择
 
 已实现P1入口与P4实际编译器（6.12）；6.7的脚本编排、此处的请求准备及后续视频生成是三个不同阶段。
