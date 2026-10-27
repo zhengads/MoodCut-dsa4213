@@ -27,6 +27,39 @@ def rating(item, tone="suspicious", rater="rater_a", value=3):
 
 
 class PairedEvaluationTests(unittest.TestCase):
+    def test_six_basic_emotions_keep_native_rating_labels(self):
+        emotions = ["anger", "disgust", "fear", "joy", "sadness", "surprise"]
+        rows = build_assignments(
+            [dict(scene_id="synthetic_basic")], replicates=1,
+            tones=emotions, conditions=["baseline"])
+        for index, row in enumerate(rows):
+            row.update(initial_plan_sha256="a" * 64, render_status="rendered",
+                       review_status="not_applicable", source_kind="synthetic",
+                       item_id=f"basic{index}")
+        votes = [rating(f"basic{index}", emotion) for index, emotion in enumerate(emotions)]
+        before = copy.deepcopy(rows)
+        result = summarize(rows, votes)
+        confusion = result["overall"]["confusion_rating_counts"]
+        self.assertEqual(result["overall"]["equal_clip_means"]["tone_accuracy"], 1)
+        for emotion in emotions:
+            self.assertEqual(confusion[emotion][emotion], 1)
+        self.assertEqual(rows, before)
+
+    def test_scene_fixed_tones_avoid_cross_product_assignments(self):
+        emotions = ["anger", "disgust", "fear", "joy", "sadness", "surprise"]
+        scenes = [dict(scene_id=f"s{index}", tone=emotion)
+                  for index, emotion in enumerate(emotions, 7)]
+        rows = build_assignments(
+            scenes, replicates=1, tones=None,
+            conditions=["baseline", "generic_review", "moodcut"])
+        self.assertEqual(len(rows), 18)
+        self.assertEqual({(row["scene_id"], row["tone"]) for row in rows},
+                         {(scene["scene_id"], scene["tone"]) for scene in scenes})
+        invalid = copy.deepcopy(scenes)
+        invalid[0]["tone"] = "affectionate-ish"
+        with self.assertRaisesRegex(ValueError, "fixed tone"):
+            build_assignments(invalid, replicates=1, tones=None, conditions=["baseline"])
+
     def test_tense_scores_without_relabeling_legacy_suspicion(self):
         rows = build_assignments([dict(scene_id="synthetic_tense")], replicates=1,
                                  tones=["tense"], conditions=["generic_review", "moodcut"])

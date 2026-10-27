@@ -34,7 +34,22 @@ The earlier S06 v3 development run produced three real videos for **$0.75421676*
 
 These cases demonstrate technical execution. Spoken Chinese, character consistency, naturalness and emotional effects still require human inspection and independent evaluation. Successful and failed attempts remain in the [pilot records](docs/pilots/).
 
-The candidate study inputs are [six clear-emotion stories v2](docs/studies/six-story-clear-emotions-20261024/README.md): two each for affectionate, hostile and tense tones. They are research inputs awaiting execution; confirming their scope does not authorize paid runs or formal evaluation.
+The candidate study inputs now comprise two complementary sets on the [same study page](docs/studies/six-story-clear-emotions-20261024/README.md). S01–S06 contain two stories each for affectionate, hostile and tense tones. The supplementary S07–S12 design contains one story for each VEMOCLAP class: anger, disgust, fear, joy, sadness and surprise. Both sets are research inputs awaiting execution; confirming their scope does not authorize paid runs or formal evaluation.
+
+### S07–S12: VEMOCLAP basic-emotion scenarios
+
+S07–S12 reuse the six existing character pairs while changing the plots and target labels. They extend the study rather than replacing or relabelling S01–S06.
+
+| ID | Scenario | Characters | Target emotion |
+| --- | --- | --- | --- |
+| S07 | Another broken promise | Maxime, Valentina | anger |
+| S08 | The foul-smelling medicine | Lijing, Taiyi | disgust |
+| S09 | Something in the forest | Elsa, Mattias | fear |
+| S10 | The celebration is saved | Anna, Kristoff | joy |
+| S11 | An irreplaceable keepsake | Lucy, Gru | sadness |
+| S12 | An unexpectedly finished task | Nezha, Aobing | surprise |
+
+The [full S01–S12 specification](docs/studies/six-story-clear-emotions-20261024/README.md) defines each relationship, fixed plot, dialogue task, boundaries, asset reuse, experimental controls and VEMOCLAP evaluation scope. S07–S12 include generated-mode scene inputs, reused asset manifests, a hash-bound index and an offline 18-assignment evaluation configuration. No videos, model outputs or evaluation results are included.
 
 ## Quick start
 

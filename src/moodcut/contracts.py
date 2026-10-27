@@ -11,6 +11,9 @@ import math
 CONTRACT_VERSION = "1.1"
 CONDITIONS = ("baseline", "generic_review", "moodcut")
 OUTPUT_MODES = ("animatic", "generated")
+LEGACY_TONES = ("affectionate", "suspicious", "hostile", "tense")
+VEMOCLAP_EMOTIONS = ("anger", "disgust", "fear", "joy", "sadness", "surprise")
+SUPPORTED_TONES = LEGACY_TONES + VEMOCLAP_EMOTIONS
 GENERATION_SETTING_FIELDS = frozenset({
     "schema_version", "output_mode", "model", "resolution", "aspect_ratio",
     "generate_audio", "seed", "style", "sound", "characters",

@@ -7,8 +7,9 @@ from pathlib import Path
 import pytest
 
 from moodcut.contracts import (
-    CONDITIONS, CONTRACT_VERSION, allowed_patch_fields, assert_dialogue_only_revision,
-    json_hash, non_dialogue_plan, shared_generation_payload, shared_generation_sha256,
+    CONDITIONS, CONTRACT_VERSION, LEGACY_TONES, SUPPORTED_TONES, VEMOCLAP_EMOTIONS,
+    allowed_patch_fields, assert_dialogue_only_revision, json_hash, non_dialogue_plan,
+    shared_generation_payload, shared_generation_sha256,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +45,14 @@ def test_modes_have_explicit_equal_review_capabilities():
         {"dialogue", "narration", "visuals", "duration_s"})
     with pytest.raises(ValueError):
         allowed_patch_fields(output_mode="video")
+
+
+def test_native_vemoclap_labels_extend_without_relabeling_legacy_tones():
+    assert LEGACY_TONES == ("affectionate", "suspicious", "hostile", "tense")
+    assert VEMOCLAP_EMOTIONS == (
+        "anger", "disgust", "fear", "joy", "sadness", "surprise")
+    assert SUPPORTED_TONES == LEGACY_TONES + VEMOCLAP_EMOTIONS
+    assert set(LEGACY_TONES).isdisjoint(VEMOCLAP_EMOTIONS)
 
 
 def test_three_conditions_share_identity_and_inputs_remain_unchanged(data):
