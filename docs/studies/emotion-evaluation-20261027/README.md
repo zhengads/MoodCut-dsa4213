@@ -4,6 +4,45 @@
 
 状态：**开发期探索性结果**。每个条件只有一个视频，没有人工盲评，不能据此宣称 MoodCut 更强或更弱。本目录只含脚本、清单、数值结果和文字记录，不含视频、模型权重和个人评分信息。
 
+## 分支简介 / Branch description
+
+**中文**　本分支 `feat/issue-9-emotion-evaluation-pipeline` 把 2026-10-25 至 10-27 做的情绪评测整理成可复现的流程，并记录评测规则和评测集的迭代。具体改动：
+
+1. **新增研究记录**（本目录）：规则怎么改的（V0→V1→V2→V3 均为历史方案，现行做法是直接评测六种情绪）、消融和对照实验步骤、逐视频结果、人工评分方案草案。
+2. **新增评测脚本** `scripts/emotion_eval/`：VEMOCLAP 单路消融、特征互换、变暗对照、VBench 批处理和只读结果的分析；路径全部来自环境变量。
+3. **带入 VEMOCLAP 适配器**：`src/moodcut/vemoclap*.py`、`configs/vemoclap-*`、`docs/vemoclap.md`、许可证和测试，脚本依赖它们。
+4. **修改项目 README**（中英文）：`Current progress` 增加评测集迭代，`Quick start` 之后新增 `Using the evaluation sets`，文档导航增加本记录。
+
+**English**　This branch, `feat/issue-9-emotion-evaluation-pipeline`, turns the evaluation done between 2026-10-25 and 10-27 into a reproducible pipeline and records how the scoring rules and evaluation sets evolved. What changed:
+
+1. **Study record** (this folder): how the rules changed (V0→V1→V2→V3 are all historical; the current approach scores the six emotions directly), the ablation and control experiments, per-video results and a draft human-rating protocol.
+2. **Evaluation scripts** in `scripts/emotion_eval/`: per-modality VEMOCLAP ablation, feature swaps, brightness control, VBench batch helpers and an analysis that runs on the committed results; all paths come from environment variables.
+3. **VEMOCLAP adapter**: `src/moodcut/vemoclap*.py`, `configs/vemoclap-*`, `docs/vemoclap.md`, the license and tests that the scripts depend on.
+4. **Project README** (English and Chinese): `Current progress` gains the evaluation-set iteration, `Quick start` is followed by `Using the evaluation sets`, and the documentation table links this record.
+
+### 评测集在哪里 / Where each evaluation set lives
+
+| 评测集 Set | 场景输入 Scene inputs | 索引 Index | 分配配置 Config | 结果 Results |
+|---|---|---|---|---|
+| S01–S06（三种氛围，历史）| `docs/studies/six-story-clear-emotions-20261024/inputs/s01_…`–`s06_…` | `inputs/index.json` | — | `results/vemoclap_all.json` 中 `label_system = atmosphere3` 的 29 条记录 |
+| S07–S12（六种情绪，现行）| `inputs/s07_…`–`s12_…` | `inputs/basic-emotions-index.json` | `configs/basic-emotions-experiment.json` | `vemoclap_all.json` 中 `label_system = emotion6`；本文第 6 节 |
+| S13–S18（审查挑战）| `inputs/s13_…`–`s18_…`（含 `draft-dialogue.json`）| `inputs/basic-emotion-challenge-index.json` | `configs/basic-emotions-challenge-experiment.json` | 目前只评测了 S15（`vemoclap_all.json`、第 6 节）|
+| 真人电影片段（校准，历史）| 不随仓库提供 | — | — | `results/film_clips_vemoclap.json` |
+
+### 实验分析结果在哪里（给做 PPT 的同学）/ Where to find the analysis results
+
+| 要找的内容 What | 位置 Where |
+|---|---|
+| 评测规则怎么改的 Rule iteration | 本文第 4 节 |
+| 六种情绪逐视频概率表 Six-emotion table | 本文第 6 节；原始数据 `results/vemoclap_all.json` |
+| 消融步骤和结论 Ablation steps | 本文第 5 节；每条视频的逐路去掉/保留结果在 `results/vemoclap_all.json` |
+| 恐惧专项特征交换 Fear feature swap | `results/fear_feature_swap_s09_s15.txt`，结论见第 5 节第 7 条 |
+| 变暗对照 Brightness control | `results/dark_experiment.json`，表格见第 5 节第 8 条 |
+| VBench 画面质量 VBench scores | `results/vbench_scores.json`，结论见第 7 节 |
+| 视频清单与哈希 Video manifest | `video_manifest.json` |
+| 人工评分方案、S09 第二版草稿 Protocol drafts | `protocols/` |
+| 复现脚本 Scripts | `../../../scripts/emotion_eval/README.md` |
+
 ## 1. 要回答的问题
 
 MoodCut 生成的两人对话视频（三个条件：baseline＝共同初稿、generic_review＝通用审查、moodcut＝情绪专项审查，只有对白不同），是否更强地传达了目标情绪或氛围？本分支用两个自动工具做辅助评测，人工盲评仍是主要证据（方案草案见 `protocols/`，尚未执行）：

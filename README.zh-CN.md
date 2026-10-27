@@ -36,6 +36,17 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 后续候选输入为[六个明显情绪情景 v2](docs/studies/six-story-clear-emotions-20261024/README.md)：affectionate、hostile、tense 各两个故事。它们是待执行的研究输入，范围确认不等于付费运行或正式评价已获批准。
 
+### 评测集的迭代（2026-10-25 至 2026-10-27）
+
+评测工作：范旭阳（FANXUYANG，GitHub：fanx9905-blip）。评测集经历了四步，含逐视频数值的完整记录见[情绪评测研究记录](docs/studies/emotion-evaluation-20261027/README.md)。
+
+1. **S01–S06，三种氛围。** VEMOCLAP 只输出六种情绪，没有“亲密”“紧张”，因此尝试过几套对应规则：V0（按名字对应）、V1（surprise ≥ 50% 的视频弃判）、V2（事先冻结的分组求和）以及提议中的 V3（冲突闸门）。**V1 和 V2 已是历史方案，不再用于打分。** V2 在 29 条视频里对 20 条（亲密 9/9，敌对 11/12，紧张 0/8），紧张和敌对在六类概率上重叠。V2 的代码保留在 `src/moodcut/vemoclap_atmosphere.py`，只用于复现这些数字。
+2. **S07–S12，六种情绪（现行做法）。** 每种 VEMOCLAP 情绪一个情景，直接看六类概率，不再合并成氛围。13 条不重复视频的初步结果：愤怒和厌恶可识别，悲伤只有 moodcut 条件命中，喜悦和惊讶分不开，恐惧识别不出来。
+3. **S13–S18，审查挑战集。** 已评测 S15（恐惧）：三个条件的 fear 都只有 4.6–9.5%。
+4. **恐惧专项排查。** 对 S09、S15 做逐路消融、用真实恐怖片段的特征互换和亮度对照，结果表明决定性的是视觉特征；只有画面被压得很暗时 fear 才升高，这不等于视频传达了恐惧。
+
+所有数字都是探索性的：每个条件一个视频，没有人工评分。人工盲评仍是主要证据（方案草案在研究记录目录中）。**实验分析结果在 [`docs/studies/emotion-evaluation-20261027/results/`](docs/studies/emotion-evaluation-20261027/results/)。**
+
 ## 快速开始
 
 需要 **Python 3.11+**。以下命令从仓库根目录运行，Windows 使用 PowerShell：
@@ -76,6 +87,27 @@ Start-Process (Resolve-Path runs/demo-01/comparison.html).Path
 
 **默认 `plan/review/smoke/run` 仍使用原 animatic 流程，不自动启用演员 v3/v4。** 需要在生成式脚本编排时显式选择协议；准备脚本、编译请求、生成视频是三个阶段。参数和前置条件见[生成式视频流程](docs/usage.md#生成式视频流程)。
 
+## 使用评测集
+
+评测集以生成式（schema 1.1）输入的形式提交在 `docs/studies/six-story-clear-emotions-20261024/inputs/` 下。它们不能走上面的离线 animatic 演示：用 S07 的 scene 运行 `run --mock` 会因 animatic 的 `schema_version` 不符而失败，`--output-mode generated` 也需要已保存的 `--source-block`。它们接入的是生成式视频流程和 `evaluate` 命令。
+
+| 评测集 | 场景输入 | 索引 | 分配配置 |
+| --- | --- | --- | --- |
+| S01–S06（三种氛围） | `inputs/s01_…` 至 `s06_…` | `inputs/index.json` | 无；只有开发示例 `configs/experiment.json` |
+| S07–S12（六种情绪） | `inputs/s07_…` 至 `s12_…` | `inputs/basic-emotions-index.json` | `configs/basic-emotions-experiment.json` |
+| S13–S18（审查挑战） | `inputs/s13_…` 至 `s18_…`，含 `draft-dialogue.json` | `inputs/basic-emotion-challenge-index.json` | `configs/basic-emotions-challenge-experiment.json` |
+
+1. **离线检查分配**（不联网、不产生费用）：`.venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run` 会列出 18 次计划运行；挑战集配置同理。
+2. **准备脚本和视频请求**：按[生成式视频流程](docs/usage.md#生成式视频流程)。真实生成需要明确模型、范围、预算，并需要[动画素材库](assets/library/README.md)中的角色图片（未提交）。
+3. **给已有视频打分**，每个视频命名为 `<video_id>.mp4`：
+   - 单个视频：`scripts/run_vemoclap.ps1` 或 `python -m moodcut.vemoclap`（[VEMOCLAP 说明](docs/vemoclap.md)）；
+   - 批量并做逐路消融：`scripts/emotion_eval/run_vemoclap_batch.py`，再运行 `collect_results.py`（[脚本说明](scripts/emotion_eval/README.md)）；
+   - VBench imaging_quality：`scripts/emotion_eval/make_vbench_manifest.py` 和 `run_vbench_batch.sh`（[VBench 说明](docs/vbench.md)）；
+   - 人工评分：`evaluate --blind-output` 和 `--ratings`，使用六种情绪标签加 `uncertain`（[评价说明](docs/evaluation.md)）。
+4. **不需要任何模型**：`python scripts/emotion_eval/analyze_mapping.py` 和 `python -m unittest discover -s tests -p "test_emotion_eval_results.py"` 可以复现映射分析并检查已提交的结果。
+
+VEMOCLAP 和 VBench 打分是独立脚本，不是 `python -m moodcut` 的子命令；它们读取已生成的 `.mp4`，不使用本快速开始里的 `--mock` 流程。
+
 ## 文档导航
 
 | 内容 | 文档 |
@@ -85,6 +117,7 @@ Start-Process (Resolve-Path runs/demo-01/comparison.html).Path
 | 数据结构、接口、共享身份与账目 | [公共契约](docs/CONTRACTS.md) |
 | 静态渲染、请求编译与视频检查 | [渲染说明](docs/rendering.md) |
 | 匿名导出、人工评分、覆盖率与费用统计 | [评价说明](docs/evaluation.md) |
+| 情绪评测记录：规则迭代、消融实验、逐视频结果 | [情绪评测研究记录](docs/studies/emotion-evaluation-20261027/README.md) · [结果](docs/studies/emotion-evaluation-20261027/results/) |
 | 角色参考图、来源与许可状态 | [动画素材库](assets/library/README.md) |
 | 历次试跑的设置、结果与失败 | [试跑记录](docs/pilots/) |
 | 模块分工、任务卡与分支规则 | [团队协作](docs/TEAM.md) · [分支规则](docs/BRANCHES.md) |
