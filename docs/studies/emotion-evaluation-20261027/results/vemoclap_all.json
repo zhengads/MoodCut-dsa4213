@@ -5018,6 +5018,696 @@
   }
  },
  {
+  "video_id": "s13/baseline",
+  "label_system": "emotion6",
+  "group": "s13",
+  "story": "S13",
+  "target": "anger",
+  "condition": "baseline",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "c4a3712510e218f8afee19f5f759043be79745079a94eba738cc960625ead506",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.705787,
+   "disgust": 0.110361,
+   "fear": 0.072039,
+   "joy": 0.00029,
+   "sadness": 0.07984,
+   "surprise": 0.031683
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.734286,
+    "disgust": 0.086285,
+    "fear": 0.068976,
+    "joy": 0.000203,
+    "sadness": 0.089376,
+    "surprise": 0.020873
+   },
+   "beats": {
+    "anger": 0.631172,
+    "disgust": 0.067102,
+    "fear": 0.089671,
+    "joy": 5.3e-05,
+    "sadness": 0.143585,
+    "surprise": 0.068417
+   },
+   "clip": {
+    "anger": 0.007085,
+    "disgust": 0.002158,
+    "fear": 0.981436,
+    "joy": 0.0001,
+    "sadness": 0.002307,
+    "surprise": 0.006914
+   },
+   "face_emotion": {
+    "anger": 0.041884,
+    "disgust": 0.258489,
+    "fear": 0.071656,
+    "joy": 0.013857,
+    "sadness": 0.371147,
+    "surprise": 0.242967
+   },
+   "ocr_sentiment": {
+    "anger": 0.669144,
+    "disgust": 0.133945,
+    "fear": 0.076122,
+    "joy": 0.000389,
+    "sadness": 0.084288,
+    "surprise": 0.036113
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000216,
+    "disgust": 0.002243,
+    "fear": 0.89267,
+    "joy": 0.000462,
+    "sadness": 0.01191,
+    "surprise": 0.092499
+   },
+   "beats": {
+    "anger": 0.000394,
+    "disgust": 0.004566,
+    "fear": 0.940904,
+    "joy": 0.004258,
+    "sadness": 0.01202,
+    "surprise": 0.037858
+   },
+   "clip": {
+    "anger": 0.025771,
+    "disgust": 0.103117,
+    "fear": 0.063172,
+    "joy": 0.001741,
+    "sadness": 0.534877,
+    "surprise": 0.271321
+   },
+   "face_emotion": {
+    "anger": 0.004347,
+    "disgust": 0.000867,
+    "fear": 0.98213,
+    "joy": 7e-06,
+    "sadness": 0.003399,
+    "surprise": 0.009249
+   },
+   "ocr_sentiment": {
+    "anger": 0.00027,
+    "disgust": 0.001647,
+    "fear": 0.922436,
+    "joy": 0.000275,
+    "sadness": 0.014402,
+    "surprise": 0.060969
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s13/generic_review",
+  "label_system": "emotion6",
+  "group": "s13",
+  "story": "S13",
+  "target": "anger",
+  "condition": "generic_review",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "edde66784b47fd151f65a25efae749106423f2cda449848566bfc0719ec47698",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.849903,
+   "disgust": 0.07883,
+   "fear": 0.01396,
+   "joy": 0.000134,
+   "sadness": 0.024912,
+   "surprise": 0.032261
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.881095,
+    "disgust": 0.060567,
+    "fear": 0.012345,
+    "joy": 8.4e-05,
+    "sadness": 0.026924,
+    "surprise": 0.018985
+   },
+   "beats": {
+    "anger": 0.714998,
+    "disgust": 0.070986,
+    "fear": 0.038163,
+    "joy": 4.4e-05,
+    "sadness": 0.065851,
+    "surprise": 0.109957
+   },
+   "clip": {
+    "anger": 0.016735,
+    "disgust": 0.002764,
+    "fear": 0.967133,
+    "joy": 0.000108,
+    "sadness": 0.003439,
+    "surprise": 0.009821
+   },
+   "face_emotion": {
+    "anger": 0.078747,
+    "disgust": 0.304933,
+    "fear": 0.021643,
+    "joy": 0.010576,
+    "sadness": 0.183219,
+    "surprise": 0.400883
+   },
+   "ocr_sentiment": {
+    "anger": 0.816008,
+    "disgust": 0.103188,
+    "fear": 0.015504,
+    "joy": 0.000205,
+    "sadness": 0.027457,
+    "surprise": 0.037639
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000199,
+    "disgust": 0.002102,
+    "fear": 0.890464,
+    "joy": 0.000475,
+    "sadness": 0.011365,
+    "surprise": 0.095394
+   },
+   "beats": {
+    "anger": 0.000959,
+    "disgust": 0.006683,
+    "fear": 0.916536,
+    "joy": 0.005076,
+    "sadness": 0.018703,
+    "surprise": 0.052043
+   },
+   "clip": {
+    "anger": 0.035496,
+    "disgust": 0.144421,
+    "fear": 0.030513,
+    "joy": 0.001846,
+    "sadness": 0.296445,
+    "surprise": 0.491279
+   },
+   "face_emotion": {
+    "anger": 0.004222,
+    "disgust": 0.000812,
+    "fear": 0.982861,
+    "joy": 7e-06,
+    "sadness": 0.003311,
+    "surprise": 0.008786
+   },
+   "ocr_sentiment": {
+    "anger": 0.00028,
+    "disgust": 0.001603,
+    "fear": 0.920888,
+    "joy": 0.000254,
+    "sadness": 0.014476,
+    "surprise": 0.0625
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s13/moodcut",
+  "label_system": "emotion6",
+  "group": "s13",
+  "story": "S13",
+  "target": "anger",
+  "condition": "moodcut",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "42dac3ebe838bd63130d908fdc35b39c97121fe692441a86b54b78e43a1dad41",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.763043,
+   "disgust": 0.145822,
+   "fear": 0.013976,
+   "joy": 0.000216,
+   "sadness": 0.059791,
+   "surprise": 0.017152
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.786995,
+    "disgust": 0.115175,
+    "fear": 0.0147,
+    "joy": 0.000175,
+    "sadness": 0.069699,
+    "surprise": 0.013256
+   },
+   "beats": {
+    "anger": 0.571548,
+    "disgust": 0.134072,
+    "fear": 0.048931,
+    "joy": 4.6e-05,
+    "sadness": 0.182339,
+    "surprise": 0.063064
+   },
+   "clip": {
+    "anger": 0.02404,
+    "disgust": 0.004445,
+    "fear": 0.952721,
+    "joy": 0.00026,
+    "sadness": 0.004553,
+    "surprise": 0.013981
+   },
+   "face_emotion": {
+    "anger": 0.059269,
+    "disgust": 0.419116,
+    "fear": 0.017317,
+    "joy": 0.012743,
+    "sadness": 0.329089,
+    "surprise": 0.162467
+   },
+   "ocr_sentiment": {
+    "anger": 0.757137,
+    "disgust": 0.161009,
+    "fear": 0.013294,
+    "joy": 0.000242,
+    "sadness": 0.054091,
+    "surprise": 0.014228
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.00024,
+    "disgust": 0.002451,
+    "fear": 0.897187,
+    "joy": 0.000443,
+    "sadness": 0.012627,
+    "surprise": 0.087052
+   },
+   "beats": {
+    "anger": 0.001448,
+    "disgust": 0.008449,
+    "fear": 0.895199,
+    "joy": 0.010506,
+    "sadness": 0.020014,
+    "surprise": 0.064383
+   },
+   "clip": {
+    "anger": 0.025146,
+    "disgust": 0.179846,
+    "fear": 0.032695,
+    "joy": 0.001396,
+    "sadness": 0.555755,
+    "surprise": 0.205161
+   },
+   "face_emotion": {
+    "anger": 0.004011,
+    "disgust": 0.000875,
+    "fear": 0.982348,
+    "joy": 7e-06,
+    "sadness": 0.003544,
+    "surprise": 0.009215
+   },
+   "ocr_sentiment": {
+    "anger": 0.000229,
+    "disgust": 0.001606,
+    "fear": 0.908682,
+    "joy": 0.000293,
+    "sadness": 0.014903,
+    "surprise": 0.074287
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s14/baseline",
+  "label_system": "emotion6",
+  "group": "s14",
+  "story": "S14",
+  "target": "disgust",
+  "condition": "baseline",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "b0de5dcc0f59fc61a878675cc911f161823c208e3511796ec6d2560408b3d080",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.077488,
+   "disgust": 0.050387,
+   "fear": 0.005406,
+   "joy": 0.002687,
+   "sadness": 0.168269,
+   "surprise": 0.695762
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.072197,
+    "disgust": 0.036998,
+    "fear": 0.006544,
+    "joy": 0.002757,
+    "sadness": 0.19585,
+    "surprise": 0.685654
+   },
+   "beats": {
+    "anger": 0.043934,
+    "disgust": 0.01355,
+    "fear": 0.003804,
+    "joy": 0.000128,
+    "sadness": 0.061992,
+    "surprise": 0.876592
+   },
+   "clip": {
+    "anger": 0.007439,
+    "disgust": 0.004358,
+    "fear": 0.973345,
+    "joy": 0.000297,
+    "sadness": 0.008495,
+    "surprise": 0.006067
+   },
+   "face_emotion": {
+    "anger": 0.000794,
+    "disgust": 0.018684,
+    "fear": 0.00088,
+    "joy": 0.018757,
+    "sadness": 0.13137,
+    "surprise": 0.829516
+   },
+   "ocr_sentiment": {
+    "anger": 0.077488,
+    "disgust": 0.050387,
+    "fear": 0.005406,
+    "joy": 0.002687,
+    "sadness": 0.168269,
+    "surprise": 0.695762
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000308,
+    "disgust": 0.003052,
+    "fear": 0.902562,
+    "joy": 0.000404,
+    "sadness": 0.014641,
+    "surprise": 0.079033
+   },
+   "beats": {
+    "anger": 0.000337,
+    "disgust": 0.005621,
+    "fear": 0.913372,
+    "joy": 0.010141,
+    "sadness": 0.036625,
+    "surprise": 0.033905
+   },
+   "clip": {
+    "anger": 0.000389,
+    "disgust": 0.003386,
+    "fear": 0.000699,
+    "joy": 0.000899,
+    "sadness": 0.051653,
+    "surprise": 0.942975
+   },
+   "face_emotion": {
+    "anger": 0.00414,
+    "disgust": 0.000903,
+    "fear": 0.981944,
+    "joy": 8e-06,
+    "sadness": 0.003259,
+    "surprise": 0.009745
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s14/generic_review",
+  "label_system": "emotion6",
+  "group": "s14",
+  "story": "S14",
+  "target": "disgust",
+  "condition": "generic_review",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "08d98f9c016f137d53c0bc073e1fe735e10e6d3e009d3b22be18a3a778a8457a",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.148408,
+   "disgust": 0.11218,
+   "fear": 0.015597,
+   "joy": 0.001587,
+   "sadness": 0.377317,
+   "surprise": 0.344911
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.07724,
+    "disgust": 0.051584,
+    "fear": 0.021043,
+    "joy": 0.002354,
+    "sadness": 0.33039,
+    "surprise": 0.517389
+   },
+   "beats": {
+    "anger": 0.157329,
+    "disgust": 0.031429,
+    "fear": 0.013718,
+    "joy": 0.000109,
+    "sadness": 0.31795,
+    "surprise": 0.479465
+   },
+   "clip": {
+    "anger": 0.009221,
+    "disgust": 0.009782,
+    "fear": 0.968848,
+    "joy": 0.000194,
+    "sadness": 0.006771,
+    "surprise": 0.005183
+   },
+   "face_emotion": {
+    "anger": 0.002074,
+    "disgust": 0.054383,
+    "fear": 0.003418,
+    "joy": 0.014655,
+    "sadness": 0.395461,
+    "surprise": 0.530009
+   },
+   "ocr_sentiment": {
+    "anger": 0.148408,
+    "disgust": 0.11218,
+    "fear": 0.015597,
+    "joy": 0.001587,
+    "sadness": 0.377317,
+    "surprise": 0.344911
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000622,
+    "disgust": 0.005496,
+    "fear": 0.913074,
+    "joy": 0.000315,
+    "sadness": 0.021945,
+    "surprise": 0.058549
+   },
+   "beats": {
+    "anger": 0.000217,
+    "disgust": 0.007034,
+    "fear": 0.925539,
+    "joy": 0.008572,
+    "sadness": 0.020063,
+    "surprise": 0.038574
+   },
+   "clip": {
+    "anger": 0.000806,
+    "disgust": 0.005011,
+    "fear": 0.002901,
+    "joy": 0.001126,
+    "sadness": 0.202381,
+    "surprise": 0.787775
+   },
+   "face_emotion": {
+    "anger": 0.004103,
+    "disgust": 0.000912,
+    "fear": 0.981646,
+    "joy": 8e-06,
+    "sadness": 0.003305,
+    "surprise": 0.010025
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s14/moodcut",
+  "label_system": "emotion6",
+  "group": "s14",
+  "story": "S14",
+  "target": "disgust",
+  "condition": "moodcut",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "881c7ef722ba719fea9488d0ad23f8a0fe95c17250dfa3b084ded94065ce911e",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.038537,
+   "disgust": 0.297521,
+   "fear": 0.003991,
+   "joy": 0.001062,
+   "sadness": 0.033127,
+   "surprise": 0.625764
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.018303,
+    "disgust": 0.124233,
+    "fear": 0.004797,
+    "joy": 0.00139,
+    "sadness": 0.026137,
+    "surprise": 0.82514
+   },
+   "beats": {
+    "anger": 0.023088,
+    "disgust": 0.097241,
+    "fear": 0.004952,
+    "joy": 6.7e-05,
+    "sadness": 0.050984,
+    "surprise": 0.823669
+   },
+   "clip": {
+    "anger": 0.022786,
+    "disgust": 0.010834,
+    "fear": 0.953713,
+    "joy": 0.000258,
+    "sadness": 0.004716,
+    "surprise": 0.007693
+   },
+   "face_emotion": {
+    "anger": 0.000453,
+    "disgust": 0.123853,
+    "fear": 0.0007,
+    "joy": 0.008946,
+    "sadness": 0.029324,
+    "surprise": 0.836723
+   },
+   "ocr_sentiment": {
+    "anger": 0.038537,
+    "disgust": 0.297521,
+    "fear": 0.003991,
+    "joy": 0.001062,
+    "sadness": 0.033127,
+    "surprise": 0.625764
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000607,
+    "disgust": 0.00539,
+    "fear": 0.912676,
+    "joy": 0.000318,
+    "sadness": 0.02169,
+    "surprise": 0.059319
+   },
+   "beats": {
+    "anger": 0.00057,
+    "disgust": 0.008441,
+    "fear": 0.902598,
+    "joy": 0.012773,
+    "sadness": 0.014763,
+    "surprise": 0.060854
+   },
+   "clip": {
+    "anger": 8.7e-05,
+    "disgust": 0.011289,
+    "fear": 0.000693,
+    "joy": 0.00053,
+    "sadness": 0.022874,
+    "surprise": 0.964527
+   },
+   "face_emotion": {
+    "anger": 0.0038,
+    "disgust": 0.000845,
+    "fear": 0.983015,
+    "joy": 7e-06,
+    "sadness": 0.003143,
+    "surprise": 0.00919
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
   "video_id": "s15/baseline",
   "label_system": "emotion6",
   "group": "s15",
@@ -5348,6 +6038,1036 @@
     "joy": 0.00028,
     "sadness": 0.014901,
     "surprise": 0.07315
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s16/baseline",
+  "label_system": "emotion6",
+  "group": "s16",
+  "story": "S16",
+  "target": "joy",
+  "condition": "baseline",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "e9c4da459ce02158db208196a2f120b6c47d0928d1ce3443144fe99fda53374e",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.009688,
+   "disgust": 0.293402,
+   "fear": 0.016048,
+   "joy": 0.000691,
+   "sadness": 0.003515,
+   "surprise": 0.676656
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.031566,
+    "disgust": 0.606834,
+    "fear": 0.018572,
+    "joy": 0.000399,
+    "sadness": 0.008037,
+    "surprise": 0.33459
+   },
+   "beats": {
+    "anger": 0.00992,
+    "disgust": 0.08468,
+    "fear": 0.016234,
+    "joy": 0.000297,
+    "sadness": 0.007197,
+    "surprise": 0.881672
+   },
+   "clip": {
+    "anger": 0.001338,
+    "disgust": 0.001646,
+    "fear": 0.978758,
+    "joy": 5.8e-05,
+    "sadness": 0.000928,
+    "surprise": 0.017272
+   },
+   "face_emotion": {
+    "anger": 0.000134,
+    "disgust": 0.118652,
+    "fear": 0.002707,
+    "joy": 0.004304,
+    "sadness": 0.002889,
+    "surprise": 0.871314
+   },
+   "ocr_sentiment": {
+    "anger": 0.008876,
+    "disgust": 0.340317,
+    "fear": 0.015701,
+    "joy": 0.000887,
+    "sadness": 0.003325,
+    "surprise": 0.630895
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 7.9e-05,
+    "disgust": 0.000975,
+    "fear": 0.849789,
+    "joy": 0.000645,
+    "sadness": 0.006709,
+    "surprise": 0.141802
+   },
+   "beats": {
+    "anger": 0.000274,
+    "disgust": 0.007947,
+    "fear": 0.931193,
+    "joy": 0.001344,
+    "sadness": 0.008226,
+    "surprise": 0.051016
+   },
+   "clip": {
+    "anger": 0.000656,
+    "disgust": 0.132021,
+    "fear": 0.005027,
+    "joy": 0.002239,
+    "sadness": 0.01994,
+    "surprise": 0.840117
+   },
+   "face_emotion": {
+    "anger": 0.003189,
+    "disgust": 0.000849,
+    "fear": 0.983392,
+    "joy": 1e-05,
+    "sadness": 0.003272,
+    "surprise": 0.009288
+   },
+   "ocr_sentiment": {
+    "anger": 0.000257,
+    "disgust": 0.001583,
+    "fear": 0.914706,
+    "joy": 0.000264,
+    "sadness": 0.014759,
+    "surprise": 0.068432
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s16/generic_review",
+  "label_system": "emotion6",
+  "group": "s16",
+  "story": "S16",
+  "target": "joy",
+  "condition": "generic_review",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "235c88cf6f168de984fb5b1a4eeabc4802cd10dc89e5c375adba819d3449fab9",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.031976,
+   "disgust": 0.138037,
+   "fear": 0.009604,
+   "joy": 0.027999,
+   "sadness": 0.172521,
+   "surprise": 0.619863
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.10409,
+    "disgust": 0.275791,
+    "fear": 0.009642,
+    "joy": 0.012878,
+    "sadness": 0.363861,
+    "surprise": 0.233738
+   },
+   "beats": {
+    "anger": 0.011651,
+    "disgust": 0.043202,
+    "fear": 0.010861,
+    "joy": 0.002823,
+    "sadness": 0.071812,
+    "surprise": 0.85965
+   },
+   "clip": {
+    "anger": 0.003939,
+    "disgust": 0.001513,
+    "fear": 0.961627,
+    "joy": 0.0005,
+    "sadness": 0.008038,
+    "surprise": 0.024382
+   },
+   "face_emotion": {
+    "anger": 0.000344,
+    "disgust": 0.048666,
+    "fear": 0.001404,
+    "joy": 0.148466,
+    "sadness": 0.119529,
+    "surprise": 0.681591
+   },
+   "ocr_sentiment": {
+    "anger": 0.037784,
+    "disgust": 0.178353,
+    "fear": 0.010565,
+    "joy": 0.036374,
+    "sadness": 0.177532,
+    "surprise": 0.559393
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 6.8e-05,
+    "disgust": 0.00086,
+    "fear": 0.833907,
+    "joy": 0.00069,
+    "sadness": 0.006192,
+    "surprise": 0.158284
+   },
+   "beats": {
+    "anger": 0.000907,
+    "disgust": 0.007655,
+    "fear": 0.864608,
+    "joy": 0.008828,
+    "sadness": 0.067238,
+    "surprise": 0.050763
+   },
+   "clip": {
+    "anger": 0.001039,
+    "disgust": 0.080656,
+    "fear": 0.003673,
+    "joy": 0.019315,
+    "sadness": 0.224117,
+    "surprise": 0.6712
+   },
+   "face_emotion": {
+    "anger": 0.003415,
+    "disgust": 0.000856,
+    "fear": 0.983081,
+    "joy": 1e-05,
+    "sadness": 0.003271,
+    "surprise": 0.009367
+   },
+   "ocr_sentiment": {
+    "anger": 0.000221,
+    "disgust": 0.001579,
+    "fear": 0.904249,
+    "joy": 0.00029,
+    "sadness": 0.015078,
+    "surprise": 0.078582
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s16/moodcut",
+  "label_system": "emotion6",
+  "group": "s16",
+  "story": "S16",
+  "target": "joy",
+  "condition": "moodcut",
+  "duration_s": 8.08,
+  "language": "Chinese",
+  "sha256": "65bfa9ad2fcae7f794fcb66850d5c74993e567c79332711d2a11290c5280889f",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.03046,
+   "disgust": 0.294086,
+   "fear": 0.013998,
+   "joy": 0.034798,
+   "sadness": 0.051895,
+   "surprise": 0.574764
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.094899,
+    "disgust": 0.562564,
+    "fear": 0.013516,
+    "joy": 0.015456,
+    "sadness": 0.104696,
+    "surprise": 0.208868
+   },
+   "beats": {
+    "anger": 0.018189,
+    "disgust": 0.050849,
+    "fear": 0.007267,
+    "joy": 0.003169,
+    "sadness": 0.039674,
+    "surprise": 0.880852
+   },
+   "clip": {
+    "anger": 0.000953,
+    "disgust": 0.001427,
+    "fear": 0.986952,
+    "joy": 0.000239,
+    "sadness": 0.00152,
+    "surprise": 0.008909
+   },
+   "face_emotion": {
+    "anger": 0.00035,
+    "disgust": 0.103415,
+    "fear": 0.002092,
+    "joy": 0.18915,
+    "sadness": 0.036725,
+    "surprise": 0.668268
+   },
+   "ocr_sentiment": {
+    "anger": 0.034618,
+    "disgust": 0.342066,
+    "fear": 0.01444,
+    "joy": 0.038762,
+    "sadness": 0.051211,
+    "surprise": 0.518902
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 6.8e-05,
+    "disgust": 0.000864,
+    "fear": 0.834143,
+    "joy": 0.000688,
+    "sadness": 0.006227,
+    "surprise": 0.158011
+   },
+   "beats": {
+    "anger": 0.000251,
+    "disgust": 0.007235,
+    "fear": 0.95245,
+    "joy": 0.00417,
+    "sadness": 0.013883,
+    "surprise": 0.022012
+   },
+   "clip": {
+    "anger": 0.001702,
+    "disgust": 0.091068,
+    "fear": 0.002513,
+    "joy": 0.020491,
+    "sadness": 0.125213,
+    "surprise": 0.759012
+   },
+   "face_emotion": {
+    "anger": 0.003394,
+    "disgust": 0.000871,
+    "fear": 0.983087,
+    "joy": 1e-05,
+    "sadness": 0.003361,
+    "surprise": 0.009277
+   },
+   "ocr_sentiment": {
+    "anger": 0.000217,
+    "disgust": 0.001654,
+    "fear": 0.908943,
+    "joy": 0.000319,
+    "sadness": 0.014821,
+    "surprise": 0.074046
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s17/baseline",
+  "label_system": "emotion6",
+  "group": "s17",
+  "story": "S17",
+  "target": "sadness",
+  "condition": "baseline",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "ae0fe4737ca1dc558d85baf739e960170f58ad10fd1f8a6d9ab0d054dcf7e25f",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.904921,
+   "disgust": 0.002614,
+   "fear": 0.001417,
+   "joy": 0.001319,
+   "sadness": 0.084071,
+   "surprise": 0.005659
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.887635,
+    "disgust": 0.002033,
+    "fear": 0.001792,
+    "joy": 0.001418,
+    "sadness": 0.101308,
+    "surprise": 0.005814
+   },
+   "beats": {
+    "anger": 0.892418,
+    "disgust": 0.004097,
+    "fear": 0.007349,
+    "joy": 7.3e-05,
+    "sadness": 0.033201,
+    "surprise": 0.062863
+   },
+   "clip": {
+    "anger": 0.031416,
+    "disgust": 0.00379,
+    "fear": 0.890432,
+    "joy": 0.001094,
+    "sadness": 0.068064,
+    "surprise": 0.005203
+   },
+   "face_emotion": {
+    "anger": 0.109657,
+    "disgust": 0.011372,
+    "fear": 0.002544,
+    "joy": 0.116901,
+    "sadness": 0.679806,
+    "surprise": 0.07972
+   },
+   "ocr_sentiment": {
+    "anger": 0.903955,
+    "disgust": 0.003278,
+    "fear": 0.001489,
+    "joy": 0.001829,
+    "sadness": 0.084109,
+    "surprise": 0.005341
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000306,
+    "disgust": 0.003011,
+    "fear": 0.902305,
+    "joy": 0.000402,
+    "sadness": 0.014774,
+    "surprise": 0.079202
+   },
+   "beats": {
+    "anger": 0.001233,
+    "disgust": 0.005315,
+    "fear": 0.702826,
+    "joy": 0.047822,
+    "sadness": 0.219308,
+    "surprise": 0.023496
+   },
+   "clip": {
+    "anger": 0.082547,
+    "disgust": 0.012583,
+    "fear": 0.013039,
+    "joy": 0.007499,
+    "sadness": 0.243836,
+    "surprise": 0.640497
+   },
+   "face_emotion": {
+    "anger": 0.003652,
+    "disgust": 0.000855,
+    "fear": 0.983217,
+    "joy": 7e-06,
+    "sadness": 0.003362,
+    "surprise": 0.008907
+   },
+   "ocr_sentiment": {
+    "anger": 0.000252,
+    "disgust": 0.001566,
+    "fear": 0.910707,
+    "joy": 0.000262,
+    "sadness": 0.014922,
+    "surprise": 0.072292
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s17/generic_review",
+  "label_system": "emotion6",
+  "group": "s17",
+  "story": "S17",
+  "target": "sadness",
+  "condition": "generic_review",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "dd971c4f969799c73c070059412ee25dd9609f8de650a2b7d1d2ae5ddfb00954",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.496492,
+   "disgust": 0.05684,
+   "fear": 0.0671,
+   "joy": 0.000514,
+   "sadness": 0.182104,
+   "surprise": 0.196951
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.425341,
+    "disgust": 0.039856,
+    "fear": 0.091656,
+    "joy": 0.000639,
+    "sadness": 0.206595,
+    "surprise": 0.235914
+   },
+   "beats": {
+    "anger": 0.530783,
+    "disgust": 0.007952,
+    "fear": 0.026266,
+    "joy": 2.1e-05,
+    "sadness": 0.033768,
+    "surprise": 0.40121
+   },
+   "clip": {
+    "anger": 0.002172,
+    "disgust": 0.004234,
+    "fear": 0.979258,
+    "joy": 0.000131,
+    "sadness": 0.012636,
+    "surprise": 0.001569
+   },
+   "face_emotion": {
+    "anger": 0.013411,
+    "disgust": 0.052026,
+    "fear": 0.023808,
+    "joy": 0.009011,
+    "sadness": 0.290187,
+    "surprise": 0.611557
+   },
+   "ocr_sentiment": {
+    "anger": 0.481376,
+    "disgust": 0.068517,
+    "fear": 0.068909,
+    "joy": 0.000677,
+    "sadness": 0.182915,
+    "surprise": 0.197605
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000379,
+    "disgust": 0.003617,
+    "fear": 0.905045,
+    "joy": 0.000377,
+    "sadness": 0.016998,
+    "surprise": 0.073584
+   },
+   "beats": {
+    "anger": 9.3e-05,
+    "disgust": 0.006253,
+    "fear": 0.931498,
+    "joy": 0.007177,
+    "sadness": 0.043804,
+    "surprise": 0.011175
+   },
+   "clip": {
+    "anger": 0.007482,
+    "disgust": 0.003934,
+    "fear": 0.008482,
+    "joy": 0.0004,
+    "sadness": 0.039486,
+    "surprise": 0.940216
+   },
+   "face_emotion": {
+    "anger": 0.003509,
+    "disgust": 0.000795,
+    "fear": 0.983949,
+    "joy": 7e-06,
+    "sadness": 0.003447,
+    "surprise": 0.008293
+   },
+   "ocr_sentiment": {
+    "anger": 0.000255,
+    "disgust": 0.001602,
+    "fear": 0.916384,
+    "joy": 0.000271,
+    "sadness": 0.014615,
+    "surprise": 0.066874
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s17/moodcut",
+  "label_system": "emotion6",
+  "group": "s17",
+  "story": "S17",
+  "target": "sadness",
+  "condition": "moodcut",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "b4514575a978a0a8805a632c5ff415c84b6c5d75b37c7b0631c2b2e2bcc8e99f",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.842027,
+   "disgust": 0.024016,
+   "fear": 0.009139,
+   "joy": 0.002366,
+   "sadness": 0.081145,
+   "surprise": 0.041308
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.865093,
+    "disgust": 0.018181,
+    "fear": 0.008111,
+    "joy": 0.001479,
+    "sadness": 0.083665,
+    "surprise": 0.023471
+   },
+   "beats": {
+    "anger": 0.813944,
+    "disgust": 0.008291,
+    "fear": 0.006647,
+    "joy": 0.000238,
+    "sadness": 0.045768,
+    "surprise": 0.125113
+   },
+   "clip": {
+    "anger": 0.002889,
+    "disgust": 0.002035,
+    "fear": 0.986851,
+    "joy": 0.000133,
+    "sadness": 0.005189,
+    "surprise": 0.002904
+   },
+   "face_emotion": {
+    "anger": 0.057758,
+    "disgust": 0.06259,
+    "fear": 0.009126,
+    "joy": 0.127637,
+    "sadness": 0.376332,
+    "surprise": 0.366556
+   },
+   "ocr_sentiment": {
+    "anger": 0.844087,
+    "disgust": 0.026321,
+    "fear": 0.008949,
+    "joy": 0.002586,
+    "sadness": 0.078156,
+    "surprise": 0.039901
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000201,
+    "disgust": 0.002132,
+    "fear": 0.886558,
+    "joy": 0.000477,
+    "sadness": 0.011904,
+    "surprise": 0.098728
+   },
+   "beats": {
+    "anger": 0.000226,
+    "disgust": 0.00487,
+    "fear": 0.947401,
+    "joy": 0.005411,
+    "sadness": 0.026438,
+    "surprise": 0.015654
+   },
+   "clip": {
+    "anger": 0.063868,
+    "disgust": 0.019796,
+    "fear": 0.006516,
+    "joy": 0.010121,
+    "sadness": 0.231831,
+    "surprise": 0.667868
+   },
+   "face_emotion": {
+    "anger": 0.003825,
+    "disgust": 0.000791,
+    "fear": 0.983852,
+    "joy": 7e-06,
+    "sadness": 0.003394,
+    "surprise": 0.008132
+   },
+   "ocr_sentiment": {
+    "anger": 0.000235,
+    "disgust": 0.001681,
+    "fear": 0.916957,
+    "joy": 0.000312,
+    "sadness": 0.014542,
+    "surprise": 0.066274
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s18/baseline",
+  "label_system": "emotion6",
+  "group": "s18",
+  "story": "S18",
+  "target": "surprise",
+  "condition": "baseline",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "37d726a6e2669d033917da1a315a0827923a843547d954d9edd45aaa17bfa3a5",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.364306,
+   "disgust": 0.553441,
+   "fear": 0.060805,
+   "joy": 0.000712,
+   "sadness": 0.007152,
+   "surprise": 0.013585
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.457182,
+    "disgust": 0.482017,
+    "fear": 0.04653,
+    "joy": 0.000345,
+    "sadness": 0.008025,
+    "surprise": 0.0059
+   },
+   "beats": {
+    "anger": 0.585643,
+    "disgust": 0.30271,
+    "fear": 0.065767,
+    "joy": 8.7e-05,
+    "sadness": 0.007916,
+    "surprise": 0.037877
+   },
+   "clip": {
+    "anger": 0.001836,
+    "disgust": 0.001797,
+    "fear": 0.987092,
+    "joy": 0.000236,
+    "sadness": 0.002775,
+    "surprise": 0.006264
+   },
+   "face_emotion": {
+    "anger": 0.016163,
+    "disgust": 0.833424,
+    "fear": 0.041673,
+    "joy": 0.020018,
+    "sadness": 0.022586,
+    "surprise": 0.066136
+   },
+   "ocr_sentiment": {
+    "anger": 0.364306,
+    "disgust": 0.553441,
+    "fear": 0.060805,
+    "joy": 0.000712,
+    "sadness": 0.007152,
+    "surprise": 0.013585
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000141,
+    "disgust": 0.001583,
+    "fear": 0.878096,
+    "joy": 0.000526,
+    "sadness": 0.00934,
+    "surprise": 0.110314
+   },
+   "beats": {
+    "anger": 0.000187,
+    "disgust": 0.004318,
+    "fear": 0.947383,
+    "joy": 0.005887,
+    "sadness": 0.017982,
+    "surprise": 0.024242
+   },
+   "clip": {
+    "anger": 0.056554,
+    "disgust": 0.69336,
+    "fear": 0.061084,
+    "joy": 0.00221,
+    "sadness": 0.048541,
+    "surprise": 0.138252
+   },
+   "face_emotion": {
+    "anger": 0.004068,
+    "disgust": 0.000929,
+    "fear": 0.98149,
+    "joy": 9e-06,
+    "sadness": 0.003403,
+    "surprise": 0.010102
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s18/generic_review",
+  "label_system": "emotion6",
+  "group": "s18",
+  "story": "S18",
+  "target": "surprise",
+  "condition": "generic_review",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "5e1ee5849e84e5701ec06e0f4c3282ee49ab4e0fd993a9df29ca3c2f68cf1a40",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.629819,
+   "disgust": 0.3213,
+   "fear": 0.003856,
+   "joy": 0.002003,
+   "sadness": 0.017671,
+   "surprise": 0.025351
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.685582,
+    "disgust": 0.265991,
+    "fear": 0.004351,
+    "joy": 0.001749,
+    "sadness": 0.021651,
+    "surprise": 0.020676
+   },
+   "beats": {
+    "anger": 0.600111,
+    "disgust": 0.248809,
+    "fear": 0.008944,
+    "joy": 0.000149,
+    "sadness": 0.015918,
+    "surprise": 0.126068
+   },
+   "clip": {
+    "anger": 0.013923,
+    "disgust": 0.004003,
+    "fear": 0.965473,
+    "joy": 0.000562,
+    "sadness": 0.00965,
+    "surprise": 0.006388
+   },
+   "face_emotion": {
+    "anger": 0.030915,
+    "disgust": 0.65236,
+    "fear": 0.003556,
+    "joy": 0.079541,
+    "sadness": 0.07494,
+    "surprise": 0.158688
+   },
+   "ocr_sentiment": {
+    "anger": 0.629819,
+    "disgust": 0.3213,
+    "fear": 0.003856,
+    "joy": 0.002003,
+    "sadness": 0.017671,
+    "surprise": 0.025351
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000244,
+    "disgust": 0.002504,
+    "fear": 0.8956,
+    "joy": 0.000439,
+    "sadness": 0.012867,
+    "surprise": 0.088346
+   },
+   "beats": {
+    "anger": 0.000665,
+    "disgust": 0.006047,
+    "fear": 0.90187,
+    "joy": 0.017408,
+    "sadness": 0.04477,
+    "surprise": 0.029241
+   },
+   "clip": {
+    "anger": 0.027637,
+    "disgust": 0.352262,
+    "fear": 0.007935,
+    "joy": 0.004687,
+    "sadness": 0.069546,
+    "surprise": 0.537932
+   },
+   "face_emotion": {
+    "anger": 0.004807,
+    "disgust": 0.000924,
+    "fear": 0.980354,
+    "joy": 8e-06,
+    "sadness": 0.00339,
+    "surprise": 0.010518
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "video_id": "s18/moodcut",
+  "label_system": "emotion6",
+  "group": "s18",
+  "story": "S18",
+  "target": "surprise",
+  "condition": "moodcut",
+  "duration_s": 8.08,
+  "language": "English",
+  "sha256": "2ed29a0e0e28eaf4b95d378bd4e2e63dc7dfcd1227abcf94f0e2ed817898adca",
+  "vbench_batch": null,
+  "note": "authored weak initial dialogue (challenge set); not an unprompted baseline",
+  "full": {
+   "anger": 0.569482,
+   "disgust": 0.36092,
+   "fear": 0.03122,
+   "joy": 0.000623,
+   "sadness": 0.008341,
+   "surprise": 0.029415
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.628209,
+    "disgust": 0.302657,
+    "fear": 0.034715,
+    "joy": 0.000532,
+    "sadness": 0.010271,
+    "surprise": 0.023616
+   },
+   "beats": {
+    "anger": 0.643988,
+    "disgust": 0.18635,
+    "fear": 0.068251,
+    "joy": 6.8e-05,
+    "sadness": 0.009529,
+    "surprise": 0.091814
+   },
+   "clip": {
+    "anger": 0.008682,
+    "disgust": 0.004851,
+    "fear": 0.966848,
+    "joy": 0.00035,
+    "sadness": 0.007699,
+    "surprise": 0.011571
+   },
+   "face_emotion": {
+    "anger": 0.030974,
+    "disgust": 0.703742,
+    "fear": 0.027668,
+    "joy": 0.021788,
+    "sadness": 0.034042,
+    "surprise": 0.181785
+   },
+   "ocr_sentiment": {
+    "anger": 0.554103,
+    "disgust": 0.38878,
+    "fear": 0.028341,
+    "joy": 0.00068,
+    "sadness": 0.007022,
+    "surprise": 0.021074
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000237,
+    "disgust": 0.002437,
+    "fear": 0.895809,
+    "joy": 0.000442,
+    "sadness": 0.012618,
+    "surprise": 0.088457
+   },
+   "beats": {
+    "anger": 0.000528,
+    "disgust": 0.008907,
+    "fear": 0.901841,
+    "joy": 0.011887,
+    "sadness": 0.033931,
+    "surprise": 0.042906
+   },
+   "clip": {
+    "anger": 0.047631,
+    "disgust": 0.415265,
+    "fear": 0.077101,
+    "joy": 0.002994,
+    "sadness": 0.050507,
+    "surprise": 0.406501
+   },
+   "face_emotion": {
+    "anger": 0.004188,
+    "disgust": 0.000913,
+    "fear": 0.981368,
+    "joy": 9e-06,
+    "sadness": 0.003354,
+    "surprise": 0.010168
+   },
+   "ocr_sentiment": {
+    "anger": 0.000221,
+    "disgust": 0.001558,
+    "fear": 0.90135,
+    "joy": 0.000284,
+    "sadness": 0.015161,
+    "surprise": 0.081425
    }
   },
   "all_zero": {
