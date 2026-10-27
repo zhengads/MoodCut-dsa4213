@@ -1,0 +1,136 @@
+{
+  "kind": "six_basic_emotion_review_challenge_design_not_execution_config",
+  "version": "1.0",
+  "created_on": "2026-10-27",
+  "status": "authored_draft_challenge_inputs_for_offline_validation",
+  "input_scope_approved": true,
+  "fixed_story_and_emotion_assignment": true,
+  "source_kind": "assistant_authored_user_requested_review_challenge",
+  "source_method": "S13-S18 are fictional challenge briefs with deliberately under-expressive authored draft dialogue. The drafts are not model outputs, natural baselines, review results, videos, ratings, or evidence of method superiority.",
+  "extends_design": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotions.json",
+  "conditions": ["baseline", "generic_review", "moodcut"],
+  "replicates_per_story": 1,
+  "planned_condition_entries": 18,
+  "duration_s": 8,
+  "max_shots": 1,
+  "language_policy": "S15 and S16 use Mandarin Chinese. S13, S14, S17, and S18 use English. Every condition within a story uses the same language.",
+  "emotion_definitions": {
+    "anger": {"label": "愤怒", "meaning": "Anger at another person's unilateral action."},
+    "disgust": {"label": "厌恶", "meaning": "Revulsion toward a spoiled drink's smell."},
+    "fear": {"label": "恐惧", "meaning": "Shared apprehension about an uncertain physical danger."},
+    "joy": {"label": "喜悦", "meaning": "Shared happiness after awaited approval."},
+    "sadness": {"label": "悲伤", "meaning": "Personal grief over an irreversible but bounded loss."},
+    "surprise": {"label": "惊讶", "meaning": "Disbelief at unexpectedly early completion."}
+  },
+  "challenge_policy": {
+    "purpose": "Test whether each review protocol identifies and improves emotion clarity, reciprocal response, and naturalness when the shared draft is intentionally understated.",
+    "frozen_inputs": "All conditions must start from the exact same authored draft and share story, actions, framing, duration, references, voices, ambience, seed, and video settings. Only dialogue may change.",
+    "draft_status": "The draft is an authored stress-test fixture and must never be described as a spontaneous planning-model baseline.",
+    "no_forced_change": "A reviewer may validly retain the draft. No condition is required to edit, and no manual change may be inserted after seeing outputs.",
+    "no_superiority_claim": "Because the inputs were selected to invite revision, results may illustrate behavior on challenge cases but cannot independently prove MoodCut outperforms Generic Review.",
+    "execution_dependency": "The current scene evaluation config does not automatically inject draft-dialogue.json into a generated initial plan. Paid execution requires an explicit shared-draft adapter and offline identity tests first."
+  },
+  "reference_selection": {
+    "source_design": "docs/studies/six-story-clear-emotions-20261024/design.json",
+    "selection_path": "assets/library/movieagent-animation.selection.json",
+    "manifest_path": "assets/library/movieagent-animation.manifest.json",
+    "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "rule": "Reuse each existing character pair once and copy its two asset records byte-for-byte; select no new images.",
+    "distinct_characters": 12,
+    "rights_status": "unconfirmed",
+    "public_redistribution_authorized": false,
+    "commercial_use_cleared": false
+  },
+  "scope_limits": [
+    "Each emotion appears in one story, so emotion, plot, cast, and film remain confounded.",
+    "The deliberately weak drafts create selection bias and are unsuitable as an unbiased benchmark without a separately preregistered protocol.",
+    "Do not replace drafts or scenarios after observing review outputs, videos, or scores.",
+    "VEMOCLAP probabilities measure whole-video emotion recognition, not dialogue quality or review correctness."
+  ],
+  "stories": [
+    {
+      "id": "s13_unilateral_decision",
+      "title": "A unilateral decision",
+      "emotion": "anger",
+      "emotion_label": "愤怒",
+      "language": "English",
+      "cast": [
+        {"character_id": "despicableme4_lucy", "display_name": "Lucy / 露西"},
+        {"character_id": "despicableme4_gru", "display_name": "Gru / 格鲁"}
+      ],
+      "asset_ids": ["movieagent_despicableme4_lucy_primary", "movieagent_despicableme4_gru_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s13_unilateral_decision/draft-dialogue.json",
+      "design_question": "Can review make anger and opposition clear without adding the unspecified decision or aggression?"
+    },
+    {
+      "id": "s14_spoiled_drink",
+      "title": "The spoiled drink",
+      "emotion": "disgust",
+      "emotion_label": "厌恶",
+      "language": "English",
+      "cast": [
+        {"character_id": "frozenii_anna", "display_name": "Anna / 安娜"},
+        {"character_id": "frozenii_kristoff", "display_name": "Kristoff / 克里斯托夫"}
+      ],
+      "asset_ids": ["movieagent_frozenii_anna_primary", "movieagent_frozenii_kristoff_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s14_spoiled_drink/draft-dialogue.json",
+      "design_question": "Can review strengthen revulsion while avoiding illness, drinking, or exaggerated gagging?"
+    },
+    {
+      "id": "s15_cracking_bridge",
+      "title": "A crack beneath the bridge",
+      "emotion": "fear",
+      "emotion_label": "恐惧",
+      "language": "Mandarin Chinese",
+      "cast": [
+        {"character_id": "nezha2_nezha", "display_name": "Nezha / 哪吒"},
+        {"character_id": "nezha2_aobing", "display_name": "Aobing / 敖丙"}
+      ],
+      "asset_ids": ["movieagent_nezha2_nezha_primary", "movieagent_nezha2_aobing_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s15_cracking_bridge/draft-dialogue.json",
+      "design_question": "Can review turn risk description into reciprocal fear without inventing collapse or escape?"
+    },
+    {
+      "id": "s16_approval_arrives",
+      "title": "The approval arrives",
+      "emotion": "joy",
+      "emotion_label": "喜悦",
+      "language": "Mandarin Chinese",
+      "cast": [
+        {"character_id": "nezha2_lijing", "display_name": "Lijing / 李靖"},
+        {"character_id": "nezha2_taiyi", "display_name": "Taiyi / 太乙"}
+      ],
+      "asset_ids": ["movieagent_nezha2_lijing_primary", "movieagent_nezha2_taiyi_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s16_approval_arrives/draft-dialogue.json",
+      "design_question": "Can review make shared joy audible without adding a celebration or reward?"
+    },
+    {
+      "id": "s17_old_tree_gone",
+      "title": "The old tree is gone",
+      "emotion": "sadness",
+      "emotion_label": "悲伤",
+      "language": "English",
+      "cast": [
+        {"character_id": "frozenii_elsa", "display_name": "Elsa / 艾莎"},
+        {"character_id": "frozenii_mattias", "display_name": "Mattias / 马蒂亚斯"}
+      ],
+      "asset_ids": ["movieagent_frozenii_elsa_primary", "movieagent_frozenii_mattias_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s17_old_tree_gone/draft-dialogue.json",
+      "design_question": "Can review express personal sadness and comfort without inventing backstory or a solution?"
+    },
+    {
+      "id": "s18_room_ready",
+      "title": "The room is already ready",
+      "emotion": "surprise",
+      "emotion_label": "惊讶",
+      "language": "English",
+      "cast": [
+        {"character_id": "despicableme4_maxime", "display_name": "Maxime / 马克西姆"},
+        {"character_id": "despicableme4_valentina", "display_name": "Valentina / 瓦伦蒂娜"}
+      ],
+      "asset_ids": ["movieagent_despicableme4_maxime_primary", "movieagent_despicableme4_valentina_primary"],
+      "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s18_room_ready/draft-dialogue.json",
+      "design_question": "Can review make disbelief clear while preserving the ordinary completed task?"
+    }
+  ]
+}

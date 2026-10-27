@@ -20,11 +20,12 @@
 
 ## 配对人工评价
 
-主 CLI 的 evaluate 完全离线，不启动模型。configs/experiment.json 是开发分配示例，包含已有软件夹具；--dry-run 仅列出任务，不改变原 SceneInput，也不自动批量生成。配置显式提供 `tones` 时保留 scene×tone×replicate×condition；省略 `tones` 时使用每个 scene 自己的受支持 `tone`，用于 S07–S12 这类固定故事–情绪配对，避免错误笛卡尔积。实际生成使用 run 命令，一次一个明确输入的 block。configs/pilot.json 保留原 VBench 提议配置，不能作为人工评价的 scene 路径配置。
+主 CLI 的 evaluate 完全离线，不启动模型。configs/experiment.json 是开发分配示例，包含已有软件夹具；--dry-run 仅列出任务，不改变原 SceneInput，也不自动批量生成。配置显式提供 `tones` 时保留 scene×tone×replicate×condition；省略 `tones` 时使用每个 scene 自己的受支持 `tone`，用于 S07–S12 和 S13–S18 这类固定故事–情绪配对，避免错误笛卡尔积。S13–S18 的独立 `draft-dialogue.json` 是人工编写的审查压力测试材料，evaluate 不会自动读取它；生成脚本调用方须把它显式传给 `pipeline.run_experiment` 的 `authored_dialogue_draft` 参数。适配器在共同规划后、条件拆分前只替换单镜头对白，并保存与重检初稿哈希；dry-run 本身仍不能当成共享初稿执行。实际请求准备使用 run 命令，一次一个明确输入的 block。configs/pilot.json 保留原 VBench 提议配置，不能作为人工评价的 scene 路径配置。
 
 ```bash
 python -m moodcut evaluate --config configs/experiment.json --dry-run
 python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run
+python -m moodcut evaluate --config configs/basic-emotions-challenge-experiment.json --dry-run
 python -m moodcut evaluate --records runs/demo/block.json --blind-output runs/blind-demo
 python -m moodcut evaluate --records runs/demo/block.json --output runs/demo/coverage.json
 python -m moodcut evaluate --records runs/demo/block.json --ratings runs/blind-demo/public/ratings.csv --private-key runs/blind-demo/PRIVATE/private_key.csv --output runs/demo/human-summary.json

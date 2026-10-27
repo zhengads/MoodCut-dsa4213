@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "kind": "authored_review_challenge_draft_not_model_output",
+  "story_id": "s15_cracking_bridge",
+  "language": "Mandarin Chinese",
+  "target_emotion": "fear",
+  "duration_s": 8,
+  "dialogue": [
+    {"character_id": "nezha2_nezha", "text": "刚才是不是响了一声？"},
+    {"character_id": "nezha2_aobing", "text": "这里可能不太稳。"}
+  ],
+  "designed_revision_opportunities": ["两句只描述线索和风险，没有明确承认恐惧。", "Aobing没有回应Nezha的情绪或保持不动的需求。"],
+  "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."
+}

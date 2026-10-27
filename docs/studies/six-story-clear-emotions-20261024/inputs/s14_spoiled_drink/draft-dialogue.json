@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "kind": "authored_review_challenge_draft_not_model_output",
+  "story_id": "s14_spoiled_drink",
+  "language": "English",
+  "target_emotion": "disgust",
+  "duration_s": 8,
+  "dialogue": [
+    {"character_id": "frozenii_anna", "text": "That smells unusual."},
+    {"character_id": "frozenii_kristoff", "text": "It has been sitting here."}
+  ],
+  "designed_revision_opportunities": ["Anna's wording is deliberately mild and does not communicate strong revulsion.", "Kristoff only states a circumstance and neither confirms spoilage nor responds to the unpleasant smell."],
+  "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."
+}

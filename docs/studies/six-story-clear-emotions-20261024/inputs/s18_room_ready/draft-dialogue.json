@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "kind": "authored_review_challenge_draft_not_model_output",
+  "story_id": "s18_room_ready",
+  "language": "English",
+  "target_emotion": "surprise",
+  "duration_s": 8,
+  "dialogue": [
+    {"character_id": "despicableme4_maxime", "text": "You finished already?"},
+    {"character_id": "despicableme4_valentina", "text": "This morning."}
+  ],
+  "designed_revision_opportunities": ["Maxime asks a factual question with only weak disbelief.", "Valentina's fragment confirms timing but does not answer the unexpected-completion contrast clearly."],
+  "usage_limit": "Exploratory review stress test only. Do not present this authored weak draft as an unprompted model baseline or evidence that MoodCut outperforms another method."
+}

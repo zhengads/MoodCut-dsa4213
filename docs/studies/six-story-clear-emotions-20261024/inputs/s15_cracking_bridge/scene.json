@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_challenge_v1_s15_cracking_bridge",
+  "tone": "fear",
+  "story": "白天，Nezha和Aobing已经并肩站在一座安静的旧桥中央。桥下方刚传来一次不明的断裂声，两人不知道桥是否安全。Nezha承认自己担心桥会失稳；Aobing回应自己也害怕，并提醒暂时不要移动。结果保持未知。使用自然普通话完成两句对白，两人各说一句，不设逐句或总字数硬限制，但必须能在八秒内自然说完并留出停顿。全片一个8秒镜头。只允许台词在三条件间变化；人物、动作、表情要求、镜头、声音、时长和素材完全共享。不展示桥坍塌、奔跑、跳跃、坠落、伤害、救援、魔法、第三人、旁白、字幕或文字卡。",
+  "characters": [
+    {"id": "nezha2_nezha", "name": "Nezha / 哪吒"},
+    {"id": "nezha2_aobing", "name": "Aobing / 敖丙"}
+  ],
+  "beats": [
+    {"id": "b1", "description": "Nezha承认断裂声使自己害怕桥会失稳。"},
+    {"id": "b2", "description": "Aobing承认同样害怕，并要求暂时保持不动。"}
+  ],
+  "asset_ids": ["movieagent_nezha2_nezha_primary", "movieagent_nezha2_aobing_primary"],
+  "min_duration_s": 8,
+  "max_duration_s": 8,
+  "min_shot_duration_s": 8,
+  "max_shot_duration_s": 8,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_review_challenge_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "S13-S18 exploratory review-challenge brief with an authored under-expressive draft; not a natural model baseline or independent efficacy result.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotion-challenge.json",
+    "design_story_id": "s15_cracking_bridge",
+    "design_version": "1.0",
+    "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s15_cracking_bridge/draft-dialogue.json",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}

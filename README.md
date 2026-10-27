@@ -34,7 +34,7 @@ The earlier S06 v3 development run produced three real videos for **$0.75421676*
 
 These cases demonstrate technical execution. Spoken Chinese, character consistency, naturalness and emotional effects still require human inspection and independent evaluation. Successful and failed attempts remain in the [pilot records](docs/pilots/).
 
-The candidate study inputs now comprise two complementary sets on the [same study page](docs/studies/six-story-clear-emotions-20261024/README.md). S01–S06 contain two stories each for affectionate, hostile and tense tones. The supplementary S07–S12 design contains one story for each VEMOCLAP class: anger, disgust, fear, joy, sadness and surprise. Both sets are research inputs awaiting execution; confirming their scope does not authorize paid runs or formal evaluation.
+The candidate study inputs now comprise three complementary sets on the [same study page](docs/studies/six-story-clear-emotions-20261024/README.md). S01–S06 contain two stories each for affectionate, hostile and tense tones. S07–S12 contain one story for each VEMOCLAP class. S13–S18 add a second six-class set with deliberately understated authored drafts for exploratory review stress testing. These drafts are not natural model baselines, and the challenge set is not independent evidence of method superiority.
 
 ### S07–S12: VEMOCLAP basic-emotion scenarios
 
@@ -49,7 +49,20 @@ S07–S12 reuse the six existing character pairs while changing the plots and ta
 | S11 | An irreplaceable keepsake | Lucy, Gru | sadness |
 | S12 | An unexpectedly finished task | Nezha, Aobing | surprise |
 
-The [full S01–S12 specification](docs/studies/six-story-clear-emotions-20261024/README.md) defines each relationship, fixed plot, dialogue task, boundaries, asset reuse, experimental controls and VEMOCLAP evaluation scope. S07–S12 include generated-mode scene inputs, reused asset manifests, a hash-bound index and an offline 18-assignment evaluation configuration. No videos, model outputs or evaluation results are included.
+The [full S01–S18 specification](docs/studies/six-story-clear-emotions-20261024/README.md) defines each relationship, fixed plot, dialogue task, boundaries, asset reuse, experimental controls and VEMOCLAP evaluation scope. S07–S12 include generated-mode scene inputs, reused asset manifests, a hash-bound index and an offline 18-assignment evaluation configuration. No videos, model outputs or evaluation results are included in those committed inputs.
+
+### S13–S18: review-challenge drafts
+
+| ID | Target emotion | Characters | Understated draft focus |
+| --- | --- | --- | --- |
+| S13 | anger | Lucy, Gru | A unilateral decision is challenged without explicit anger |
+| S14 | disgust | Anna, Kristoff | A spoiled smell is described too mildly |
+| S15 | fear | Nezha, Aobing | Danger is noted without reciprocal fear |
+| S16 | joy | Lijing, Taiyi | Good news is delivered without shared happiness |
+| S17 | sadness | Elsa, Mattias | A meaningful loss receives a minimal response |
+| S18 | surprise | Maxime, Valentina | Early completion receives only a mild question |
+
+The [S13–S18 section](docs/studies/six-story-clear-emotions-20261024/README.md#s13s18-authored-review-challenge-scenarios) includes the exact mixed-language drafts and safeguards. S15–S16 use Mandarin; the other four use English. It is an eight-second exploratory development set. The programmatic generated-script pipeline can bind one saved authored draft to the shared initial plan before the three-condition split; paid execution still requires separate model, scope and budget authorization.
 
 ## Quick start
 

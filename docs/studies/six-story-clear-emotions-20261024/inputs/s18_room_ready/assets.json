@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "assets": [
+    {
+      "asset_id": "movieagent_despicableme4_maxime_primary",
+      "character_id": "despicableme4_maxime",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "width": 1282,
+      "height": 1478,
+      "sha256": "6d479c0e75b7f6b93b17e8e19e7ffcc18e5468471a2da86d0b6d4ccf6c22994f",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Maxime/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    },
+    {
+      "asset_id": "movieagent_despicableme4_valentina_primary",
+      "character_id": "despicableme4_valentina",
+      "path": "assets/raw/movieagent/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "width": 1332,
+      "height": 1058,
+      "sha256": "c36ebce22b220abe1bdec66235b4eda3c82aaae2c7641d8d3b56fc06942b6b32",
+      "source_url": "https://raw.githubusercontent.com/showlab/MovieAgent/d84041bed8bc8be460664528d9e9924cdde384ba/dataset/DespicableMe4/character_list/Valentina/best.png",
+      "revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+      "rights_note": "Source: showlab/MovieAgent, commit d84041bed8bc8be460664528d9e9924cdde384ba. Third-party film character reference; no project-level image license or rights-holder redistribution authorization verified. Local reference cache only; attribution does not grant permission. Not cleared for public redistribution or commercial use.",
+      "allowed_crops": [
+        "full"
+      ]
+    }
+  ]
+}

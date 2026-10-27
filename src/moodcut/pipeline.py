@@ -149,6 +149,49 @@ def _mode_options(output_mode, generation_settings, template_sha256):
     return {"output_mode": "generated"}
 
 
+def apply_authored_dialogue_draft(scene: dict, plan: dict, draft: dict) -> dict:
+    """Apply one explicit authored dialogue fixture to a one-shot generated plan.
+
+    The planner still owns all shared non-dialogue fields.  This adapter replaces
+    dialogue once, before the three conditions are copied, and rejects ambiguous
+    or mismatched fixtures instead of guessing a shot or speaker mapping.
+    """
+    if not all(isinstance(value, dict) for value in (scene, plan, draft)):
+        raise ValueError("Authored dialogue draft requires scene, plan and draft objects")
+    if scene.get("output_mode") != "generated" or plan.get("output_mode") != "generated":
+        raise ValueError("Authored dialogue draft requires explicit generated mode")
+    if draft.get("kind") != "authored_review_challenge_draft_not_model_output":
+        raise ValueError("Unsupported authored dialogue draft kind")
+    story_id = scene.get("provenance", {}).get("design_story_id")
+    if not isinstance(story_id, str) or draft.get("story_id") != story_id:
+        raise ValueError("Authored dialogue draft story identity does not match scene")
+    if draft.get("target_emotion") != scene.get("tone"):
+        raise ValueError("Authored dialogue draft emotion does not match scene")
+    shots = plan.get("shots")
+    if not isinstance(shots, list) or len(shots) != 1:
+        raise ValueError("Authored dialogue draft currently requires exactly one planned shot")
+    duration = shots[0].get("duration_s")
+    if (type(draft.get("duration_s")) is not int or draft["duration_s"] != duration
+            or scene.get("min_duration_s") != duration or scene.get("max_duration_s") != duration):
+        raise ValueError("Authored dialogue draft duration does not match the fixed one-shot plan")
+    dialogue = draft.get("dialogue")
+    if not isinstance(dialogue, list) or not dialogue:
+        raise ValueError("Authored dialogue draft must contain nonempty dialogue")
+    expected = [character.get("id") for character in scene.get("characters", [])]
+    actual = []
+    for line in dialogue:
+        if (not isinstance(line, dict) or set(line) != {"character_id", "text"}
+                or not isinstance(line.get("character_id"), str)
+                or not isinstance(line.get("text"), str) or not line["text"].strip()):
+            raise ValueError("Authored dialogue lines require only nonempty character_id and text")
+        actual.append(line["character_id"])
+    if actual != expected:
+        raise ValueError("Authored dialogue speaker order must match the scene character order")
+    adapted = deepcopy(plan)
+    adapted["shots"][0]["dialogue"] = deepcopy(dialogue)
+    return adapted
+
+
 def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
                   condition: str, out_dir: str, project_root: str, font_path: str | None,
                   render=True, replicate=1, source_kind="development", output_mode="animatic",
@@ -327,7 +370,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
 def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                    font_path=None, render=True, replicate=1, cache_dir=None, source_kind="development",
                    output_mode="animatic", generation_settings=None, template_sha256=None,
-                   review_protocol=GLOBAL_REVIEW):
+                   review_protocol=GLOBAL_REVIEW, authored_dialogue_draft=None):
     """Plan once; generated mode freezes shared identity and prepares script records.
 
     No generated request compilation, video transport or animatic rendering occurs
@@ -340,8 +383,11 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     mode_options = _mode_options(output_mode, generation_settings, template_sha256)
     validate_review_protocol(review_protocol, output_mode)
     generated = output_mode == "generated"
+    if authored_dialogue_draft is not None and not generated:
+        raise ValueError("Authored dialogue draft requires explicit generated mode")
     if generated:
-        scene, manifest, generation_settings = deepcopy((scene, manifest, generation_settings))
+        scene, manifest, generation_settings, authored_dialogue_draft = deepcopy(
+            (scene, manifest, generation_settings, authored_dialogue_draft))
     root = Path(project_root).resolve()
     errors = validate_scene(scene, manifest, project_root=root, **mode_options)
     if errors:
@@ -352,6 +398,8 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     write_json(output / "assets.json", manifest)
     if generated:
         write_json(output / "generation_settings.json", generation_settings)
+        if authored_dialogue_draft is not None:
+            write_json(output / "draft-dialogue.json", authored_dialogue_draft)
     settings = _model_settings(client)
     identity = {"schema_version": "1.0", "scene": scene, "manifest": manifest,
                 "replicate": replicate, "settings": settings,
@@ -361,6 +409,8 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     if generated:
         identity.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                         generation_settings=deepcopy(generation_settings), template_sha256=template_sha256)
+        if authored_dialogue_draft is not None:
+            identity["authored_dialogue_draft_sha256"] = json_hash(authored_dialogue_draft)
     if review_protocol in ACTOR_PROTOCOLS:
         identity["review_protocol"] = review_protocol
         identity["review_prompt_hashes"] = _review_hashes(output_mode=output_mode, review_protocol=review_protocol)
@@ -387,6 +437,16 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                 scene, plan, manifest, generation_settings, template_sha256=template_sha256):
             raise ValueError("Cached shared generation identity mismatch; cache preserved")
         planning.update(status="completed", cache_hit=True, raw_responses=saved["raw_responses"])
+        if authored_dialogue_draft is not None:
+            source = saved.get("initial_plan_source")
+            if (source != {"kind": "authored_shared_dialogue",
+                           "draft_sha256": json_hash(authored_dialogue_draft)}
+                    or saved.get("planner_plan_sha256") != json_hash(saved["raw_responses"].get("shot"))
+                    or plan != apply_authored_dialogue_draft(
+                        scene, saved["raw_responses"].get("shot"), authored_dialogue_draft)):
+                raise ValueError("Cached authored dialogue identity/application mismatch; cache preserved")
+            planning.update(initial_plan_source=deepcopy(source),
+                            planner_plan_sha256=saved["planner_plan_sha256"])
         return plan
 
     try:
@@ -412,6 +472,13 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                                               project_root=root, **mode_options)
             planning["raw_responses"] = deepcopy(traced["raw_responses"])
             initial = deepcopy(traced["plan"])
+            if authored_dialogue_draft is not None:
+                planning["planner_plan_sha256"] = json_hash(initial)
+                initial = apply_authored_dialogue_draft(scene, initial, authored_dialogue_draft)
+                planning["initial_plan_source"] = {
+                    "kind": "authored_shared_dialogue",
+                    "draft_sha256": json_hash(authored_dialogue_draft),
+                }
             errors = validate_plan(scene, initial, manifest, project_root=root, **mode_options)
             if errors:
                 raise ValueError("; ".join(errors))
@@ -424,6 +491,9 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
                          "plan_sha256": json_hash(initial), "raw_responses": traced["raw_responses"]}
                 if generated:
                     saved["shared_generation_sha256"] = shared
+                if authored_dialogue_draft is not None:
+                    saved["initial_plan_source"] = deepcopy(planning["initial_plan_source"])
+                    saved["planner_plan_sha256"] = planning["planner_plan_sha256"]
                 write_json(cache, saved)
         if generated:
             shared = shared_generation_sha256(scene, initial, manifest, generation_settings,
@@ -477,6 +547,8 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
         block.update(schema_version=CONTRACT_VERSION, output_mode="generated",
                      shared_generation_sha256=shared, generation_settings=generation_settings,
                      template_sha256=template_sha256)
+        if authored_dialogue_draft is not None:
+            block["initial_plan_source"] = deepcopy(planning.get("initial_plan_source"))
     write_json(output / "block.json", block)
     return block
 
@@ -511,6 +583,19 @@ def _load_generated_block(path, project_root):
     planning = read_json(folder / "planning.json")
     need(isinstance(planning, dict) and planning.get("status") == "completed"
          and json_hash(planning) == json_hash(block.get("planning")), "source planning record mismatch")
+    source = block.get("initial_plan_source")
+    if source is not None:
+        need(source == planning.get("initial_plan_source")
+             and source.get("kind") == "authored_shared_dialogue",
+             "authored dialogue source metadata mismatch")
+        draft = read_json(folder / "draft-dialogue.json")
+        need(source.get("draft_sha256") == json_hash(draft), "authored dialogue draft hash mismatch")
+        planner_plan = planning.get("raw_responses", {}).get("shot")
+        need(isinstance(planner_plan, dict)
+             and planning.get("planner_plan_sha256") == json_hash(planner_plan),
+             "authored dialogue planner source mismatch")
+        need(initial == apply_authored_dialogue_draft(scene, planner_plan, draft),
+             "authored dialogue was not applied exactly once to the shared initial plan")
     policy = block.get("text_model_settings")
     need(not str(block.get("model_id", "")).startswith("role-policy/") or policy is not None,
          "role policy metadata is missing")

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.1",
+  "output_mode": "generated",
+  "scene_id": "study_20261027_challenge_v1_s14_spoiled_drink",
+  "tone": "disgust",
+  "story": "白天，安静门厅旁的小桌边，Anna和Kristoff已经面对面站好。桌上有一杯已经变质、气味明显难闻的饮料。Anna闻到后强烈反感；Kristoff确认饮料已经坏了。两人不饮用、不触碰也不移走杯子。只用自然英语完成两句对白，两人各说一句，不设逐句或总字数硬限制，但必须能在八秒内自然说完并留出停顿。全片一个8秒镜头。只允许台词在三条件间变化；人物、动作、表情要求、镜头、声音、时长和素材完全共享。不增加中毒、疾病、呕吐、夸张干呕、魔法、第三人、旁白、字幕、文字卡或额外说话者。",
+  "characters": [
+    {"id": "frozenii_anna", "name": "Anna / 安娜"},
+    {"id": "frozenii_kristoff", "name": "Kristoff / 克里斯托夫"}
+  ],
+  "beats": [
+    {"id": "b1", "description": "Anna对变质饮料的难闻气味表达强烈反感。"},
+    {"id": "b2", "description": "Kristoff确认饮料已经变质且气味令人不适。"}
+  ],
+  "asset_ids": ["movieagent_frozenii_anna_primary", "movieagent_frozenii_kristoff_primary"],
+  "min_duration_s": 8,
+  "max_duration_s": 8,
+  "min_shot_duration_s": 8,
+  "max_shot_duration_s": 8,
+  "max_shots": 1,
+  "provenance": {
+    "kind": "assistant_authored_user_requested_review_challenge_not_executed",
+    "source_url": null,
+    "revision": null,
+    "adaptation": "S13-S18 exploratory review-challenge brief with an authored under-expressive draft; not a natural model baseline or independent efficacy result.",
+    "design_path": "docs/studies/six-story-clear-emotions-20261024/design-basic-emotion-challenge.json",
+    "design_story_id": "s14_spoiled_drink",
+    "design_version": "1.0",
+    "draft_dialogue_path": "docs/studies/six-story-clear-emotions-20261024/inputs/s14_spoiled_drink/draft-dialogue.json",
+    "reference_revision": "d84041bed8bc8be460664528d9e9924cdde384ba",
+    "input_scope_approved": true,
+    "formal_inclusion_approved": false
+  }
+}
