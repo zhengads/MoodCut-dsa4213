@@ -36,7 +36,7 @@ These cases demonstrate technical execution. Spoken Chinese, character consisten
 
 The candidate study inputs now comprise three complementary sets on the [same study page](docs/studies/six-story-clear-emotions-20261024/README.md). S01–S06 contain two stories each for affectionate, hostile and tense tones. S07–S12 contain one story for each VEMOCLAP class. S13–S18 add a second six-class set with deliberately understated authored drafts for exploratory review stress testing. These drafts are not natural model baselines, and the challenge set is not independent evidence of method superiority.
 
-### Evaluation-set iteration (2026-10-25 to 2026-10-27)
+### Evaluation-set iteration
 
 Evaluation work by 范旭阳 (FANXUYANG, GitHub: fanx9905-blip). The evaluation sets changed in four steps; the full record with per-video numbers is the [emotion evaluation record](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md).
 

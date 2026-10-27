@@ -36,7 +36,7 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 后续候选输入为[六个明显情绪情景 v2](docs/studies/six-story-clear-emotions-20261024/README.md)：affectionate、hostile、tense 各两个故事。它们是待执行的研究输入，范围确认不等于付费运行或正式评价已获批准。
 
-### 评测集的迭代（2026-10-25 至 2026-10-27）
+### 评测集的迭代
 
 评测工作：范旭阳（FANXUYANG，GitHub：fanx9905-blip）。评测集经历了四步，含逐视频数值的完整记录见[情绪评测研究记录](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md)。
 
