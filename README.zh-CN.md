@@ -38,7 +38,7 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 ### 评测集的迭代（2026-10-25 至 2026-10-27）
 
-评测工作：范旭阳（FANXUYANG，GitHub：fanx9905-blip）。评测集经历了四步，含逐视频数值的完整记录见[情绪评测研究记录](docs/studies/emotion-evaluation-20261027/README.md)。
+评测工作：范旭阳（FANXUYANG，GitHub：fanx9905-blip）。评测集经历了四步，含逐视频数值的完整记录见[情绪评测研究记录](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md)。
 
 1. **S01–S06，三种氛围。** VEMOCLAP 只输出六种情绪，没有“亲密”“紧张”，因此尝试过几套对应规则：V0（按名字对应）、V1（surprise ≥ 50% 的视频弃判）、V2（事先冻结的分组求和）以及提议中的 V3（冲突闸门）。**V1 和 V2 已是历史方案，不再用于打分。** V2 在 29 条视频里对 20 条（亲密 9/9，敌对 11/12，紧张 0/8），紧张和敌对在六类概率上重叠。V2 的代码保留在 `src/moodcut/vemoclap_atmosphere.py`，只用于复现这些数字。
 2. **S07–S12，六种情绪（现行做法）。** 每种 VEMOCLAP 情绪一个情景，直接看六类概率，不再合并成氛围。13 条不重复视频的初步结果：愤怒和厌恶可识别，悲伤只有 moodcut 条件命中，喜悦和惊讶分不开，恐惧识别不出来。
@@ -117,7 +117,7 @@ VEMOCLAP 和 VBench 打分是独立脚本，不是 `python -m moodcut` 的子命
 | 数据结构、接口、共享身份与账目 | [公共契约](docs/CONTRACTS.md) |
 | 静态渲染、请求编译与视频检查 | [渲染说明](docs/rendering.md) |
 | 匿名导出、人工评分、覆盖率与费用统计 | [评价说明](docs/evaluation.md) |
-| 情绪评测记录：规则迭代、消融实验、逐视频结果 | [情绪评测研究记录](docs/studies/emotion-evaluation-20261027/README.md) · [结果](docs/studies/emotion-evaluation-20261027/results/) |
+| 情绪评测记录：规则迭代、消融实验、逐视频结果 | [情绪评测研究记录](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md) · [结果](docs/studies/emotion-evaluation-20261027/results/) |
 | 角色参考图、来源与许可状态 | [动画素材库](assets/library/README.md) |
 | 历次试跑的设置、结果与失败 | [试跑记录](docs/pilots/) |
 | 模块分工、任务卡与分支规则 | [团队协作](docs/TEAM.md) · [分支规则](docs/BRANCHES.md) |

@@ -1,6 +1,6 @@
 # 情绪评测脚本
 
-这些脚本用来复现 [情绪评测研究记录](../../docs/studies/emotion-evaluation-20261027/README.md) 里的 VEMOCLAP 单路消融、特征互换、变暗对照和 VBench 画面质量评测。仓库不包含视频、模型权重和上游代码，也不写死任何本机路径，目录通过环境变量给出：
+这些脚本用来复现 [情绪评测研究记录](../../docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md) 里的 VEMOCLAP 单路消融、特征互换、变暗对照和 VBench 画面质量评测。仓库不包含视频、模型权重和上游代码，也不写死任何本机路径，目录通过环境变量给出：
 
 | 环境变量 | 内容 |
 |---|---|

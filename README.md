@@ -38,7 +38,7 @@ The candidate study inputs now comprise three complementary sets on the [same st
 
 ### Evaluation-set iteration (2026-10-25 to 2026-10-27)
 
-Evaluation work by 范旭阳 (FANXUYANG, GitHub: fanx9905-blip). The evaluation sets changed in four steps; the full record with per-video numbers is the [emotion evaluation record](docs/studies/emotion-evaluation-20261027/README.md).
+Evaluation work by 范旭阳 (FANXUYANG, GitHub: fanx9905-blip). The evaluation sets changed in four steps; the full record with per-video numbers is the [emotion evaluation record](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md).
 
 1. **S01–S06, three tones.** VEMOCLAP outputs six emotions and has no affectionate or tense class, so mapping rules were tried: V0 (name match), V1 (skip videos with surprise ≥ 50%), V2 (frozen group sums) and a proposed V3 (conflict gate). **V1 and V2 are historical and no longer used for scoring.** V2 matched 20 of 29 videos (affectionate 9/9, hostile 11/12, tense 0/8), and tense and hostile overlap in the six probabilities. The V2 code stays in `src/moodcut/vemoclap_atmosphere.py` only to reproduce those numbers.
 2. **S07–S12, six emotions (current approach).** One scenario per VEMOCLAP emotion; videos are scored on the six probabilities directly, with no merging into tones. First results over 13 unique videos: anger and disgust are recognised, sadness only in the moodcut condition, joy is indistinguishable from surprise, fear is not detected.
@@ -145,7 +145,7 @@ VEMOCLAP and VBench scoring are separate scripts, not subcommands of `python -m 
 | Data structures, interfaces, shared identity and accounting | [Contracts](docs/CONTRACTS.md) |
 | Static rendering, request compilation and video inspection | [Rendering](docs/rendering.md) |
 | Anonymized export, human ratings, coverage and cost summaries | [Evaluation](docs/evaluation.md) |
-| Emotion evaluation record: rule iteration, ablations, per-video results | [Emotion evaluation record](docs/studies/emotion-evaluation-20261027/README.md) · [results](docs/studies/emotion-evaluation-20261027/results/) |
+| Emotion evaluation record: rule iteration, ablations, per-video results | [Emotion evaluation record](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md) · [results](docs/studies/emotion-evaluation-20261027/results/) |
 | Character references, sources and license status | [Animation asset library](assets/library/README.md) |
 | Settings, results and failures from previous trials | [Pilot records](docs/pilots/) |
 | Module ownership, task cards and branch rules | [Team workflow](docs/TEAM.md) · [Branch rules](docs/BRANCHES.md) |
