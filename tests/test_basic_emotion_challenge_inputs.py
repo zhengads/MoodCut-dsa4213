@@ -91,6 +91,9 @@ def test_challenge_scenes_drafts_and_reused_assets_validate_offline():
         assert draft["language"] == row["language"] == EXPECTED_LANGUAGES[story_id]
         language_instruction = "只用自然英语" if row["language"] == "English" else "使用自然普通话"
         assert language_instruction in scene["story"]
+        assert "台词不直接念出anger、disgust、fear、joy、sadness、surprise" in scene["story"]
+        assert "参考图只确定角色身份与服装" in scene["story"]
+        assert "不引用原电影台词" in scene["story"]
         assert scene["provenance"]["design_path"] == DESIGN_PATH.relative_to(ROOT).as_posix()
         assert scene["provenance"]["design_story_id"] == story_id == draft["story_id"]
         assert scene["provenance"]["draft_dialogue_path"] == row["draft_dialogue_path"]
