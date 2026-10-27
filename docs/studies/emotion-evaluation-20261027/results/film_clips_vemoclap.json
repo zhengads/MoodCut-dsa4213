@@ -1,0 +1,1170 @@
+[
+ {
+  "clip": "A2_affect_charade_boat",
+  "set": "results2",
+  "intended": "affectionate",
+  "full": {
+   "anger": 0.003904,
+   "disgust": 3e-06,
+   "fear": 0.00125,
+   "joy": 2.7e-05,
+   "sadness": 0.994779,
+   "surprise": 3.8e-05
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.002464,
+    "disgust": 1e-06,
+    "fear": 0.001757,
+    "joy": 3.9e-05,
+    "sadness": 0.995681,
+    "surprise": 5.7e-05
+   },
+   "beats": {
+    "anger": 0.286322,
+    "disgust": 0.004556,
+    "fear": 0.545472,
+    "joy": 8.6e-05,
+    "sadness": 0.142701,
+    "surprise": 0.020863
+   },
+   "clip": {
+    "anger": 0.003867,
+    "disgust": 2.7e-05,
+    "fear": 0.059367,
+    "joy": 4.4e-05,
+    "sadness": 0.936245,
+    "surprise": 0.000449
+   },
+   "face_emotion": {
+    "anger": 5.2e-05,
+    "disgust": 2e-06,
+    "fear": 0.000277,
+    "joy": 0.000288,
+    "sadness": 0.999315,
+    "surprise": 6.7e-05
+   },
+   "ocr_sentiment": {
+    "anger": 0.003758,
+    "disgust": 3e-06,
+    "fear": 0.001297,
+    "joy": 3.7e-05,
+    "sadness": 0.994868,
+    "surprise": 3.7e-05
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000534,
+    "disgust": 0.004759,
+    "fear": 0.913066,
+    "joy": 0.000331,
+    "sadness": 0.020012,
+    "surprise": 0.061297
+   },
+   "beats": {
+    "anger": 3.2e-05,
+    "disgust": 1.1e-05,
+    "fear": 0.020271,
+    "joy": 0.001036,
+    "sadness": 0.97746,
+    "surprise": 0.00119
+   },
+   "clip": {
+    "anger": 0.006062,
+    "disgust": 0.004841,
+    "fear": 0.465578,
+    "joy": 0.004946,
+    "sadness": 0.378052,
+    "surprise": 0.140521
+   },
+   "face_emotion": {
+    "anger": 0.004418,
+    "disgust": 0.000774,
+    "fear": 0.982309,
+    "joy": 8e-06,
+    "sadness": 0.003438,
+    "surprise": 0.009053
+   },
+   "ocr_sentiment": {
+    "anger": 0.000259,
+    "disgust": 0.001581,
+    "fear": 0.914116,
+    "joy": 0.000261,
+    "sadness": 0.014794,
+    "surprise": 0.068989
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "A3_affect_charade_phone",
+  "set": "results2",
+  "intended": "affectionate",
+  "full": {
+   "anger": 0.010495,
+   "disgust": 0.000254,
+   "fear": 0.56471,
+   "joy": 0.000148,
+   "sadness": 0.424161,
+   "surprise": 0.000231
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.00512,
+    "disgust": 0.00011,
+    "fear": 0.656931,
+    "joy": 0.000184,
+    "sadness": 0.337364,
+    "surprise": 0.000291
+   },
+   "beats": {
+    "anger": 0.090383,
+    "disgust": 0.001245,
+    "fear": 0.833521,
+    "joy": 4.1e-05,
+    "sadness": 0.073975,
+    "surprise": 0.000834
+   },
+   "clip": {
+    "anger": 0.001856,
+    "disgust": 0.000542,
+    "fear": 0.951173,
+    "joy": 2.9e-05,
+    "sadness": 0.04282,
+    "surprise": 0.003581
+   },
+   "face_emotion": {
+    "anger": 0.000251,
+    "disgust": 0.000255,
+    "fear": 0.229989,
+    "joy": 0.002926,
+    "sadness": 0.765852,
+    "surprise": 0.000727
+   },
+   "ocr_sentiment": {
+    "anger": 0.010047,
+    "disgust": 0.000306,
+    "fear": 0.57429,
+    "joy": 0.000197,
+    "sadness": 0.414941,
+    "surprise": 0.00022
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000572,
+    "disgust": 0.005035,
+    "fear": 0.913089,
+    "joy": 0.000324,
+    "sadness": 0.020832,
+    "surprise": 0.060148
+   },
+   "beats": {
+    "anger": 3.9e-05,
+    "disgust": 0.000531,
+    "fear": 0.859452,
+    "joy": 0.001754,
+    "sadness": 0.113082,
+    "surprise": 0.025142
+   },
+   "clip": {
+    "anger": 0.001973,
+    "disgust": 0.001271,
+    "fear": 0.78492,
+    "joy": 0.002592,
+    "sadness": 0.203124,
+    "surprise": 0.00612
+   },
+   "face_emotion": {
+    "anger": 0.0044,
+    "disgust": 0.000818,
+    "fear": 0.982226,
+    "joy": 8e-06,
+    "sadness": 0.003448,
+    "surprise": 0.0091
+   },
+   "ocr_sentiment": {
+    "anger": 0.000255,
+    "disgust": 0.001583,
+    "fear": 0.913293,
+    "joy": 0.000265,
+    "sadness": 0.01481,
+    "surprise": 0.069794
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "H1_hostile_hgf",
+  "set": "results2",
+  "intended": "hostile",
+  "full": {
+   "anger": 0.889713,
+   "disgust": 4.7e-05,
+   "fear": 0.107307,
+   "joy": 0.000149,
+   "sadness": 0.000528,
+   "surprise": 0.002256
+  },
+  "missing_modalities": [
+   "ocr_sentiment"
+  ],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.745378,
+    "disgust": 3.6e-05,
+    "fear": 0.247355,
+    "joy": 0.000388,
+    "sadness": 0.00077,
+    "surprise": 0.006073
+   },
+   "beats": {
+    "anger": 0.356539,
+    "disgust": 0.00055,
+    "fear": 0.6326,
+    "joy": 2.1e-05,
+    "sadness": 0.008992,
+    "surprise": 0.001299
+   },
+   "clip": {
+    "anger": 0.148864,
+    "disgust": 0.000917,
+    "fear": 0.782266,
+    "joy": 0.000218,
+    "sadness": 0.001375,
+    "surprise": 0.066361
+   },
+   "face_emotion": {
+    "anger": 0.273862,
+    "disgust": 0.000692,
+    "fear": 0.577658,
+    "joy": 0.042098,
+    "sadness": 0.013869,
+    "surprise": 0.091822
+   },
+   "ocr_sentiment": {
+    "anger": 0.889713,
+    "disgust": 4.7e-05,
+    "fear": 0.107307,
+    "joy": 0.000149,
+    "sadness": 0.000528,
+    "surprise": 0.002256
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000661,
+    "disgust": 0.005685,
+    "fear": 0.914916,
+    "joy": 0.000307,
+    "sadness": 0.022559,
+    "surprise": 0.055872
+   },
+   "beats": {
+    "anger": 0.00221,
+    "disgust": 0.000591,
+    "fear": 0.566526,
+    "joy": 0.00927,
+    "sadness": 0.003062,
+    "surprise": 0.418341
+   },
+   "clip": {
+    "anger": 0.01088,
+    "disgust": 0.000727,
+    "fear": 0.928998,
+    "joy": 0.001789,
+    "sadness": 0.040766,
+    "surprise": 0.016839
+   },
+   "face_emotion": {
+    "anger": 0.004573,
+    "disgust": 0.000747,
+    "fear": 0.98213,
+    "joy": 7e-06,
+    "sadness": 0.003151,
+    "surprise": 0.009391
+   },
+   "ocr_sentiment": {
+    "anger": 0.000241,
+    "disgust": 0.001883,
+    "fear": 0.917778,
+    "joy": 0.000348,
+    "sadness": 0.014316,
+    "surprise": 0.065434
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "H2_hostile_notld",
+  "set": "results2",
+  "intended": "hostile",
+  "full": {
+   "anger": 0.687695,
+   "disgust": 0.000148,
+   "fear": 0.309769,
+   "joy": 0.000832,
+   "sadness": 0.001554,
+   "surprise": 1e-06
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.460109,
+    "disgust": 8.9e-05,
+    "fear": 0.536456,
+    "joy": 0.001594,
+    "sadness": 0.001751,
+    "surprise": 2e-06
+   },
+   "beats": {
+    "anger": 0.011504,
+    "disgust": 8.5e-05,
+    "fear": 0.954345,
+    "joy": 1e-06,
+    "sadness": 0.034062,
+    "surprise": 3e-06
+   },
+   "clip": {
+    "anger": 0.661059,
+    "disgust": 0.002443,
+    "fear": 0.326613,
+    "joy": 0.007561,
+    "sadness": 0.000264,
+    "surprise": 0.002061
+   },
+   "face_emotion": {
+    "anger": 0.121115,
+    "disgust": 0.001445,
+    "fear": 0.769328,
+    "joy": 0.090325,
+    "sadness": 0.017769,
+    "surprise": 1.7e-05
+   },
+   "ocr_sentiment": {
+    "anger": 0.676662,
+    "disgust": 0.000175,
+    "fear": 0.320528,
+    "joy": 0.00105,
+    "sadness": 0.001584,
+    "surprise": 1e-06
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000621,
+    "disgust": 0.005404,
+    "fear": 0.913893,
+    "joy": 0.000314,
+    "sadness": 0.021913,
+    "surprise": 0.057854
+   },
+   "beats": {
+    "anger": 0.020495,
+    "disgust": 0.004508,
+    "fear": 0.405912,
+    "joy": 0.544794,
+    "sadness": 0.000933,
+    "surprise": 0.023357
+   },
+   "clip": {
+    "anger": 0.000292,
+    "disgust": 0.000124,
+    "fear": 0.903698,
+    "joy": 4.2e-05,
+    "sadness": 0.095815,
+    "surprise": 2.9e-05
+   },
+   "face_emotion": {
+    "anger": 0.003697,
+    "disgust": 0.000538,
+    "fear": 0.983574,
+    "joy": 9e-06,
+    "sadness": 0.003431,
+    "surprise": 0.008752
+   },
+   "ocr_sentiment": {
+    "anger": 0.000253,
+    "disgust": 0.001653,
+    "fear": 0.917744,
+    "joy": 0.000285,
+    "sadness": 0.014533,
+    "surprise": 0.065531
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "T1_tense_notld",
+  "set": "results2",
+  "intended": "tense",
+  "full": {
+   "anger": 0.140809,
+   "disgust": 3.1e-05,
+   "fear": 0.78497,
+   "joy": 1.5e-05,
+   "sadness": 0.005104,
+   "surprise": 0.069071
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.129877,
+    "disgust": 2.2e-05,
+    "fear": 0.810382,
+    "joy": 1.3e-05,
+    "sadness": 0.005487,
+    "surprise": 0.05422
+   },
+   "beats": {
+    "anger": 0.002117,
+    "disgust": 5.7e-05,
+    "fear": 0.992036,
+    "joy": 0.0,
+    "sadness": 0.005751,
+    "surprise": 3.9e-05
+   },
+   "clip": {
+    "anger": 0.006489,
+    "disgust": 1.1e-05,
+    "fear": 0.031579,
+    "joy": 3.6e-05,
+    "sadness": 0.000111,
+    "surprise": 0.961774
+   },
+   "face_emotion": {
+    "anger": 0.013534,
+    "disgust": 0.000118,
+    "fear": 0.582471,
+    "joy": 0.00028,
+    "sadness": 0.016828,
+    "surprise": 0.386769
+   },
+   "ocr_sentiment": {
+    "anger": 0.132356,
+    "disgust": 3.7e-05,
+    "fear": 0.79481,
+    "joy": 2.1e-05,
+    "sadness": 0.00504,
+    "surprise": 0.067736
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000264,
+    "disgust": 0.002661,
+    "fear": 0.898896,
+    "joy": 0.000428,
+    "sadness": 0.013466,
+    "surprise": 0.084285
+   },
+   "beats": {
+    "anger": 0.000121,
+    "disgust": 8e-06,
+    "fear": 0.005874,
+    "joy": 0.000186,
+    "sadness": 9.7e-05,
+    "surprise": 0.993714
+   },
+   "clip": {
+    "anger": 0.000238,
+    "disgust": 0.000246,
+    "fear": 0.973042,
+    "joy": 6e-06,
+    "sadness": 0.026262,
+    "surprise": 0.000206
+   },
+   "face_emotion": {
+    "anger": 0.002007,
+    "disgust": 0.000391,
+    "fear": 0.984767,
+    "joy": 1.5e-05,
+    "sadness": 0.00322,
+    "surprise": 0.0096
+   },
+   "ocr_sentiment": {
+    "anger": 0.000259,
+    "disgust": 0.00158,
+    "fear": 0.915834,
+    "joy": 0.000262,
+    "sadness": 0.014649,
+    "surprise": 0.067417
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "T2_tense_notld",
+  "set": "results2",
+  "intended": "tense",
+  "full": {
+   "anger": 0.003339,
+   "disgust": 4e-06,
+   "fear": 0.996041,
+   "joy": 7e-06,
+   "sadness": 0.000236,
+   "surprise": 0.000373
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.004036,
+    "disgust": 3e-06,
+    "fear": 0.99542,
+    "joy": 5e-06,
+    "sadness": 0.000291,
+    "surprise": 0.000245
+   },
+   "beats": {
+    "anger": 0.000308,
+    "disgust": 8e-06,
+    "fear": 0.998408,
+    "joy": 0.0,
+    "sadness": 0.001169,
+    "surprise": 0.000107
+   },
+   "clip": {
+    "anger": 0.008321,
+    "disgust": 0.000114,
+    "fear": 0.930166,
+    "joy": 0.001401,
+    "sadness": 0.000434,
+    "surprise": 0.059564
+   },
+   "face_emotion": {
+    "anger": 0.000896,
+    "disgust": 2.7e-05,
+    "fear": 0.995315,
+    "joy": 0.000108,
+    "sadness": 0.001192,
+    "surprise": 0.002462
+   },
+   "ocr_sentiment": {
+    "anger": 0.003432,
+    "disgust": 4e-06,
+    "fear": 0.995972,
+    "joy": 8e-06,
+    "sadness": 0.000232,
+    "surprise": 0.000352
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000193,
+    "disgust": 0.002051,
+    "fear": 0.889562,
+    "joy": 0.000476,
+    "sadness": 0.011248,
+    "surprise": 0.096469
+   },
+   "beats": {
+    "anger": 0.001978,
+    "disgust": 0.000696,
+    "fear": 0.766971,
+    "joy": 0.0169,
+    "sadness": 0.002374,
+    "surprise": 0.21108
+   },
+   "clip": {
+    "anger": 0.000114,
+    "disgust": 6.3e-05,
+    "fear": 0.992108,
+    "joy": 2e-06,
+    "sadness": 0.007313,
+    "surprise": 0.000401
+   },
+   "face_emotion": {
+    "anger": 0.001003,
+    "disgust": 0.000275,
+    "fear": 0.984925,
+    "joy": 2.4e-05,
+    "sadness": 0.002737,
+    "surprise": 0.011036
+   },
+   "ocr_sentiment": {
+    "anger": 0.000234,
+    "disgust": 0.001632,
+    "fear": 0.914233,
+    "joy": 0.000296,
+    "sadness": 0.014506,
+    "surprise": 0.069099
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "FA1_affect_charade_room",
+  "set": "results_fresh",
+  "intended": "affectionate",
+  "full": {
+   "anger": 0.089988,
+   "disgust": 0.025959,
+   "fear": 0.714047,
+   "joy": 0.02032,
+   "sadness": 0.127765,
+   "surprise": 0.021921
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.054959,
+    "disgust": 0.013323,
+    "fear": 0.776283,
+    "joy": 0.021167,
+    "sadness": 0.111708,
+    "surprise": 0.022561
+   },
+   "beats": {
+    "anger": 0.135058,
+    "disgust": 0.001353,
+    "fear": 0.730459,
+    "joy": 3.4e-05,
+    "sadness": 0.12819,
+    "surprise": 0.004905
+   },
+   "clip": {
+    "anger": 0.0055,
+    "disgust": 0.021711,
+    "fear": 0.915466,
+    "joy": 0.003257,
+    "sadness": 0.003885,
+    "surprise": 0.050181
+   },
+   "face_emotion": {
+    "anger": 0.00168,
+    "disgust": 0.028423,
+    "fear": 0.262918,
+    "joy": 0.406923,
+    "sadness": 0.236439,
+    "surprise": 0.063616
+   },
+   "ocr_sentiment": {
+    "anger": 0.094042,
+    "disgust": 0.031353,
+    "fear": 0.712584,
+    "joy": 0.02577,
+    "sadness": 0.118795,
+    "surprise": 0.017457
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000425,
+    "disgust": 0.003951,
+    "fear": 0.909161,
+    "joy": 0.00036,
+    "sadness": 0.017634,
+    "surprise": 0.068469
+   },
+   "beats": {
+    "anger": 0.000111,
+    "disgust": 0.024906,
+    "fear": 0.61837,
+    "joy": 0.145148,
+    "sadness": 0.009858,
+    "surprise": 0.201607
+   },
+   "clip": {
+    "anger": 0.00322,
+    "disgust": 0.001838,
+    "fear": 0.583914,
+    "joy": 0.001784,
+    "sadness": 0.385896,
+    "surprise": 0.023347
+   },
+   "face_emotion": {
+    "anger": 0.005088,
+    "disgust": 0.000678,
+    "fear": 0.982276,
+    "joy": 7e-06,
+    "sadness": 0.003056,
+    "surprise": 0.008895
+   },
+   "ocr_sentiment": {
+    "anger": 0.000226,
+    "disgust": 0.001529,
+    "fear": 0.902257,
+    "joy": 0.000269,
+    "sadness": 0.015106,
+    "surprise": 0.080613
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "FA2_affect_charade_office",
+  "set": "results_fresh",
+  "intended": "affectionate",
+  "full": {
+   "anger": 0.328845,
+   "disgust": 0.000106,
+   "fear": 0.597171,
+   "joy": 0.061453,
+   "sadness": 0.002531,
+   "surprise": 0.009894
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.281967,
+    "disgust": 7.2e-05,
+    "fear": 0.650639,
+    "joy": 0.055934,
+    "sadness": 0.002698,
+    "surprise": 0.008689
+   },
+   "beats": {
+    "anger": 0.103289,
+    "disgust": 0.002781,
+    "fear": 0.675304,
+    "joy": 0.000632,
+    "sadness": 0.15975,
+    "surprise": 0.058243
+   },
+   "clip": {
+    "anger": 0.019723,
+    "disgust": 4.4e-05,
+    "fear": 0.976981,
+    "joy": 0.000786,
+    "sadness": 6.3e-05,
+    "surprise": 0.002403
+   },
+   "face_emotion": {
+    "anger": 0.005402,
+    "disgust": 7.5e-05,
+    "fear": 0.161081,
+    "joy": 0.809458,
+    "sadness": 0.003182,
+    "surprise": 0.020803
+   },
+   "ocr_sentiment": {
+    "anger": 0.320563,
+    "disgust": 0.000124,
+    "fear": 0.590679,
+    "joy": 0.077557,
+    "sadness": 0.002383,
+    "surprise": 0.008693
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000301,
+    "disgust": 0.002959,
+    "fear": 0.902151,
+    "joy": 0.00041,
+    "sadness": 0.014386,
+    "surprise": 0.079793
+   },
+   "beats": {
+    "anger": 0.000896,
+    "disgust": 8.4e-05,
+    "fear": 0.946293,
+    "joy": 0.039496,
+    "sadness": 0.000265,
+    "surprise": 0.012966
+   },
+   "clip": {
+    "anger": 0.002809,
+    "disgust": 0.003141,
+    "fear": 0.388827,
+    "joy": 0.01894,
+    "sadness": 0.399129,
+    "surprise": 0.187155
+   },
+   "face_emotion": {
+    "anger": 0.004268,
+    "disgust": 0.00077,
+    "fear": 0.982639,
+    "joy": 8e-06,
+    "sadness": 0.003309,
+    "surprise": 0.009006
+   },
+   "ocr_sentiment": {
+    "anger": 0.000243,
+    "disgust": 0.001568,
+    "fear": 0.909971,
+    "joy": 0.000271,
+    "sadness": 0.01491,
+    "surprise": 0.073038
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "FH1_hostile_notld_standoff",
+  "set": "results_fresh",
+  "intended": "hostile",
+  "full": {
+   "anger": 0.070019,
+   "disgust": 0.000389,
+   "fear": 0.871664,
+   "joy": 0.017619,
+   "sadness": 0.040272,
+   "surprise": 3.7e-05
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.10575,
+    "disgust": 0.000411,
+    "fear": 0.828468,
+    "joy": 0.010416,
+    "sadness": 0.054935,
+    "surprise": 2e-05
+   },
+   "beats": {
+    "anger": 0.006782,
+    "disgust": 2.9e-05,
+    "fear": 0.98088,
+    "joy": 1e-06,
+    "sadness": 0.012289,
+    "surprise": 1.9e-05
+   },
+   "clip": {
+    "anger": 0.029306,
+    "disgust": 0.006697,
+    "fear": 0.760129,
+    "joy": 0.166618,
+    "sadness": 0.006313,
+    "surprise": 0.030937
+   },
+   "face_emotion": {
+    "anger": 0.001807,
+    "disgust": 0.000515,
+    "fear": 0.432824,
+    "joy": 0.467684,
+    "sadness": 0.097023,
+    "surprise": 0.000147
+   },
+   "ocr_sentiment": {
+    "anger": 0.067682,
+    "disgust": 0.000451,
+    "fear": 0.870814,
+    "joy": 0.021893,
+    "sadness": 0.039124,
+    "surprise": 3.5e-05
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000145,
+    "disgust": 0.001619,
+    "fear": 0.87688,
+    "joy": 0.000535,
+    "sadness": 0.00953,
+    "surprise": 0.111291
+   },
+   "beats": {
+    "anger": 0.000295,
+    "disgust": 0.002922,
+    "fear": 0.095672,
+    "joy": 0.879602,
+    "sadness": 0.005439,
+    "surprise": 0.016071
+   },
+   "clip": {
+    "anger": 0.000509,
+    "disgust": 9.5e-05,
+    "fear": 0.921142,
+    "joy": 3.1e-05,
+    "sadness": 0.078149,
+    "surprise": 7.4e-05
+   },
+   "face_emotion": {
+    "anger": 0.004958,
+    "disgust": 0.00075,
+    "fear": 0.982151,
+    "joy": 7e-06,
+    "sadness": 0.003124,
+    "surprise": 0.00901
+   },
+   "ocr_sentiment": {
+    "anger": 0.000248,
+    "disgust": 0.001614,
+    "fear": 0.914246,
+    "joy": 0.000279,
+    "sadness": 0.014665,
+    "surprise": 0.068947
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "FH2_hostile_tos_bridge",
+  "set": "results_fresh",
+  "intended": "hostile",
+  "full": {
+   "anger": 0.990238,
+   "disgust": 0.000316,
+   "fear": 0.000254,
+   "joy": 0.000606,
+   "sadness": 0.006427,
+   "surprise": 0.002158
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.985816,
+    "disgust": 0.000263,
+    "fear": 0.000438,
+    "joy": 0.000983,
+    "sadness": 0.009065,
+    "surprise": 0.003435
+   },
+   "beats": {
+    "anger": 0.643397,
+    "disgust": 0.037261,
+    "fear": 0.142601,
+    "joy": 0.000836,
+    "sadness": 0.12849,
+    "surprise": 0.047415
+   },
+   "clip": {
+    "anger": 0.814618,
+    "disgust": 0.000562,
+    "fear": 0.126274,
+    "joy": 0.000711,
+    "sadness": 0.019057,
+    "surprise": 0.038778
+   },
+   "face_emotion": {
+    "anger": 0.531114,
+    "disgust": 0.009232,
+    "fear": 0.001818,
+    "joy": 0.144916,
+    "sadness": 0.204014,
+    "surprise": 0.108906
+   },
+   "ocr_sentiment": {
+    "anger": 0.990382,
+    "disgust": 0.000376,
+    "fear": 0.000258,
+    "joy": 0.000773,
+    "sadness": 0.006251,
+    "surprise": 0.001959
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000413,
+    "disgust": 0.003854,
+    "fear": 0.908,
+    "joy": 0.000366,
+    "sadness": 0.017297,
+    "surprise": 0.07007
+   },
+   "beats": {
+    "anger": 0.068892,
+    "disgust": 0.002704,
+    "fear": 0.257649,
+    "joy": 0.059028,
+    "sadness": 0.135993,
+    "surprise": 0.475733
+   },
+   "clip": {
+    "anger": 0.028926,
+    "disgust": 0.084452,
+    "fear": 0.136219,
+    "joy": 0.031799,
+    "sadness": 0.449179,
+    "surprise": 0.269425
+   },
+   "face_emotion": {
+    "anger": 0.003224,
+    "disgust": 0.000476,
+    "fear": 0.983561,
+    "joy": 1.1e-05,
+    "sadness": 0.003277,
+    "surprise": 0.009451
+   },
+   "ocr_sentiment": {
+    "anger": 0.000243,
+    "disgust": 0.00159,
+    "fear": 0.910501,
+    "joy": 0.000275,
+    "sadness": 0.014821,
+    "surprise": 0.07257
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ },
+ {
+  "clip": "FT1_tense_notld_door",
+  "set": "results_fresh",
+  "intended": "tense",
+  "full": {
+   "anger": 0.210245,
+   "disgust": 0.000209,
+   "fear": 0.786252,
+   "joy": 0.002109,
+   "sadness": 0.001147,
+   "surprise": 3.9e-05
+  },
+  "missing_modalities": [],
+  "drop_one": {
+   "asr_sentiment": {
+    "anger": 0.248103,
+    "disgust": 0.00018,
+    "fear": 0.748918,
+    "joy": 0.001398,
+    "sadness": 0.001377,
+    "surprise": 2.4e-05
+   },
+   "beats": {
+    "anger": 0.003267,
+    "disgust": 2.2e-05,
+    "fear": 0.991137,
+    "joy": 0.0,
+    "sadness": 0.005529,
+    "surprise": 4.3e-05
+   },
+   "clip": {
+    "anger": 0.203821,
+    "disgust": 0.006703,
+    "fear": 0.728314,
+    "joy": 0.048645,
+    "sadness": 0.000499,
+    "surprise": 0.012017
+   },
+   "face_emotion": {
+    "anger": 0.012963,
+    "disgust": 0.000611,
+    "fear": 0.862488,
+    "joy": 0.117704,
+    "sadness": 0.005905,
+    "surprise": 0.000329
+   },
+   "ocr_sentiment": {
+    "anger": 0.223441,
+    "disgust": 0.000222,
+    "fear": 0.773079,
+    "joy": 0.002113,
+    "sadness": 0.001108,
+    "surprise": 3.6e-05
+   }
+  },
+  "keep_one": {
+   "asr_sentiment": {
+    "anger": 0.000188,
+    "disgust": 0.002008,
+    "fear": 0.88809,
+    "joy": 0.000484,
+    "sadness": 0.010997,
+    "surprise": 0.098233
+   },
+   "beats": {
+    "anger": 0.00592,
+    "disgust": 0.006789,
+    "fear": 0.279652,
+    "joy": 0.684308,
+    "sadness": 0.001125,
+    "surprise": 0.022206
+   },
+   "clip": {
+    "anger": 0.00024,
+    "disgust": 5.7e-05,
+    "fear": 0.968134,
+    "joy": 1.4e-05,
+    "sadness": 0.031353,
+    "surprise": 0.000202
+   },
+   "face_emotion": {
+    "anger": 0.004568,
+    "disgust": 0.000751,
+    "fear": 0.982487,
+    "joy": 7e-06,
+    "sadness": 0.003232,
+    "surprise": 0.008955
+   },
+   "ocr_sentiment": {
+    "anger": 0.000222,
+    "disgust": 0.001733,
+    "fear": 0.914843,
+    "joy": 0.000341,
+    "sadness": 0.014529,
+    "surprise": 0.068333
+   }
+  },
+  "all_zero": {
+   "anger": 0.000241,
+   "disgust": 0.001883,
+   "fear": 0.917778,
+   "joy": 0.000348,
+   "sadness": 0.014316,
+   "surprise": 0.065434
+  }
+ }
+]

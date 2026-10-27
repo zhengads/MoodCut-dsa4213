@@ -36,6 +36,17 @@ These cases demonstrate technical execution. Spoken Chinese, character consisten
 
 The candidate study inputs now comprise three complementary sets on the [same study page](docs/studies/six-story-clear-emotions-20261024/README.md). S01–S06 contain two stories each for affectionate, hostile and tense tones. S07–S12 contain one story for each VEMOCLAP class. S13–S18 add a second six-class set with deliberately understated authored drafts for exploratory review stress testing. These drafts are not natural model baselines, and the challenge set is not independent evidence of method superiority.
 
+### Evaluation-set iteration
+
+Evaluation work by 范旭阳 (FANXUYANG, GitHub: fanx9905-blip). The evaluation sets changed in four steps; the full record with per-video numbers is the [emotion evaluation record](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md).
+
+1. **S01–S06, three tones.** VEMOCLAP outputs six emotions and has no affectionate or tense class, so mapping rules were tried: V0 (name match), V1 (skip videos with surprise ≥ 50%), V2 (frozen group sums) and a proposed V3 (conflict gate). **V1 and V2 are historical and no longer used for scoring.** V2 matched 20 of 29 videos (affectionate 9/9, hostile 11/12, tense 0/8), and tense and hostile overlap in the six probabilities. The V2 code stays in `src/moodcut/vemoclap_atmosphere.py` only to reproduce those numbers.
+2. **S07–S12, six emotions (current approach).** One scenario per VEMOCLAP emotion; videos are scored on the six probabilities directly, with no merging into tones. First results over 13 unique videos: anger and disgust are recognised, sadness only in the moodcut condition, joy is indistinguishable from surprise, fear is not detected.
+3. **S13–S18, review-challenge set.** S15 (fear) is evaluated: fear stays at 4.6–9.5% in all three conditions.
+4. **Fear diagnostics.** Per-modality ablation, feature swaps with a real horror clip and a brightness control on S09/S15 show that the visual features decide the result; fear rises only when the picture is made very dark, which does not show that the video conveys fear.
+
+All numbers are exploratory: one video per condition and no human ratings. Human blind rating remains the primary evidence (draft protocol in the study folder). **Analysis results are in [`docs/studies/emotion-evaluation-20261027/results/`](docs/studies/emotion-evaluation-20261027/results/).**
+
 ### S07–S12: VEMOCLAP basic-emotion scenarios
 
 S07–S12 reuse the six existing character pairs while changing the plots and target labels. They extend the study rather than replacing or relabelling S01–S06.
@@ -104,6 +115,27 @@ The output contains a shared draft, three condition records and three static ani
 
 **Default `plan/review/smoke/run` commands still use the original animatic flow and do not enable Actor v3/v4 automatically.** Select a protocol explicitly during generated-script orchestration. Script preparation, request compilation and video generation are separate stages. See the [generated-video workflow](docs/usage.md#生成式视频流程) for parameters and prerequisites.
 
+## Using the evaluation sets
+
+The evaluation sets are committed as generated-mode (schema 1.1) inputs under `docs/studies/six-story-clear-emotions-20261024/inputs/`. They do not run through the offline animatic demo above: `run --mock` with an S07 scene fails with an invalid animatic `schema_version`, and `--output-mode generated` needs a saved `--source-block` from prepared scripts. They connect to the generated-video workflow and to the `evaluate` command instead.
+
+| Set | Scene inputs | Index | Assignment config |
+| --- | --- | --- | --- |
+| S01–S06 (three tones) | `inputs/s01_…` to `s06_…` | `inputs/index.json` | none; only the development example `configs/experiment.json` |
+| S07–S12 (six emotions) | `inputs/s07_…` to `s12_…` | `inputs/basic-emotions-index.json` | `configs/basic-emotions-experiment.json` |
+| S13–S18 (review challenge) | `inputs/s13_…` to `s18_…`, with `draft-dialogue.json` | `inputs/basic-emotion-challenge-index.json` | `configs/basic-emotions-challenge-experiment.json` |
+
+1. **Check the assignments offline** (no network, no paid calls): `.venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run` lists 18 planned runs; the challenge config does the same.
+2. **Prepare scripts and video requests** with the [generated-video workflow](docs/usage.md#生成式视频流程). Real generation needs an explicit model, scope and budget, and the character images from the [asset library](assets/library/README.md), which are not committed.
+3. **Score the videos you have**, one `<video_id>.mp4` each:
+   - one video: `scripts/run_vemoclap.ps1` or `python -m moodcut.vemoclap` ([VEMOCLAP guide](docs/vemoclap.md));
+   - batch with per-modality ablation: `scripts/emotion_eval/run_vemoclap_batch.py`, then `collect_results.py` ([script guide](scripts/emotion_eval/README.md));
+   - VBench imaging_quality: `scripts/emotion_eval/make_vbench_manifest.py` and `run_vbench_batch.sh` ([VBench guide](docs/vbench.md));
+   - human rating: `evaluate --blind-output` and `--ratings`, with the six emotion labels plus `uncertain` ([evaluation guide](docs/evaluation.md)).
+4. **Without any model**: `python scripts/emotion_eval/analyze_mapping.py` and `python -m unittest discover -s tests -p "test_emotion_eval_results.py"` reproduce the mapping analysis and check the committed results.
+
+VEMOCLAP and VBench scoring are separate scripts, not subcommands of `python -m moodcut`; they read finished `.mp4` files and do not use the `--mock` flow of this Quick start.
+
 ## Documentation
 
 | Topic | Reference |
@@ -113,6 +145,7 @@ The output contains a shared draft, three condition records and three static ani
 | Data structures, interfaces, shared identity and accounting | [Contracts](docs/CONTRACTS.md) |
 | Static rendering, request compilation and video inspection | [Rendering](docs/rendering.md) |
 | Anonymized export, human ratings, coverage and cost summaries | [Evaluation](docs/evaluation.md) |
+| Emotion evaluation record: rule iteration, ablations, per-video results | [Emotion evaluation record](docs/studies/emotion-evaluation-20261027/EMOTION_EVALUATION_RECORD.md) · [results](docs/studies/emotion-evaluation-20261027/results/) |
 | Character references, sources and license status | [Animation asset library](assets/library/README.md) |
 | Settings, results and failures from previous trials | [Pilot records](docs/pilots/) |
 | Module ownership, task cards and branch rules | [Team workflow](docs/TEAM.md) · [Branch rules](docs/BRANCHES.md) |
@@ -134,6 +167,7 @@ src/moodcut/         Core modules; prompts/ holds model prompts
 configs/            Model, rendering and experiment configuration
 tests/              Offline tests and fixtures/
 scripts/            Asset preparation, video inspection and comparison
+                    scripts/emotion_eval/ holds the VEMOCLAP/VBench evaluation scripts
 docs/               Methods, contracts, tasks and pilot records
 assets/             Asset metadata; original images stay in ignored folders
 references/         Source locks, reading index and local caches

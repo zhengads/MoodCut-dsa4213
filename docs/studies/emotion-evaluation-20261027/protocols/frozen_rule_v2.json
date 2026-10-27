@@ -1,0 +1,39 @@
+{
+ "rule": {
+  "version": "v2",
+  "supersedes": "draft-1 (abstain at surprise >= 0.50)",
+  "frozen_before_viewing_fresh_clip_results": true,
+  "groups": {
+   "hostile": [
+    "anger",
+    "disgust"
+   ],
+   "tense": [
+    "fear"
+   ],
+   "affectionate": [
+    "joy",
+    "sadness",
+    "surprise"
+   ]
+  },
+  "decision": "argmax of the three group scores; no abstention",
+  "intended_score": "sum of the group probabilities belonging to the video's intended atmosphere",
+  "pass_criteria_for_fresh_clips": {
+   "min_correct": 5,
+   "of": 6,
+   "min_correct_per_atmosphere": 1
+  },
+  "reason_for_change": "user feedback: surprise should map to an atmosphere (positive valence in the upstream emotion_to_va table; surprise appears only in affectionate-intended project videos); not based on fresh clip results"
+ },
+ "rule_sha256": "38dd32848580d8a8e3bb404ce0c4b641758f89a2bc3cf2a6cf445213e580422d",
+ "frozen_at_local": "2026-10-25T22:42:30",
+ "clip_sha256": {
+  "FA1_affect_charade_room.mp4": "4d19c860bb386899710c98cc888ccfd4c6e6183b9e236d7010d911995fe4a621",
+  "FA2_affect_charade_office.mp4": "b4afcfe988dfe2a2825d3016bd61ef6d05df24ee2fa9a985ab6ef378ccbacf8b",
+  "FH1_hostile_notld_standoff.mp4": "160edf4d60e65d3ecd7fc5361a79926806b0b01d34e8df41db1f6de207a182a7",
+  "FH2_hostile_tos_bridge.mp4": "50968aa7cb681d8b6bf178777db744506592c2cc26bfb87a208cfafbda95773c",
+  "FT1_tense_notld_door.mp4": "2c66907c554b876b37543587d34b3d96e69d85404ae7885159bba223ce96dbe5",
+  "FT2_tense_notld_prep.mp4": "9015bc94331eb94e66f4f105d752b9727edaac68a063260f79a93075ae922d62"
+ }
+}
