@@ -31,7 +31,7 @@ SOURCE_ASSETS = {
 }
 
 EXPECTED_LANGUAGES = {
-    "s13_unilateral_decision": "English",
+    "s13_unilateral_decision": "Mandarin Chinese",
     "s14_spoiled_drink": "English",
     "s15_cracking_bridge": "Mandarin Chinese",
     "s16_approval_arrives": "Mandarin Chinese",
@@ -164,6 +164,10 @@ def _s13_generated_case():
 
 def test_authored_draft_replaces_only_dialogue_without_mutating_inputs():
     scene, _manifest, plan, draft, _settings = _s13_generated_case()
+    assert draft["dialogue"] == [
+        {"character_id": "despicableme4_lucy", "text": "所以你没有问我，就自己决定了。"},
+        {"character_id": "despicableme4_gru", "text": "我只是觉得这样更简单。"},
+    ]
     before = deepcopy((scene, plan, draft))
     adapted = pipeline.apply_authored_dialogue_draft(scene, plan, draft)
     assert adapted["shots"][0]["dialogue"] == draft["dialogue"]

@@ -13,7 +13,7 @@
   "planned_condition_entries": 18,
   "duration_s": 8,
   "max_shots": 1,
-  "language_policy": "S15 and S16 use Mandarin Chinese. S13, S14, S17, and S18 use English. Every condition within a story uses the same language.",
+  "language_policy": "S13, S15, and S16 use Mandarin Chinese. S14, S17, and S18 use English. Every condition within a story uses the same language.",
   "emotion_definitions": {
     "anger": {"label": "愤怒", "meaning": "Anger at another person's unilateral action."},
     "disgust": {"label": "厌恶", "meaning": "Revulsion toward a spoiled drink's smell."},
@@ -53,7 +53,7 @@
       "title": "A unilateral decision",
       "emotion": "anger",
       "emotion_label": "愤怒",
-      "language": "English",
+      "language": "Mandarin Chinese",
       "cast": [
         {"character_id": "despicableme4_lucy", "display_name": "Lucy / 露西"},
         {"character_id": "despicableme4_gru", "display_name": "Gru / 格鲁"}
