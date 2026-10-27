@@ -19,7 +19,7 @@
 | `film_clip_combos.py` | 对真人电影片段只保留或互换若干路特征 |
 | `feature_swap_fear.py` | 恐惧专项：用真实恐怖片段的特征替换和反向替换，检验哪一路决定 fear |
 | `darken_and_eval.py` | 用 ffmpeg 只降亮度（音频不变）后重新评测 |
-| `audio_check.py`、`audio_probe.py`、`asr_all.py`、`face_probe.py` | 音轨响度和 BEATs 标签、Whisper 转写、人脸检测输出，用来排查特征 |
+| `audio_check.py`、`asr_all.py`、`face_probe.py` | 音轨响度和 BEATs 标签、Whisper 转写、人脸检测输出，用来排查特征 |
 | `dim_audio.py`、`text_go.py` | 语音唤醒度/支配度/情感价模型和 GoEmotions 文本模型，探索性代理 |
 | `analyze_mapping.py` | 只读已提交结果，检验六类情绪概率能否分开亲密、敌对、紧张（不需要任何模型） |
 | `make_vbench_manifest.py`、`run_vbench_batch.sh` | 生成 VBench imaging_quality 清单并运行，环境和固定版本见 [docs/vbench.md](../../docs/vbench.md) |
