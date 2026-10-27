@@ -275,6 +275,66 @@ This is an **exploratory stress-test set**, not an unbiased benchmark. The draft
 | S17 | sadness / 悲伤 | Elsa, Mattias | An old tree meaningful to Elsa has been removed | “The old tree is gone.” / “I know.” |
 | S18 | surprise / 惊讶 | Maxime, Valentina | Valentina has finished preparing the room much earlier than expected | “You finished already?” / “This morning.” |
 
+#### S13: A unilateral decision — anger
+
+**Relationship and starting point:** Lucy and Gru are adult partners seated opposite each other in a quiet living room. They had agreed to make an ordinary household decision together, but Gru has just made it alone without consulting Lucy.
+
+**Fixed plot:** Lucy objects to Gru breaking their agreement and expresses anger about his unilateral action. Gru defends what he did without denying that he decided alone. The disagreement remains unresolved.
+
+**Dialogue task:** the saved shared draft gives Lucy one understated objection and Gru one practical excuse. Baseline keeps those exact lines; review may make the anger and opposition clearer without specifying what the decision concerned.
+
+**Boundaries:** do not invent the household arrangement, deception, crime, infidelity, threats, insults, shouting, pushing or departure. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
+#### S14: The spoiled drink — disgust
+
+**Relationship and starting point:** Anna and Kristoff are adult partners already standing opposite each other beside a small table in a quiet entrance hall. A drink on the table has spoiled and has a clearly unpleasant smell.
+
+**Fixed plot:** Anna reacts with strong aversion to the smell. Kristoff confirms that the drink has spoiled. Neither person drinks, touches or removes it.
+
+**Dialogue task:** the saved shared draft describes the smell too mildly and gives an indirect acknowledgement. Review may strengthen revulsion and confirmation while retaining one line per character.
+
+**Boundaries:** do not introduce poisoning, illness, vomiting, exaggerated gagging, magic or another person. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
+#### S15: A crack beneath the bridge — fear
+
+**Relationship and starting point:** Nezha and Aobing are trusted companions already standing together at the centre of a quiet old bridge. They have just heard one unexplained cracking sound from below and do not know whether the bridge is safe.
+
+**Fixed plot:** Nezha admits concern that the bridge may become unstable. Aobing shares the fear and tells Nezha not to move yet. The cause and outcome remain unknown.
+
+**Dialogue task:** the saved Mandarin draft merely notices the sound and possible instability. Review may make their reciprocal fear clearer without changing the unknown outcome.
+
+**Boundaries:** do not show collapse, running, jumping, falling, injury, rescue, magic or another person. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
+#### S16: The approval arrives — joy
+
+**Relationship and starting point:** Lijing and Taiyi are collaborators already standing opposite each other beside a table in a quiet room. An ordinary community event they prepared together had been awaiting approval, and they have just learned that it was approved.
+
+**Fixed plot:** Lijing expresses happiness and relief about the approval. Taiyi reciprocates the joy and anticipation. The event itself has not started.
+
+**Dialogue task:** the saved Mandarin draft states the approval and next step without audible shared happiness. Review may strengthen joy and relief while keeping the event ordinary.
+
+**Boundaries:** do not add an award, position, money, competition, new person, celebration action, magic or music. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
+#### S17: The old tree is gone — sadness
+
+**Relationship and starting point:** Elsa and Mattias are trusted companions already standing together in a quiet courtyard. Elsa has just learned that an old tree personally meaningful to her was removed after natural decline; its former place is empty.
+
+**Fixed plot:** Elsa expresses sadness about losing the tree. Mattias understands the loss and offers comfort. The tree is not restored and no solution is found.
+
+**Dialogue task:** the saved shared draft states the loss and gives only a minimal response. Review may express personal sadness and meaningful comfort without inventing why the tree mattered.
+
+**Boundaries:** do not invent the tree's origin, a deceased relative, an accident, a responsible party or a remedy. Do not require crying, embracing or magic. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
+#### S18: The room is already ready — surprise
+
+**Relationship and starting point:** Maxime and Valentina are collaborators already standing opposite each other beside a table in an ordinary meeting room. Both expected preparing the room to take longer, but Maxime has just discovered that Valentina finished much earlier.
+
+**Fixed plot:** Maxime expresses immediate surprise and disbelief at the early completion. Valentina confirms that the room was ready that morning.
+
+**Dialogue task:** the saved shared draft asks a mild question and gives a fragmentary confirmation. Review may make the disbelief and confirmation clearer without specifying extra work or assistance.
+
+**Boundaries:** do not add secret help, a competition, reward, conflict, magic, exaggerated jumping or another person. Do not directly recite an emotion label. Reference images define identity and clothing only. Do not quote the source film or rely on undeclared film history.
+
 ### Intended revision opportunities
 
 - **S13:** clarify Lucy's anger and make Gru's defensive opposition explicit without inventing the decision.
