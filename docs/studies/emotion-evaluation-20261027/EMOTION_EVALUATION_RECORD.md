@@ -8,14 +8,14 @@
 
 **中文**　本分支 `feat/issue-9-emotion-evaluation-pipeline` 把 2026-10-25 至 10-27 做的情绪评测整理成可复现的流程，并记录评测规则和评测集的迭代。具体改动：
 
-1. **新增研究记录**（本目录）：规则怎么改的（V0→V1→V2→V3 均为历史方案，现行做法是直接评测六种情绪）、消融和对照实验步骤、逐视频结果、人工评分方案草案。
+1. **新增研究记录**（本目录）：规则怎么改的（direct-label→surprise-filtered→grouped-score→conflict-gated 均为历史方案，现行做法是直接评测六种情绪）、消融和对照实验步骤、逐视频结果、人工评分方案草案。
 2. **新增评测脚本** `scripts/emotion_eval/`：VEMOCLAP 单路消融、特征互换、变暗对照、VBench 批处理和只读结果的分析；路径全部来自环境变量。
 3. **带入 VEMOCLAP 适配器**：`src/moodcut/vemoclap*.py`、`configs/vemoclap-*`、`docs/vemoclap.md`、许可证和测试，脚本依赖它们。
 4. **修改项目 README**（中英文）：`Current progress` 增加评测集迭代，`Quick start` 之后新增 `Using the evaluation sets`，文档导航增加本记录。
 
 **English**　This branch, `feat/issue-9-emotion-evaluation-pipeline`, turns the evaluation done between 2026-10-25 and 10-27 into a reproducible pipeline and records how the scoring rules and evaluation sets evolved. What changed:
 
-1. **Study record** (this folder): how the rules changed (V0→V1→V2→V3 are all historical; the current approach scores the six emotions directly), the ablation and control experiments, per-video results and a draft human-rating protocol.
+1. **Study record** (this folder): how the rules changed (direct-label→surprise-filtered→grouped-score→conflict-gated are all historical; the current approach scores the six emotions directly), the ablation and control experiments, per-video results and a draft human-rating protocol.
 2. **Evaluation scripts** in `scripts/emotion_eval/`: per-modality VEMOCLAP ablation, feature swaps, brightness control, VBench batch helpers and an analysis that runs on the committed results; all paths come from environment variables.
 3. **VEMOCLAP adapter**: `src/moodcut/vemoclap*.py`, `configs/vemoclap-*`, `docs/vemoclap.md`, the license and tests that the scripts depend on.
 4. **Project README** (English and Chinese): `Current progress` gains the evaluation-set iteration, `Quick start` is followed by `Using the evaluation sets`, and the documentation table links this record.
@@ -62,18 +62,18 @@ MoodCut 生成的两人对话视频（三个条件：baseline＝共同初稿、g
 
 日期依据结果文件的时间戳；10 月 25 日 20 点之前的准备工作没有保留时间记录，合并在 10 月 25 日。
 
-- **10 月 25 日**：接手此前未完成的 VEMOCLAP 评测任务；排查 anger 被判成 surprise 的倾向；挑选并核对两人对话的真人电影片段做校准；对项目视频（S06 十五秒、Anna/Elsa 等）做 VEMOCLAP 并第一次做单路消融，发现结果主要由音频决定；事先冻结规则 V2 并用新片段校验；评测 S01 v4。
+- **10 月 25 日**：接手此前未完成的 VEMOCLAP 评测任务；排查 anger 被判成 surprise 的倾向；挑选并核对两人对话的真人电影片段做校准；对项目视频（S06 十五秒、Anna/Elsa 等）做 VEMOCLAP 并第一次做单路消融，发现结果主要由音频决定；事先冻结规则 grouped-score 并用新片段校验；评测 S01 reviewer-revisit。
 - **10 月 26 日**：评测 S01 十五秒；探索语音唤醒度/支配度/情感价模型和 GoEmotions 文本代理，均不理想；评测 S04（紧张）；搭建固定版本的 VBench 环境，评测 S03、S05 英文新视频和所有已有项目视频；写人工盲评方案增补草案；汇总成共享页面。
-- **10 月 27 日**：补测网站上的 S06 视频；分析紧张为什么被判成敌对，提出 V3（冲突闸门）；倒推能否由六类概率区分三种氛围；改为直接评测六种情绪，评测 S07–S12 和 S15；对恐惧视频做逐路消融、特征互换和变暗对照；起草 S09 探索性第二版；整理本分支。
+- **10 月 27 日**：补测网站上的 S06 视频；分析紧张为什么被判成敌对，提出 conflict-gated（冲突闸门）；倒推能否由六类概率区分三种氛围；改为直接评测六种情绪，评测 S07–S12 和 S15；对恐惧视频做逐路消融、特征互换和变暗对照；起草 S09 探索性第二版；整理本分支。
 
 ## 4. 评测规则是怎么改的
 
 | 版本 | 规则 | 为什么改 | 结果 | 状态 |
 |---|---|---|---|---|
-| V0 | 敌对＝anger，紧张＝fear，亲密＝joy | 名字最接近 | 12 个预试视频对 7 个；亲密 5 个全错：joy 几乎为 0，被读成 sadness 或 surprise | 放弃 |
-| V1 | 在 V0 上，surprise ≥ 50% 弃判 | surprise 含义不清 | 被指出不合理：目标就是确定对应关系，不应丢掉这类视频 | 被 V2 取代 |
-| V2 | 敌对＝anger＋disgust，紧张＝fear，亲密＝joy＋sadness＋surprise，取得分最高的一组，不弃判 | 上游情绪价表里 surprise 为正；预试里 surprise 只出现在亲密视频；规则在看校验结果之前冻结（`protocols/frozen_rule_v2.json`） | 29 条项目视频记录对 20 条：亲密 9/9，敌对 11/12，紧张 0/8；真人电影校验未达标（标准 6 中至少 5） | 实现于 `src/moodcut/vemoclap_atmosphere.py`，对紧张无效 |
-| V3（提议） | 只判有没有冲突：anger＋disgust＋fear ≥ 50% 为冲突类，否则为亲密；紧张和敌对交给人工 | 紧张视频冲突量 77.0–98.8%，亲密视频 0.2–9.6% | 29 条里 28 条（看过数据后设计，未验证） | 未冻结 |
+| direct-label | 敌对＝anger，紧张＝fear，亲密＝joy | 名字最接近 | 12 个预试视频对 7 个；亲密 5 个全错：joy 几乎为 0，被读成 sadness 或 surprise | 放弃 |
+| surprise-filtered | 在 direct-label 上，surprise ≥ 50% 弃判 | surprise 含义不清 | 被指出不合理：目标就是确定对应关系，不应丢掉这类视频 | 被 grouped-score 取代 |
+| grouped-score | 敌对＝anger＋disgust，紧张＝fear，亲密＝joy＋sadness＋surprise，取得分最高的一组，不弃判 | 上游情绪价表里 surprise 为正；预试里 surprise 只出现在亲密视频；规则在看校验结果之前冻结（`protocols/frozen_rule_v2.json`） | 29 条项目视频记录对 20 条：亲密 9/9，敌对 11/12，紧张 0/8；真人电影校验未达标（标准 6 中至少 5） | 实现于 `src/moodcut/vemoclap_atmosphere.py`，对紧张无效 |
+| conflict-gated（提议） | 只判有没有冲突：anger＋disgust＋fear ≥ 50% 为冲突类，否则为亲密；紧张和敌对交给人工 | 紧张视频冲突量 77.0–98.8%，亲密视频 0.2–9.6% | 29 条里 28 条（看过数据后设计，未验证） | 未冻结 |
 | 六种情绪 | 不再对应氛围，直接看六类概率 | 倒推发现紧张与敌对不可分（见下） | 见第 6 节 | 现行方向 |
 
 **倒推紧张与敌对能否分开**（`scripts/emotion_eval/analyze_mapping.py`，只读已提交结果）：在 19 条冲突类视频里，anger 的 AUC 只有 0.31（两类完全重叠），fear 为 0.08（紧张的 fear 平均只有 6.5%），只有 disgust 的 AUC 达 0.97，但这是“充分不必要”：敌对里有三条 disgust 很低、anger 高达 96–99%，与紧张无法区分。“冲突闸门＋disgust ≥ 5%”留一组验证 24/29，是在看过数据后选的阈值，且紧张只有 S03、S04 两个故事，不能当规则。
@@ -164,7 +164,7 @@ MoodCut 生成的两人对话视频（三个条件：baseline＝共同初稿、g
 | `results/dark_experiment.json` | 变暗对照 |
 | `results/fear_feature_swap_s09_s15.txt` | 恐惧专项特征交换的完整输出 |
 | `results/film_clips_vemoclap.json` | 真人电影片段的 VEMOCLAP 结果（片段本身不提供） |
-| `protocols/` | 人工盲评方案草案、事先冻结的规则 V2、S09 探索性第二版草稿 |
+| `protocols/` | 人工盲评方案草案、事先冻结的规则 grouped-score、S09 探索性第二版草稿 |
 
 ## 10. 局限
 

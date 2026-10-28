@@ -37,7 +37,7 @@ $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
 
 `check-client` 只检查本地配置，不联网，也不验证远端 key。提供 key 不会自动开启付费调用。
 
-在明确接受模型、规模与本次预算后，旧文本 demo 可执行以下命令；它产生的是 animatic，不是生成式视频，也不启用演员 v3：
+在明确接受模型、规模与本次预算后，旧文本 demo 可执行以下命令；它产生的是 animatic，不是生成式视频，也不启用演员 actor-negotiation：
 
 ```powershell
 # Paid text demo only; first prepare the Anna/Elsa assets below.
@@ -45,7 +45,7 @@ $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
 .venv/Scripts/python scripts/compare_demo.py --run runs/live-demo-01
 ```
 
-该故事是已有读信软件示例的改编，不是原电影剧情或正式评价数据。旧协议未命中规划缓存时最多 9 次文本调用；演员 v3 的整块上限为 19 次，v4 为 16 次，具体模型与设置见[方法说明](ACTOR_REVIEW_METHOD.md)。
+该故事是已有读信软件示例的改编，不是原电影剧情或正式评价数据。旧协议未命中规划缓存时最多 9 次文本调用；演员 actor-negotiation 的整块上限为 19 次，reviewer-revisit 为 16 次，具体模型与设置见[方法说明](ACTOR_REVIEW_METHOD.md)。
 
 `--max-cost-usd` 是客户端估算阈值，不是账户硬额度，也不跨进程共享。真实费用以记录和平台账目为准；未知费用保留为 `null` 并停止后续调用，不自动重试。
 
@@ -53,9 +53,9 @@ $env:OPENROUTER_API_KEY = Read-Host 'OpenRouter API key' -MaskInput
 
 ### 1. 准备三条件脚本
 
-需要已有的 1.1/generated 脚本 `block.json`，由 `pipeline.run_experiment(..., output_mode="generated", ...)` 产生。规划前冻结实际视频模板哈希、共同输入和生成设置；v4 显式传入 `review_protocol="actor_self_review_v4"`。选择 `actor_self_review_v3` 可保留旧版行为；更早协议也保持兼容。
+需要已有的 1.1/generated 脚本 `block.json`，由 `pipeline.run_experiment(..., output_mode="generated", ...)` 产生。规划前冻结实际视频模板哈希、共同输入和生成设置；reviewer-revisit 显式传入 `review_protocol="reviewer_revisit"`。选择 `actor_negotiation` 可保留旧版行为；更早协议也保持兼容。
 
-这里使用程序接口，普通 CLI `plan/review` 不提供 v3/v4 切换。参数、依赖和产物见[脚本编排契约](CONTRACTS.md#67-已实现的生成脚本编排与共享身份记录)与[演员方法](ACTOR_REVIEW_METHOD.md)。脚本准备不创建视频任务；使用真实文本模型仍需相应预算授权。
+这里使用程序接口，普通 CLI `plan/review` 不提供 negotiation/revisit 切换。参数、依赖和产物见[脚本编排契约](CONTRACTS.md#67-已实现的生成脚本编排与共享身份记录)与[演员方法](ACTOR_REVIEW_METHOD.md)。脚本准备不创建视频任务；使用真实文本模型仍需相应预算授权。
 
 ### 2. 离线编译请求
 
@@ -216,7 +216,7 @@ docs/REFERENCES.md、docs/upstream-reuse.md 和该 Issue 关联的任务卡。
 
     python scripts/run_s06_real.py text --input runs/NEW-S06-RUN --text-budget 0.10 --allow-paid
 
-使用 Gemini、DeepSeek 和 actor_self_review_v3。
+使用 Gemini、DeepSeek 和 actor_negotiation。
 输出目录存在时禁止重复提交。
 
 ### 3. 编译视频请求

@@ -1,4 +1,4 @@
-# Anna/Elsa v3 per-shot writer real trial — JSON error before video
+# Anna/Elsa actor-negotiation per-shot writer real trial — JSON error before video
 
 The user separately authorized one real trial using the corrected writer contract, unchanged models, HeyGen 768p, three requested five-second conditions, text ceiling $0.10, combined ceiling $1.00 and an additional untouched $0.10 reserve. This trial executed code `cc15e01d873caa8c56c947be018302d959577a4d` on 2026-10-24. See [exact saved results](anna-elsa-actor-v3-shot.results.json) and [the comparison page](https://zhengads.github.io/MoodCut-dsa4213/#v3-shot).
 
@@ -6,7 +6,7 @@ The user separately authorized one real trial using the corrected writer contrac
 
 ## Scope and actual text
 
-Anna/Elsa's existing umbrella-return development story and original two PNGs were reused. Gemini 2.5 Flash-Lite handled common planning/unified writing; independent actor reports used DeepSeek V3.2. Both review conditions used `actor_self_review_v3` with `writer_output_contract=dialogue_by_shot_v1`. Original scene/settings, 16:9, seed 4213, native Mandarin and disabled prompt enhancement were fixed; reference bytes/MIME and current model prices were checked read-only. Text endpoints remained within the configured ceilings and the three-video quote remained $0.75.
+Anna/Elsa's existing umbrella-return development story and original two PNGs were reused. Gemini 2.5 Flash-Lite handled common planning/unified writing; independent actor reports used DeepSeek V3.2. Both review conditions used `actor_negotiation` with `writer_output_contract=dialogue_by_shot_object`. Original scene/settings, 16:9, seed 4213, native Mandarin and disabled prompt enhancement were fixed; reference bytes/MIME and current model prices were checked read-only. Text endpoints remained within the configured ceilings and the three-video quote remained $0.75.
 
 | Condition | Saved model-generated dialogue | Actual state |
 | --- | --- | --- |

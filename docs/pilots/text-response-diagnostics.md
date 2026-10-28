@@ -8,8 +8,8 @@ Both actual failed trials remain unchanged:
 
 | Actual trial | Observed stopping point | Original text spending | New videos |
 | --- | --- | --- | --- |
-| [First v3](anna-elsa-actor-v3.md) | Conflicting complete edits for one shot | $0.00281304 | 0 |
-| [Per-shot v3](anna-elsa-actor-v3-shot.md) | Emotional writer failed strict JSON-object parsing | $0.00291790 | 0 |
+| [First actor-negotiation](anna-elsa-actor-negotiation.md) | Conflicting complete edits for one shot | $0.00281304 | 0 |
+| [Per-shot actor-negotiation](anna-elsa-actor-negotiation-shot.md) | Emotional writer failed strict JSON-object parsing | $0.00291790 | 0 |
 
 The second trial did not retain invalid model content. It remains missing, with its exact JSON error subtype unknown. New classifications below apply to newly captured responses; they do not reconstruct or reclassify that historical reply. Neither trial is converted into a success.
 
@@ -50,6 +50,6 @@ Public error messages carry only layer/kind, not raw snippets or offending key n
 
 ## Offline acceptance
 
-Client tests cover exact retention before parsing, syntax/duplicate/non-finite/non-object/UTF-8/nesting errors, known and unknown costs, HTTP errors, bounded oversized bodies, echoed credential redaction, filesystem failures and unique/restored capture contexts. CLI tests exercise automatic capture on valid planning and invalid planning/review. The existing full v3 integration exercises both routed roles, both conditions and nineteen-call success/disagreement paths; an added invalid-JSON response stops before the next condition with its known charge and raw text preserved. Existing anonymous-export tests require exactly the public CSV/media files.
+Client tests cover exact retention before parsing, syntax/duplicate/non-finite/non-object/UTF-8/nesting errors, known and unknown costs, HTTP errors, bounded oversized bodies, echoed credential redaction, filesystem failures and unique/restored capture contexts. CLI tests exercise automatic capture on valid planning and invalid planning/review. The existing full actor-negotiation integration exercises both routed roles, both conditions and nineteen-call success/disagreement paths; an added invalid-JSON response stops before the next condition with its known charge and raw text preserved. Existing anonymous-export tests require exactly the public CSV/media files.
 
-A separate network-denied replay in `runs/anna-elsa-text-response-offline-20261024` retained five explicitly developer-authored software failures with matching hashes and diagnostic costs, recompiled six historical global/v1/v2/v3 preparation packages read-only, and verified **661 protected files** unchanged before and after. This includes both failed trials, their original public result pairs, prior media and offline evidence. Fixture costs are not spending; actual HTTP calls and new spending are zero. Test counts and current-head CI are recorded in PR #52. Offline checks establish engineering behavior, not future model compliance or video quality. Issues #8/#9 remain open; PR #52 remains unmerged.
+A separate network-denied replay in `runs/anna-elsa-text-response-offline-20261024` retained five explicitly developer-authored software failures with matching hashes and diagnostic costs, recompiled six historical global, actor-pass, confirmation and negotiation preparation packages read-only, and verified **661 protected files** unchanged before and after. This includes both failed trials, their original public result pairs, prior media and offline evidence. Fixture costs are not spending; actual HTTP calls and new spending are zero. Test counts and current-head CI are recorded in PR #52. Offline checks establish engineering behavior, not future model compliance or video quality. Issues #8/#9 remain open; PR #52 remains unmerged.

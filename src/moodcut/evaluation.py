@@ -7,6 +7,7 @@ from collections import defaultdict
 from pathlib import Path, PurePosixPath
 
 from .contracts import SUPPORTED_TONES
+from .protocol_names import canonical_name
 
 CUSTOM_DIMENSIONS = (
     "subject_consistency", "background_consistency", "motion_smoothness",
@@ -600,18 +601,19 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
 
     run_ids, conditions, block_ids, replicates, kinds, models = set(), set(), set(), set(), set(), set()
     selected_scopes = []
-    protocols = [row.get("review_protocol", "global_v1") for row in records if isinstance(row, dict)]
-    review_protocols = {p for p in protocols if isinstance(p, str)}
-    if (len(review_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
-            or not review_protocols <= {"global_v1", "actor_self_review_v1", "actor_self_review_v2", "actor_self_review_v3", "actor_self_review_v4"}):
+    protocols = [row.get("review_protocol", "global_review") for row in records if isinstance(row, dict)]
+    raw_protocols = {p for p in protocols if isinstance(p, str)}
+    review_protocols = {canonical_name(p) for p in raw_protocols}
+    if (len(raw_protocols) != 1 or any(not isinstance(p, str) for p in protocols)
+            or not review_protocols <= {"global_review", "actor_self_review", "actor_confirmation", "actor_negotiation", "reviewer_revisit"}):
         errors.append("records must use one consistent review protocol")
-    if review_protocols in ({"actor_self_review_v3"}, {"actor_self_review_v4"}):
-        contracts = [r.get("writer_output_contract", "issue_patch_v1") for r in records if isinstance(r, dict)]
-        if (any(not isinstance(c, str) or c not in ("issue_patch_v1", "dialogue_by_shot_v1", "dialogue_by_shot_json_schema_v1", "dialogue_by_shot_json_schema_v2") for c in contracts)
+    if review_protocols in ({"actor_negotiation"}, {"reviewer_revisit"}):
+        contracts = [r.get("writer_output_contract", "issue_patch") for r in records if isinstance(r, dict)]
+        if (any(not isinstance(c, str) or canonical_name(c) not in ("issue_patch", "dialogue_by_shot_object", "dialogue_by_shot_writer_schema", "dialogue_by_shot_owned_schema") for c in contracts)
                 or len(set(c for c in contracts if isinstance(c, str))) != 1):
-            errors.append("records must use one consistent v3 writer output contract")
-        if review_protocols == {"actor_self_review_v4"} and any(c != "dialogue_by_shot_json_schema_v2" for c in contracts):
-            errors.append("v4 requires the current shot writer contract")
+            errors.append("records must use one consistent negotiation writer output contract")
+        if review_protocols == {"reviewer_revisit"} and any(canonical_name(c) != "dialogue_by_shot_owned_schema" for c in contracts):
+            errors.append("revisit requires the current shot writer contract")
     for index, row in enumerate(records):
         prefix = f"record {index + 1}"
         if not isinstance(row, dict):
@@ -654,14 +656,14 @@ def validate_generated_comparison(records, *, scene, initial, plans, manifest,
         allowed = ("not_applicable",) if condition == "baseline" else ("applied", "unchanged")
         if status not in allowed:
             errors.append(f"{prefix}: invalid review source {status!r}")
-        if row.get("review_protocol") == "actor_self_review_v2" and condition != "baseline":
+        if canonical_name(row.get("review_protocol")) == "actor_confirmation" and condition != "baseline":
             disposition = row.get("feedback_disposition")
             omitted = disposition.get("unaddressed_issue_ids") if isinstance(disposition, dict) else None
             expected_confirmation = ("accepted" if omitted else "not_needed") if isinstance(omitted, list) else None
             if (expected_confirmation is None or row.get("actor_confirmation_status") != expected_confirmation
                     or row.get("actor_endorsement") != "not_requested"):
                 errors.append(f"{prefix}: actor omissions lack valid corresponding-actor confirmation")
-        if row.get("review_protocol") in ("actor_self_review_v3", "actor_self_review_v4") and condition != "baseline":
+        if canonical_name(row.get("review_protocol")) in ("actor_negotiation", "reviewer_revisit") and condition != "baseline":
             disposition = row.get("feedback_disposition")
             omitted = disposition.get("unaddressed_issue_ids") if isinstance(disposition, dict) else None
             targets, disputed = row.get("confirmation_issue_ids"), row.get("disputed_issue_ids")

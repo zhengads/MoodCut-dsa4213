@@ -84,7 +84,7 @@ def run_text(folder, budget):
         output_mode="generated",
         generation_settings=settings,
         template_sha256=get_video_template_sha256(),
-        review_protocol="actor_self_review_v3",
+        review_protocol="actor_negotiation",
     )
 
     print("Block status:", block.get("status"))

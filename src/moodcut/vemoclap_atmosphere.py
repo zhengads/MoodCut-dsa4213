@@ -1,4 +1,4 @@
-"""Diagnostic mapping from VEMOCLAP six-class probabilities to MoodCut atmospheres (rule v2).
+"""Diagnostic mapping from VEMOCLAP six-class probabilities to MoodCut atmospheres (rule grouped).
 
 Offline and dependency-free. It reads probabilities only; it never runs a model and is not an
 independent experiment result or a replacement for human ratings.
@@ -13,7 +13,7 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 EMOTIONS = ("anger", "disgust", "fear", "joy", "sadness", "surprise")
-RULE_VERSION = "v2"
+RULE_VERSION = "grouped"
 # Insertion order is the tie-break order.
 GROUPS: dict[str, tuple[str, ...]] = {
     "hostile": ("anger", "disgust"),
@@ -45,7 +45,7 @@ def group_scores(probabilities: Mapping[str, float]) -> dict[str, float]:
 
 
 def classify(probabilities: Mapping[str, float]) -> str:
-    """Highest group score; ties go to the earlier group in GROUPS. No abstention in v2."""
+    """Highest group score; ties go to the earlier group in GROUPS. No abstention in grouped."""
     scores = group_scores(probabilities)
     best = max(scores.values())
     return next(group for group, score in scores.items() if score == best)

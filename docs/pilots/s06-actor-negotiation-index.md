@@ -1,12 +1,12 @@
-# Real S06 v3 actor-reference trial (2026-10-25)
+# Real S06 actor-negotiation actor-reference trial (2026-10-25)
 
 Three distinct real HeyGen clips completed after the actor-reference correction. This is the existing S06 cleanup-assignment development story (Lijing/Taiyi), with the same frozen story, references, voices, duration and model policy. It is not formal evaluation; human listening/viewing is pending. PR #52 remains unmerged; Issues #8/#9 remain open.
 
-[Play the three conditions](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · [Original clip archive](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s06-v3-index-20261025) · [Exact planning/review/media/accounting record](s06-actor-v3-index.results.json)
+[Play the three conditions](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · Original clip archive (withdrawn video release) · [Exact planning/review/media/accounting record](s06-actor-v3-index.results.json)
 
 ## Executed settings and flow
 
-- Executed code: `7f35e25011066a8235b73d608d61c6aebb5760c5`, including main `f45590d` / #57 and the earlier client/schema/actor-reference fixes. Actor protocol `actor_self_review_v3`; coordinated request contract `dialogue_by_shot_json_schema_v2`.
+- Executed code: `7f35e25011066a8235b73d608d61c6aebb5760c5`, including main `f45590d` / #57 and the earlier client/schema/actor-reference fixes. Actor protocol `actor_negotiation`; coordinated request contract `dialogue_by_shot_owned_schema`.
 - Gemini 2.5 Flash-Lite plans once and writes unified revisions; DeepSeek V3.2 reviews separately as each actor. Both roles retain temperature 0 and disabled reasoning. Optional planning-stage schema settings remain off; actor/writer requests carry explicit schemas.
 - HeyGen video 1, 768p, 16:9, requested 5 seconds per condition, seed 4213, native Mandarin, two frozen male voices and indoor ambience; prompt enhancement disabled. Both supplied PNGs match their frozen local/remote hashes and MIME.
 - Actual flow: planning 3 calls; generic actor/actor/writer 3; emotional actor/actor/writer 3. Four actor schema requests and two writer schema requests matched their expected identities; all nine raw replies and diagnostic hashes were verified. No JSON syntax, ownership or patch failure occurred.
@@ -34,6 +34,6 @@ Page text is the saved model plan, not a verified speech transcript.
 
 Character references: [showlab/MovieAgent](https://github.com/showlab/MovieAgent), pinned commit `d84041bed8bc8be460664528d9e9924cdde384ba`, NeZha2/Lijing and NeZha2/Taiyi `best.png`; image IDs/source URLs/hashes are retained in the exact result record. Underlying image/character rights remain unconfirmed; attribution and provider acceptance are not a license. The Release retains SOURCE.md and a byte manifest.
 
-Human video checks and independent ratings remain blank. Writer-declared addressed status is not proof of semantic fulfillment. This successful development run neither repairs the preserved [previous wrong-index failure](s06-actor-v3-schema.md) nor establishes superiority over generic review. The earlier [JSON-tail failure](s06-actor-v3.md) is also unchanged.
+Human video checks and independent ratings remain blank. Writer-declared addressed status is not proof of semantic fulfillment. This successful development run neither repairs the preserved [previous wrong-index failure](s06-actor-negotiation-schema.md) nor establishes superiority over generic review. The earlier [JSON-tail failure](s06-actor-negotiation.md) is also unchanged.
 
 Branch synchronization acceptance before this run: 272 tests +27 subtests, original-byte negative/positive replay, eight old request recompilations and all five steps of the existing offline workflow (including 12 generated integration cases) passed. No new API/tool or experimental criterion was added for this run.

@@ -17,7 +17,7 @@
 
 `src/moodcut/reviewer.py`、`patches.py`、`prompts/review_*.txt`；`tests/test_reviewer.py`、`tests/test_patches.py`；`docs/review.md` 与方法说明。
 
-导入公共字段白名单与非台词验证。公共 client/pipeline/source 变更与 P1 协调；不改规划/生成提示或评价标准。global_v1 的一次复查与 v3 的有上限协商不可混称。
+导入公共字段白名单与非台词验证。公共 client/pipeline/source 变更与 P1 协调；不改规划/生成提示或评价标准。global_review 的一次复查与 actor-negotiation 的有上限协商不可混称。
 
 ## 验证入口
 

@@ -9,11 +9,11 @@ This directory preserves entry points with research or reproducibility value. Da
 | Content | Location |
 | --- | --- |
 | Real trials, failures and exact result JSON | [Trial index](../pilots/README.md) |
-| P1 integration, real v2 calls and source handoff | [Original integration report](../p1-integration-verification.md) |
+| P1 integration, real actor-confirmation calls and source handoff | [Original integration report](../p1-integration-verification.md) |
 | P5 software acceptance, qualification rejection of real summaries and contribution attribution | [Evaluation acceptance record](evaluation-acceptance.md) |
 | VBench CPU smoke and batch measurements on synthetic videos | [VBench historical validation](../vbench.md#historical-validation-2026-10-14) |
 | Design and acceptance criteria for the initial generated-video adapter | [Generated-video plan](../GENERATIVE_VIDEO_PLAN.md) |
-| Original six-story inputs | [v1](../studies/six-story-20261024/README.md); [separate v2 revision](../studies/six-story-clear-emotions-20261024/README.md) |
+| Original six-story inputs | [single-pass](../studies/six-story-20261024/README.md); [separate actor-confirmation revision](../studies/six-story-clear-emotions-20261024/README.md) |
 
 ## Complete document snapshots before cleanup
 

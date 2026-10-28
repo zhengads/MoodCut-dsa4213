@@ -1,8 +1,8 @@
-# Offline correction: schema-constrained v3 writer requests
+# Offline correction: schema-constrained actor-negotiation writer requests
 
 ## Diagnosis from original evidence
 
-The [actual S06 failure](s06-actor-v3.md) remains stopped, with nine text calls costing $0.00361854 and zero video submissions. Its [original result JSON](s06-actor-v3.results.json), private HTTP bytes, model text, errors and accounting are unchanged. This correction is separately authorized offline; no paid request is repeated.
+The [actual S06 failure](s06-actor-negotiation.md) remains stopped, with nine text calls costing $0.00361854 and zero video submissions. Its [original result JSON](s06-actor-v3.results.json), private HTTP bytes, model text, errors and accounting are unchanged. This correction is separately authorized offline; no paid request is repeated.
 
 The saved outer envelope is valid JSON. Its `choices[0].message.content` exactly equals the retained 331-character completion, whose UTF-8 SHA-256 is `8ceeea1b5deed14d2aea21d47f5ad53439a1aeb2d968267af32ed430734a85f2`. Extra braces and a trailing `reasons` fragment follow the first object. Strict parsing reproduces `Extra data` at line 1, column 312, position 311. The reply arrived with `finish_reason=stop`; it was not locally concatenated by the writer adapter or introduced while saving. Both existing writer prompt JSON examples also parse correctly. The evidence localizes the malformed text to the returned completion; it does not explain why the upstream model/provider emitted that suffix.
 
@@ -12,9 +12,9 @@ The confirmed request-side gap is that the client supplied only `response_format
 
 The existing `complete_json` interface, FakeClient, OpenRouter client and role router accept optional `json_schema=None`. Omission preserves the legacy request format. With a schema, the same request sends `response_format.type=json_schema`, a named schema and `strict=true`; existing `require_parameters=true`, disabled fallbacks, price limits and no-retry behavior remain. Schema bytes enter both per-client/shared budget reservations. The adapter records `response_format_type` and `json_schema_sha256` without changing returned task objects or usage accounting.
 
-Only new v3 `actor_revise` calls request the shape schema, identically for generic/emotional conditions and both rounds. Planning, actor critique, actor confirmation and older protocols retain their existing request formats. The schema describes complete per-shot dialogue arrays, speaker/text fields and feedback disposition; round two additionally requires objection responses. It supplies no dialogue, decision or task solution. Existing ownership, complete-issue coverage, line order/count, actual changes, semantic-boundary and bounded-confirmation validators remain authoritative.
+Only new actor-negotiation `actor_revise` calls request the shape schema, identically for generic/emotional conditions and both rounds. Planning, actor critique, actor confirmation and older protocols retain their existing request formats. The schema describes complete per-shot dialogue arrays, speaker/text fields and feedback disposition; round two additionally requires objection responses. It supplies no dialogue, decision or task solution. Existing ownership, complete-issue coverage, line order/count, actual changes, semantic-boundary and bounded-confirmation validators remain authoritative.
 
-New execution is labeled `writer_output_contract="dialogue_by_shot_json_schema_v1"`, with separate revision/negotiation prompt hashes. Historical `dialogue_by_shot_v1` and `issue_patch_v1` keep their exact original prompt files/hashes and saved-source behavior. Source rechecks bind the new writer call's schema digest/format to its round; comparison rejects mixed writer contracts. This prevents new constrained requests from silently inheriting the identity of old JSON-mode attempts.
+New execution is labeled `writer_output_contract="dialogue_by_shot_writer_schema"`, with separate revision/negotiation prompt hashes. Historical `dialogue_by_shot_object` and `issue_patch` keep their exact original prompt files/hashes and saved-source behavior. Source rechecks bind the new writer call's schema digest/format to its round; comparison rejects mixed writer contracts. This prevents new constrained requests from silently inheriting the identity of old JSON-mode attempts.
 
 Two new prompt versions retain the same writing requirements and explicitly require ending immediately after one object. No parser prefix extraction, brace deletion, text trimming, repair model, response-healing plugin, tool, new client, retry or model switch is introduced. If the provider rejects the schema, ignores it and returns bad JSON, or returns invalid task fields, the existing failure stop still applies. Unknown fees remain unknown and block continuation.
 
@@ -30,7 +30,7 @@ Network-denied acceptance in `runs/s06-structured-writer-offline-20261024` uses 
 
 - S06: replay all nine original responses through the new routed pipeline. Both writer requests carry the schema; the original bad emotional response still fails at the identical position, with identical retained body/content hashes and known last-call cost. No candidate, request bundle or video is released. Its failed status is not repaired.
 - Anna/Elsa: replay all nine previously successful responses unchanged. The new contract prepares all three scripts and compiles video requests offline; every final plan remains identical to its historical source. No generated answer is authored as fallback.
-- Recompile seven preserved global/v1/v2/old-v3/per-shot preparation packages read-only. Verify **916 protected files** unchanged before/after, including all actual failures, successful media and frozen story inputs.
+- Recompile seven preserved global/actor-pass/v2/old-v3/per-shot preparation packages read-only. Verify **916 protected files** unchanged before/after, including all actual failures, successful media and frozen story inputs.
 
 The replay summaries explicitly label software transport and historical costs: their logical call counters/returned fees are replayed evidence, **not new HTTP calls or spending**. Actual model calls, new spending and video submissions in this correction are zero. Source/trace files and original raw replies remain private and Git-ignored.
 

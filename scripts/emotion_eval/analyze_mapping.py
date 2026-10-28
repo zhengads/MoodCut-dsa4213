@@ -52,7 +52,7 @@ def fit_thr(train):
     return best[1]
 
 
-def v2(d):
+def grouped(d):
     h, t, a = d["anger"] + d["disgust"], d["fear"], d["joy"] + d["sadness"] + d["surprise"]
     return max((("hostile", h), ("tense", t), ("affectionate", a)), key=lambda x: x[1])[0]
 
@@ -87,7 +87,7 @@ def main():
     print("  total", hit, "/", tot)
     thr = fit_thr(D)
     print(f"  threshold fitted on all data: {thr} -> {sum(rule(d, thr) == d['tone'] for d in D)}/{len(D)} (in-sample)")
-    print("\nV2 three-class (hostile=anger+disgust, tense=fear, affectionate=joy+sadness+surprise):", sum(v2(d) == d["tone"] for d in D), "/", len(D))
+    print("\ngrouped three-class (hostile=anger+disgust, tense=fear, affectionate=joy+sadness+surprise):", sum(grouped(d) == d["tone"] for d in D), "/", len(D))
     print("\n== same franchise (Nezha2): tense S04 vs hostile S06")
     for d in D:
         if d["fr"] == "Nezha2":

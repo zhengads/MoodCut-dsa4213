@@ -2,9 +2,11 @@ name: Video comparison Pages
 
 on:
   push:
-    branches: [main, feat/issue-8-agent-animation-pilot, feat/issue-8-actor-v3-live]
+    branches: [main]
     paths:
       - web/video-review/**
+      - scripts/build_video_gallery.py
+      - docs/studies/six-story-clear-emotions-20261024/release-index.json
       - .github/workflows/video-pages.yml
   workflow_dispatch:
 
@@ -31,21 +33,14 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-      - name: Assemble static page and exact historical media
+      - name: Assemble current gallery and verify media
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          mkdir -p _site/media
-          cp web/video-review/{index.html,site.css,app.js,data.json,media.sha256} _site/
-          gh release download pilot-anna-elsa-20261024 --pattern '*.mp4' --dir _site/media
-          gh release download pilot-anna-elsa-v3-20261024 --pattern '*.mp4' --dir _site/media
-          gh release download pilot-s06-v3-index-20261025 --pattern '*.mp4' --dir _site/media
-          gh release download pilot-s01-v4-20261025 --pattern '*.mp4' --dir _site/media
-          cd _site
-          sha256sum --check media.sha256
-          test "$(find media -maxdepth 1 -name '*.mp4' | wc -l)" -eq "$(grep -c '  media/' media.sha256)"
-          touch .nojekyll
+          mkdir -p release-download
+          gh release download Videos_01-12 --pattern 'MoodCut_01-12_All_Videos.zip' --dir release-download
+          python scripts/build_video_gallery.py --archive release-download/MoodCut_01-12_All_Videos.zip --output _site
       - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: _site

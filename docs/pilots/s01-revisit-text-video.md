@@ -1,4 +1,4 @@
-# S01 v4 text and video development case
+# S01 reviewer-revisit text and video development case
 
 On 2026-10-25, the separately authorized S01 run completed common planning, generic review, MoodCut revision/revisits, and native-audio video generation. The latest case is [available in the gallery](https://zhengads.github.io/MoodCut-dsa4213/#s01-v4). [Parsed results](s01-v4.results.json) preserve the initial plan, original Actor/writer/revisit responses, settings, executed-source hashes, costs and media identities. This is one development case, not a formal or blind evaluation.
 
@@ -34,8 +34,8 @@ Text costs match identified generation metadata; both video receipts record $0.2
 
 ## Failure preservation and request correction
 
-Earlier attempts stopped for two scene segments, an omitted beat, and developer-side shared JSON-Schema references that accidentally constrained free text. All original artifacts remain intact. The successful caller wrapper broke schema-node aliases with a JSON round trip, bound original IDs/order/duration, and guarded free-text fields before submission. It did not patch returned Agent words. Twenty-two offline request checks and 28 focused v4 tests passed before the successful run. The saved source loader, review replay, comparison contract, frozen non-dialogue fields, native A/V and hashes passed rechecks.
+Earlier attempts stopped for two scene segments, an omitted beat, and developer-side shared JSON-Schema references that accidentally constrained free text. All original artifacts remain intact. The successful caller wrapper broke schema-node aliases with a JSON round trip, bound original IDs/order/duration, and guarded free-text fields before submission. It did not patch returned Agent words. Twenty-two offline request checks and 28 focused reviewer-revisit tests passed before the successful run. The saved source loader, review replay, comparison contract, frozen non-dialogue fields, native A/V and hashes passed rechecks.
 
-V4 was executed from a local development snapshot based on dc8fbaf, with exact runtime and prompt hashes in the result JSON. This gallery change **does not merge that runtime implementation** or retag historical v1/v3 results. It publishes the completed case only.
+reviewer-revisit was executed from a local development snapshot based on dc8fbaf, with exact runtime and prompt hashes in the result JSON. This gallery change **does not merge that runtime implementation** or retag historical v1/v3 results. It publishes the completed case only.
 
-The gallery now shows completed-video cases; failed/no-video entries are hidden from navigation and playback, while their original data and historical records remain preserved. Raw video hashes remain checked during Pages deployment. Original character reference images are not included in this release. See the [release source statement](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s01-v4-20261025/SOURCE.md).
+The gallery now shows completed-video cases; failed/no-video entries are hidden from navigation and playback, while their original data and historical records remain preserved. Raw video hashes remain checked during Pages deployment. Original character reference images are not included in this release. See the release source statement (withdrawn video release).

@@ -2,7 +2,7 @@
 
 [文档状态](README.md) · [使用命令](usage.md#检查与评价生成视频) · [VBench 工具](vbench.md) · [历史验收](history/evaluation-acceptance.md)
 
-本页维护输入要求、评分口径和证据边界。真实试跑记录在 pilots/；人工评分、模型自评、媒体完整性和 VBench 分数分开解释。PR #58 的历史视频审计与图像质量结果仍为独立待合并增量，不据此宣称六故事实验完成。
+本页维护输入要求、评分口径和证据边界。真实试跑记录在 pilots/；人工评分、模型自评、媒体完整性和 VBench 分数分开解释。PR #58 的历史视频审计与图像质量结果已合入，保留下方带日期的证据；不据此宣称当前 12 个剧本的正式评价完成。
 
 ## 软件流程验证
 
@@ -16,7 +16,7 @@
 
 ## 方法身份
 
-同一比较使用一致的协议和 writer contract。v3 的有效最终分歧可保留 disputed 状态进入准备，不自动计为成功、失败或人工认可；详见[演员方法](ACTOR_REVIEW_METHOD.md)。公开对比页暴露条件、目标和台词，不用于盲评分发。
+同一比较使用一致的协议和 writer contract。actor-negotiation 的有效最终分歧可保留 disputed 状态进入准备，不自动计为成功、失败或人工认可；详见[演员方法](ACTOR_REVIEW_METHOD.md)。公开对比页暴露条件、目标和台词，不用于盲评分发。
 
 ## 配对人工评价
 
@@ -274,7 +274,7 @@ histories, formal experiments or independent subjective judgments.
 | 人工评价 | 技术检查人、评分人数、每 clip 评分数、同故事版本分配、随机化及暴露风险 |
 | 分析 | 评分指标、缺失/排除规则、配对分母、覆盖与费用报告，不在看结果后选择口径 |
 
-[六故事 v2](studies/six-story-clear-emotions-20261024/README.md)已有输入范围，执行和正式纳入仍需确认。2026-10-23 的最初单镜头提议及后续批准/失败保留在[还伞记录](pilots/umbrella-single-shot.md)，不再把其中旧占位图、旧报价或“从未试跑”当作当前状态。
+[六故事 actor-confirmation](studies/six-story-clear-emotions-20261024/README.md)已有输入范围，执行和正式纳入仍需确认。2026-10-23 的最初单镜头提议及后续批准/失败保留在[还伞记录](pilots/umbrella-single-shot.md)，不再把其中旧占位图、旧报价或“从未试跑”当作当前状态。
 
 ## VBench 辅助评价
 
@@ -333,7 +333,7 @@ qualification or approval for formal inclusion.
 ### Versioned evidence inventory
 
 Repository snapshot: `f45590de4a89d9c5d787771dcc59308e41f274d3` (main).
-The v3 public result record was read separately at
+The actor-negotiation public result record was read separately at
 `c7e6bd87437bef05dad45805f55c184ad4e1b041` (Draft PR #52).
 
 | Pilot protocol | Condition entries | Distinct videos | Interpretation |
@@ -345,17 +345,17 @@ The v3 public result record was read separately at
 
 Public releases and pinned records:
 
-- [Historical global-v1 / actor-v1 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024):
-  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/manifest.json),
+- Historical global-v1 / actor-v1 release (withdrawn video release):
+  manifest (withdrawn video release),
   [global result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-agent.results.json),
   [actor-v1 result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-actor.results.json).
-- [Historical actor-v3 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024):
-  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/manifest.json),
+- Historical actor-v3 release (withdrawn video release):
+  manifest (withdrawn video release),
   [pinned result](https://github.com/zhengads/MoodCut-dsa4213/blob/c7e6bd87437bef05dad45805f55c184ad4e1b041/docs/pilots/anna-elsa-actor-v3-captured.results.json).
   Its executed code is `7817623a76de5d5ff68b7da5c12aa943e28798c4`, with
-  `dialogue_by_shot_v1`. The commit hosting the published record is not the
+  `dialogue_by_shot_object`. The commit hosting the published record is not the
   executed commit. Do not relabel these clips as outputs of the newer
-  `dialogue_by_shot_json_schema_v2` contract in PR #52.
+  `dialogue_by_shot_owned_schema` contract in PR #52.
 
 Release manifest SHA-256 values, in the release order above:
 
@@ -471,7 +471,7 @@ independent human ratings remain outstanding.
 
 Each row is one distinct downloaded file, linked by the exact filename and
 SHA-256 in the audit table above. Actor-v3 denotes the historical
-`actor_self_review_v3` / `dialogue_by_shot_v1` outputs, not the later schema fixes.
+`actor_negotiation` / `dialogue_by_shot_object` outputs, not the later schema fixes.
 Scores are descriptive development-media measurements; formal inclusion remains
 false. The adapter's method label is a unique protocol/file identifier so its
 summary cannot silently pool different protocols.
@@ -588,8 +588,8 @@ contains the following trace for `return-umbrella-shot`, character `b` (Elsa):
 
 The corresponding video is `actor-v3-moodcut.mp4`, SHA-256
 `0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7`.
-This trace concerns the historical `actor_self_review_v3` /
-`dialogue_by_shot_v1` run, not the later S06/schema fixes.
+This trace concerns the historical `actor_negotiation` /
+`dialogue_by_shot_object` run, not the later S06/schema fixes.
 
 ### Evaluation interpretation and follow-up
 

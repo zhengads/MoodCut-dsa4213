@@ -1,0 +1,11 @@
+{
+  "actor_self_review_v4": "reviewer_revisit",
+  "actor_self_review_v3": "actor_negotiation",
+  "actor_self_review_v2": "actor_confirmation",
+  "actor_self_review_v1": "actor_self_review",
+  "global_v1": "global_review",
+  "dialogue_by_shot_json_schema_v2": "dialogue_by_shot_owned_schema",
+  "dialogue_by_shot_json_schema_v1": "dialogue_by_shot_writer_schema",
+  "dialogue_by_shot_v1": "dialogue_by_shot_object",
+  "issue_patch_v1": "issue_patch"
+}

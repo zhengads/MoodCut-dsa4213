@@ -40,12 +40,12 @@ chessloverr 的原 P5 实现、团队接线及 FAN XUYANG 的覆盖计数增量�
 
 | Issue #9 要求 | 当前实现及验收依据 | 真实执行边界 |
 | --- | --- | --- |
-| 三条件输入适配、来源与账目 | P1 `recheck_generated_records` 和 P5 `qualify_generated_records` 消费完整最终 1.1 block；保留原 source_kind、失败、模型、哈希和账目 | 新公开 v3 结果是试跑摘要，不能代替最终 block |
+| 三条件输入适配、来源与账目 | P1 `recheck_generated_records` 和 P5 `qualify_generated_records` 消费完整最终 1.1 block；保留原 source_kind、失败、模型、哈希和账目 | 新公开 actor-negotiation 结果是试跑摘要，不能代替最终 block |
 | 共同初稿、共享身份和导出资格 | `validate_generated_comparison` 加 P1/P4 来源重算；身份、非台词、回执或媒体变化有拒绝回归 | 真实摘要只验证了公开计划及媒体，尚不能独立重算全部共同输入 |
 | 复用导出/评分，匿名和状态分列 | `export_generated_blind_items` / `summarize_generated_records` 复用原复制器/算术；覆盖 applied、unchanged、失败、无渲染及缺评分 | 真实匿名包尚未发布；不使用低层旧接口绕过门禁 |
 | 统计及费用口径 | clip 等权、uncertain 未命中、M/G 共同可评块及覆盖分报；unknown 为 null，规划/合法复用各计一次 | 公开费用算术一致不等于独立认证提供商账单 |
 | 合成软件回归 | `tests/test_evaluation_paired.py` / `tests/test_evaluation.py` 覆盖三条件、身份篡改、失败、unknown、零分母、复用、匿名副本与评分映射 | 测试回执、软件视频和合成评分不是模型效果数据 |
-| 待确认协议 | 本文保留协议表；当前故事候选为 PR #56 的[明显情绪 v2 输入](../studies/six-story-clear-emotions-20261024/README.md) | 6 故事/18 条目是当前设计范围；正式冻结、观看者、排除/复用规则和执行预算仍需确认 |
+| 待确认协议 | 本文保留协议表；当前故事候选为 PR #56 的[明显情绪 actor-confirmation 输入](../studies/six-story-clear-emotions-20261024/README.md) | 6 故事/18 条目是当前设计范围；正式冻结、观看者、排除/复用规则和执行预算仍需确认 |
 | 报告边界 | 检验情绪专项台词审查相对通用审查的端到端价值；不归因为更多 Agent、动作规划或面部表情机制；VBench imaging_quality 不衡量情绪 | 人工质量、独立盲评、正式统计和效果结论尚未完成 |
 
 新版 main 已支持独立 `tense` 标签；保留 `suspicious` 兼容历史记录，不将
@@ -55,7 +55,7 @@ chessloverr 的原 P5 实现、团队接线及 FAN XUYANG 的覆盖计数增量�
 
 ### 新真实视频预检和正式资格结果
 
-从 [v3 Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024)
+从 actor-negotiation Release (withdrawn video release)
 下载三段原片及 manifest；原模型结果来自
 `feat/issue-8-actor-v3-live` 的 `docs/pilots/anna-elsa-actor-v3-captured.results.json`，
 执行代码为 `7817623`。三段不同原片共 3,326,698 字节，均 1344×768、24fps、
