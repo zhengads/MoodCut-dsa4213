@@ -1,6 +1,6 @@
 # 审查实现：报告验证、原子补丁与全局复查
 
-[演员协议](ACTOR_REVIEW_METHOD.md)说明当前 v3 方法；本页说明共用验证器和兼容的 `global_v1` 路径。准确字段见 [CONTRACTS](CONTRACTS.md)。
+[演员协议](ACTOR_REVIEW_METHOD.md)说明当前 actor-negotiation 方法；本页说明共用验证器和兼容的 `global_review` 路径。准确字段见 [CONTRACTS](CONTRACTS.md)。
 
 既有报告/补丁与全局审查基础实现由 FAN XUYANG 交付；生成式台词限定适配由 ZHENG MINGLIANG 交付。后续演员协议与来源重检保留各 PR 的贡献记录。
 
@@ -35,7 +35,7 @@ generated 不投影越权候选，不从被丢弃的版本继承复查结论。�
 
 ## 使用与验证
 
-默认函数调用保持 global_v1；生成式模式需显式传参：
+默认函数调用保持 global_review；生成式模式需显式传参：
 
 ```python
 result = review_and_revise(

@@ -30,9 +30,9 @@ The preflight missed the Content-Type requirement despite verifying PNG bytes. T
 
 Sources: [OpenRouter model/prices](https://openrouter.ai/heygen/heygen-video-1), [HeyGen references and enhancement controls](https://developers.heygen.com/docs/models/heygen-video).
 
-The following v3 record describes the earlier Seedance attempts, not the current HeyGen authorization.
+The following actor-negotiation record describes the earlier Seedance attempts, not the current HeyGen authorization.
 
-关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / v3，补充首次真实提交诊断。**状态：PNG交付已随PR #44合入；后续单独批准的固定台词试跑已尝试首个POST，未取得任务ID并停止，无成片。** 素材交付阶段新增付费消费为0；这次真实提交的单笔费用未知，不能写成免费。
+关联：[#9](https://github.com/zhengads/MoodCut-dsa4213/issues/9)，[#8](https://github.com/zhengads/MoodCut-dsa4213/issues/8)。版本：2026-10-23 / actor-negotiation，补充首次真实提交诊断。**状态：PNG交付已随PR #44合入；后续单独批准的固定台词试跑已尝试首个POST，未取得任务ID并停止，无成片。** 素材交付阶段新增付费消费为0；这次真实提交的单笔费用未知，不能写成免费。
 
 ### 首次真实提交与本次诊断（2026-10-23）
 

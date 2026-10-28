@@ -4,13 +4,13 @@ This is a developer interface correction in Draft PR #52, not a new model experi
 
 ## Observed failure and scope
 
-The [original S06 schema trial](s06-actor-v3-schema.md) remains failed. Its [public original response](s06-actor-v3-schema.results.json) records emotional Taiyi citing global `line_indices=[0]` even though `own_dialogue` supplied index `1`; index `0` belongs to Lijing. The existing ownership validator correctly stopped before the emotional writer and all video submission. The reply was valid JSON; this was a reference-binding error, not another JSON-tail error.
+The [original S06 schema trial](s06-actor-negotiation-schema.md) remains failed. Its [public original response](s06-actor-v3-schema.results.json) records emotional Taiyi citing global `line_indices=[0]` even though `own_dialogue` supplied index `1`; index `0` belongs to Lijing. The existing ownership validator correctly stopped before the emotional writer and all video submission. The reply was valid JSON; this was a reference-binding error, not another JSON-tail error.
 
 Both historical actor prompts contained a literal `[0]` example. This is a possible source of confusion, not a proven cause of the model's choice. New prompts remove that fixed index and explicitly distinguish global positions from positions in the actor's filtered list. Historical prompt files and failed results are unchanged.
 
 ## Existing request path, bounded by actual ownership
 
-The existing optional `complete_json(json_schema=...)` now also applies to v3 `actor_critique`. `get_actor_json_schema` derives allowed references from the same `_actor_lines(initial_plan, actor_id)` used to supply `own_dialogue`:
+The existing optional `complete_json(json_schema=...)` now also applies to actor-negotiation `actor_critique`. `get_actor_json_schema` derives allowed references from the same `_actor_lines(initial_plan, actor_id)` used to supply `own_dialogue`:
 
 - Each issue chooses one shot-specific schema branch. Its shot ID and integer index enum come only from that actor's actual original lines in that shot. Multi-shot indices cannot be mixed, and multiple owned lines remain available.
 - Taiyi in this S06 shot can cite only `[1]`; Lijing can cite only `[0]`. The code does not translate, renumber or replace returned references.
@@ -18,7 +18,7 @@ The existing optional `complete_json(json_schema=...)` now also applies to v3 `a
 - Evidence, suggestions, issue count and issue IDs remain model output. The schema supplies no opinion, acceptance decision or rewritten dialogue. Existing dimension/severity labels retain their existing meaning.
 - Generic and emotional groups use the identical schema construction and ownership rules. Their only intentional review difference remains the criteria paragraph. Writer schemas, models, two-round negotiation, final-disagreement handling and hard-error gates are unchanged.
 
-Request schema hashes enter existing call records/traces and source rechecks. To preserve saved identities, new execution uses `writer_output_contract=dialogue_by_shot_json_schema_v2`; the existing field identifies the coordinated v3 prompt/request bundle, not a new negotiation protocol. Old writer-only `dialogue_by_shot_json_schema_v1`, per-shot `dialogue_by_shot_v1`, patch/global/v1/v2 records keep their original prompt hashes and validation paths. Mixed v3 contracts remain ineligible for a single comparison. Schema bytes already count toward existing input-budget reservations.
+Request schema hashes enter existing call records/traces and source rechecks. To preserve saved identities, new execution uses `writer_output_contract=dialogue_by_shot_owned_schema`; the existing field identifies the coordinated actor-negotiation prompt/request bundle, not a new negotiation protocol. Old writer-only `dialogue_by_shot_writer_schema`, per-shot `dialogue_by_shot_object`, patch/global/actor-pass/v2 records keep their original prompt hashes and validation paths. Mixed actor-negotiation contracts remain ineligible for a single comparison. Schema bytes already count toward existing input-budget reservations.
 
 Unsupported provider schemas, ignored constraints resulting in invalid output, malformed JSON, wrong ownership and unknown costs still stop. No schema downgrade, retry, repair model or correction of the experimental answer is added. Native enforcement of this new actor schema has not been paid-tested.
 

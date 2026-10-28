@@ -1,8 +1,8 @@
-# Anna/Elsa v3 real trial with response retention
+# Anna/Elsa actor-negotiation real trial with response retention
 
 **Three new real videos completed.** This separately authorized trial executed `7817623a76de5d5ff68b7da5c12aa943e28798c4` on 2026-10-24, using the corrected per-shot writer contract and private text-response retention. Nine text calls cost **$0.00277694**, three video submissions cost **$0.75**, and the exact total **$0.75277694** matches this attempt's account usage increment. No paid retry, model switch, manual JSON repair or handwritten dialogue was used; the additional $0.10 reserve was untouched.
 
-[Play and compare the three videos](https://zhengads.github.io/MoodCut-dsa4213/#v3-captured), [original video archive](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024), [exact saved result](anna-elsa-actor-v3-captured.results.json).
+[Play and compare the three videos](https://zhengads.github.io/MoodCut-dsa4213/#v3-captured), original video archive (withdrawn video release), [exact saved result](anna-elsa-actor-v3-captured.results.json).
 
 ## Fixed inputs and actual calls
 
@@ -31,11 +31,11 @@ All nine text generation IDs were individually checked through the read-only pro
 
 All **nine HTTP bodies and extracted model strings** were saved privately before parsing and their SHA-256 values were rechecked. Every call has null parse/retention errors. This confirms actual successful-response retention; invalid-response classification remains supported by the separate offline tests, since this live attempt produced no invalid JSON.
 
-The original [first v3 failure](anna-elsa-actor-v3.md) and [per-shot JSON failure](anna-elsa-actor-v3-shot.md) remain unchanged, including the second attempt's missing text and unknown error subtype. **667 protected historical files** retained their hashes. The page adds this successful attempt separately; four previous experiment objects and five historical media hashes remain identical. Original response files, credentials, reference images and binary videos stay outside Git.
+The original [first actor-negotiation failure](anna-elsa-actor-negotiation.md) and [per-shot JSON failure](anna-elsa-actor-negotiation-shot.md) remain unchanged, including the second attempt's missing text and unknown error subtype. **667 protected historical files** retained their hashes. The page adds this successful attempt separately; four previous experiment objects and five historical media hashes remain identical. Original response files, credentials, reference images and binary videos stay outside Git.
 
 ## Acceptance boundary and follow-up
 
-Human listening/viewing checks and ratings remain empty. Listen for the actual lines/speakers, truncation or extra speech, compare naturalness and warmth, and inspect character identity/action. Completion of these three videos alone does not show that the emotional condition is better, that v3 negotiation caused an improvement, or that future calls will consistently pass.
+Human listening/viewing checks and ratings remain empty. Listen for the actual lines/speakers, truncation or extra speech, compare naturalness and warmth, and inspect character identity/action. Completion of these three videos alone does not show that the emotional condition is better, that actor-negotiation negotiation caused an improvement, or that future calls will consistently pass.
 
 The material source remains showlab/MovieAgent commit `d84041bed8bc8be460664528d9e9924cdde384ba`, FrozenII Anna/Elsa `best.png`. The archive preserves source attribution and the existing unconfirmed image/character rights status; attribution and provider acceptance are not permission. This page is development viewing material, not blind evaluation.
 

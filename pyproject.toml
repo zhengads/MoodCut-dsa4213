@@ -24,7 +24,7 @@ include = ["moodcut*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-moodcut = ["prompts/*.txt"]
+moodcut = ["prompts/*.txt", "legacy_names.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

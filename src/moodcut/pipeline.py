@@ -17,7 +17,8 @@ from .contracts import (CONDITIONS, CONTRACT_VERSION, OUTPUT_MODES, json_hash,
 from .evaluation import build_assignments
 from .planner import MAX_OUTPUT_TOKENS, PlanningError, get_planning_prompt_hashes, make_plan_with_trace
 from .renderer import render_plan
-from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, ACTOR_REVIEW_V2,
+from .protocol_names import canonical_name
+from .reviewer import (get_review_prompt_hashes, review_and_revise, GLOBAL_REVIEW, ACTOR_PROTOCOLS, CONFIRMED_REVIEW,
                        BOUNDED_PROTOCOLS, get_reviewers,
                        validate_review_protocol, validate_actor_review_result, SHOT_WRITER_CONTRACT, LEGACY_WRITER_CONTRACT,
                        get_writer_json_schema, get_actor_json_schema, WRITER_ONLY_SCHEMA_CONTRACT)
@@ -206,6 +207,7 @@ def run_condition(scene: dict, initial_plan: dict, manifest: dict, client, *,
     if condition not in CONDITIONS or type(replicate) is not int or replicate < 1:
         raise ValueError("Invalid condition or replicate")
     mode_options = _mode_options(output_mode, generation_settings, template_sha256)
+    review_protocol = canonical_name(review_protocol)
     validate_review_protocol(review_protocol, output_mode)
     generated = output_mode == "generated"
     if not generated and (expected_initial_plan_sha256 is not None or expected_shared_generation_sha256 is not None):
@@ -381,6 +383,7 @@ def run_experiment(scene, manifest, client=None, *, out_dir, project_root=".",
     if source_kind not in ("synthetic", "development", "formal"):
         raise ValueError("Invalid source_kind")
     mode_options = _mode_options(output_mode, generation_settings, template_sha256)
+    review_protocol = canonical_name(review_protocol)
     validate_review_protocol(review_protocol, output_mode)
     generated = output_mode == "generated"
     if authored_dialogue_draft is not None and not generated:
@@ -567,7 +570,7 @@ def _load_generated_block(path, project_root):
     need(isinstance(block, dict) and block.get("schema_version") == CONTRACT_VERSION
          and block.get("output_mode") == "generated" and block.get("status") == "prepared",
          "source must be a prepared 1.1/generated script block")
-    review_protocol = block.get("review_protocol", GLOBAL_REVIEW)
+    review_protocol = canonical_name(block.get("review_protocol", GLOBAL_REVIEW))
     validate_review_protocol(review_protocol, "generated")
     folder = path.parent
     scene, manifest, initial, settings = [read_json(folder / name) for name in
@@ -624,12 +627,12 @@ def _load_generated_block(path, project_root):
             need(row.get("text_model_settings") == policy
                  and all(c.get("model_id") == policy["roles"][RoleRoutedClient.role_for_stage(c.get("stage"))].get("model_id")
                          for c in row.get("call_records", [])), "review call model differs from role policy")
-        need(row.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "review protocol mismatch")
+        need(row.get("review_protocol", GLOBAL_REVIEW) == block.get("review_protocol", GLOBAL_REVIEW), "review protocol mismatch")
         if review_protocol in ACTOR_PROTOCOLS:
             writer_options = {}
             if review_protocol in BOUNDED_PROTOCOLS:
-                contract = block.get("writer_output_contract", LEGACY_WRITER_CONTRACT)
-                need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == contract, "writer output contract mismatch")
+                contract = canonical_name(block.get("writer_output_contract", LEGACY_WRITER_CONTRACT))
+                need(row.get("writer_output_contract", LEGACY_WRITER_CONTRACT) == block.get("writer_output_contract", LEGACY_WRITER_CONTRACT), "writer output contract mismatch")
                 writer_options["writer_output_contract"] = contract
                 if contract in (SHOT_WRITER_CONTRACT, WRITER_ONLY_SCHEMA_CONTRACT):
                     writers = [c for c in row.get("call_records", []) if c.get("stage") == "actor_revise"]
@@ -646,7 +649,7 @@ def _load_generated_block(path, project_root):
             expected_prompts = _review_hashes(output_mode="generated", review_protocol=review_protocol, **writer_options)
             need(all(row.get("prompt_hashes", {}).get(k) == v for k, v in expected_prompts.items()),
                  "actor prompt identity mismatch")
-            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (ACTOR_REVIEW_V2, *BOUNDED_PROTOCOLS) else ())
+            actor_stages = ("actor_critique", "actor_revise") + (("actor_confirm",) if review_protocol in (CONFIRMED_REVIEW, *BOUNDED_PROTOCOLS) else ())
             need(all(c.get("stage") in actor_stages for c in row.get("call_records", [])),
                  "actor source contains a legacy review call")
         else:
@@ -680,7 +683,7 @@ def _load_generated_block(path, project_root):
             reviewed = read_json(directory / "review.json")
             need(isinstance(reviewed, dict) and reviewed.get("status") == status
                  and json_hash(reviewed.get("plan")) == json_hash(final), "saved review/final script mismatch")
-            need(reviewed.get("review_protocol", GLOBAL_REVIEW) == review_protocol, "saved review protocol mismatch")
+            need(reviewed.get("review_protocol", GLOBAL_REVIEW) == block.get("review_protocol", GLOBAL_REVIEW), "saved review protocol mismatch")
             if review_protocol in ACTOR_PROTOCOLS:
                 need(all(row.get(name) == reviewed.get(name) for name in
                          ("actor_feedback_status", "actor_endorsement", "feedback_disposition", "actor_confirmation_status")),
@@ -700,7 +703,7 @@ def _load_generated_block(path, project_root):
                         stages.extend(["actor_confirm"] * len(round_record["actor_confirmations"]))
                     need([c.get("stage") for c in row.get("call_records", [])] == stages,
                          "actor negotiation call sequence mismatch")
-                if review_protocol == ACTOR_REVIEW_V2:
+                if review_protocol == CONFIRMED_REVIEW:
                     stages = ["actor_critique"] * len(scene["characters"])
                     if reviewed["report"]["issues"]:
                         stages.append("actor_revise")

@@ -1,14 +1,14 @@
 # S06 schema-writer real trial — actor line-ownership failure
 
-**Stopped after eight text calls; zero video submissions.** This separately authorized trial used the corrected v3 code `c4d61630f41d49a54061ffd1a8c5efb07b8c6b1b` on 2026-10-24. The generic writer's native JSON Schema request succeeded, but emotional Taiyi returned the wrong global dialogue-line index. The existing ownership validator stopped the block before the emotional writer. No retry, model switch, index correction or handwritten fallback occurred.
+**Stopped after eight text calls; zero video submissions.** This separately authorized trial used the corrected actor-negotiation code `c4d61630f41d49a54061ffd1a8c5efb07b8c6b1b` on 2026-10-24. The generic writer's native JSON Schema request succeeded, but emotional Taiyi returned the wrong global dialogue-line index. The existing ownership validator stopped the block before the emotional writer. No retry, model switch, index correction or handwritten fallback occurred.
 
-[Actual status and saved lines](https://zhengads.github.io/MoodCut-dsa4213/#s06-schema), [exact result and actor reply](s06-actor-v3-schema.results.json). There is no new S06 video to watch. The [previous S06 JSON-tail failure](s06-actor-v3.md) and historical Anna/Elsa originals remain separate and unchanged.
+[Actual status and saved lines](https://zhengads.github.io/MoodCut-dsa4213/#s06-schema), [exact result and actor reply](s06-actor-v3-schema.results.json). There is no new S06 video to watch. The [previous S06 JSON-tail failure](s06-actor-negotiation.md) and historical Anna/Elsa originals remain separate and unchanged.
 
 ## Scope and actual sequence
 
 Scene, asset manifest, fixed male voices/indoor ambience, pricing and text-model configurations match the previous S06 attempt exactly. The original cleanup-assignment task, hostile target, two PNG references, five-second single shot, 768p/16:9/seed4213/native Mandarin settings and disabled enhancement are unchanged. Raw PNG bytes/MIME, local hashes, public prices and compatible Gemini structured-output endpoints were checked before submission; the possible three-video quote remained $0.75. Limits were text $0.10, combined $1.00 and an additional untouched $0.10 reserve.
 
-The new writer contract is `dialogue_by_shot_json_schema_v1`, with unchanged `actor_self_review_v3` negotiation rules and Gemini 2.5 Flash-Lite / DeepSeek V3.2 roles. Actual order: three shared planning calls, generic actor/actor/writer, emotional actor/actor. **All eight completions were valid JSON** and all raw bodies, model strings and diagnostics were retained and hash-checked. Client JSON success does not mean actor-ownership or overall review success.
+The new writer contract is `dialogue_by_shot_writer_schema`, with unchanged `actor_negotiation` negotiation rules and Gemini 2.5 Flash-Lite / DeepSeek V3.2 roles. Actual order: three shared planning calls, generic actor/actor/writer, emotional actor/actor. **All eight completions were valid JSON** and all raw bodies, model strings and diagnostics were retained and hash-checked. Client JSON success does not mean actor-ownership or overall review success.
 
 | Condition | Saved planned dialogue: Lijing / Taiyi | Actual state |
 | --- | --- | --- |

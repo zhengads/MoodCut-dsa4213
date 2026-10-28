@@ -107,7 +107,7 @@ worker 复用上游模型类和抽帧/归一化函数，保留原特征顺序、
 初次预检为 `blocked`；随后获得继续配置环境并验证单段视频的授权，完成上述依赖/模型准备。
 使用同一段已有 Anna/Elsa actor-v1 moodcut 原片，时长 5.258344 秒，文件 SHA-256
 `cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8`。
-原片来源：[历史试跑说明](pilots/anna-elsa-actor.md)与 [Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024)。
+原片来源：[历史试跑说明](pilots/anna-elsa-actor.md)与 Release (withdrawn video release)。
 
 实际结果 `status=success`，CPU/两线程，适配器总耗时 **197.596 秒**（含预检、加载和推理，不含下载/安装）。
 ASR sentiment、BEATs、CLIP、face emotion、OCR sentiment 均完成，`missing_features=[]`。

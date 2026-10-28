@@ -9,7 +9,7 @@ from unittest.mock import patch
 from moodcut.client import FakeClient
 from moodcut.reviewer import (MAX_OUTPUT_TOKENS, review_and_revise,
                              get_review_prompt_hashes, validate_report, validate_verification,
-                             ACTOR_REVIEW, ACTOR_REVIEW_V2, ACTOR_REVIEW_V3, validate_actor_review_result)
+                             ACTOR_REVIEW, CONFIRMED_REVIEW, NEGOTIATED_REVIEW, validate_actor_review_result)
 
 
 def inputs():
@@ -651,7 +651,7 @@ def confirmation_response(case, actor, decision="accept_omission", mode="moodcut
 
 def call_confirmed(case, client, mode="moodcut"):
     return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
-        review_protocol=ACTOR_REVIEW_V2, project_root=Path(__file__).resolve().parents[1])
+        review_protocol=CONFIRMED_REVIEW, project_root=Path(__file__).resolve().parents[1])
 
 
 def bounded_software_case(mode="moodcut", omitted=("a", "b"), first="maintain_objection", final="maintain_objection"):
@@ -685,11 +685,11 @@ def bounded_software_case(mode="moodcut", omitted=("a", "b"), first="maintain_ob
 
 def call_bounded(case, client, mode="moodcut"):
     return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
-        review_protocol=ACTOR_REVIEW_V3, project_root=Path(__file__).resolve().parents[1])
+        review_protocol=NEGOTIATED_REVIEW, project_root=Path(__file__).resolve().parents[1])
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v3_writer_returns_one_dialogue_per_shot_for_both_actor_issues(mode):
+def test_negotiation_writer_returns_one_dialogue_per_shot_for_both_actor_issues(mode):
     case = actor_software_case(mode)
     writer = {"dialogue_by_shot": {case[1]["shots"][0]["shot_id"]:
         deepcopy(case[4]["patch"]["edits"][0]["set"]["dialogue"])},
@@ -705,7 +705,7 @@ def test_v3_writer_returns_one_dialogue_per_shot_for_both_actor_issues(mode):
 
 
 @pytest.mark.parametrize("bad", ["legacy_edits", "unknown_shot", "feedback_free_shot", "array", "alternatives", "wrong_speaker", "missing_line", "false_addressed", "extra_field"])
-def test_v3_shot_writer_fails_closed_without_guessing_or_merging(bad):
+def test_negotiation_shot_writer_fails_closed_without_guessing_or_merging(bad):
     case, replies = bounded_software_case(omitted=(), first="accept_candidate")
     writer = replies[2]
     sid = case[1]["shots"][0]["shot_id"]
@@ -724,53 +724,53 @@ def test_v3_shot_writer_fails_closed_without_guessing_or_merging(bad):
     assert result["negotiation_rounds"][0]["writer_response"] == writer
 
 
-def test_v3_duplicate_json_shot_keys_are_rejected_before_conversion():
+def test_negotiation_duplicate_json_shot_keys_are_rejected_before_conversion():
     from moodcut.client import _strict_json
     with pytest.raises(ValueError, match="duplicate JSON key"):
         _strict_json('{"dialogue_by_shot":{"S":[],"S":[]},"feedback_disposition":{}}')
 
 
-def test_v3_saved_raw_shot_dialogue_and_derived_patch_must_agree():
+def test_negotiation_saved_raw_shot_dialogue_and_derived_patch_must_agree():
     case, replies = bounded_software_case()
     result = call_bounded(case, FakeClient(replies))
     changed = deepcopy(result)
     sid = case[1]["shots"][0]["shot_id"]
     changed["negotiation_rounds"][0]["writer_response"]["dialogue_by_shot"] = {sid: deepcopy(case[1]["shots"][0]["dialogue"])}
     assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
-    changed = deepcopy(result); changed["writer_output_contract"] = "issue_patch_v1"
+    changed = deepcopy(result); changed["writer_output_contract"] = "issue_patch"
     assert validate_actor_review_result(*case[:3], changed, mode="moodcut")
 
 
-def test_v3_old_writer_contract_prompt_identity_remains_available():
+def test_negotiation_old_writer_contract_prompt_identity_remains_available():
     import hashlib
     root = Path(__file__).resolve().parents[1] / "src/moodcut/prompts"
-    old = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3, writer_output_contract="issue_patch_v1")
-    new = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3)
+    old = get_review_prompt_hashes(output_mode="generated", review_protocol=NEGOTIATED_REVIEW, writer_output_contract="issue_patch")
+    new = get_review_prompt_hashes(output_mode="generated", review_protocol=NEGOTIATED_REVIEW)
     assert old["revise"] == hashlib.sha256((root / "review_actor_revise.txt").read_text(encoding="utf-8").encode()).hexdigest()
     assert old["negotiate"] == hashlib.sha256((root / "review_actor_negotiate.txt").read_text(encoding="utf-8").encode()).hexdigest()
     assert old["revise"] != new["revise"] and old["negotiate"] != new["negotiate"]
     assert old["confirm"] == new["confirm"]
     assert all(old[k] != new[k] for k in ("generic", "moodcut"))
-    writer_only = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3,
-        writer_output_contract="dialogue_by_shot_json_schema_v1")
+    writer_only = get_review_prompt_hashes(output_mode="generated", review_protocol=NEGOTIATED_REVIEW,
+        writer_output_contract="dialogue_by_shot_writer_schema")
     assert all(writer_only[k] == old[k] for k in ("generic", "moodcut", "confirm"))
     assert all(writer_only[k] == new[k] for k in ("revise", "negotiate", "confirm"))
-    previous = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V3,
-        writer_output_contract="dialogue_by_shot_v1")
+    previous = get_review_prompt_hashes(output_mode="generated", review_protocol=NEGOTIATED_REVIEW,
+        writer_output_contract="dialogue_by_shot_object")
     for phase in ("revise", "negotiate"):
         assert previous[phase] == hashlib.sha256((root / f"review_actor_{phase}_by_shot.txt").read_text(encoding="utf-8").encode()).hexdigest()
         assert previous[phase] != new[phase]
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v3_writer_schema_is_used_in_both_rounds_without_new_actor_calls(mode):
+def test_negotiation_writer_schema_is_used_in_both_rounds_without_new_actor_calls(mode):
     from moodcut.reviewer import get_writer_json_schema
     from moodcut.contracts import json_hash
     case, replies = bounded_software_case(mode)
     client = FakeClient(replies)
     result = call_bounded(case, client, mode)
     assert result["status"] == "applied", result["errors"]
-    assert result["writer_output_contract"] == "dialogue_by_shot_json_schema_v2"
+    assert result["writer_output_contract"] == "dialogue_by_shot_owned_schema"
     writers = [c for c in client.calls if c["stage"] == "actor_revise"]
     assert len(writers) == 2 and len(client.calls) == 8
     assert [c["json_schema_sha256"] for c in writers] == [
@@ -780,7 +780,7 @@ def test_v3_writer_schema_is_used_in_both_rounds_without_new_actor_calls(mode):
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
 @pytest.mark.parametrize("final", ["maintain_objection", "accept_candidate"])
-def test_v3_final_disagreement_is_viewable_after_two_real_revision_attempts(mode, final):
+def test_negotiation_final_disagreement_is_viewable_after_two_real_revision_attempts(mode, final):
     case, responses = bounded_software_case(mode, final=final)
     original = deepcopy(case)
     client = FakeClient(responses)
@@ -808,7 +808,7 @@ def test_v3_final_disagreement_is_viewable_after_two_real_revision_attempts(mode
 
 
 @pytest.mark.parametrize("empty,omitted", [(True, ()), (False, ()), (False, ("b",))])
-def test_v3_no_objection_needs_no_extra_round(empty, omitted):
+def test_negotiation_no_objection_needs_no_extra_round(empty, omitted):
     case, responses = bounded_software_case(omitted=omitted, first="accept_candidate")
     if empty:
         for response in case[3]:
@@ -822,7 +822,7 @@ def test_v3_no_objection_needs_no_extra_round(empty, omitted):
     assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
 
 
-def test_v3_invalid_original_actor_report_is_failed_not_no_issues():
+def test_negotiation_invalid_original_actor_report_is_failed_not_no_issues():
     case, responses = bounded_software_case()
     responses[0]["actor_id"] = "b"
     client = FakeClient(responses)
@@ -832,7 +832,7 @@ def test_v3_invalid_original_actor_report_is_failed_not_no_issues():
 
 
 @pytest.mark.parametrize("bad", ["no_response", "same_dialogue", "omit_again", "drop_prior", "non_dialogue", "bad_speaker"])
-def test_v3_second_writer_cannot_repeat_its_veto_or_bypass_constraints(bad):
+def test_negotiation_second_writer_cannot_repeat_its_veto_or_bypass_constraints(bad):
     case, responses = bounded_software_case(omitted=("b",))
     writer = responses[4]
     if bad == "no_response": writer["objection_responses"] = {}
@@ -856,7 +856,7 @@ def test_v3_second_writer_cannot_repeat_its_veto_or_bypass_constraints(bad):
 
 @pytest.mark.parametrize("round_index", [1, 2])
 @pytest.mark.parametrize("bad", ["wrong_owner", "wrong_hash", "missing_issue", "other_issue", "empty_reason", "missing_reply"])
-def test_v3_hard_confirmation_errors_stop_without_retry(round_index, bad):
+def test_negotiation_hard_confirmation_errors_stop_without_retry(round_index, bad):
     case, responses = bounded_software_case()
     slot = 3 if round_index == 1 else 6
     response = responses[slot]
@@ -874,7 +874,7 @@ def test_v3_hard_confirmation_errors_stop_without_retry(round_index, bad):
 
 
 @pytest.mark.parametrize("bad", ["drop_round", "third_round", "missing_final_reply", "wrong_candidate", "hide_dispute", "fake_approval", "skip_revision"])
-def test_v3_saved_source_cannot_hide_rounds_disagreements_or_actual_candidate(bad):
+def test_negotiation_saved_source_cannot_hide_rounds_disagreements_or_actual_candidate(bad):
     case, responses = bounded_software_case()
     result = call_bounded(case, FakeClient(responses))
     if bad == "drop_round": result["negotiation_rounds"].pop(0)
@@ -888,7 +888,7 @@ def test_v3_saved_source_cannot_hide_rounds_disagreements_or_actual_candidate(ba
 
 
 @pytest.mark.parametrize("outcome", ["disputed", "accepted", "unknown_cost", "over_budget", "http_error", "json_error"])
-def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tmp_path, monkeypatch, outcome):
+def test_negotiation_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tmp_path, monkeypatch, outcome):
     import io
     from unittest.mock import Mock
     from urllib.error import HTTPError
@@ -925,7 +925,7 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
     out = tmp_path / "bounded-source"
     block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
         output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(),
-        review_protocol=ACTOR_REVIEW_V3)
+        review_protocol=NEGOTIATED_REVIEW)
     for call in block['planning']['call_records']:
         assert (out / call['response_artifact']['body_path']).is_file()
     for row in block['runs']:
@@ -967,14 +967,14 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
                    template_sha256=get_video_template_sha256(), project_root=root)
     assert validate_generated_comparison(block["runs"], **options) == []
     mixed = deepcopy(block["runs"])
-    mixed[0]["writer_output_contract"] = "dialogue_by_shot_v1"
-    assert any("consistent v3 writer" in e for e in validate_generated_comparison(mixed, **options))
+    mixed[0]["writer_output_contract"] = "dialogue_by_shot_object"
+    assert any("consistent negotiation writer" in e for e in validate_generated_comparison(mixed, **options))
     for field, value in (("negotiation_status", "failed"), ("negotiation_round_count", 3),
                          ("confirmation_issue_ids", []), ("actor_confirmation_status", "failed")):
         records = deepcopy(block["runs"])
         records[1][field] = value
         assert any("bounded actor negotiation" in e for e in validate_generated_comparison(records, **options))
-    records = deepcopy(block["runs"]); records[0]["review_protocol"] = ACTOR_REVIEW_V2
+    records = deepcopy(block["runs"]); records[0]["review_protocol"] = CONFIRMED_REVIEW
     assert any("consistent review protocol" in e for e in validate_generated_comparison(records, **options))
     review_path = out / "generic_review/review.json"
     saved = review_path.read_text(encoding="utf-8")
@@ -1022,7 +1022,7 @@ def test_v3_pipeline_routes_nineteen_calls_and_enforces_source_and_cost_gates(tm
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v2_only_corresponding_actor_can_accept_its_omission(mode):
+def test_confirmation_only_corresponding_actor_can_accept_its_omission(mode):
     case = omission_case(mode)
     response = confirmation_response(case, "b", mode=mode)
     before = deepcopy(case)
@@ -1041,7 +1041,7 @@ def test_v2_only_corresponding_actor_can_accept_its_omission(mode):
     assert validate_actor_review_result(*case[:3], result, mode=mode) == []
 
 
-def test_v2_objection_blocks_finalization_but_keeps_candidate_and_both_positions():
+def test_confirmation_objection_blocks_finalization_but_keeps_candidate_and_both_positions():
     case = omission_case()
     response = confirmation_response(case, "b", "maintain_objection")
     client = FakeClient(case[3] + [case[4], response])
@@ -1053,7 +1053,7 @@ def test_v2_objection_blocks_finalization_but_keeps_candidate_and_both_positions
     assert any("maintains objection" in e for e in result["errors"])
 
 
-def test_v2_groups_all_omitted_issues_per_actor_in_at_most_two_calls():
+def test_confirmation_groups_all_omitted_issues_per_actor_in_at_most_two_calls():
     case = omission_case(omitted=("a", "b"))
     extra = deepcopy(case[3][1]["issues"][0]);extra["issue_id"] = "local-2"
     case[3][1]["issues"].append(extra)
@@ -1070,7 +1070,7 @@ def test_v2_groups_all_omitted_issues_per_actor_in_at_most_two_calls():
 
 @pytest.mark.parametrize("bad", ["wrong_actor", "other_issue", "missing_issue", "duplicate_issue", "wrong_candidate",
     "wrong_initial", "wrong_scene", "wrong_mode", "patch", "empty_reason", "invalid_decision"])
-def test_v2_invalid_confirmation_cannot_release_writer_omission(bad):
+def test_confirmation_invalid_confirmation_cannot_release_writer_omission(bad):
     case = omission_case()
     response = confirmation_response(case, "b")
     if bad == "wrong_actor": response["actor_id"] = "a"
@@ -1091,7 +1091,7 @@ def test_v2_invalid_confirmation_cannot_release_writer_omission(bad):
     assert len(client.calls) == 4 and result["writer_response"] == case[4]
 
 
-def test_v2_invalid_first_confirmation_stops_before_second_actor_and_does_not_retry():
+def test_confirmation_invalid_first_confirmation_stops_before_second_actor_and_does_not_retry():
     case = omission_case(omitted=("a", "b"))
     wrong = confirmation_response(case, "a");wrong["actor_id"] = "b"
     client = FakeClient(case[3] + [case[4], wrong, confirmation_response(case, "b")])
@@ -1104,7 +1104,7 @@ def test_v2_invalid_first_confirmation_stops_before_second_actor_and_does_not_re
 
 
 @pytest.mark.parametrize("empty", [False, True])
-def test_v2_no_omission_has_no_confirmation_or_extra_call(empty):
+def test_confirmation_no_omission_has_no_confirmation_or_extra_call(empty):
     case = actor_software_case()
     if empty:
         for report in case[3]:report["issues"] = []
@@ -1116,7 +1116,7 @@ def test_v2_no_omission_has_no_confirmation_or_extra_call(empty):
     assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
 
 
-def test_v2_source_checks_cannot_be_satisfied_by_a_writer_status_or_other_candidate():
+def test_confirmation_source_checks_cannot_be_satisfied_by_a_writer_status_or_other_candidate():
     case = omission_case()
     result = call_confirmed(case, FakeClient(case[3] + [case[4], confirmation_response(case, "b")]))
     for change in ("missing", "disputed", "candidate", "missing_candidate", "endorsement"):
@@ -1128,13 +1128,13 @@ def test_v2_source_checks_cannot_be_satisfied_by_a_writer_status_or_other_candid
         else:tampered["actor_endorsement"] = "approved"
         assert validate_actor_review_result(*case[:3], tampered, mode="moodcut")
     assert set(get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW)) == {"generic", "moodcut", "revise"}
-    v2 = get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW_V2)
-    assert set(v2) == {"generic", "moodcut", "revise", "confirm"}
-    assert {k:v for k,v in v2.items() if k!="confirm"} == get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW)
+    confirmation = get_review_prompt_hashes(output_mode="generated", review_protocol=CONFIRMED_REVIEW)
+    assert set(confirmation) == {"generic", "moodcut", "revise", "confirm"}
+    assert {k:v for k,v in confirmation.items() if k!="confirm"} == get_review_prompt_hashes(output_mode="generated", review_protocol=ACTOR_REVIEW)
 
 
 @pytest.mark.parametrize("outcome", ["accepted", "disputed", "unknown_cost"])
-def test_v2_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source(tmp_path, monkeypatch, outcome):
+def test_confirmation_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source(tmp_path, monkeypatch, outcome):
     import io
     from unittest.mock import Mock
     from moodcut import pipeline
@@ -1166,7 +1166,7 @@ def test_v2_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source
     settings["model"] = pipeline.read_json(root/"configs/video.json")["model"]
     out = tmp_path/"source"
     block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
-        output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(), review_protocol=ACTOR_REVIEW_V2)
+        output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(), review_protocol=CONFIRMED_REVIEW)
     if outcome!="accepted":
         assert block["status"] == "failed" and send.call_count == 7
         assert block["runs"][1]["actor_confirmation_status"] == ("disputed" if outcome=="disputed" else "failed")
@@ -1200,7 +1200,7 @@ def test_v2_pipeline_routes_confirmations_and_rejects_missing_or_disputed_source
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v3_actor_schema_uses_existing_global_ownership_without_repair(mode):
+def test_negotiation_actor_schema_uses_existing_global_ownership_without_repair(mode):
     from moodcut.reviewer import get_actor_json_schema, _merge_actor_reports
     root = Path(__file__).resolve().parents[1]
     raw = json.loads((root / "docs/pilots/s06-actor-v3-schema.results.json").read_text(encoding="utf-8"))
@@ -1228,7 +1228,7 @@ def test_v3_actor_schema_uses_existing_global_ownership_without_repair(mode):
     assert plan == before
 
 
-def test_v3_actor_schema_keeps_shot_index_pairs_and_empty_actor():
+def test_negotiation_actor_schema_keeps_shot_index_pairs_and_empty_actor():
     from moodcut.reviewer import get_actor_json_schema
     scene = {"scene_id": "software"}
     plan = {"shots": [
@@ -1245,7 +1245,7 @@ def test_v3_actor_schema_keeps_shot_index_pairs_and_empty_actor():
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v3_actor_requests_bind_each_actor_schema_without_added_calls(mode):
+def test_negotiation_actor_requests_bind_each_actor_schema_without_added_calls(mode):
     from moodcut.reviewer import get_actor_json_schema
     from moodcut.contracts import json_hash
     case, replies = bounded_software_case(mode)
@@ -1261,8 +1261,8 @@ def test_v3_actor_requests_bind_each_actor_schema_without_added_calls(mode):
     assert result["actor_reports"] == [{"actor_id": a["id"], "response": r} for a, r in zip(case[0]["characters"], replies[:2])]
 
 
-# Developer-authored v4 software fixtures; these are not model-quality evidence.
-def v4_case(mode="moodcut", *, empty_actor=False, unchanged=False, second=False,
+# Developer-authored revisit software fixtures; these are not model-quality evidence.
+def revisit_case(mode="moodcut", *, empty_actor=False, unchanged=False, second=False,
             final="resolved", no_issues=False):
     from moodcut.reviewer import GLOBAL_REVIEWER_ID
     from moodcut.contracts import json_hash
@@ -1304,20 +1304,20 @@ def v4_case(mode="moodcut", *, empty_actor=False, unchanged=False, second=False,
     return case, replies
 
 
-def call_v4(case, client, mode="moodcut"):
-    from moodcut.reviewer import ACTOR_REVIEW_V4
+def call_revisit(case, client, mode="moodcut"):
+    from moodcut.reviewer import REVISIT_REVIEW
     return review_and_revise(*case[:3], client, mode=mode, output_mode="generated",
-        review_protocol=ACTOR_REVIEW_V4, project_root=Path(__file__).resolve().parents[1])
+        review_protocol=REVISIT_REVIEW, project_root=Path(__file__).resolve().parents[1])
 
 
 @pytest.mark.parametrize("mode,reviewers", [("generic_review", 1), ("moodcut", 2)])
 @pytest.mark.parametrize("second,final", [(False, "resolved"), (False, "withdrawn"),
                                          (True, "resolved"), (True, "maintain_objection")])
-def test_v4_every_candidate_revisited_with_equal_revision_limit(mode, reviewers, second, final):
-    case, replies = v4_case(mode, second=second, final=final)
+def test_revisit_every_candidate_revisited_with_equal_revision_limit(mode, reviewers, second, final):
+    case, replies = revisit_case(mode, second=second, final=final)
     before = deepcopy(case[:3])
     client = FakeClient(replies)
-    result = call_v4(case, client, mode)
+    result = call_revisit(case, client, mode)
     assert result["status"] == "applied", result["errors"]
     rounds = 2 if second else 1
     assert result["negotiation_round_count"] == rounds
@@ -1346,37 +1346,37 @@ def test_v4_every_candidate_revisited_with_equal_revision_limit(mode, reviewers,
 
 
 @pytest.mark.parametrize("mode", ["generic_review", "moodcut"])
-def test_v4_unchanged_candidates_still_revisited_and_may_remain_unresolved(mode):
-    case, replies = v4_case(mode, unchanged=True, second=True, final="maintain_objection")
+def test_revisit_unchanged_candidates_still_revisited_and_may_remain_unresolved(mode):
+    case, replies = revisit_case(mode, unchanged=True, second=True, final="maintain_objection")
     client = FakeClient(replies)
-    result = call_v4(case, client, mode)
+    result = call_revisit(case, client, mode)
     assert result["status"] == "unchanged", result["errors"]
     assert result["plan"] == case[1] and result["negotiation_round_count"] == 2
     assert result["disputed_issue_ids"] and client.remaining == 0
 
 
-def test_v4_actor_without_initial_issues_is_revisited():
-    case, replies = v4_case(empty_actor=True)
+def test_revisit_actor_without_initial_issues_is_revisited():
+    case, replies = revisit_case(empty_actor=True)
     client = FakeClient(replies)
-    result = call_v4(case, client)
+    result = call_revisit(case, client)
     assert result["status"] == "applied", result["errors"]
     assert len(result["actor_confirmations"]) == 2
     assert result["actor_confirmations"][1]["response"]["decisions"] == []
 
 
 @pytest.mark.parametrize("mode,expected", [("generic_review", 1), ("moodcut", 2)])
-def test_v4_no_issues_stops_before_writer(mode, expected):
-    case, replies = v4_case(mode, no_issues=True)
+def test_revisit_no_issues_stops_before_writer(mode, expected):
+    case, replies = revisit_case(mode, no_issues=True)
     client = FakeClient(replies)
-    result = call_v4(case, client, mode)
+    result = call_revisit(case, client, mode)
     assert result["status"] == "unchanged", result["errors"]
     assert result["negotiation_status"] == "no_issues" and len(client.calls) == expected
     assert validate_actor_review_result(*case[:3], result, mode=mode) == []
 
 
 @pytest.mark.parametrize("bad", ["ownership", "hash", "missing_decision", "missing_second_response", "transport"])
-def test_v4_failure_preserves_attempts_without_retry(bad):
-    case, replies = v4_case(second=True)
+def test_revisit_failure_preserves_attempts_without_retry(bad):
+    case, replies = revisit_case(second=True)
     expected = 1 if bad == "ownership" else 4 if bad in ("hash", "missing_decision") else 6
     if bad == "ownership": replies[0]["issues"][0]["line_indices"] = [1]
     elif bad == "hash": replies[3]["candidate_plan_sha256"] = "wrong"
@@ -1384,7 +1384,7 @@ def test_v4_failure_preserves_attempts_without_retry(bad):
     elif bad == "missing_second_response": replies[5]["objection_responses"] = {}
     else: replies = replies[:5]
     client = FakeClient(replies)
-    result = call_v4(case, client)
+    result = call_revisit(case, client)
     assert result["status"] == "review_failed" and result["plan"] == case[1]
     assert result["errors"] and len(client.calls) == expected
     if bad != "ownership":
@@ -1392,9 +1392,9 @@ def test_v4_failure_preserves_attempts_without_retry(bad):
 
 
 @pytest.mark.parametrize("final_regression", [False, True])
-def test_v4_partner_context_regression_gets_one_final_response(final_regression):
+def test_revisit_partner_context_regression_gets_one_final_response(final_regression):
     from moodcut.contracts import json_hash
-    case, replies = v4_case(empty_actor=True)
+    case, replies = revisit_case(empty_actor=True)
     regression = dict(deepcopy(case[3][1]["issues"][0]), issue_id="regression-1",
         evidence="Changed partner dialogue introduced this synthetic context regression.")
     replies[4]["new_issues"] = [regression]
@@ -1415,7 +1415,7 @@ def test_v4_partner_context_regression_gets_one_final_response(final_regression)
         confirms[1]["new_issues"] = [dict(regression, issue_id="regression-2")]
     replies += [second, *confirms]
     client = FakeClient(replies)
-    result = call_v4(case, client)
+    result = call_revisit(case, client)
     assert result["status"] == "applied", result["errors"]
     assert result["negotiation_round_count"] == 2 and len(client.calls) == 8
     assert result["negotiation_status"] == ("disputed" if final_regression else "complete")
@@ -1426,28 +1426,28 @@ def test_v4_partner_context_regression_gets_one_final_response(final_regression)
     assert any(i["issue_id"] == regression_id for i in payload["report"]["issues"])
 
 
-def test_v4_unchanged_shot_cannot_introduce_a_new_regression():
-    case, replies = v4_case(unchanged=True)
+def test_revisit_unchanged_shot_cannot_introduce_a_new_regression():
+    case, replies = revisit_case(unchanged=True)
     replies[3]["new_issues"] = deepcopy(case[3][0]["issues"])
     client = FakeClient(replies)
-    result = call_v4(case, client)
+    result = call_revisit(case, client)
     assert result["status"] == "review_failed" and len(client.calls) == 4
     assert any("changed dialogue" in e for e in result["errors"])
 
 
 @pytest.mark.parametrize("final", ["resolved", "maintain_objection"])
-def test_v4_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeypatch, final):
+def test_revisit_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeypatch, final):
     import io
     from unittest.mock import Mock
     from moodcut import pipeline
     from moodcut.client import OpenRouterClient, RoleRoutedClient
-    from moodcut.reviewer import ACTOR_REVIEW_V4
+    from moodcut.reviewer import REVISIT_REVIEW
     from moodcut.video_generation import get_video_template_sha256
     from moodcut.evaluation import validate_generated_comparison
     monkeypatch.setattr("socket.socket.connect", lambda *a, **k: pytest.fail("Offline test forbids network"))
     root = Path(__file__).resolve().parents[1]
-    case, generic = v4_case("generic_review", second=True, final=final)
-    _, actors = v4_case(second=True, final=final)
+    case, generic = revisit_case("generic_review", second=True, final=final)
+    _, actors = revisit_case(second=True, final=final)
     scene, initial, manifest = deepcopy(case[:3])
     for asset in manifest["assets"]:
         asset["source_url"] = "https://example.invalid/" + asset["asset_id"] + ".png"
@@ -1468,10 +1468,10 @@ def test_v4_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeyp
     client = RoleRoutedClient(*clients, max_cost_usd=.1)
     settings = pipeline.read_json(root / "tests/fixtures/generated_contract.json")["settings"]
     settings["model"] = pipeline.read_json(root / "configs/video.json")["model"]
-    out = tmp_path / "v4-software-source"
+    out = tmp_path / "revisit-software-source"
     block = pipeline.run_experiment(scene, manifest, client, out_dir=out, project_root=root, render=False,
         output_mode="generated", generation_settings=settings, template_sha256=get_video_template_sha256(),
-        review_protocol=ACTOR_REVIEW_V4, source_kind="synthetic")
+        review_protocol=REVISIT_REVIEW, source_kind="synthetic")
     assert block["status"] == "prepared", block
     assert send.call_count == 16 and [r["review_calls"] for r in block["runs"]] == [0, 5, 8]
     expected_roles = ["test/planning"] * 3 + ["test/review", "test/planning", "test/review", "test/planning", "test/review"]
@@ -1485,12 +1485,41 @@ def test_v4_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeyp
     options = dict(scene=scene, initial=initial, plans=plans, manifest=manifest, settings=settings,
         template_sha256=get_video_template_sha256(), project_root=root)
     assert validate_generated_comparison(block["runs"], **options) == []
-    mixed = deepcopy(block["runs"]); mixed[0]["review_protocol"] = ACTOR_REVIEW_V3
+    mixed = deepcopy(block["runs"]); mixed[0]["review_protocol"] = NEGOTIATED_REVIEW
     assert any("consistent review protocol" in e for e in validate_generated_comparison(mixed, **options))
     wrong_contract = deepcopy(block["runs"])
     for row in wrong_contract:
-        row["writer_output_contract"] = "issue_patch_v1"
-    assert any("v4 requires" in e for e in validate_generated_comparison(wrong_contract, **options))
+        row["writer_output_contract"] = "issue_patch"
+    assert any("revisit requires" in e for e in validate_generated_comparison(wrong_contract, **options))
+    # Synthetic legacy serialization must replay without modifying any saved bytes.
+    from moodcut.protocol_names import _ALIASES
+    import shutil
+    legacy = tmp_path / "historical-source"
+    shutil.copytree(out, legacy)
+    old_names = {current: old for old, current in _ALIASES.items()}
+    def restore_serialized_names(value):
+        if isinstance(value, dict):
+            for key, entry in value.items():
+                if key in ("review_protocol", "writer_output_contract") and isinstance(entry, str):
+                    value[key] = old_names.get(entry, entry)
+                else:
+                    restore_serialized_names(entry)
+        elif isinstance(value, list):
+            for entry in value:
+                restore_serialized_names(entry)
+    for file in legacy.rglob("*.json"):
+        value = pipeline.read_json(file)
+        restore_serialized_names(value)
+        file.write_text(json.dumps(value), encoding="utf-8")
+    before = {file: file.read_bytes() for file in legacy.rglob("*.json")}
+    pipeline._load_generated_block(legacy, root)
+    historical_block = pipeline.read_json(legacy / "block.json")
+    assert validate_generated_comparison(historical_block["runs"], **options) == []
+    assert before == {file: file.read_bytes() for file in before}
+    # Mixed raw identities stay rejected even when they resolve to the same behavior.
+    mixed_names = deepcopy(historical_block["runs"])
+    mixed_names[0]["review_protocol"] = REVISIT_REVIEW
+    assert any("consistent review protocol" in error for error in validate_generated_comparison(mixed_names, **options))
     path = out / "generic_review/review.json"
     saved = pipeline.read_json(path)
     saved["negotiation_rounds"][0]["actor_confirmations"] = []
@@ -1500,9 +1529,9 @@ def test_v4_full_pipeline_offline_source_replay_and_comparison(tmp_path, monkeyp
 
 
 
-def test_v4_regression_can_be_repaired_by_restoring_original_partner_context():
+def test_revisit_regression_can_be_repaired_by_restoring_original_partner_context():
     from moodcut.contracts import json_hash
-    case, replies = v4_case(empty_actor=True)
+    case, replies = revisit_case(empty_actor=True)
     replies[4]["new_issues"] = [dict(deepcopy(case[3][1]["issues"][0]), issue_id="context-regression")]
     original_issue = "actor-1:local-1"
     regression_id = "actor-2:revisit-1:context-regression"
@@ -1516,16 +1545,16 @@ def test_v4_regression_can_be_repaired_by_restoring_original_partner_context():
         c["new_issues"] = []
     confirms[0]["decisions"][0]["decision"] = "maintain_objection"
     confirms[1]["decisions"] = [{"issue_id": regression_id, "decision": "resolved", "reason": "Original context restored."}]
-    result = call_v4(case, FakeClient(replies + [second, *confirms]))
+    result = call_revisit(case, FakeClient(replies + [second, *confirms]))
     assert result["status"] == "unchanged", result["errors"]
     assert result["plan"] == case[1] and result["disputed_issue_ids"] == [original_issue]
     assert validate_actor_review_result(*case[:3], result, mode="moodcut") == []
 
 
 @pytest.mark.parametrize("change", ["missing_new_issues", "missing_reports", "wrong_round", "frozen_direction"])
-def test_v4_saved_result_rejects_missing_fields_and_frozen_changes(change):
-    case, replies = v4_case(second=True)
-    result = call_v4(case, FakeClient(replies))
+def test_revisit_saved_result_rejects_missing_fields_and_frozen_changes(change):
+    case, replies = revisit_case(second=True)
+    result = call_revisit(case, FakeClient(replies))
     assert result["status"] == "applied", result["errors"]
     if change == "missing_new_issues":
         result["negotiation_rounds"][0]["actor_confirmations"][0]["response"].pop("new_issues")

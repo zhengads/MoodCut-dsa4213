@@ -1,679 +1,376 @@
 {
-  "kind": "presentation_derived_from_preserved_actual_records",
-  "formal_inclusion_approved": false,
-  "experiments": [
+  "scenarios": [
     {
-      "id": "s01-v4",
-      "title": "安娜与克里斯托夫：久别重逢",
-      "intro": "通用审查保留初稿；MoodCut 调整承诺范围，并完成修改后回访。",
-      "scene_location": "白天，安静的门厅",
-      "tone_label": "亲密、陪伴",
-      "speaker_names": {
-        "frozenii_anna": "安娜",
-        "frozenii_kristoff": "克里斯托夫"
-      },
-      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，FrozenII 安娜／克里斯托夫 best.png。保留原权利声明。",
-      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s01-v4-20261025/SOURCE.md",
-      "protocol": "actor_self_review_v4",
-      "writer_output_contract": "dialogue_by_shot_json_schema_v2",
-      "cost": "0.504356",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/main/docs/pilots/s01-v4-text-video.md",
-      "duration": "请求 5 秒；原片约 5.26 秒",
-      "run_date": "2026-10-25",
-      "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s01-v4-20261025",
-      "model_label": "Gemini 编剧／DeepSeek 审查；HeyGen 768p",
-      "description": "显式 v4 开发试跑：通用组使用 1 个全局审查 Agent，MoodCut 使用 2 个独立 Actor。两组共用初稿与非台词输入。",
-      "observations": [
-        "通用审查未报告问题，保留“我也是，我会一直陪着你。”；未提交候选稿，因此没有修改或回访。",
-        "MoodCut 的克里斯托夫 Actor 认为“一直”可能超出当前陪伴情景的承诺范围。编剧采纳示例句“我也很想你，现在哪儿也不去了。”，安娜台词未变。",
-        "修改后两位 Actor 均回访：安娜未提出新增问题，克里斯托夫将原意见标为已解决；没有触发第二轮，也没有独立质量评分。",
-        "三个条件入口只对应两段独立生成视频。通用审查复用 baseline，不能当作另一段独立样本。文本 $0.004356＋新增视频 $0.50＝$0.504356。",
-        "固定 seed 未锁定手势和背景细节；请求台词不等于已核实的语音转录，单例不能证明 MoodCut 整体更好。"
+      "number": "01",
+      "title": "Another broken promise",
+      "emotion": "anger",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Maxime",
+        "Valentina"
       ],
+      "brief": "Maxime angrily confronts Valentina about repeatedly breaking her promises. Valentina responds defensively and does not accept his criticism. Their disagreement remains unresolved.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "真实出片，待听看验收",
-          "video": "media/s01-v4-baseline.mp4",
-          "dialogue": [
-            {
-              "character_id": "frozenii_anna",
-              "text": "我真的好想你啊。"
-            },
-            {
-              "character_id": "frozenii_kristoff",
-              "text": "我也是，我会一直陪着你。"
-            }
-          ],
-          "note": "未经审查的共同初稿。"
+          "label": "Baseline",
+          "video": "media/01-baseline.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "generic_review",
-          "label": "通用审查",
-          "status": "复用 baseline 原片",
-          "video": "media/s01-v4-baseline.mp4",
-          "dialogue": [
-            {
-              "character_id": "frozenii_anna",
-              "text": "我真的好想你啊。"
-            },
-            {
-              "character_id": "frozenii_kristoff",
-              "text": "我也是，我会一直陪着你。"
-            }
-          ],
-          "note": "1 个全局审查 Agent 未报告问题；台词及请求与 baseline 相同，复用同一原片。"
+          "label": "Generic Review",
+          "video": "media/01-generic_review.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "moodcut",
           "label": "MoodCut",
-          "status": "真实出片，待听看验收",
-          "video": "media/s01-v4-moodcut.mp4",
-          "dialogue": [
-            {
-              "character_id": "frozenii_anna",
-              "text": "我真的好想你啊。"
-            },
-            {
-              "character_id": "frozenii_kristoff",
-              "text": "我也很想你，现在哪儿也不去了。"
-            }
-          ],
-          "note": "克里斯托夫 Actor 提出承诺范围问题；编剧采纳建议后，两位 Actor 均回访，原意见标为 resolved。"
+          "video": "media/01-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     },
     {
-      "id": "s06-index",
-      "title": "李靖与太乙：这次谁来收尾",
-      "intro": "演员引用约束修复后，原 S06 三条件真实出片；直接听看台词修改的效果。",
-      "scene_location": "普通活动室门边",
-      "tone_label": "敌意、对抗",
-      "speaker_names": {
-        "nezha2_lijing": "李靖",
-        "nezha2_taiyi": "太乙"
-      },
-      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
-      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-s06-v3-index-20261025/SOURCE.md",
-      "protocol": "actor_self_review_v3",
-      "writer_output_contract": "dialogue_by_shot_json_schema_v2",
-      "cost": "0.75421676",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-index.md",
-      "duration": "请求 5 秒；三段原片均约 5.26 秒",
-      "description": "本次复跑原 S06 收尾分工故事。三段真实视频均已生成；JSON、演员台词归属和修订校验通过，原始失败记录仍保留在仓库历史记录。",
-      "observations": [
-        "实际 9 次文本请求、3 次视频提交，三段均为本次独立生成的原片；没有重试、换模型、手写台词或替演员改索引。",
-        "两组各有 4 条演员意见，编剧第一轮均申报全部处理；未触发退回确认和第二轮协商，不能把编剧申报当作演员最终认可。",
-        "四次演员请求按实际台词归属约束镜头和全局行号；两次编剧请求也使用 Schema。九份响应均为合法 JSON，原始字节已留存并核对。",
-        "文本 $0.00421676，加三段视频 $0.75，总计 $0.75421676；逐笔文本费用和本次账户增量均已核清，$0.10 备用金未动用。",
-        "页面台词来自实际计划，尚未核对是否完整说出、语速与表演是否自然；人工评分仍为空，不据此认定情绪组更好。",
-        "上次演员错引行号和更早的 JSON 尾部失败均保持原样；本页展示的是另一次新试跑。"
+      "number": "02",
+      "title": "The foul-smelling medicine",
+      "emotion": "disgust",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Lijing",
+        "Taiyi"
       ],
+      "brief": "Lijing reacts with strong disgust to the medicine's smell. Taiyi acknowledges that the smell is unpleasant. Neither character drinks the medicine or removes the bottle.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "真实出片，待听看验收",
-          "video": "media/s06-v3-index-baseline.mp4",
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？重新分工。"
-            }
-          ],
-          "note": "Gemini 共同初稿，未经演员审查。"
+          "label": "Baseline",
+          "video": "media/02-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "真实出片，待听看验收",
-          "video": "media/s06-v3-index-generic_review.mp4",
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次活动的收尾，你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？必须重新分工。"
-            }
-          ],
-          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
+          "label": "Generic Review",
+          "video": "media/02-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "真实出片，待听看验收",
-          "video": "media/s06-v3-index-moodcut.mp4",
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "剩下的，你收拾。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么要我负责？必须重新分工。"
-            }
-          ],
-          "note": "两位演员共提出 4 条意见，编剧申报全部处理；尚未人工听看验收。"
-        }
-      ],
-      "run_date": "2026-10-25",
-      "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-s06-v3-index-20261025"
-    },
-    {
-      "id": "s06-schema",
-      "title": "李靖与太乙：这次谁来收尾",
-      "intro": "本次使用修复后的结构化编剧请求；情绪组演员行归属校验失败，未出片。",
-      "scene_location": "普通活动室门边",
-      "tone_label": "敌意、对抗",
-      "speaker_names": {
-        "nezha2_lijing": "李靖",
-        "nezha2_taiyi": "太乙"
-      },
-      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
-      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
-      "protocol": "actor_self_review_v3",
-      "writer_output_contract": "dialogue_by_shot_json_schema_v1",
-      "cost": "0.00336748",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3-schema.md",
-      "duration": "请求 5 秒；实际未提交视频",
-      "description": "修复后的 v3 再跑 S06：通用组 Schema 编剧请求成功，但情绪组太乙把自己的台词索引填成 0，指向李靖的台词。系统按硬性错误规则停止，没有视频提交或重试。",
-      "observations": [
-        "真实调用 8 次：共同规划 3 次，通用组演员 2 次加编剧 1 次，情绪组演员 2 次。情绪组未进入编剧、演员确认或第二轮协商。",
-        "通用组编剧实际使用 json_schema，输出和修订均通过；本轮全部 8 份响应都是合法 JSON。一次成功不代表今后所有调用都能保证合规。",
-        "本镜头的全局行索引为 0＝李靖、1＝太乙。输入给太乙的 own_dialogue 明确标注 line_index=1，太乙回复的 line_indices 却为 [0]；角色归属检查因此拒绝。",
-        "没有替演员改索引、重试、换模型或手写补位；没有编译或提交视频，情绪组显示的仍是诊断用初稿。",
-        "8 笔文本费用合计 $0.00336748，逐笔服务端核对且与本次账户增量一致。视频费为 0，$0.10 备用金未动用。",
-        "上次 S06 的 JSON 多余尾部失败单独保留；本次是新的演员引用索引错误。无新视频可供效果比较，不能据此判断通用或情绪审查谁更好。"
-      ],
-      "conditions": [
-        {
-          "id": "baseline",
-          "label": "共同初稿",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？重新分工。"
-            }
-          ],
-          "note": "共同初稿已保存；情绪组演员行归属错误导致整块停止，视频未提交。"
-        },
-        {
-          "id": "generic_review",
-          "label": "通用自审",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾，该你负责了。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "不行，得重新分工。"
-            }
-          ],
-          "note": "两位通用演员各提 1 条意见，Schema 编剧申报均已处理，修订通过；整块停止，没有新视频。"
-        },
-        {
-          "id": "moodcut",
-          "label": "情绪自审",
-          "status": "演员行归属错误，整块停止",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？重新分工。"
-            }
-          ],
-          "note": "太乙回复引用了李靖的全局行索引，已拒绝。这里是恢复的诊断用初稿，不是通过审查的最终稿，也没有自动改索引。"
+          "label": "MoodCut",
+          "video": "media/02-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     },
     {
-      "id": "s06",
-      "title": "李靖与太乙：这次谁来收尾",
-      "intro": "同一场分工争执，比较通用审查与情绪审查。本次在文本阶段停止。",
-      "scene_location": "普通活动室门边",
-      "tone_label": "敌意、对抗",
-      "speaker_names": {
-        "nezha2_lijing": "李靖",
-        "nezha2_taiyi": "太乙"
-      },
-      "source_credit": "角色参考来源：showlab/MovieAgent 固定版本 d84041b，NeZha2 李靖／太乙 best.png。图片及角色使用权仍未核清，署名不等于授权。",
-      "source_statement_url": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
-      "protocol": "actor_self_review_v3",
-      "writer_output_contract": "dialogue_by_shot_v1",
-      "cost": "0.00361854",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/s06-actor-v3.md",
-      "duration": "请求 5 秒；实际未提交视频",
-      "description": "S06 真实试跑在情绪组编剧 JSON 语法校验时停止：模型返回的对象后多了括号和 reasons 残片。原文已完整保存，错误可复现；没有视频提交，也没有重试。",
-      "observations": [
-        "共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用。通用组返回合法修订；情绪组编剧回复未通过 JSON 校验。",
-        "通用组李靖无意见、太乙 1 条，编剧申报已处理；情绪组两位演员各 1 条，但编剧输出未被接受。",
-        "保存的原始模型文本本地重解析为 Extra data：第 1 行、第 312 列，偏移 311。外层 HTTP 正文中的 content 与留存文本一致，不再猜测历史失败原因。",
-        "系统按硬性错误规则停止，没有截取合法前缀、删除多余尾部、重试、换模型或手写补位；未进入演员确认和第二轮协商。",
-        "9 笔文本费用合计 $0.00361854，逐笔服务端核对且与本次账户增量一致。视频提交和新增视频为 0，备用金未动用。",
-        "这次没有可供听看比较的新视频，不能据此认定通用审查更好。历史 Anna/Elsa 原片和前两次失败保持原样。"
+      "number": "03",
+      "title": "Something in the forest",
+      "emotion": "fear",
+      "language": "English",
+      "characters": [
+        "Elsa",
+        "Mattias"
       ],
+      "brief": "Elsa admits that she is frightened by the approaching creature. Mattias acknowledges the danger and admits that he is frightened too. The creature remains unseen, and the encounter is unresolved.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？重新分工。"
-            }
-          ],
-          "note": "本次共同初稿已保存；情绪组硬性错误导致整块停止，视频未提交。"
+          "label": "Baseline",
+          "video": "media/03-baseline.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "不行，得重新分工。"
-            }
-          ],
-          "note": "通用组修订合法，编剧申报采纳太乙的 1 条意见；整块停止，没有新视频。"
+          "label": "Generic Review",
+          "video": "media/03-generic_review.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "JSON 语法失败，整块停止",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "nezha2_lijing",
-              "text": "这次收尾你来负责。"
-            },
-            {
-              "character_id": "nezha2_taiyi",
-              "text": "凭什么？重新分工。"
-            }
-          ],
-          "note": "这里只显示恢复的诊断用初稿，不是通过审查的最终稿。失败原文已保存，没有删尾巴或手写补位。"
+          "label": "MoodCut",
+          "video": "media/03-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     },
     {
-      "id": "v3-captured",
-      "protocol": "actor_self_review_v3",
-      "writer_output_contract": "dialogue_by_shot_v1",
-      "cost": "0.75277694",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-captured.md",
-      "duration": "请求 5 秒，原片约 5.26 秒",
-      "description": "本次 v3 真实三条件已出片：Gemini 共同规划、两位 DeepSeek 演员独立自审、Gemini 按镜头统一修订，再由 HeyGen 分别生成三段新视频。原始文本响应已私下完整保存。",
-      "observations": [
-        "真实调用：共同规划 3 次，两组各 2 位演员加 1 次编剧，共 9 次文本调用；随后 3 次独立视频提交，得到 3 段不同原片，没有复用旧视频。",
-        "通用组 Anna 无意见、Elsa 有 1 条；情绪组两位演员各有 1 条。两组编剧都申报采纳了全部意见，结构校验通过。",
-        "本次没有未采纳意见，因而没有触发演员确认或第二轮协商。编剧申报已采纳不等于演员最终认可，也不证明语义上完全满足反馈。",
-        "9 份 HTTP 原始响应与模型文本均已私下保存并核对哈希，没有 JSON、留存或结构错误；无付费重试、换模型或手写台词补位。",
-        "文本 $0.00277694，视频 $0.75，总消费 $0.75277694，与本次账户扣款增量一致；$0.10 备用金未动用。",
-        "软件确认三段原片都有音轨、时长约 5.26 秒。台词是否说对、人物是否稳定、语速与温暖感如何，请实际听看；人工评分仍为空，不据此宣称情绪组更好。",
-        "前两次 v3 失败和五段历史 global/v1 原片仍原样保留在其他页签。"
+      "number": "04",
+      "title": "The celebration is saved",
+      "emotion": "joy",
+      "language": "English",
+      "characters": [
+        "Anna",
+        "Kristoff"
       ],
+      "brief": "Anna happily announces that the celebration will take place after all. Kristoff responds with genuine happiness and shares her excitement. The celebration has not yet begun.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "真实视频已生成，待听看验收",
-          "video": "media/actor-v3-baseline.mp4",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "本次共同规划的真实原片；未修改台词。"
+          "label": "Baseline",
+          "video": "media/04-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "真实视频已生成，待听看验收",
-          "video": "media/actor-v3-generic_review.mp4",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你啊，安娜。"
-            }
-          ],
-          "note": "Anna 没有提出意见，Elsa 提出 1 条；编剧申报已采纳，修改 Elsa 台词。未触发演员确认。"
+          "label": "Generic Review",
+          "video": "media/04-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "真实视频已生成，待听看验收",
-          "video": "media/actor-v3-moodcut.mp4",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，你的伞还给你。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。你真好。"
-            }
-          ],
-          "note": "两位演员各提出 1 条意见；编剧申报均已采纳，修改两人的台词。未触发演员确认。"
+          "label": "MoodCut",
+          "video": "media/04-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     },
     {
-      "id": "v3-shot",
-      "protocol": "actor_self_review_v3",
-      "writer_output_contract": "dialogue_by_shot_v1",
-      "cost": "0.00291790",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3-shot.md",
-      "duration": "请求 5 秒；实际未提交视频",
-      "description": "修复后 v3 的真实试跑：通用组按镜头返回一份完整台词并通过；情绪组编剧回复未通过严格 JSON 对象解析，已按硬性错误规则停止，没有新视频。",
-      "observations": [
-        "真实调用 9 次：共同规划 3 次，两组各 2 位演员加 1 次编剧。通用组把两位演员的 3 条意见整合进同一镜头的一份台词，得到一条内部补丁。",
-        "情绪组编剧回复未通过 JSON 对象解析。现有日志没有保存失败原文，提供商只读内容查询也不可用，因此不能确定是语法、重复键、非有限值还是非对象根节点。",
-        "系统没有猜测或重构失败台词，没有重试、换模型或手写补位。未进入演员确认或第二轮协商；情绪组显示的是诊断用初稿。",
-        "9 条调用费用已逐笔查回执并与本次账户增量对齐：$0.00291790。视频提交、新视频和人工评分均为 0，备用金未动用。",
-        "先前旧接口 v3 的两条 edit 失败仍单独保留。历史页签的原片继续可看，不是本次 v3 的新输出。"
+      "number": "05",
+      "title": "An irreplaceable keepsake",
+      "emotion": "sadness",
+      "language": "English",
+      "characters": [
+        "Lucy",
+        "Gru"
       ],
+      "brief": "Lucy expresses sadness about losing something personally meaningful. Gru acknowledges her disappointment and offers comfort. The object remains damaged, and no solution is found.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+          "label": "Baseline",
+          "video": "media/05-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，伞我用完啦，还你。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。伞还好用吗？"
-            }
-          ],
-          "note": "本次在情绪组发生硬性错误后停止；没有新片，也未借用历史片段。"
+          "label": "Generic Review",
+          "video": "media/05-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "JSON 校验失败，整块停止",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "恢复初稿供诊断，不是通过审查的最终稿；失败回复原文不可用，未自行重构。"
+          "label": "MoodCut",
+          "video": "media/05-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     },
     {
-      "id": "v3",
-      "protocol": "actor_self_review_v3",
-      "cost": "0.00281304",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/feat/issue-8-actor-v3-live/docs/pilots/anna-elsa-actor-v3.md",
-      "duration": "请求 5 秒；实际未提交视频",
-      "description": "演员协商 v3 真实试跑已停止：情绪组编剧对同一镜头输出两条完整对白 edit，违反单镜头合并修改契约。这是硬性格式错误，不是可保留放行的创作分歧。",
-      "observations": [
-        "实际完成 9 次文本调用：共同规划 3 次、通用组 2 位演员加 1 次编剧、情绪组 2 位演员加 1 次编剧。所有输出均来自真实模型，无手写补位。",
-        "通用组修改了 Anna 的台词，Elsa 保持初稿；情绪组返回的两条 edit 指向同一镜头，且 Elsa 台词不同，不能当作两个互不影响的修改直接拼接。",
-        "系统拒绝整份情绪组补丁并恢复初稿供诊断，没有重试、手工合并或更换模型。未进入演员确认或第二轮协商，不能据此判断 v3 协商效果。",
-        "视频请求、生成视频和人工评分均为 0。实付 $0.00281304，与后续只读核账增量完全一致；$0.10 备用金未动用。",
-        "想看已有成片，可切换到历史页签；那些视频不是此次 v3 输出。"
+      "number": "06",
+      "title": "An unexpectedly finished task",
+      "emotion": "surprise",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Nezha",
+        "Aobing"
       ],
+      "brief": "Nezha expresses disbelief that Aobing has already completed the task. Aobing confirms that it is finished. Nezha remains surprised by the unexpected result.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "情绪组发生硬性错误，整块在视频准备前停止；没有挪用历史视频。"
+          "label": "Baseline",
+          "video": "media/06-baseline.mp4",
+          "note": "Same video bytes as Generic Review and Moodcut."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "文本已保存，视频未提交",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，你的伞还给你。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "情绪组发生硬性错误，整块在视频准备前停止；没有挪用历史视频。"
+          "label": "Generic Review",
+          "video": "media/06-generic_review.mp4",
+          "note": "Same video bytes as Baseline and Moodcut."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "修订格式错误，整块停止",
-          "video": null,
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "恢复的初稿，仅供诊断；两条原始冲突 edit 见完整记录。没有可播放新片。"
+          "label": "MoodCut",
+          "video": "media/06-moodcut.mp4",
+          "note": "Same video bytes as Baseline and Generic Review."
         }
       ]
     },
     {
-      "id": "actors",
-      "protocol": "actor_self_review_v1",
-      "cost": "0.50248398",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/a466b1bc000889e30af0254126f7c0ec41def436/docs/pilots/anna-elsa-actor.md",
-      "description": "共同规划一次。两位演员独立审自己的台词，再由同一编剧整合；通用与情绪组只改变自审重点。",
-      "observations": [
-        "通用组：两位演员都没有提出问题，编剧未被调用，台词和视频均与共同初稿相同。",
-        "情绪组：两人各提出一条意见，编剧把 Anna 改为“艾莎，伞还你啦。”，Elsa 的台词未改。",
-        "Elsa 的意见仍未采纳，编剧理由还有角色误指。此处保留原结果，等待人工听看判断。"
+      "number": "07",
+      "title": "A unilateral decision",
+      "emotion": "anger",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Lucy",
+        "Gru"
       ],
+      "brief": "Lucy objects to Gru breaking their agreement and expresses anger about his unilateral action. Gru defends what he did without denying that he decided alone. The disagreement remains unresolved.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "规划 Agent 原稿",
-          "video": "media/actor-v1-baseline-and-generic.mp4",
-          "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "原始视频与原生声音，未剪辑或调速"
+          "label": "Baseline",
+          "video": "media/07-baseline.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "generic_review",
-          "label": "通用自审",
-          "status": "无修改，复用初稿视频",
-          "video": "media/actor-v1-baseline-and-generic.mp4",
-          "sha256": "bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "同一段原片，没有另行生成"
+          "label": "Generic Review",
+          "video": "media/07-generic_review.mp4",
+          "note": "Approximately 8 seconds."
         },
         {
           "id": "moodcut",
-          "label": "情绪自审",
-          "status": "仅修改台词",
-          "video": "media/actor-v1-moodcut.mp4",
-          "sha256": "cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，伞还你啦。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "原始视频与原生声音，未剪辑或调速"
+          "label": "MoodCut",
+          "video": "media/07-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
-      ],
-      "unresolved": {
-        "summary": "Elsa 建议让感谢更亲近，例如“谢啦，安娜。”；编剧保留了原句。",
-        "writerReason": "The suggestion to add '伞没淋湿吧？' or '谢啦' to Anna's line would extend the dialogue beyond the 5-second limit and alter the simple, direct nature of the thank you, which might not be desired."
-      }
+      ]
     },
     {
-      "id": "global",
-      "protocol": "global_v1",
-      "cost": "0.75376126",
-      "record": "https://github.com/zhengads/MoodCut-dsa4213/blob/a466b1bc000889e30af0254126f7c0ec41def436/docs/pilots/anna-elsa-agent.md",
-      "description": "共同规划一次。通用与情绪组分别进行整段台词审查、修订和复查，均从同一初稿出发。",
-      "observations": [
-        "通用组把 Anna 的说法缩短，并将 Elsa 的“谢谢你”改为“谢啦”。",
-        "情绪组强调还伞动作，并将 Elsa 的回应改为“嗯，辛苦你了。”。",
-        "两种审查的模型复查均保留一条未解决意见；尚无独立人工评分。"
+      "number": "08",
+      "title": "The spoiled drink",
+      "emotion": "disgust",
+      "language": "English",
+      "characters": [
+        "Anna",
+        "Kristoff"
       ],
+      "brief": "Anna reacts with strong aversion to the smell. Kristoff confirms that the drink has spoiled. Neither person drinks, touches or removes it.",
       "conditions": [
         {
           "id": "baseline",
-          "label": "共同初稿",
-          "status": "规划 Agent 原稿",
-          "video": "media/global-v1-baseline.mp4",
-          "sha256": "4cdadb0ab1d66868caad62bb7c11e8c8b9c24e43a89f73f5f88767539f1c85e1",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，这是你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢谢你，安娜。"
-            }
-          ],
-          "note": "原始视频与原生声音，未剪辑或调速"
+          "label": "Baseline",
+          "video": "media/08-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
         },
         {
           "id": "generic_review",
-          "label": "通用审查",
-          "status": "仅修改台词",
-          "video": "media/global-v1-generic_review.mp4",
-          "sha256": "8badfe78d6a9253cdf7f081112d64d5af933704015db235e51fcc7fb6e11c2a4",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，你的伞。"
-            },
-            {
-              "character_id": "b",
-              "text": "谢啦，安娜。"
-            }
-          ],
-          "note": "原始视频与原生声音，未剪辑或调速"
+          "label": "Generic Review",
+          "video": "media/08-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
         },
         {
           "id": "moodcut",
-          "label": "情绪审查",
-          "status": "仅修改台词",
-          "video": "media/global-v1-moodcut.mp4",
-          "sha256": "bab555e2b4dfeef1d4183baaee857ded13540502cc14284d01d7baa1f61bee4b",
-          "dialogue": [
-            {
-              "character_id": "a",
-              "text": "艾莎，你的伞，还给你。"
-            },
-            {
-              "character_id": "b",
-              "text": "嗯，辛苦你了。"
-            }
-          ],
-          "note": "原始视频与原生声音，未剪辑或调速"
+          "label": "MoodCut",
+          "video": "media/08-moodcut.mp4",
+          "note": "Approximately 8 seconds."
+        }
+      ]
+    },
+    {
+      "number": "09",
+      "title": "A crack beneath the bridge",
+      "emotion": "fear",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Nezha",
+        "Aobing"
+      ],
+      "brief": "Nezha admits concern that the bridge may become unstable. Aobing shares the fear and tells Nezha not to move yet. The cause and outcome remain unknown.",
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "Baseline",
+          "video": "media/09-baseline.mp4",
+          "note": "Approximately 8 seconds."
+        },
+        {
+          "id": "generic_review",
+          "label": "Generic Review",
+          "video": "media/09-generic_review.mp4",
+          "note": "Approximately 8 seconds."
+        },
+        {
+          "id": "moodcut",
+          "label": "MoodCut",
+          "video": "media/09-moodcut.mp4",
+          "note": "Approximately 8 seconds."
+        }
+      ]
+    },
+    {
+      "number": "10",
+      "title": "The approval arrives",
+      "emotion": "joy",
+      "language": "Mandarin Chinese",
+      "characters": [
+        "Lijing",
+        "Taiyi"
+      ],
+      "brief": "Lijing expresses happiness and relief about the approval. Taiyi reciprocates the joy and anticipation. The event itself has not started.",
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "Baseline",
+          "video": "media/10-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
+        },
+        {
+          "id": "generic_review",
+          "label": "Generic Review",
+          "video": "media/10-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
+        },
+        {
+          "id": "moodcut",
+          "label": "MoodCut",
+          "video": "media/10-moodcut.mp4",
+          "note": "Approximately 8 seconds."
+        }
+      ]
+    },
+    {
+      "number": "11",
+      "title": "The old tree is gone",
+      "emotion": "sadness",
+      "language": "English",
+      "characters": [
+        "Elsa",
+        "Mattias"
+      ],
+      "brief": "Elsa expresses sadness about losing the tree. Mattias understands the loss and offers comfort. The tree is not restored and no solution is found.",
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "Baseline",
+          "video": "media/11-baseline.mp4",
+          "note": "Same video bytes as Generic Review."
+        },
+        {
+          "id": "generic_review",
+          "label": "Generic Review",
+          "video": "media/11-generic_review.mp4",
+          "note": "Same video bytes as Baseline."
+        },
+        {
+          "id": "moodcut",
+          "label": "MoodCut",
+          "video": "media/11-moodcut.mp4",
+          "note": "Approximately 8 seconds."
+        }
+      ]
+    },
+    {
+      "number": "12",
+      "title": "The room is already ready",
+      "emotion": "surprise",
+      "language": "English",
+      "characters": [
+        "Maxime",
+        "Valentina"
+      ],
+      "brief": "Maxime expresses immediate surprise and disbelief at the early completion. Valentina confirms that the room was ready that morning.",
+      "conditions": [
+        {
+          "id": "baseline",
+          "label": "Baseline",
+          "video": "media/12-baseline.mp4",
+          "note": "Approximately 8 seconds."
+        },
+        {
+          "id": "generic_review",
+          "label": "Generic Review",
+          "video": "media/12-generic_review.mp4",
+          "note": "Approximately 8 seconds."
+        },
+        {
+          "id": "moodcut",
+          "label": "MoodCut",
+          "video": "media/12-moodcut.mp4",
+          "note": "Approximately 8 seconds."
         }
       ]
     }
-  ],
-  "gallery_policy": "completed_video_cases_only; original failed records retained"
+  ]
 }

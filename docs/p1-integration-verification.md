@@ -2,7 +2,7 @@
 
 > Historical integration evidence dated 2026-10-24. Executed versions, original observations and attribution below are preserved; old outstanding-work statements are not current task assignments. See [current status](README.md) and [pilot index](pilots/README.md).
 
-Current integration note (2026-10-24): PR #48 has merged into main. Historical real-model evidence remains tied to its executed code revision rather than being automatically attributed to later protocols. The separate bounded-negotiation increment uses explicit `actor_self_review_v3`; its offline implementation/evidence is tracked in [the current method](ACTOR_REVIEW_METHOD.md). It does not retag historical paid artifacts or establish human acceptance.
+Current integration note (2026-10-24): PR #48 has merged into main. Historical real-model evidence remains tied to its executed code revision rather than being automatically attributed to later protocols. The separate bounded-negotiation increment uses explicit `actor_negotiation`; its offline implementation/evidence is tracked in [the current method](ACTOR_REVIEW_METHOD.md). It does not retag historical paid artifacts or establish human acceptance.
 
 **Project:** MoodCut - DSA4213
 **Module:** MC-01 / P1 Foundation and Integration
@@ -25,7 +25,7 @@ The following checks were completed locally:
 - Cross-module tests: 311 tests passed, 72 subtests passed.
 - Both Umbrella Pilot PNG references were verified against their recorded SHA-256 hashes.
 - Five pinned upstream source files were verified.
-- Umbrella Pilot v3 shared generation identity was reproduced.
+- Umbrella Pilot actor-negotiation shared generation identity was reproduced.
 - All three condition-specific request hashes matched the delivery manifest.
 
 No additional paid model calls were made during these checks.
@@ -81,7 +81,7 @@ The remaining work includes:
 3. Confirm P5 qualification and export boundaries.
 4. Obtain human listening and viewing acceptance.
 5. Preserve unresolved actor feedback and quality limitations.
-6. Verify the merged actor protocols against their respective code baselines, including the newer v3 bounded-negotiation increment.
+6. Verify the merged actor protocols against their respective code baselines, including the newer actor-negotiation bounded-negotiation increment.
 
 ## 6. Real-Run Evidence and Accounting Review
 
@@ -104,7 +104,7 @@ The review reports retained unresolved issues. The software execution result doe
 
 ### 6.2 Actor Self-Review Pilot
 
-PR #48 documents the newer actor_self_review_v1 protocol.
+PR #48 documents the newer actor_self_review protocol.
 
 The reported real execution includes:
 
@@ -241,7 +241,7 @@ The remaining work is to obtain the sanitized real-run
 artifacts, perform independent evidence rechecks, and record
 human acceptance decisions.
 
-PR #48 is merged into main. Historical paid-run evidence must remain associated with its executed code revision. The newer v3 bounded-negotiation increment requires separate integration evidence.
+PR #48 is merged into main. Historical paid-run evidence must remain associated with its executed code revision. The newer actor-negotiation bounded-negotiation increment requires separate integration evidence.
 
 ## 8. Conclusion
 
@@ -255,12 +255,12 @@ Issue #8 should remain open until the outstanding acceptance requirements are re
 
 No additional paid model execution is authorized by this report.
 
-## 9. Local Real v2 Integration Verification
+## 9. Local Real actor-confirmation Integration Verification
 
 ### 9.1 Scope and Baseline
 
 On 2026-10-24, an independent local development pilot exercised
-`actor_self_review_v2` using real OpenRouter text-model calls.
+`actor_confirmation` using real OpenRouter text-model calls.
 
 The tests used the repository baseline `7ac42ae`, before the
 newer bounded-negotiation increment merged into main.
@@ -272,7 +272,7 @@ The source kind was `development`, output mode was `generated`,
 and no video generation API was invoked.
 
 These tests are not formal study samples and do not constitute
-real-model verification of `actor_self_review_v3`.
+real-model verification of `actor_negotiation`.
 
 ### 9.2 Real Text-Model Runs
 
@@ -289,7 +289,7 @@ an independent reconciliation with the OpenRouter account ledger.
 The team-approved cumulative text budget was USD 0.10.
 The recorded total remained below that authorization.
 
-### 9.3 Successful v2 No-Change Path
+### 9.3 Successful actor-confirmation No-Change Path
 
 Run 02 completed shared Gemini planning with three recorded
 planning calls.
@@ -340,9 +340,9 @@ The existing tests include actor feedback ownership, unified
 revision, omission acceptance, maintained objections, invalid
 confirmations, failure blocking, and pipeline integration.
 
-These results were obtained before the newer v3 increment
+These results were obtained before the newer actor-negotiation increment
 was synchronized locally and must not be represented as a
-post-merge v3 regression run.
+post-merge actor-negotiation regression run.
 
 ### 9.5.1 Post-Merge Regression Verification
 
@@ -357,11 +357,11 @@ This run includes the newer bounded actor-negotiation
 implementation and paired evaluation integration tests.
 
 These are offline regression results, not evidence of
-real paid `actor_self_review_v3` execution.
+real paid `actor_negotiation` execution.
 
 ### 9.6 Acceptance Boundary and Handoff
 
-Verified in real v2 execution:
+Verified in real actor-confirmation execution:
 - Real shared planning and independent actor feedback.
 - Three-condition prepared records on the no-change path.
 - Recorded text costs and fail-closed handling.
@@ -372,13 +372,13 @@ Not verified by these real runs:
 - Real actor confirmation of omitted feedback.
 - Real maintained-objection handling.
 - Video generation, media quality, and P5 qualification.
-- The newer `actor_self_review_v3` protocol.
+- The newer `actor_negotiation` protocol.
 
 Local outputs remain in ignored `runs/` directories.
 They have not been committed as public research evidence.
 
 P1 software integration is substantially verified for the
-tested v2 paths. Final real-model protocol acceptance,
+tested actor-confirmation paths. Final real-model protocol acceptance,
 independent provider accounting reconciliation, and P4/P5
 handoff remain pending.
 

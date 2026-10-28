@@ -1,6 +1,6 @@
-# Follow-up small study: six stories with fixed tone assignments, v1
+# Follow-up small study: six stories with fixed tone assignments, original
 
-This page preserves the v1 design record. Current study inputs follow the revised [affectionate / hostile / tense v2 design](../six-story-clear-emotions-20261024/README.md). All original JSON inputs in this directory remain unchanged; historical suspicious labels are not renamed tense.
+This page preserves the original design record. Current study inputs follow the revised [affectionate / hostile / tense revised design](../six-story-clear-emotions-20261024/README.md). All original JSON inputs in this directory remain unchanged; historical suspicious labels are not renamed tense.
 
 Design and input scope confirmed on 2026-10-24. This planned small study uses **6 stories with one fixed tone each: 2 affectionate, 2 suspicious and 2 hostile**. Each story will compare baseline, generic_review and moodcut, without repeats for now, giving 18 condition entries. Stories, characters and tone assignments are fixed by this design; this round does not add stories or cross every story with every tone. This change only supplies inputs, with 0 new model API calls and zero spending.
 
@@ -122,7 +122,7 @@ The planning Agent will only need the corresponding `scene.json` and `assets.jso
 
 Local checks use the existing `moodcut.validation.validate_scene(..., output_mode="generated")` to validate structure and local images. They also check six unique stories, two per tone, 12 unique characters, input file hashes and the arithmetic of 18 condition entries. These checks do not call the planner, create API clients, compile video requests or access the network. Structural acceptance does not establish plot quality, speech-duration feasibility or video quality.
 
-Before execution, determine the method version, models / duration and budget, viewer assignment, and handling of failed and unchanged samples. Actor v2 belongs to the separate [PR #48](https://github.com/zhengads/MoodCut-dsa4213/pull/48). This input change does not depend on that implementation being merged, nor may historical v1 videos be treated as v2 results. The six-story input scope is confirmed with `input_scope_approved=true`; this does not authorize model calls or formally include results that do not yet exist. Accordingly, `execution_enabled`, `paid_run_authorized` and `formal_inclusion_approved` remain `false`.
+Before execution, determine the method version, models / duration and budget, viewer assignment, and handling of failed and unchanged samples. Actor revised belongs to the separate [PR #48](https://github.com/zhengads/MoodCut-dsa4213/pull/48). This input change does not depend on that implementation being merged, nor may historical original videos be treated as revised results. The six-story input scope is confirmed with `input_scope_approved=true`; this does not authorize model calls or formally include results that do not yet exist. Accordingly, `execution_enabled`, `paid_run_authorized` and `formal_inclusion_approved` remain `false`.
 
 If input errors or common-duration feasibility require a revision before paid execution, retain the version, reason and original inputs, and recalculate index hashes. After paid execution begins, do not replace stories, characters or tones based on which method wins. Main results should cover every planned entry and report failures, unchanged outputs, reuse and missing ratings separately. The jointly evaluable subset cannot represent all attempts.
 

@@ -1,9 +1,9 @@
 {
-  "release_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/Videos_S07-S18",
+  "release_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/Videos_01-12",
   "published_on": "2026-10-28",
-  "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/Videos_S07-S18/MoodCut_S07-S12_and_S13-S18_V2_All_Videos.zip",
-  "archive_sha256": "bafa056a434bd406778f07e4651e8e42f81d5da9c74df0f9ad0a358ebc5f1920",
-  "numbering_scope": "Display numbers only; source IDs, inputs and historical results retain their original identities.",
+  "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/Videos_01-12/MoodCut_01-12_All_Videos.zip",
+  "archive_sha256": "b8b42b75331f79382879da1fa68ce4084498b55827e59c0a3bae4ec73dbadb69",
+  "numbering_scope": "Published folders and gallery use 01-12; source IDs identify the original input briefs.",
   "scenario_count": 12,
   "condition_file_count": 36,
   "unique_video_byte_hashes": 28,
@@ -11,7 +11,6 @@
     {
       "number": "01",
       "source_id": "S07",
-      "release_version": "original",
       "title": "Another broken promise",
       "emotion": "anger",
       "characters": [
@@ -19,7 +18,7 @@
         "Valentina / 瓦伦蒂娜"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S07_8s_Chinese_Three_Videos",
+      "archive_directory": "MoodCut_01",
       "source_scene": "inputs/s07_broken_promise/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -49,7 +48,6 @@
     {
       "number": "02",
       "source_id": "S08",
-      "release_version": "original",
       "title": "The foul-smelling medicine",
       "emotion": "disgust",
       "characters": [
@@ -57,7 +55,7 @@
         "Taiyi / 太乙"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S08_8s_Chinese_Three_Videos",
+      "archive_directory": "MoodCut_02",
       "source_scene": "inputs/s08_foul_medicine/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -87,7 +85,6 @@
     {
       "number": "03",
       "source_id": "S09",
-      "release_version": "original",
       "title": "Something in the forest",
       "emotion": "fear",
       "characters": [
@@ -95,7 +92,7 @@
         "Mattias / 马蒂亚斯"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S09_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_03",
       "source_scene": "inputs/s09_forest_creature/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -125,7 +122,6 @@
     {
       "number": "04",
       "source_id": "S10",
-      "release_version": "original",
       "title": "The celebration is saved",
       "emotion": "joy",
       "characters": [
@@ -133,7 +129,7 @@
         "Kristoff / 克里斯托夫"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S10_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_04",
       "source_scene": "inputs/s10_celebration_saved/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -163,7 +159,6 @@
     {
       "number": "05",
       "source_id": "S11",
-      "release_version": "original",
       "title": "An irreplaceable keepsake",
       "emotion": "sadness",
       "characters": [
@@ -171,7 +166,7 @@
         "Gru / 格鲁"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S11_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_05",
       "source_scene": "inputs/s11_irreplaceable_keepsake/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -201,7 +196,6 @@
     {
       "number": "06",
       "source_id": "S12",
-      "release_version": "original",
       "title": "An unexpectedly finished task",
       "emotion": "surprise",
       "characters": [
@@ -209,7 +203,7 @@
         "Aobing / 敖丙"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S12_8s_Chinese_Three_Conditions_Shared_Video",
+      "archive_directory": "MoodCut_06",
       "source_scene": "inputs/s12_finished_task/scene.json",
       "initial_dialogue_source": "not_specified_in_delivery",
       "files": [
@@ -239,7 +233,6 @@
     {
       "number": "07",
       "source_id": "S13",
-      "release_version": "V2",
       "title": "A unilateral decision",
       "emotion": "anger",
       "characters": [
@@ -247,7 +240,7 @@
         "Gru / 格鲁"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S13_V2_8s_Chinese_Three_Videos",
+      "archive_directory": "MoodCut_07",
       "source_scene": "inputs/s13_unilateral_decision/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
@@ -277,7 +270,6 @@
     {
       "number": "08",
       "source_id": "S14",
-      "release_version": "V2",
       "title": "The spoiled drink",
       "emotion": "disgust",
       "characters": [
@@ -285,7 +277,7 @@
         "Kristoff / 克里斯托夫"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S14_V2_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_08",
       "source_scene": "inputs/s14_spoiled_drink/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
@@ -315,7 +307,6 @@
     {
       "number": "09",
       "source_id": "S15",
-      "release_version": "V2",
       "title": "A crack beneath the bridge",
       "emotion": "fear",
       "characters": [
@@ -323,7 +314,7 @@
         "Aobing / 敖丙"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S15_V2_8s_Chinese_Three_Videos",
+      "archive_directory": "MoodCut_09",
       "source_scene": "inputs/s15_cracking_bridge/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
@@ -353,7 +344,6 @@
     {
       "number": "10",
       "source_id": "S16",
-      "release_version": "V2",
       "title": "The approval arrives",
       "emotion": "joy",
       "characters": [
@@ -361,7 +351,7 @@
         "Taiyi / 太乙"
       ],
       "language": "Mandarin Chinese",
-      "archive_directory": "MoodCut_S16_V2_8s_Chinese_Three_Videos",
+      "archive_directory": "MoodCut_10",
       "source_scene": "inputs/s16_approval_arrives/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
@@ -391,7 +381,6 @@
     {
       "number": "11",
       "source_id": "S17",
-      "release_version": "V2",
       "title": "The old tree is gone",
       "emotion": "sadness",
       "characters": [
@@ -399,7 +388,7 @@
         "Mattias / 马蒂亚斯"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S17_V2_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_11",
       "source_scene": "inputs/s17_old_tree_gone/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
@@ -429,7 +418,6 @@
     {
       "number": "12",
       "source_id": "S18",
-      "release_version": "V2",
       "title": "The room is already ready",
       "emotion": "surprise",
       "characters": [
@@ -437,7 +425,7 @@
         "Valentina / 瓦伦蒂娜"
       ],
       "language": "English",
-      "archive_directory": "MoodCut_S18_V2_8s_English_Three_Videos",
+      "archive_directory": "MoodCut_12",
       "source_scene": "inputs/s18_room_ready/scene.json",
       "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
       "files": [
