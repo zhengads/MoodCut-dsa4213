@@ -320,3 +320,303 @@ snapshots must remain intact, and missing costs must remain unknown.
 Actual receipt/media rechecks, VBench runs on accepted real clips and independent
 human ratings remain outstanding in this checkout. No formal sample size,
 participant assignment or new paid execution is approved by this document.
+
+## Public pilot media audit and evaluation readiness (2026-10-25)
+
+P5 audited the actual downloadable Anna/Elsa pilot videos against their release
+manifests and published result records. All **8 distinct videos** passed byte,
+metadata and full audio/video decode checks. They represent **9 condition
+entries**, because actor-v1 baseline and generic_review share one video. This is
+media integrity evidence, not a VBench result, independent rating, full source
+qualification or approval for formal inclusion.
+
+### Versioned evidence inventory
+
+Repository snapshot: `f45590de4a89d9c5d787771dcc59308e41f274d3` (main).
+The v3 public result record was read separately at
+`c7e6bd87437bef05dad45805f55c184ad4e1b041` (Draft PR #52).
+
+| Pilot protocol | Condition entries | Distinct videos | Interpretation |
+| --- | ---: | ---: | --- |
+| global-v1 | 3 | 3 | Historical global review; keep separate from actor self-review. |
+| actor-v1 | 3 | 2 | baseline and unchanged generic_review reuse identical bytes; retain both condition entries without inventing an independent generation. |
+| actor-v3 | 3 | 3 | Historical bounded actor negotiation; public record says completed_requires_manual_inspection. |
+| Total inventory | 9 | 8 | An inventory count across protocols, not nine independent experimental samples. |
+
+Public releases and pinned records:
+
+- [Historical global-v1 / actor-v1 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-20261024):
+  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-20261024/manifest.json),
+  [global result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-agent.results.json),
+  [actor-v1 result](https://github.com/zhengads/MoodCut-dsa4213/blob/f45590de4a89d9c5d787771dcc59308e41f274d3/docs/pilots/anna-elsa-actor.results.json).
+- [Historical actor-v3 release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/pilot-anna-elsa-v3-20261024):
+  [manifest](https://github.com/zhengads/MoodCut-dsa4213/releases/download/pilot-anna-elsa-v3-20261024/manifest.json),
+  [pinned result](https://github.com/zhengads/MoodCut-dsa4213/blob/c7e6bd87437bef05dad45805f55c184ad4e1b041/docs/pilots/anna-elsa-actor-v3-captured.results.json).
+  Its executed code is `7817623a76de5d5ff68b7da5c12aa943e28798c4`, with
+  `dialogue_by_shot_v1`. The commit hosting the published record is not the
+  executed commit. Do not relabel these clips as outputs of the newer
+  `dialogue_by_shot_json_schema_v2` contract in PR #52.
+
+Release manifest SHA-256 values, in the release order above:
+
+```text
+b89b95de4577cbe8d2611df4e210dc49e91400170aaf1359fed26e4875b0472b
+b3d479ef1b6141165ecee8bed374318a575fa9e02c4fa1bb41aaa14bbe06abd3
+```
+
+### Observed file checks
+
+Every listed MP4 matched its manifest size/hash and GitHub asset size/digest
+(where the API supplied a digest). Each mapped condition's published video hash,
+width, height and encoded duration matched the downloaded file. All videos have
+1344 x 768 video, reported frame rate 24/1, an audio stream and encoded duration
+5.258344 seconds. Total downloaded MP4 size: **8,662,796 bytes**. Full decoding
+reported no errors for all eight files with FFmpeg 9.0.1 Essentials.
+
+| File | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `global-v1-baseline.mp4` | 923,816 | `4cdadb0ab1d66868caad62bb7c11e8c8b9c24e43a89f73f5f88767539f1c85e1` |
+| `global-v1-generic_review.mp4` | 1,090,596 | `8badfe78d6a9253cdf7f081112d64d5af933704015db235e51fcc7fb6e11c2a4` |
+| `global-v1-moodcut.mp4` | 1,023,858 | `bab555e2b4dfeef1d4183baaee857ded13540502cc14284d01d7baa1f61bee4b` |
+| `actor-v1-baseline-and-generic.mp4` | 1,261,699 | `bdda0b1bbb79ce0942b6cd867d77e8e804839a575b1597f8ee4fc29bb55668a7` |
+| `actor-v1-moodcut.mp4` | 1,036,129 | `cf0aaaf662f76df3ca2166ce33f2690663451783fba068b5346b5efc5dc771c8` |
+| `actor-v3-baseline.mp4` | 1,070,733 | `c4c527b7a9f8bfd3ab7e0cec41bf077d980226d4e147a55d65979a6ed734050c` |
+| `actor-v3-generic_review.mp4` | 1,156,634 | `dba7f08313592ba258f820eb78c6f01d2dd16620e8c05c5c2cedcaba545fcff8` |
+| `actor-v3-moodcut.mp4` | 1,099,331 | `0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7` |
+
+To reproduce, download the MP4 assets and manifests from the two releases into
+separate ignored run directories, retain their SOURCE.md attribution, and first
+verify the manifest hashes above. Compare each file's byte count and SHA-256
+with the manifest and pinned per-condition result. Probe both streams using
+P4's existing media probe (or `ffprobe -v error -show_format -show_streams
+-of json <clip.mp4>`), then decode each file with:
+
+```text
+ffmpeg -v error -xerror -i <clip.mp4> -map 0:v:0 -map 0:a:0 -f null -
+```
+
+The audit's local evidence is under `runs/release-audit-20261025/`: `audit.json`,
+`videos.csv`, downloaded manifests/source records, per-file ffprobe JSON and
+decode logs. These artifacts and videos remain ignored. The pinned links,
+checksums, observations and reproduction procedure above are the public record.
+
+Audio presence and successful decoding do not establish intelligible speech,
+correct speaker attribution, emotional delivery or visual quality. This audit
+made zero provider calls, ran no benchmark inference and collected no ratings.
+It did not independently reconcile the published spending with original receipts.
+
+### Project status and next evidence handoff
+
+At this snapshot, PR #46 (P5 anonymous-label regressions) and PR #57 (review
+coverage and repeatable offline verification, authored by `fanx9905-blip`) are
+merged. The PR #46 status in the dated contribution table above is historical.
+PR #52 remains Draft: the later S06 attempts stopped before video generation;
+the latest recorded stop was invalid actor dialogue ownership. The subsequent
+schema/ownership fixes have offline evidence, but no new successful S06 video
+is established by the eight historical Anna/Elsa files.
+
+The [six-story clear-emotion inputs](studies/six-story-clear-emotions-20261024/README.md)
+define affectionate/hostile/tense scenes and 18 planned condition entries. They
+are an input design, not 18 completed results. Do not merge the older Anna/Elsa
+pilot into that dataset or combine global-v1, actor-v1 and actor-v3 into a paired
+method-effect estimate.
+
+| Next activity | Available evidence / dependency | Required interpretation |
+| --- | --- | --- |
+| Inspect historical pilot media | The eight files are now locally available and byte-checked. | A human can inspect speech, speakers and emotion; no answers have been filled automatically. |
+| Requalify actual source records | Still needs final block records, frozen inputs, preparation artifacts, configuration and original receipts with relative relationships intact. Published summary JSON and MP4 files alone are insufficient. | Reuse P1 source rechecks and P5 qualification; retain failures, unknown costs and each final ledger once. |
+| Run real-clip VBench | Freeze the accepted clip inventory and obtain the required model, scale and compute/budget approval. | Existing adapter covers imaging_quality; it does not measure dialogue emotion or constitute full VBench. Report protocol and reused-file mappings alongside scores. |
+| Collect independent ratings | Needs source-qualified export, agreed protocol/rater assignment and blank templates. | Reuse existing export/import rechecks; keep private mappings private and human answers independent. |
+| Compare the current method | Needs a frozen common protocol, completed approved runs and independent evidence for the intended study. | Preserve failed/unchanged/reused entries and coverage; do not infer effectiveness from these integrity checks. |
+
+The [public viewing page](https://zhengads.github.io/MoodCut-dsa4213/) reveals
+conditions and target tones. It is suitable for team inspection, not blind
+rating distribution. Use the existing anonymous export route after complete
+source handoff; account for prior exposure when assigning independent raters.
+
+P5 contribution in this increment: independently retrieved and audited the
+published media, reconciled condition-to-file reuse and protocol versions, and
+recorded the remaining evaluation dependencies. Generation, protocol changes
+and the shared verification workflow remain attributed to their original authors.
+
+### Current offline integration verification
+
+Reused the team's existing workflow on the same main snapshot:
+
+```text
+python scripts/verify_workflow.py --output runs/workflow-verification-20261025
+```
+
+All five stages passed: three-condition mock run, anonymous export, coverage
+without ratings, assignment dry-run and generated integration. The final stage
+passed **12 tests**, with zero failures/errors/skips. The mock run produced three
+clips; all three remained unrated and score means remained null. Local evidence
+is `runs/workflow-verification-20261025/verification.json`, stage logs and
+`generated-tests.xml`. These synthetic fixtures verify software integration;
+they do not requalify the real pilot media audited above. No full-suite rerun
+is claimed for this documentation-only increment.
+
+## Real pilot imaging_quality results (2026-10-25)
+
+Following explicit approval of the eight-video CPU scope, the existing pinned
+VBench adapter evaluated all eight audited files with cached MUSIQ-SPAQ weights.
+**8 succeeded, 0 failed, 0 missing, 0 timed out.** Total worker elapsed time was
+393.202 seconds (including per-worker setup); each file took 47.795-55.513 seconds,
+within its 300-second timeout. There were no retries, GPU runs, model downloads
+or paid API calls. External API spending was $0. This supersedes the pending
+benchmark status in the earlier audit snapshot; full source qualification and
+independent human ratings remain outstanding.
+
+### Measured scores
+
+Each row is one distinct downloaded file, linked by the exact filename and
+SHA-256 in the audit table above. Actor-v3 denotes the historical
+`actor_self_review_v3` / `dialogue_by_shot_v1` outputs, not the later schema fixes.
+Scores are descriptive development-media measurements; formal inclusion remains
+false. The adapter's method label is a unique protocol/file identifier so its
+summary cannot silently pool different protocols.
+
+| Video ID (MP4 basename) | Mapped condition(s) | Raw mean MUSIQ | imaging_quality (0-1) | Worker seconds |
+| --- | --- | ---: | ---: | ---: |
+| `global-v1-baseline` | baseline | 76.547845840 | 0.765478458405 | 55.513 |
+| `global-v1-generic_review` | generic_review | 76.734780896 | 0.767347808961 | 47.850 |
+| `global-v1-moodcut` | moodcut | 75.797529713 | 0.757975297128 | 47.875 |
+| `actor-v1-baseline-and-generic` | baseline + generic_review | 76.851614368 | 0.768516143676 | 47.821 |
+| `actor-v1-moodcut` | moodcut | 75.617978004 | 0.756179780037 | 47.902 |
+| `actor-v3-baseline` | baseline | 75.800705756 | 0.758007057559 | 49.606 |
+| `actor-v3-generic_review` | generic_review | 76.946241994 | 0.769462419941 | 48.840 |
+| `actor-v3-moodcut` | moodcut | 74.978804250 | 0.749788042499 | 47.795 |
+
+The shared actor-v1 file was scored once. Its baseline and generic_review entries
+refer to that same score, not two independent samples. No pooled cross-protocol
+mean, overall VBench score, significance test or method-effect estimate is
+reported. In each of these three historical protocol groups, the moodcut file
+has a lower imaging_quality value than its baseline file. Preserve that
+observation; it does not establish worse emotional delivery or general method
+performance from one story and one clip per condition.
+
+### Score derivation and reproducibility
+
+- VBench source: `fd18b3d055cb0fc6f066ca90fe2c3c8cbb698490`, clean pinned checkout.
+- Model: cached MUSIQ-SPAQ, SHA-256
+  `358bb6af275e28ea56821d44fb55c6cb83645db11f394d3ad65b2d149965ab50`.
+- CPU, two PyTorch threads, seed 0, `longer` preprocessing, `custom_input` mode.
+  Generation seed 4213 in the metadata is distinct from the evaluator seed.
+- The pinned implementation loads all decoded video frames, resizes inputs whose
+  longer edge exceeds 512 pixels, computes MUSIQ per frame, averages within the
+  video, then divides the raw mean by 100. Audio and prompt text are not scored.
+  The manifest retains the published scene story and explicitly identifies it as
+  different from the unavailable original compiled provider prompt.
+- Environment recorded in the batch checkpoint includes torch 2.5.1+cpu,
+  torchvision 0.20.1+cpu, pyiqa 0.1.13, timm 1.0.12, decord 0.6.0 and
+  transformers 4.37.2. See the earlier setup section for the pinned environment.
+
+Formula: `imaging_quality = mean(frame MUSIQ scores) / 100`. For example,
+`76.5478458404541 / 100 = 0.765478458404541` for global-v1 baseline. This is a
+normalized perceptual-quality score, not a 76.55% accuracy or probability.
+
+The actual invocation used the existing adapter without production-code changes:
+
+```powershell
+$env:PYTHONPATH = 'src'
+$env:HF_HUB_OFFLINE = '1'
+$env:TRANSFORMERS_OFFLINE = '1'
+.venv/Scripts/python -B -m moodcut.evaluation batch --manifest runs/pilot-vbench-plan-20261025/manifest.json --video-root runs/release-audit-20261025 --upstream references/upstream/vbench --cache runs/vbench-cache --output runs/pilot-vbench-results-20261025 --timeout 300
+```
+
+A new invocation must use a fresh output directory. This command records the
+completed execution; it does not approve further or broader compute runs.
+
+### Evidence and verification
+
+Local artifacts remain under ignored `runs/` directories:
+
+- `pilot-vbench-plan-20261025/manifest.json`: eight unique inputs;
+  `condition-map.json`: nine condition entries mapped to the eight video IDs;
+  `plan.json`: original pre-approval plan, with subsequent scope approval recorded
+  separately in `approval.json`. The original plan snapshot is preserved.
+- `pilot-vbench-results-20261025/checkpoint.json`: original input/configuration
+  identity and results; `normalized_results.json` and `summary.csv`: existing
+  adapter outputs. Each summary group contains one unique file.
+- `pilot-vbench-results-20261025/item-*/`: native VBench results and worker logs.
+- `pilot-vbench-results-20261025/public_results.json` and `public_results.csv`:
+  sanitized per-file results with hashes, protocol, condition mapping and timing.
+  Raw local checkpoints/logs can contain machine paths and should not be copied
+  into public PR text.
+
+Post-run checks matched every successful normalized score to its native raw
+score divided by 100 and to the native aggregate. All eight original media hashes
+still match the input manifest and audit. Checkpoint/normalized rows agree;
+summary totals retain all eight files with zero missing/failed entries; all nine
+condition mappings remain present. The exact CPU/thread/timeout configuration
+was checked. No human judgments were generated and no receipt or media was
+rewritten. This documentation-only increment does not claim a new full-suite
+local test run; the earlier offline workflow result remains separate evidence.
+
+The next evaluation dependencies are unchanged: complete original source records
+and receipts for qualification, independent human inspection/ratings, and an
+agreed formal study protocol. These historical image-quality measurements alone
+do not satisfy those dependencies or evaluate speech, emotion, audio quality,
+temporal consistency or the other VBench dimensions.
+
+## Qualitative case: explicit affection versus contextual naturalness (2026-10-25)
+
+A non-blind team discussion raised a contextual concern about Elsa's moodcut line,
+"谢谢你，安娜。你真好。" ("Thank you, Anna. You are so kind."). Praising Anna's kindness
+may be excessive for the routine return of a borrowed umbrella unless additional
+context motivates it. This is an open naturalness/overstatement concern, not a
+confirmed error: affectionate relationships and delivery could make the line
+plausible. The English account below is an edited paraphrase of feedback, not a
+verbatim independent-rater response.
+
+### Trace to the saved review
+
+The [pinned actor-v3 public record](https://github.com/zhengads/MoodCut-dsa4213/blob/c7e6bd87437bef05dad45805f55c184ad4e1b041/docs/pilots/anna-elsa-actor-v3-captured.results.json)
+contains the following trace for `return-umbrella-shot`, character `b` (Elsa):
+
+1. The baseline line is "谢谢你，安娜。". Elsa's moodcut actor report
+   `actor-2:tone_underwhelming` describes it as insufficiently warm and explicitly
+   proposes adding "你真好" as one possible revision.
+2. `writer_response.dialogue_by_shot` adopts the added phrase, and the writer's
+   `addressed_issue_ids` includes that actor issue. The saved final plan contains
+   the same line. This establishes the phrase's presence in the script before
+   video generation; it does not verify exactly what is audible in the clip.
+3. The saved result is `applied` with `verification_kind=programmatic_only`,
+   `actor_endorsement=not_requested`, `actor_confirmation_status=not_needed` and
+   an empty `actor_confirmations` list. Writer-declared feedback resolution is not
+   an independent judgment that the resulting dialogue is natural.
+
+The corresponding video is `actor-v3-moodcut.mp4`, SHA-256
+`0948eb88ae5b82a283b38c07d4225db3ec5aaa438ecbc3b0b4c11ecb60c74ca7`.
+This trace concerns the historical `actor_self_review_v3` /
+`dialogue_by_shot_v1` run, not the later S06/schema fixes.
+
+### Evaluation interpretation and follow-up
+
+The case suggests a possible trade-off: making the target affection explicit may
+weaken conversational motivation. Treat this as a qualitative hypothesis for
+future independent assessment, not a numeric score, causal finding, universal
+rule against gratitude or evidence that the method generally fails. It is also
+not an explanation for this clip's lower imaging_quality value; that metric does
+not score dialogue meaning.
+
+The discussion had access to conditions, target tone, expected lines and prior
+image-quality scores, with assistant discussion before the feedback was recorded.
+It is not blind or independent. No timestamped transcript, complete technical
+checklist, numeric naturalness/overstatement rating or other-condition judgment
+was supplied. Those fields remain unfilled. The existing independent-rating
+counts and all benchmark scores are unchanged.
+
+Local evidence is `runs/actor-v3-technical-review-20261025/qualitative_concern_001.json`;
+the original blank technical template, public source record, videos and benchmark
+results remain intact. Preserve the case for discussion with the review-module
+owner. Any future prompt revision should be a separately versioned prospective
+change; do not rewrite these historical scripts or replace their evaluation
+results. Independent ratings must still follow the agreed source-qualified
+export and assignment workflow.
+
+### 简短中文总结
+
+8 段真实视频的 VBench imaging_quality 已全部算完，零失败/超时，耗时约 6 分 33 秒，外部 API 费用 $0。三个协议下 moodcut 的该项分数均低于对应 baseline，已如实保留；这只是画面质量，不能代表情绪效果或整体方法优劣。9 条条件记录中有一段视频复用，完整来源核验和独立人工评分仍待完成。
+
+补充发现：情绪角色建议、编剧采纳了“你真好”，但其场景自然度受到非盲讨论质疑。已保留为待进一步核实的定性案例，不计作独立评分，也未修改原台词或视频。
