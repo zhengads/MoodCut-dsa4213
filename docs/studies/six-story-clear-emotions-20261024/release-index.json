@@ -1,0 +1,468 @@
+{
+  "release_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/tag/Videos_S07-S18",
+  "published_on": "2026-10-28",
+  "archive_url": "https://github.com/zhengads/MoodCut-dsa4213/releases/download/Videos_S07-S18/MoodCut_S07-S12_and_S13-S18_V2_All_Videos.zip",
+  "archive_sha256": "bafa056a434bd406778f07e4651e8e42f81d5da9c74df0f9ad0a358ebc5f1920",
+  "numbering_scope": "Display numbers only; source IDs, inputs and historical results retain their original identities.",
+  "scenario_count": 12,
+  "condition_file_count": 36,
+  "unique_video_byte_hashes": 28,
+  "scenarios": [
+    {
+      "number": "01",
+      "source_id": "S07",
+      "release_version": "original",
+      "title": "Another broken promise",
+      "emotion": "anger",
+      "characters": [
+        "Maxime / 马克西姆",
+        "Valentina / 瓦伦蒂娜"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S07_8s_Chinese_Three_Videos",
+      "source_scene": "inputs/s07_broken_promise/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese.mp4",
+          "bytes": 1106035,
+          "sha256": "2f505cb7d9e429d1c0d46ec87851afe6338415599dfde7f63d8073ee8ea7699e",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese.mp4",
+          "bytes": 1205696,
+          "sha256": "f7baa6fce61106ccd9e3ba2db24722acd5497b50b3ee214940c44385b6fdbaa5",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese.mp4",
+          "bytes": 1174003,
+          "sha256": "871d006cecb38322dfd505fee19449e43a0590fa3224e3cf434f354b481a2715",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "02",
+      "source_id": "S08",
+      "release_version": "original",
+      "title": "The foul-smelling medicine",
+      "emotion": "disgust",
+      "characters": [
+        "Lijing / 李靖",
+        "Taiyi / 太乙"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S08_8s_Chinese_Three_Videos",
+      "source_scene": "inputs/s08_foul_medicine/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese.mp4",
+          "bytes": 910681,
+          "sha256": "4f5c0dd91579c6766135449788d5f45a9f47bc7340edd77b2ee5c03fa19c7641",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese.mp4",
+          "bytes": 910681,
+          "sha256": "4f5c0dd91579c6766135449788d5f45a9f47bc7340edd77b2ee5c03fa19c7641",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese.mp4",
+          "bytes": 965758,
+          "sha256": "24cf9b8099a9a7444e0efd1dab1048e9125d66460d538a72c70d8eda63105d22",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "03",
+      "source_id": "S09",
+      "release_version": "original",
+      "title": "Something in the forest",
+      "emotion": "fear",
+      "characters": [
+        "Elsa / 艾莎",
+        "Mattias / 马蒂亚斯"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S09_8s_English_Three_Videos",
+      "source_scene": "inputs/s09_forest_creature/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1359816,
+          "sha256": "916d8e7241acf0d51d10bcd12dafa8755ce414b3e46bfb2854fc7edf48a2056d",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1309987,
+          "sha256": "e86625b496a2060d7ce6484b3940ca739c96a4f0a007379403e7193fdb3523a6",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 1348761,
+          "sha256": "3cad83a10f0bcfeda40d0c5c5b5320ded674777097a6ce33bc14eacbf4323563",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "04",
+      "source_id": "S10",
+      "release_version": "original",
+      "title": "The celebration is saved",
+      "emotion": "joy",
+      "characters": [
+        "Anna / 安娜",
+        "Kristoff / 克里斯托夫"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S10_8s_English_Three_Videos",
+      "source_scene": "inputs/s10_celebration_saved/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1216178,
+          "sha256": "51792338b8b0fb738afc2042aa971af79677f61dc501fad3b8c6eeeebe85977b",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1216178,
+          "sha256": "51792338b8b0fb738afc2042aa971af79677f61dc501fad3b8c6eeeebe85977b",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 1230729,
+          "sha256": "14d3a29d770588fd8344b49aebb3d9d2412d334b11178a773bdd7573f44f60ce",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "05",
+      "source_id": "S11",
+      "release_version": "original",
+      "title": "An irreplaceable keepsake",
+      "emotion": "sadness",
+      "characters": [
+        "Lucy / 露西",
+        "Gru / 格鲁"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S11_8s_English_Three_Videos",
+      "source_scene": "inputs/s11_irreplaceable_keepsake/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1682518,
+          "sha256": "2368bdb0b8259bec7d8c8d0c0f00853ba2ff140d7b5d09193e8369c06d1b5df4",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1682518,
+          "sha256": "2368bdb0b8259bec7d8c8d0c0f00853ba2ff140d7b5d09193e8369c06d1b5df4",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 1357519,
+          "sha256": "5bdb96fe5a24805e28d8e9e0c720f67abd229b72ac3fa2d0a84801afba6c46e4",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "06",
+      "source_id": "S12",
+      "release_version": "original",
+      "title": "An unexpectedly finished task",
+      "emotion": "surprise",
+      "characters": [
+        "Nezha / 哪吒",
+        "Aobing / 敖丙"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S12_8s_Chinese_Three_Conditions_Shared_Video",
+      "source_scene": "inputs/s12_finished_task/scene.json",
+      "initial_dialogue_source": "not_specified_in_delivery",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese_SHARED.mp4",
+          "bytes": 907829,
+          "sha256": "62cb21378b76e8a50f28f27b7bbc01e6a4735f4e1b6d35acdd2706bd8c034b53",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese_SHARED.mp4",
+          "bytes": 907829,
+          "sha256": "62cb21378b76e8a50f28f27b7bbc01e6a4735f4e1b6d35acdd2706bd8c034b53",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese_SHARED.mp4",
+          "bytes": 907829,
+          "sha256": "62cb21378b76e8a50f28f27b7bbc01e6a4735f4e1b6d35acdd2706bd8c034b53",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "07",
+      "source_id": "S13",
+      "release_version": "V2",
+      "title": "A unilateral decision",
+      "emotion": "anger",
+      "characters": [
+        "Lucy / 露西",
+        "Gru / 格鲁"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S13_V2_8s_Chinese_Three_Videos",
+      "source_scene": "inputs/s13_unilateral_decision/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese.mp4",
+          "bytes": 1663023,
+          "sha256": "4557e997b4fd5b901754a17a1fe2e49e4d898d55947f99588771904f70299123",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese.mp4",
+          "bytes": 1647981,
+          "sha256": "999f26530cb7e1c94c33ccd2872cb44ea95706c79f695d5608bb48dd5c611594",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese.mp4",
+          "bytes": 1556524,
+          "sha256": "7260c29bc5709ba9fe4a50dc0aad2fc6b241d36a55ab8f74023297fd738afb30",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "08",
+      "source_id": "S14",
+      "release_version": "V2",
+      "title": "The spoiled drink",
+      "emotion": "disgust",
+      "characters": [
+        "Anna / 安娜",
+        "Kristoff / 克里斯托夫"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S14_V2_8s_English_Three_Videos",
+      "source_scene": "inputs/s14_spoiled_drink/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1159019,
+          "sha256": "d9b236d8c2c50b4dbeb82ea5424320b79116b711915aee44868ae7bcbebb62c3",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1159019,
+          "sha256": "d9b236d8c2c50b4dbeb82ea5424320b79116b711915aee44868ae7bcbebb62c3",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 837803,
+          "sha256": "3621ef8fd06bd2aada181928f10bf526222176d0231c532b73aa3c3b1f6a36b7",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "09",
+      "source_id": "S15",
+      "release_version": "V2",
+      "title": "A crack beneath the bridge",
+      "emotion": "fear",
+      "characters": [
+        "Nezha / 哪吒",
+        "Aobing / 敖丙"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S15_V2_8s_Chinese_Three_Videos",
+      "source_scene": "inputs/s15_cracking_bridge/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese.mp4",
+          "bytes": 1420525,
+          "sha256": "9ca2e9faf16aad074d68ae28bee2915f72b96298cd946d66f1a26ab38730b5d1",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese.mp4",
+          "bytes": 1445857,
+          "sha256": "30b40573fe3c82c8e175deafab20b55da41c42d3b87e486f30da4527d3c22a9b",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese.mp4",
+          "bytes": 1458275,
+          "sha256": "71e215d56a8dd1330fa80f29580b27bc4f13e57db0deeac29187fe2f2d7fdec1",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "10",
+      "source_id": "S16",
+      "release_version": "V2",
+      "title": "The approval arrives",
+      "emotion": "joy",
+      "characters": [
+        "Lijing / 李靖",
+        "Taiyi / 太乙"
+      ],
+      "language": "Mandarin Chinese",
+      "archive_directory": "MoodCut_S16_V2_8s_Chinese_Three_Videos",
+      "source_scene": "inputs/s16_approval_arrives/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_Chinese.mp4",
+          "bytes": 1113903,
+          "sha256": "d67ed371a41056cad3c621ff57aaee18d9f1e9b39be84e3fc3529def0270cead",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_Chinese.mp4",
+          "bytes": 1113903,
+          "sha256": "d67ed371a41056cad3c621ff57aaee18d9f1e9b39be84e3fc3529def0270cead",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_Chinese.mp4",
+          "bytes": 972456,
+          "sha256": "6fa24420f3ccff67473892ddb349fb0020ed89e5e978318b0af0e4fef46b6193",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "11",
+      "source_id": "S17",
+      "release_version": "V2",
+      "title": "The old tree is gone",
+      "emotion": "sadness",
+      "characters": [
+        "Elsa / 艾莎",
+        "Mattias / 马蒂亚斯"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S17_V2_8s_English_Three_Videos",
+      "source_scene": "inputs/s17_old_tree_gone/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1079636,
+          "sha256": "2f23f21fa6d46e092f99278576749711053db696f805318957cd4b823f59bb40",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1079636,
+          "sha256": "2f23f21fa6d46e092f99278576749711053db696f805318957cd4b823f59bb40",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 1152731,
+          "sha256": "48140cdebca467d1dde3a37ec1fd410bc57dc12406c9b8e2a2da5534649e4799",
+          "duration_s": "8.083344"
+        }
+      ]
+    },
+    {
+      "number": "12",
+      "source_id": "S18",
+      "release_version": "V2",
+      "title": "The room is already ready",
+      "emotion": "surprise",
+      "characters": [
+        "Maxime / 马克西姆",
+        "Valentina / 瓦伦蒂娜"
+      ],
+      "language": "English",
+      "archive_directory": "MoodCut_S18_V2_8s_English_Three_Videos",
+      "source_scene": "inputs/s18_room_ready/scene.json",
+      "initial_dialogue_source": "gemini_planning_generated_shared_initial_dialogue",
+      "files": [
+        {
+          "condition": "baseline",
+          "file": "01_Baseline_8s_English.mp4",
+          "bytes": 1115908,
+          "sha256": "25e3b2ed802a0fa84e3dbaa633052c290636991179cfd21d01250f68a63ee6f4",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "generic_review",
+          "file": "02_Generic_Review_8s_English.mp4",
+          "bytes": 1156375,
+          "sha256": "e02234457f8e97c682435e17805a4098cc464316b88c08cf9a6b529c722cd63d",
+          "duration_s": "8.083344"
+        },
+        {
+          "condition": "moodcut",
+          "file": "03_MoodCut_8s_English.mp4",
+          "bytes": 1197839,
+          "sha256": "be95ea8dd768c139458b4d2dad34e033e94d64b4c157a35f0914de3d1db1afa4",
+          "duration_s": "8.083344"
+        }
+      ]
+    }
+  ]
+}

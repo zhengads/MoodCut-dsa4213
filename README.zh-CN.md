@@ -12,7 +12,7 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 ## 方法与三组对照
 
-上图及下表对应最新 S01 使用的 **v4 开发协议**：
+上图及下表对应早期 S01 案例使用的 **v4 开发协议**：
 
 | 条件 | 处理方式 |
 | --- | --- |
@@ -28,13 +28,11 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 
 ## 当前进展
 
-截至 2026-10-25，最新 **S01 v4 视频对照**已上线：[直接观看](https://zhengads.github.io/MoodCut-dsa4213/#s01-v4) · [审查、修改、回访与费用记录](docs/pilots/s01-v4-text-video.md)。通用审查保留初稿；MoodCut 修改克里斯托夫一句并回访两位 Actor。三个条件入口对应两段独立生成视频，通用审查复用 baseline；成功文本与视频合计 **$0.504356**。页面暂时隐藏未出片条目，失败记录与费用仍保留。
+最新 [Videos S07–S18 Release](https://github.com/zhengads/MoodCut-dsa4213/releases/tag/Videos_S07-S18) 发布于 2026-10-28，包含 **12 个剧本：S07–S12 和 S13–S18 V2**。[当前剧本目录](docs/studies/six-story-clear-emotions-20261024/README.md) 已按发布顺序统一编号为 **01–12**，同时列出原编号供查找。压缩包共有 36 个条件视频文件，按字节哈希去重为 28 段，每段约 8 秒。
 
-此前 S06 v3 开发试跑已生成三段真实视频，总费用 **$0.75421676**。[直接观看](https://zhengads.github.io/MoodCut-dsa4213/#s06-index) · [试跑记录与原始结果](docs/pilots/s06-actor-v3-index.md)
+交付清单表明，**S13–S18 V2 使用 Gemini 生成的共同初稿**；旧版手工弱化台词、S07–S12 原先的 5 秒设计均不能作为这批成片的说明。文件对应关系和哈希见[发布索引](docs/studies/six-story-clear-emotions-20261024/release-index.json)。正式纳入和独立人工质量验收仍未完成。
 
-这证明了该样例的技术流程跑通；中文对白、人物一致性、自然度和情绪效果仍待人工检查与独立评价。历史成功和失败均保留在[试跑记录](docs/pilots/)中。
-
-后续候选输入为[六个明显情绪情景 v2](docs/studies/six-story-clear-emotions-20261024/README.md)：affectionate、hostile、tense 各两个故事。它们是待执行的研究输入，范围确认不等于付费运行或正式评价已获批准。
+早期 [S01 v4](docs/pilots/s01-v4-text-video.md)、[S06 v3](docs/pilots/s06-actor-v3-index.md) 的结果、费用和失败保留在[试跑记录](docs/pilots/)中。[视频对比网页](https://zhengads.github.io/MoodCut-dsa4213/)目前展示的是这些早期案例；最新 12 个剧本的视频请使用上方 Release。
 
 ### 评测集的迭代
 
@@ -45,7 +43,7 @@ MoodCut 是 DSA4213 课程研究项目：给定故事、两个角色参考图和
 3. **S13–S18，审查挑战集。** 已评测 S15（恐惧）：三个条件的 fear 都只有 4.6–9.5%。
 4. **恐惧专项排查。** 对 S09、S15 做逐路消融、用真实恐怖片段的特征互换和亮度对照，结果表明决定性的是视觉特征；只有画面被压得很暗时 fear 才升高，这不等于视频传达了恐惧。
 
-所有数字都是探索性的：每个条件一个视频，没有人工评分。人工盲评仍是主要证据（方案草案在研究记录目录中）。**实验分析结果在 [`docs/studies/emotion-evaluation-20261027/results/`](docs/studies/emotion-evaluation-20261027/results/)。**
+以下历史数值不能直接当作 2026-10-28 发布包或 S13–S18 V2 的评测结果。所有数字都是探索性的：每个条件一个视频，没有人工评分。人工盲评仍是主要证据（方案草案在研究记录目录中）。**实验分析结果在 [`docs/studies/emotion-evaluation-20261027/results/`](docs/studies/emotion-evaluation-20261027/results/)。**
 
 ## 快速开始
 
@@ -87,15 +85,17 @@ Start-Process (Resolve-Path runs/demo-01/comparison.html).Path
 
 **默认 `plan/review/smoke/run` 仍使用原 animatic 流程，不自动启用演员 v3/v4。** 需要在生成式脚本编排时显式选择协议；准备脚本、编译请求、生成视频是三个阶段。参数和前置条件见[生成式视频流程](docs/usage.md#生成式视频流程)。
 
-## 使用评测集
+## 使用已保存的输入配置
+
+当前 01–12 展示编号见[剧本目录](docs/studies/six-story-clear-emotions-20261024/README.md)。下列配置保留原编号及早期设计设置，不能直接复现此次发布的 8 秒成片或 V2 初稿。
 
 评测集以生成式（schema 1.1）输入的形式提交在 `docs/studies/six-story-clear-emotions-20261024/inputs/` 下。它们不能走上面的离线 animatic 演示：用 S07 的 scene 运行 `run --mock` 会因 animatic 的 `schema_version` 不符而失败，`--output-mode generated` 也需要已保存的 `--source-block`。它们接入的是生成式视频流程和 `evaluate` 命令。
 
 | 评测集 | 场景输入 | 索引 | 分配配置 |
 | --- | --- | --- | --- |
-| S01–S06（三种氛围） | `inputs/s01_…` 至 `s06_…` | `inputs/index.json` | 无；只有开发示例 `configs/experiment.json` |
-| S07–S12（六种情绪） | `inputs/s07_…` 至 `s12_…` | `inputs/basic-emotions-index.json` | `configs/basic-emotions-experiment.json` |
-| S13–S18（审查挑战） | `inputs/s13_…` 至 `s18_…`，含 `draft-dialogue.json` | `inputs/basic-emotion-challenge-index.json` | `configs/basic-emotions-challenge-experiment.json` |
+| 历史 S01–S06（三种氛围） | `inputs/s01_…` 至 `s06_…` | `inputs/index.json` | 无；只有开发示例 `configs/experiment.json` |
+| 01–06 / 原 S07–S12（早期 5 秒输入） | `inputs/s07_…` 至 `s12_…` | `inputs/basic-emotions-index.json` | `configs/basic-emotions-experiment.json` |
+| 07–12 / 原 S13–S18（旧手工挑战初稿，非 V2 台词） | `inputs/s13_…` 至 `s18_…`，含 `draft-dialogue.json` | `inputs/basic-emotion-challenge-index.json` | `configs/basic-emotions-challenge-experiment.json` |
 
 1. **离线检查分配**（不联网、不产生费用）：`.venv/Scripts/python -m moodcut evaluate --config configs/basic-emotions-experiment.json --dry-run` 会列出 18 次计划运行；挑战集配置同理。
 2. **准备脚本和视频请求**：按[生成式视频流程](docs/usage.md#生成式视频流程)。真实生成需要明确模型、范围、预算，并需要[动画素材库](assets/library/README.md)中的角色图片（未提交）。
